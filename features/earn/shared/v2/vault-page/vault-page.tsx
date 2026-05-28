@@ -50,6 +50,7 @@ type Props = {
   title: string;
   description: string;
   apx?: number | null;
+  apxLabel?: string;
   apxHint?: React.ReactNode;
   apxUpdateTooltipText?: React.ReactNode;
   isApxStale?: boolean;
@@ -130,6 +131,7 @@ export const VaultPage: FC<Props> = (props) => {
           title={props.title}
           description={props.description}
           apx={props.apx}
+          apxLabel={props.apxLabel}
           tvlUsd={props.tvlUsd}
           apxHint={props.apxHint}
           apxUpdateTooltipText={props.apxUpdateTooltipText}

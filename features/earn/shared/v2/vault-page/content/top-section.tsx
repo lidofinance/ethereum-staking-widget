@@ -10,6 +10,7 @@ import { FormatPrice } from 'shared/formatters/format-price';
 import { InlineLoader } from 'features/earn/shared/inline-loader';
 import { VaultTip } from 'features/earn/shared/vault-tip';
 import { Badge } from 'features/earn/shared/badge';
+import { shouldShowApxUpdateTooltip } from 'features/earn/shared/v2/apy-update-tooltip-text';
 import { getTokenDecimals } from 'utils/token-decimals';
 
 import {
@@ -44,6 +45,7 @@ type TopSectionProps = {
   title: string;
   description: string;
   apx?: number | null;
+  apxLabel?: string;
   tvlUsd?: number | null;
   apxHint?: React.ReactNode;
   apxUpdateTooltipText?: React.ReactNode;
@@ -59,6 +61,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     title,
     description,
     apx,
+    apxLabel = 'APY* (14d avg.)',
     tvlUsd,
     apxHint,
     apxUpdateTooltipText,
@@ -69,12 +72,15 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     balance,
   } = props;
   const isMobile = useBreakpoint('md');
-  const shouldShowApxUpdateTooltip =
-    !!apx && !isApxLoading && !!apxUpdateTooltipText;
+  const showApxUpdateTooltip = shouldShowApxUpdateTooltip({
+    apx,
+    isLoading: isApxLoading,
+    apxUpdateTooltipText,
+  });
 
   const apxValue = (
     <TopSectionStatValueTooltipTarget>
-      <TopSectionStatValue $accent $muted={isApxStale} data-testId="apx-value">
+      <TopSectionStatValue $accent $muted={isApxStale} data-testid="apx-value">
         <InlineLoader isLoading={isApxLoading} width={70}>
           <FormatPercent value={apx} decimals="percent" />
         </InlineLoader>
@@ -89,37 +95,39 @@ export const TopSection: FC<TopSectionProps> = (props) => {
           <TopSectionHeaderIcon aria-hidden>
             <props.logo />
           </TopSectionHeaderIcon>
-          <TopSectionHeaderTitle data-testId="vault-title">
+          <TopSectionHeaderTitle data-testid="vault-title">
             {title}
           </TopSectionHeaderTitle>
           {protectedBadgeTooltipText && (
             <Badge text="PROTECTED" tooltipText={protectedBadgeTooltipText} />
           )}
         </TopSectionHeader>
-        <TopSectionDescription data-testId="vault-description">
+        <TopSectionDescription data-testid="vault-description">
           {description}
         </TopSectionDescription>
       </TopSectionContent>
       <TopSectionStatsRow>
+        {apxLabel && (
+          <TopSectionStatItem>
+            <TopSectionStatLabel data-testid="apx-label">
+              {apxLabel}
+              <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
+            </TopSectionStatLabel>
+            {showApxUpdateTooltip ? (
+              <Tooltip
+                title={apxUpdateTooltipText}
+                placement={isMobile ? 'topRight' : 'topLeft'}
+              >
+                {apxValue}
+              </Tooltip>
+            ) : (
+              apxValue
+            )}
+          </TopSectionStatItem>
+        )}
         <TopSectionStatItem>
-          <TopSectionStatLabel data-testId="apx-label">
-            APY* (7d avg.)
-            <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
-          </TopSectionStatLabel>
-          {shouldShowApxUpdateTooltip ? (
-            <Tooltip
-              title={apxUpdateTooltipText}
-              placement={isMobile ? 'topRight' : 'topLeft'}
-            >
-              {apxValue}
-            </Tooltip>
-          ) : (
-            apxValue
-          )}
-        </TopSectionStatItem>
-        <TopSectionStatItem>
-          <TopSectionStatLabel data-testId="tvl-label">TVL</TopSectionStatLabel>
-          <TopSectionStatValue data-testId="tvl-amount">
+          <TopSectionStatLabel data-testid="tvl-label">TVL</TopSectionStatLabel>
+          <TopSectionStatValue data-testid="tvl-amount">
             <InlineLoader isLoading={isTvlLoading} width={70}>
               <FormatLargeAmount amount={tvlUsd} />
             </InlineLoader>
@@ -127,7 +135,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
         </TopSectionStatItem>
         {!!balance?.sharesAmount && (
           <TopSectionStatItem>
-            <TopSectionStatLabel data-testId="my-deposit-label">
+            <TopSectionStatLabel data-testid="my-deposit-label">
               My deposit
               <VaultTip placement="bottomLeft">
                 You hold{' '}
@@ -144,7 +152,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
               </VaultTip>
             </TopSectionStatLabel>
             <TopSectionStatValueGroup>
-              <TopSectionStatValue data-testId="my-deposit-value">
+              <TopSectionStatValue data-testid="my-deposit-value">
                 <InlineLoader isLoading={balance.isLoading} width={70}>
                   <FormatToken
                     trimEllipsis
@@ -155,7 +163,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
                 </InlineLoader>
               </TopSectionStatValue>
               {!balance.isLoading && balance.usdAmount != null && (
-                <TopSectionStatSubValue data-testId="my-deposit-usd-value">
+                <TopSectionStatSubValue data-testid="my-deposit-usd-value">
                   <FormatPrice amount={balance.usdAmount} />
                 </TopSectionStatSubValue>
               )}

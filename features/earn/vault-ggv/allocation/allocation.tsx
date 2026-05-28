@@ -5,14 +5,9 @@ const FOOTER_TEXT =
   'Data is provided by Veda’s API and reflects the most recent snapshot at the time of update. As a result, the TVL shown here may differ from the vault’s TVL due to the data timestamp';
 
 export const Allocation = () => {
-  const { data, isLoading, apy } = useGGVAllocation();
+  const { data, isLoading } = useGGVAllocation();
 
   return (
-    <VaultAllocation
-      data={data}
-      isLoading={isLoading}
-      apy={apy}
-      footer={FOOTER_TEXT}
-    />
+    <VaultAllocation data={data} isLoading={isLoading} footer={FOOTER_TEXT} />
   );
 };

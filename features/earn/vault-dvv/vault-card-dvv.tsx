@@ -18,11 +18,10 @@ import {
   DVV_TOKEN_SYMBOL,
   DVV_VAULT_DESCRIPTION,
 } from './consts';
-import { DVVAprBreakdown } from './components/dvv-apr-breakdown';
 
 export const VaultCardDVV = () => {
   const { isWalletConnected } = useDappStatus();
-  const { tvl, apr, isLoading: isLoadingStats } = useDVVStats();
+  const { tvl, isLoading: isLoadingStats } = useDVVStats();
   const { sharesBalance, isLoading: isLoadingPosition } = useDVVPosition();
   return (
     <VaultCard
@@ -36,10 +35,7 @@ export const VaultCardDVV = () => {
       ]}
       stats={{
         tvl,
-        apx: apr,
-        apxLabel: 'APR',
         isLoading: isLoadingStats,
-        apxHint: <DVVAprBreakdown />,
       }}
       logo={<VaultDVVIcon />}
       position={

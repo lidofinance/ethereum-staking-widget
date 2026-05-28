@@ -36,7 +36,7 @@ import { VaultTip } from '../../vault-tip';
 type VaultStats = {
   tvl?: number | null;
   apx?: number | null;
-  apxLabel: string;
+  apxLabel?: string;
   isLoading?: boolean;
   apxHint?: React.ReactNode;
 };
@@ -123,22 +123,26 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
       </CardHeader>
       <CardDivider />
       <CardStats>
-        <StatItem data-testid="apx">
-          <StatLabel>
-            {stats.apxLabel}
-            <VaultTip
-              placement="bottomLeft"
-              style={{ position: 'relative', zIndex: 20 }}
-            >
-              {stats.apxHint}
-            </VaultTip>
-          </StatLabel>
-          <StatValue $accent data-testid="apx-value">
-            <InlineLoader isLoading={stats.isLoading} width={70}>
-              <FormatPercent value={stats.apx} decimals="percent" />
-            </InlineLoader>
-          </StatValue>
-        </StatItem>
+        {stats.apxLabel && (
+          <StatItem data-testid="apx">
+            <StatLabel>
+              {stats.apxLabel}
+              {stats.apxHint && (
+                <VaultTip
+                  placement="bottomLeft"
+                  style={{ position: 'relative', zIndex: 20 }}
+                >
+                  {stats.apxHint}
+                </VaultTip>
+              )}
+            </StatLabel>
+            <StatValue $accent data-testid="apx-value">
+              <InlineLoader isLoading={stats.isLoading} width={70}>
+                <FormatPercent value={stats.apx} decimals="percent" />
+              </InlineLoader>
+            </StatValue>
+          </StatItem>
+        )}
         <StatItem data-testid="tvl">
           <StatLabel>TVL</StatLabel>
           <StatValue data-testid="tvl-amount">

@@ -45,7 +45,6 @@ import {
   GGV_TOKEN_SYMBOL,
 } from './consts';
 import { GGVFaq } from './faq/ggv-faq';
-import { GGVApyHint } from './components/ggv-apy-hint';
 import { GGVVaultDetails } from './components/ggv-vault-details';
 import { UpgradeCardVaultPage } from '../shared/upgrade-card-vault-page/upgrade-card-vault-page';
 import { DrawerRight } from '../shared/drawer-right';
@@ -70,7 +69,7 @@ export const VaultPageGGV: FC<{
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
 
   const { isDappActive } = useDappStatus();
-  const { tvl, apy, isLoading } = useGGVStats();
+  const { tvl, isLoading } = useGGVStats();
   const {
     data,
     usdBalance,
@@ -100,14 +99,7 @@ export const VaultPageGGV: FC<{
             logo={<VaultGGVIcon />}
             partners={GGV_PARTNERS}
           />
-          <VaultStats
-            compact
-            tvl={tvl}
-            apxLabel="APY"
-            apx={apy}
-            apxHint={<GGVApyHint />}
-            isLoading={isLoading}
-          />
+          <VaultStats compact tvl={tvl} isLoading={isLoading} />
           <VaultDescription description={GGV_VAULT_DESCRIPTION} />
         </VaultBlockHeaderSection>
         {isDappActive && (
@@ -160,7 +152,7 @@ export const VaultPageGGV: FC<{
       <Allocation />
       <GGVFaq />
       <DisclaimerSection>
-        <AprDisclaimer mentionAPY />
+        <AprDisclaimer />
         <LegalDisclaimer />
       </DisclaimerSection>
       <DrawerRight
