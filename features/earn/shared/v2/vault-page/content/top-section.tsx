@@ -10,6 +10,7 @@ import { FormatPrice } from 'shared/formatters/format-price';
 import { InlineLoader } from 'features/earn/shared/inline-loader';
 import { VaultTip } from 'features/earn/shared/vault-tip';
 import { Badge } from 'features/earn/shared/badge';
+import { shouldShowApxUpdateTooltip } from 'features/earn/shared/v2/apy-update-tooltip-text';
 import { getTokenDecimals } from 'utils/token-decimals';
 
 import {
@@ -69,8 +70,11 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     balance,
   } = props;
   const isMobile = useBreakpoint('md');
-  const shouldShowApxUpdateTooltip =
-    !!apx && !isApxLoading && !!apxUpdateTooltipText;
+  const showApxUpdateTooltip = shouldShowApxUpdateTooltip({
+    apx,
+    isLoading: isApxLoading,
+    apxUpdateTooltipText,
+  });
 
   const apxValue = (
     <TopSectionStatValueTooltipTarget>
@@ -106,7 +110,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
             APY* (7d avg.)
             <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
           </TopSectionStatLabel>
-          {shouldShowApxUpdateTooltip ? (
+          {showApxUpdateTooltip ? (
             <Tooltip
               title={apxUpdateTooltipText}
               placement={isMobile ? 'topRight' : 'topLeft'}

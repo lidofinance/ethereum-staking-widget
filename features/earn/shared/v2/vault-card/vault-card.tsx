@@ -33,6 +33,7 @@ import { getTokenDecimals } from 'utils/token-decimals';
 import { useConfig } from 'config/use-config';
 import { InlineLoader } from '../../inline-loader';
 import { VaultTip } from '../../vault-tip';
+import { shouldShowApxUpdateTooltip } from '../apy-update-tooltip-text';
 
 type VaultStats = {
   tvl?: number | null;
@@ -88,8 +89,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
 
   const isMobile = useBreakpoint('md');
 
-  const shouldShowApxUpdateTooltip =
-    !!stats.apx && !stats.isLoading && !!stats.apxUpdateTooltipText;
+  const showApxUpdateTooltip = shouldShowApxUpdateTooltip(stats);
 
   const apxValue = (
     <StatValue $accent $muted={stats.isApxStale} data-testid="apx-value">
@@ -154,7 +154,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               {stats.apxHint}
             </VaultTip>
           </StatLabel>
-          {shouldShowApxUpdateTooltip ? (
+          {showApxUpdateTooltip ? (
             <StyledTooltip
               title={stats.apxUpdateTooltipText}
               placement={isMobile ? 'topRight' : 'topLeft'}
