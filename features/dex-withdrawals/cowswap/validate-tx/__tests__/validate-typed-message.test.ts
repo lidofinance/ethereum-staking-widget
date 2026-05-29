@@ -526,47 +526,62 @@ describe('validateSignTypedData', () => {
   });
 
   describe('appData validation', () => {
-    it('throws when fetch fails (network error)', async () => {
+    it('rejects when fetch fails (network error)', async () => {
       vi.mocked(standardFetcher).mockRejectedValue(new Error('Network error'));
-      await expect(
-        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
-      ).rejects.toThrow('Network error');
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Failed to fetch or validate app data');
     });
 
-    it('throws when appData response has wrong appCode (schema fail)', async () => {
+    it('rejects when appData response has wrong appCode (schema fail)', async () => {
       vi.mocked(standardFetcher).mockResolvedValue(
         buildAppDataResponse(FEE_RECIPIENT, { appCode: 'Evil App' }),
       );
-      await expect(
-        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
-      ).rejects.toThrow('Invalid app data response');
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Failed to fetch or validate app data');
     });
 
-    it('throws when partnerFee.volumeBps is wrong', async () => {
+    it('rejects when partnerFee.volumeBps is wrong', async () => {
       vi.mocked(standardFetcher).mockResolvedValue(
         buildAppDataResponse(FEE_RECIPIENT, { volumeBps: 50 }),
       );
-      await expect(
-        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
-      ).rejects.toThrow('Invalid app data response');
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Failed to fetch or validate app data');
     });
 
-    it('throws when slippageBips > 300', async () => {
+    it('rejects when slippageBips > 300', async () => {
       vi.mocked(standardFetcher).mockResolvedValue(
         buildAppDataResponse(FEE_RECIPIENT, { slippageBips: 301 }),
       );
-      await expect(
-        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
-      ).rejects.toThrow('Invalid app data response');
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Failed to fetch or validate app data');
     });
 
-    it('throws when orderClass is not market', async () => {
+    it('rejects when orderClass is not market', async () => {
       vi.mocked(standardFetcher).mockResolvedValue(
         buildAppDataResponse(FEE_RECIPIENT, { orderClass: 'limit' }),
       );
-      await expect(
-        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
-      ).rejects.toThrow('Invalid app data response');
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Failed to fetch or validate app data');
     });
 
     it('rejects when partner fee recipient mismatches feeRecipient', async () => {
@@ -613,16 +628,17 @@ describe('validateSignTypedData', () => {
 });
 
 describe('validateSignTypedData — wstETH permit', () => {
-  describe('happy path', () => {
-    it('allows valid wstETH permit on mainnet', async () => {
+  describe('permit messages are blocked', () => {
+    it('rejects valid wstETH permit on mainnet (permits not allowed)', async () => {
       const result = await validateSignTypedData(
         buildPermitParams(),
         mainnetCtx,
       );
-      expect(result.allowed).toBe(true);
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Permit messages are not allowed');
     });
 
-    it('allows valid wstETH permit on Sepolia', async () => {
+    it('rejects valid wstETH permit on Sepolia (permits not allowed)', async () => {
       const result = await validateSignTypedData(
         buildPermitParams({
           chainId: CHAIN_SEPOLIA,
@@ -631,12 +647,68 @@ describe('validateSignTypedData — wstETH permit', () => {
         }),
         sepoliaCtx,
       );
-      expect(result.allowed).toBe(true);
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Permit messages are not allowed');
+    });
+
+    it('rejects permit even when deadline is in the past (permit check runs first)', async () => {
+      const result = await validateSignTypedData(
+        buildPermitParams({ deadline: 1000 }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Permit messages are not allowed');
+    });
+
+    it('rejects permit when chain differs from ctx (permit blocked before chain check)', async () => {
+      const result = await validateSignTypedData(
+        buildPermitParams({ chainId: CHAIN_SEPOLIA }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      // Permit hits block before chain check
+      expect(result.reason).toContain('Permit messages are not allowed');
+    });
+
+    it('rejects permit with wrong verifyingContract (permit blocked regardless)', async () => {
+      const result = await validateSignTypedData(
+        buildPermitParams({ verifyingContract: ATTACKER }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Permit messages are not allowed');
+    });
+
+    it('rejects permit when owner is not the signer (permit blocked regardless)', async () => {
+      const result = await validateSignTypedData(
+        buildPermitParams({ owner: ATTACKER }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Permit messages are not allowed');
+    });
+
+    it('rejects permit when spender is not CoW VaultRelayer (permit blocked regardless)', async () => {
+      const result = await validateSignTypedData(
+        buildPermitParams({ spender: ATTACKER }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Permit messages are not allowed');
+    });
+
+    it('rejects permit when value is zero (permit blocked regardless)', async () => {
+      const result = await validateSignTypedData(
+        buildPermitParams({ value: '0' }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Permit messages are not allowed');
     });
   });
 
-  describe('schema validation', () => {
-    it('rejects wrong domain name', async () => {
+  describe('schema validation (runs before permit block)', () => {
+    it('rejects wrong domain name (schema fail — Invalid signTypedData parameters)', async () => {
       const result = await validateSignTypedData(
         buildPermitParams({ domainName: 'Evil Token' }),
         mainnetCtx,
@@ -645,7 +717,7 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.reason).toContain('Invalid signTypedData parameters');
     });
 
-    it('rejects wrong domain version', async () => {
+    it('rejects wrong domain version (schema fail)', async () => {
       const result = await validateSignTypedData(
         buildPermitParams({ version: '2' }),
         mainnetCtx,
@@ -653,7 +725,7 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects unknown primaryType', async () => {
+    it('rejects unknown primaryType (schema fail — Invalid signTypedData parameters)', async () => {
       const result = await validateSignTypedData(
         buildPermitParams({ primaryType: 'Transfer' }),
         mainnetCtx,
@@ -663,7 +735,7 @@ describe('validateSignTypedData — wstETH permit', () => {
     });
   });
 
-  describe('signer / chain / contract checks', () => {
+  describe('signer check (runs before permit block)', () => {
     it('rejects when signer differs from ctx.signer', async () => {
       const result = await validateSignTypedData(
         buildPermitParams({ signer: ATTACKER }),
@@ -672,61 +744,76 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.allowed).toBe(false);
       expect(result.reason).toContain('Signer address mismatch');
     });
+  });
+});
 
-    it('rejects when domain chainId differs from ctx.chainId', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ chainId: CHAIN_SEPOLIA }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Chain ID mismatch');
-    });
+describe('validateCowSwapOrderMessage — hooks in appData', () => {
+  const validHook = {
+    callData: '0x1234' as const,
+    dappId: 'test-dapp',
+    gasLimit: '21000',
+    target: '0x1111111111111111111111111111111111111111' as const,
+  };
 
-    it('rejects when verifyingContract is not wstETH', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ verifyingContract: ATTACKER }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Verifying contract mismatch');
+  const buildAppDataWithHooks = (
+    feeRecipient: string,
+    hooks: { pre?: (typeof validHook)[]; post?: (typeof validHook)[] },
+  ) => {
+    const fullAppData = JSON.stringify({
+      appCode: 'Lido Staking Widget',
+      metadata: {
+        orderClass: { orderClass: 'market' },
+        partnerFee: { recipient: feeRecipient, volumeBps: 30 },
+        quote: { slippageBips: 100, smartSlippage: false },
+        widget: { appCode: 'Lido Staking Widget', environment: 'mainnet' },
+        hooks,
+      },
+      version: '1.0.0',
     });
+    return { fullAppData };
+  };
+
+  it('rejects order when pre-hooks are present', async () => {
+    vi.mocked(standardFetcher).mockResolvedValue(
+      buildAppDataWithHooks(FEE_RECIPIENT, { pre: [validHook] }),
+    );
+    const result = await validateSignTypedData(
+      buildTypedDataParams(),
+      mainnetCtx,
+    );
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toContain('Pre/Post Hooks are not allowed');
   });
 
-  describe('permit field checks', () => {
-    it('rejects when owner is not the signer', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ owner: ATTACKER }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Owner address cannot be different');
-    });
+  it('rejects order when post-hooks are present', async () => {
+    vi.mocked(standardFetcher).mockResolvedValue(
+      buildAppDataWithHooks(FEE_RECIPIENT, { post: [validHook] }),
+    );
+    const result = await validateSignTypedData(
+      buildTypedDataParams(),
+      mainnetCtx,
+    );
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toContain('Pre/Post Hooks are not allowed');
+  });
 
-    it('rejects when spender is not CoW VaultRelayer', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ spender: ATTACKER }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Spender must be CoW VaultRelayer');
-    });
+  it('allows order when hooks field is absent', async () => {
+    // Default mock has no hooks — already covered but explicitly test
+    const result = await validateSignTypedData(
+      buildTypedDataParams(),
+      mainnetCtx,
+    );
+    expect(result.allowed).toBe(true);
+  });
 
-    it('rejects when value is zero', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ value: '0' }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit value must be greater than 0');
-    });
-
-    it('allows permit even when original deadline is in the past (deadline is overridden)', async () => {
-      // validateSignTypedData always overrides the permit deadline before validation
-      const result = await validateSignTypedData(
-        buildPermitParams({ deadline: 1000 }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(true);
-    });
+  it('allows order when hooks object is present but both pre and post are empty arrays', async () => {
+    vi.mocked(standardFetcher).mockResolvedValue(
+      buildAppDataWithHooks(FEE_RECIPIENT, { pre: [], post: [] }),
+    );
+    const result = await validateSignTypedData(
+      buildTypedDataParams(),
+      mainnetCtx,
+    );
+    expect(result.allowed).toBe(true);
   });
 });

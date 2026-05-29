@@ -1,10 +1,10 @@
 import { vi, afterEach, describe, it, expect, type Mock } from 'vitest';
 
-// // Mock utils/qa to break the ESM config chain (env-dynamics.mjs)
-// vi.mock('utils/qa', () => ({
-//   overrideWithQAMockString: vi.fn((value: string) => value),
-//   overrideWithQAMockNumber: vi.fn((value: number) => value),
-// }));
+// Mock utils/qa to break the ESM config chain (env-dynamics.mjs)
+vi.mock('utils/qa', () => ({
+  overrideWithQAMockString: vi.fn((value: string) => value),
+  overrideWithQAMockNumber: vi.fn((value: number) => value),
+}));
 
 import { overrideWithQAMockString, overrideWithQAMockNumber } from 'utils/qa';
 import { applyQALevelOverride, readThresholds } from '../utils/qa-utils';

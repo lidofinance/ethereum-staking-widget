@@ -122,17 +122,19 @@ describe('ManifestSchema', () => {
       expect(result['1']?.config?.withdrawalDex?.enabled).toBe(false);
     });
 
-    it('throws for unrecognized integration key', () => {
-      expect(() =>
-        ManifestSchema.parse({
-          '1': {
-            ...validEntry,
-            config: {
-              withdrawalDex: { integration: 'unknown', enabled: true },
-            },
+    it('ignores unrecognized integration key and returns default (forward compatibility)', () => {
+      const result = ManifestSchema.parse({
+        '1': {
+          ...validEntry,
+          config: {
+            withdrawalDex: { integration: 'unknown', enabled: true },
           },
-        }),
-      ).toThrow();
+        },
+      });
+      expect(result['1']?.config?.withdrawalDex).toEqual({
+        integration: 'cowswap',
+        enabled: false,
+      });
     });
   });
 
