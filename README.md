@@ -6,7 +6,7 @@ A widget for submitting Ether to the pool based on [Lido Frontend Template](http
 
 ### Prerequisites
 
-- Node.js v20+
+- Node.js v20+ (CI builds on Node 24)
 - Yarn package manager v1
 
 This project requires an .env file which is distributed via private communication channels. A sample can be found in .env.example
@@ -41,7 +41,7 @@ yarn dev:ipfs # will start with HMR
 
 ### Environment variables
 
-Note! Avoid using `NEXT_PUBLIC_` environment variables as it hinders our CI pipeline. Please use server-side environment variables and pass them to the client using `getInitialProps` in `_app.js`.
+Note! Avoid using `NEXT_PUBLIC_` environment variables as it hinders our CI pipeline. Please use server-side environment variables and pass them to the client using `getInitialProps` in `_app.tsx`.
 
 ### Automatic versioning
 
@@ -91,5 +91,3 @@ To create a new release:
 1. When you need to release, go to Repo → Releases.
 1. Publish the desired release draft manually by clicking the edit button - this release is now the `Latest Published`.
 1. After publication, the action to create a release bump will be triggered automatically.
-
-Learn more about [App Release Flow](https://www.notion.so/App-Release-Flow-f8a3484deecb40cb9d8da4d82c1afe96).

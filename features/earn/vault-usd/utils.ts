@@ -30,6 +30,7 @@ export type UsdVaultStatsFetchedData = z.infer<typeof USD_VAULT_STATS_SCHEMA>;
 
 export const USD_VAULT_APY_SCHEMA = z.object({
   apy: APY_SCHEMA,
+  days: z.number(),
   apyLastUpdate: UNIX_TIMESTAMP_SCHEMA,
 });
 export type UsdVaultApyFetchedData = z.infer<typeof USD_VAULT_APY_SCHEMA>;
@@ -46,7 +47,7 @@ export const fetchUsdVaultStats = async () => {
 
 export const fetchUsdVaultStatsApr = async () => {
   const usdVaultAddress = getContractAddress(CHAINS.Mainnet, 'usdVault');
-  const USD_APY_ENDPOINT = `${USD_VAULT_STATS_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${usdVaultAddress}/apy`;
+  const USD_APY_ENDPOINT = `${USD_VAULT_STATS_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${usdVaultAddress}/timeweighted-apy`;
 
   const data = await standardFetcher<UsdVaultApyFetchedData>(USD_APY_ENDPOINT);
   const { apy, apyLastUpdate } = USD_VAULT_APY_SCHEMA.parse(data);

@@ -12,7 +12,7 @@ import {
 type VaultStatsProps = {
   tvl?: number | null;
   apx?: number | null;
-  apxLabel: 'APY' | 'APR';
+  apxLabel?: 'APY' | 'APR';
   isLoading?: boolean;
   apxHint?: React.ReactNode;
   compact?: boolean;
@@ -36,15 +36,19 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
           </InlineLoader>
         </VaultStatsValue>
       </VaultStatsItem>
-      <VaultStatsItem data-testid="apx-value">
-        <VaultStatsLabel>{apxLabel}</VaultStatsLabel>{' '}
-        <VaultStatsValue>
-          <InlineLoader isLoading={isLoading} width={70}>
-            <FormatPercent value={apx} decimals="percent" />*
-          </InlineLoader>
-        </VaultStatsValue>
-        {!isLoading && <VaultTip placement="bottom">{apxHint}</VaultTip>}
-      </VaultStatsItem>
+      {apxLabel && (
+        <VaultStatsItem data-testid="apx-value">
+          <VaultStatsLabel>{apxLabel}</VaultStatsLabel>{' '}
+          <VaultStatsValue>
+            <InlineLoader isLoading={isLoading} width={70}>
+              <FormatPercent value={apx} decimals="percent" />*
+            </InlineLoader>
+          </VaultStatsValue>
+          {!isLoading && apxHint && (
+            <VaultTip placement="bottom">{apxHint}</VaultTip>
+          )}
+        </VaultStatsItem>
+      )}
     </VaultStatsWrapper>
   );
 };
