@@ -1,3 +1,5 @@
+/* eslint-disable no-console, no-prototype-builtins */
+
 export const openKeys = [
   'SELF_ORIGIN',
   'ROOT_ORIGIN',
