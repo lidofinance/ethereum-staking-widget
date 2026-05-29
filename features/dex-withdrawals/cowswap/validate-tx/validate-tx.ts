@@ -13,11 +13,14 @@ import { validateSignTypedData } from './validate-typed-message';
 export const validateTx = async (request: unknown, ctx: ValidationContext) => {
   let order: OrderData | undefined = undefined;
 
-  const { data: sanitizedRequest, success } =
-    jsonRpcRequestSchema.safeParse(request);
+  const {
+    data: sanitizedRequest,
+    success,
+    error,
+  } = jsonRpcRequestSchema.safeParse(request);
 
   if (!success) {
-    throw new Error('Invalid JSON-RPC request');
+    throw new Error(`Invalid JSON-RPC request, error: ${error.message}`);
   }
 
   const { method, params } = sanitizedRequest;

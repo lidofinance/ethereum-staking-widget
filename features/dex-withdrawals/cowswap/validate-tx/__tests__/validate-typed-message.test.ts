@@ -63,6 +63,9 @@ const sepoliaCtx = { chainId: CHAIN_SEPOLIA, signer: SIGNER as `0x${string}` };
 const APP_DATA =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
 
+const REAL_APP_DATA_HASH =
+  '0x04c6e64bf43a255e35ceb6178cc12b21d3feb190c8cf003927f868dcd1a6c189';
+
 type AppDataOverrides = {
   appCode?: string;
   orderClass?: string;
@@ -195,6 +198,10 @@ type OrderOverrides = {
   sellTokenBalance?: string;
   buyTokenBalance?: string;
   validTo?: number;
+  appData?: string;
+  sellAmount?: string;
+  buyAmount?: string;
+  feeAmount?: string;
 };
 
 const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
@@ -210,14 +217,14 @@ const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
     message: {
       sellToken: overrides.sellToken ?? STETH,
       buyToken: overrides.buyToken ?? WETH,
-      sellAmount: '1000000000000000000',
-      buyAmount: '950000000000000000',
+      sellAmount: overrides.sellAmount ?? '1000000000000000000',
+      buyAmount: overrides.buyAmount ?? '950000000000000000',
       validTo: overrides.validTo ?? defaultValidTo,
       kind: overrides.kind ?? 'sell',
       partiallyFillable: overrides.partiallyFillable ?? false,
-      appData: APP_DATA,
+      appData: overrides.appData ?? APP_DATA,
       receiver: overrides.receiver ?? signer,
-      feeAmount: '0',
+      feeAmount: overrides.feeAmount ?? '0',
       sellTokenBalance: overrides.sellTokenBalance ?? 'erc20',
       buyTokenBalance: overrides.buyTokenBalance ?? 'erc20',
     },
@@ -316,6 +323,37 @@ describe('validateSignTypedData', () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ signer: checksummed }),
         { chainId: CHAIN_MAINNET, signer: checksummed as `0x${string}` },
+      );
+      expect(result.allowed).toBe(true);
+    });
+
+    it('allows order with real production appData', async () => {
+      vi.mocked(standardFetcher).mockResolvedValue({
+        fullAppData: JSON.stringify({
+          appCode: 'Lido Staking Widget',
+          metadata: {
+            orderClass: {
+              orderClass: 'market',
+            },
+            partnerFee: {
+              recipient: '0x3e40d73eb977dc6a537af587d48316fee66e9c8c',
+              volumeBps: 30,
+            },
+            quote: {
+              slippageBips: 300,
+              smartSlippage: true,
+            },
+            widget: {
+              appCode: 'CoW Swap',
+              environment: 'production',
+            },
+          },
+          version: '1.14.0',
+        }),
+      });
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
       );
       expect(result.allowed).toBe(true);
     });
@@ -496,6 +534,43 @@ describe('validateSignTypedData', () => {
     it('rejects when receiver differs from signer', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ receiver: ATTACKER }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Receiver address cannot be different');
+    });
+
+    it('rejects real stETH→ETH order with receiver replaced by attacker', async () => {
+      (MetadataApi as unknown as Mock).mockImplementation(
+        buildMetadataApiMock(REAL_APP_DATA_HASH),
+      );
+      vi.mocked(standardFetcher).mockResolvedValue({
+        fullAppData: JSON.stringify({
+          appCode: 'Lido Staking Widget',
+          metadata: {
+            orderClass: { orderClass: 'market' },
+            partnerFee: {
+              recipient: '0x3e40d73eb977dc6a537af587d48316fee66e9c8c',
+              volumeBps: 30,
+            },
+            quote: { slippageBips: 300, smartSlippage: true },
+            widget: { appCode: 'CoW Swap', environment: 'production' },
+          },
+          version: '1.14.0',
+        }),
+      });
+      // Real order with receiver swapped to attacker; receiver check fires before validTo check
+      const result = await validateSignTypedData(
+        buildTypedDataParams({
+          sellToken: STETH,
+          buyToken: ETH_ADDRESS,
+          sellAmount: '4497656450651374',
+          buyAmount: '3757899892262334',
+          feeAmount: '0',
+          validTo: 1780074458,
+          appData: REAL_APP_DATA_HASH,
+          receiver: ATTACKER,
+        }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);

@@ -96,7 +96,7 @@ const SEPOLIA_CONFIG = buildNetworkTxConfig(
 
 export const jsonRpcRequestSchema = z.object({
   method: z.string(),
-  params: z.array(z.unknown()),
+  params: z.array(z.unknown()).optional(),
   id: z.number(),
 });
 
