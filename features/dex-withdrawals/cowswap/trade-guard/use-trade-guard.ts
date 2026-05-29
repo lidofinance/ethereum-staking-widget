@@ -239,6 +239,17 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     return verifyOrderAmounts(order, snapshot);
   }, []);
 
+  const openTransactionGuardModal = useCallback(
+    async (reason: string) => {
+      await showModal(
+        'blocked',
+        [`We could not verify safety of signed transaction`, reason],
+        false,
+      );
+    },
+    [showModal],
+  );
+
   return {
     modalState,
     handleModalClose,
@@ -246,6 +257,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     validateApproval,
     reportTradeParams,
     checkSellLimit,
+    openTransactionGuardModal,
     verifySignedOrder,
   };
 };

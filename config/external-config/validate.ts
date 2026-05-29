@@ -126,7 +126,7 @@ const DexWithdrawalIntegrationEntrySchema = z
       }
       // if we don't recognize the integration key, we disable it
       return {
-        integration: 'cow-swap' as const,
+        integration: 'cowswap' as const,
         enabled: false,
       };
     },

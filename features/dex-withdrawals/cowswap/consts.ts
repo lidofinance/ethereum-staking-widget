@@ -57,4 +57,4 @@ export const DEX_BUY_TOKEN_LIST_URL = `${GITHUB_RAW_MAIN_PATH}/public/token-list
 export const COWSWAP_APPDATA_API = (appDataHex: string, environment: string) =>
   `https://api.cow.fi/${environment}/api/v1/app_data/${appDataHex}`;
 export const COWSWAP_ORDER_API = (orderUID: string, environment: string) =>
-  `https://api.cow.fi/${environment}/api/v1/orders/${orderUid}`;
+  `https://api.cow.fi/${environment}/api/v1/orders/${orderUID}`;

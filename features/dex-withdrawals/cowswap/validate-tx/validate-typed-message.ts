@@ -336,14 +336,16 @@ export const validateSignTypedData = async (
   NB! we disallow permits in cow swap widget config
   but if we want to allow them in the future, we can validate them here and override the deadline to prevent stale permits from being used
   will also need to add preHook validation in appData where permit is applied before trade
-  
-  if (order.primaryType === 'Permit') {
-    const deadline = overridePermitDeadline(params);
-    order.message.deadline = deadline;
-    return validateWstEthPermit(order, ctx);
-  }
-    
   */
+  if (order.primaryType === 'Permit') {
+    return {
+      allowed: false,
+      reason: `Permit messages are not allowed`,
+    };
+    // const deadline = overridePermitDeadline(params);
+    // order.message.deadline = deadline;
+    // return validateWstEthPermit(order, ctx);
+  }
 
   invariant(false, 'Unreachable code');
 };

@@ -91,6 +91,7 @@ export const CowswapFrame = () => {
     validateApproval,
     reportTradeParams,
     checkSellLimit,
+    openTransactionGuardModal,
     verifySignedOrder,
   } = useTradeGuard({
     isTestnet,
@@ -101,7 +102,10 @@ export const CowswapFrame = () => {
     return isValid;
   }, [validateAddress, walletClient?.account.address]);
 
-  const provider = useCowSwapEthereumProvider(verifySignedOrder);
+  const provider = useCowSwapEthereumProvider(
+    verifySignedOrder,
+    openTransactionGuardModal,
+  );
 
   const params = useMemo<CowSwapWidgetParams>(
     () => ({

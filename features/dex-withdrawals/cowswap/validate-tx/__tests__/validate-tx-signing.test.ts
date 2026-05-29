@@ -1,4 +1,7 @@
-import { validateSendTransaction, validateSendCalls } from '../validate-tx';
+import {
+  validateSendTransaction,
+  validateSendCalls,
+} from '../validate-tx-signing';
 import { encodeFunctionData } from 'viem';
 import { CowSettlementAbi } from '../../abi';
 
@@ -34,7 +37,7 @@ const buildApprove = (spender: string): string =>
 const buildTransfer = (to: string): string =>
   '0xa9059cbb' + to.slice(2).toLowerCase().padStart(64, '0') + '0'.repeat(64);
 
-// Helper: build setPreSignature(bytes orderUid, bool signed) calldata
+// Helper: build setPreSignature(bytes orderUID, bool signed) calldata
 const buildSetPreSignature = (signed = true): string =>
   encodeFunctionData({
     abi: CowSettlementAbi,

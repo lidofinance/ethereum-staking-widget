@@ -4,22 +4,13 @@ import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
 import { useDappStatus } from 'modules/web3';
 
-import {
-  BLOCKED_RPC_METHODS,
-  BLOCKED_RPC_NAMESPACES,
-  COWSWAP_WIDGET_ALLOWED_RPC_METHODS,
-} from '../consts';
-import {
-  validateSendTransaction,
-  validateSendCalls,
-  OrderData,
-  validateSignTypedData,
-} from '../validate-tx';
+import { OrderData, validateTx } from '../validate-tx';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
 export const useCowSwapEthereumProvider = (
   verifySignedOrder: VerifyOrder,
+  openTransactionGuardModal: (reason: string) => Promise<void>,
 ): EthereumProvider | undefined => {
   const { chainId } = useDappStatus();
   const { data: walletClient } = useWalletClient();
@@ -29,76 +20,36 @@ export const useCowSwapEthereumProvider = (
     if (!walletClient || !connector) return undefined;
 
     return {
-      request: async <T>(args: JsonRpcRequest): Promise<T> => {
-        const ctx = {
-          chainId,
-          signer: walletClient.account.address,
-        };
+      request: async <T>(payload: JsonRpcRequest): Promise<T> => {
+        try {
+          const { order, sanitizedRequest } = await validateTx(payload, {
+            chainId,
+            signer: walletClient.account.address,
+          });
 
-        let order: OrderData | undefined = undefined;
+          // this prevents extra fields to be passed along with the orginal request
+          payload = sanitizedRequest;
 
-        // Level 1: block dangerous RPC methods
-        if (BLOCKED_RPC_METHODS.has(args.method)) {
-          throw new Error(`RPC method "${args.method}" is not allowed`);
-        }
+          // Validate order trade  params, order can be recovered from different signing methods
+          if (order) {
+            const error = verifySignedOrder(order);
 
-        // Defense-in-depth: verify CowSwap order before signing
-        else if (args.method === 'eth_signTypedData_v4') {
-          // !NB: this validation modifies the params to override the wstETH permit deadline
-          const { allowed, result, reason } = await validateSignTypedData(
-            args.params,
-            ctx,
-          );
-
-          if (!allowed) {
-            console.warn('[DEX Provider] Signing Typed Data blocked:', reason);
-            throw new Error(reason);
+            if (error) {
+              throw new Error(
+                `Signed order does not match validated order: ${error}`,
+              );
+            }
           }
-          if (result) {
-            order = result;
-          }
-        } else if (args.method === 'eth_sendTransaction') {
-          const result = await validateSendTransaction(args.params, ctx);
-          if (!result.allowed) {
-            console.warn('[DEX Provider] Transaction blocked:', result.reason);
-            throw new Error(result.reason);
-          }
-          if (result.result) {
-            order = result.result;
-          }
-        } else if (args.method === 'wallet_sendCalls') {
-          const result = await validateSendCalls(args.params, ctx);
-          if (!result.allowed) {
-            console.warn('[DEX Provider] Batch call blocked:', result.reason);
-            throw new Error(result.reason);
-          }
-          if (result.result) {
-            order = result.result;
-          }
-        }
-        // Last line of defense, against unexpected RPC methods
-        //  that don't pass namespace filter and are not explicitly allowed
-        else if (
-          BLOCKED_RPC_NAMESPACES.test(args.method) &&
-          !COWSWAP_WIDGET_ALLOWED_RPC_METHODS.has(args.method)
-        ) {
-          console.warn(
-            `[DEX Provider] RPC method "${args.method}" blocked by namespace filter`,
-          );
-          throw new Error(`RPC method "${args.method}" is not allowed`);
-        }
-
-        // Validate order trade  params, order can be recovered from different signing methods
-        if (order) {
-          const error = verifySignedOrder(order);
-
-          if (error) {
-            throw new Error(`Order signing rejected: ${error}`);
+        } catch (error) {
+          if (error instanceof Error) {
+            await openTransactionGuardModal(error.message);
+            throw error; // re-throw to ensure the error is propagated to the caller
           }
         }
 
         return walletClient.request(
-          args as Parameters<typeof walletClient.request>[0],
+          payload as Parameters<typeof walletClient.request>[0],
+          { dedupe: true },
         );
       },
       on: (eventName: string, handler: unknown) => {
@@ -108,5 +59,11 @@ export const useCowSwapEthereumProvider = (
         );
       },
     };
-  }, [walletClient, connector, chainId, verifySignedOrder]);
+  }, [
+    walletClient,
+    connector,
+    chainId,
+    verifySignedOrder,
+    openTransactionGuardModal,
+  ]);
 };

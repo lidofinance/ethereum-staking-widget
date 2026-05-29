@@ -94,6 +94,12 @@ const SEPOLIA_CONFIG = buildNetworkTxConfig(
 
 // ---- Schemas -----
 
+export const jsonRpcRequestSchema = z.object({
+  method: z.string(),
+  params: z.array(z.unknown()),
+  id: z.number(),
+});
+
 export const addressSchema = z
   .string()
   .refine((address) => isAddress(address, { strict: false }), {
