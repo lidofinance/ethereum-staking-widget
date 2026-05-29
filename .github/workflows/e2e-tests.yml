@@ -1,8 +1,6 @@
-name: Tests
+name: E2E Tests
 
 on:
-  workflow_dispatch:
-  pull_request:
   workflow_call:
     inputs:
       stand_url:
@@ -19,25 +17,9 @@ on:
         type: boolean
 
 jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Run unit tests
-        run: yarn test:unit
-
   e2e-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
         with:
@@ -48,10 +30,11 @@ jobs:
           node-version: 24
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install --frozen-lockfile
 
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
+        timeout-minutes: 20
 
       - name: Run tests on preview stand
         if: ${{ inputs.on_preview_stand }}

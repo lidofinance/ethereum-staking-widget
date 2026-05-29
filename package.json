@@ -15,7 +15,7 @@
     "lint:fix": "yarn lint --fix",
     "types": "tsc --noEmit",
     "postinstall": "husky install",
-    "test": "yarn test:unit && test:e2e",
+    "test": "yarn test:unit && yarn test:e2e",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:e2e": "playwright test"
