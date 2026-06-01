@@ -28,7 +28,7 @@ export const useCowSwapEthereumProvider = (
           });
 
           // this prevents extra fields to be passed along with the orginal request
-          payload = sanitizedRequest;
+          payload = sanitizedRequest as typeof payload;
 
           // Validate order trade  params, order can be recovered from different signing methods
           if (order) {
