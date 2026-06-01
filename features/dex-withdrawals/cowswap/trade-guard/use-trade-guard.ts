@@ -232,6 +232,15 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
   const verifySignedOrder = useCallback((order: OrderData): string | null => {
     // Amount checks against last validated payload
     const snapshot = lastValidatedTradeRef.current;
+
+    if (
+      snapshot?.buyAmountMinUnits === '' ||
+      snapshot?.sellAmountUnits === '' ||
+      snapshot?.buyToken === '' ||
+      snapshot?.sellToken === ''
+    ) {
+      return 'Trade parameters incomplete — cannot verify order';
+    }
     if (!snapshot) {
       return 'No validated trade on record — order signing rejected';
     }
