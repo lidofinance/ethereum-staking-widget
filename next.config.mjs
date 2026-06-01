@@ -161,10 +161,11 @@ export default withBundleAnalyzer({
             key: 'x-dns-prefetch-control',
             value: 'on',
           },
-          // This header is overwritten by CF, but we still align value just in case
+          // This header is overwritten by CF, but we still align value just in case.
+          // 31536000 (1 year) is the minimum required by hstspreload.org.
           {
             key: 'strict-transport-security',
-            value: 'max-age=2592000; includeSubDomains; preload',
+            value: 'max-age=31536000; includeSubDomains; preload',
           },
           {
             key: 'referrer-policy',
