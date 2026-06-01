@@ -1,6 +1,5 @@
 import {
   BLOCKED_RPC_METHODS,
-  BLOCKED_RPC_NAMESPACES,
   COWSWAP_WIDGET_ALLOWED_RPC_METHODS,
 } from '../consts';
 import { OrderData, ValidationContext, jsonRpcRequestSchema } from './utils';
@@ -73,11 +72,7 @@ export const validateTx = async (request: unknown, ctx: ValidationContext) => {
     }
   }
   // Last line of defense, against unexpected RPC methods
-  //  that don't pass namespace filter and are not explicitly allowed
-  if (
-    BLOCKED_RPC_NAMESPACES.test(method) &&
-    !COWSWAP_WIDGET_ALLOWED_RPC_METHODS.has(method)
-  ) {
+  if (!COWSWAP_WIDGET_ALLOWED_RPC_METHODS.has(method)) {
     console.warn(
       `[DEX Provider] RPC method "${method}" blocked by namespace filter`,
     );

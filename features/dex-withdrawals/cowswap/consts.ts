@@ -31,9 +31,15 @@ export const BLOCKED_RPC_METHODS = new Set([
 ]);
 
 export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
-  // base
+  // read-only
   'eth_accounts',
   'eth_chainId',
+  'eth_call',
+  'eth_estimateGas',
+  'eth_getBalance',
+  'eth_getTransactionReceipt',
+  'eth_getTransactionCount',
+  'eth_feeHistory',
   // EOA
   'eth_signTypedData_v4',
   'eth_sendTransaction',
@@ -42,6 +48,7 @@ export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
   'wallet_sendCalls',
   'wallet_showCallsStatus',
   'wallet_getCallsStatus',
+  //
 ]);
 
 export const MAX_SLIPPAGE = 300; // 3% (bps)

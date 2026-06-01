@@ -6,6 +6,7 @@ import {
   Hex,
   hexToBigInt,
   maxUint256,
+  parseEther,
 } from 'viem';
 import z from 'zod';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -27,6 +28,7 @@ import {
 } from './utils';
 import { CowSettlementAbi } from '../abi';
 import { COWSWAP_ORDER_API } from '../consts';
+import { readThresholds } from '../trade-guard/utils';
 
 // ================================================================
 //  Public validation functions
@@ -192,6 +194,17 @@ const validateApproveSpender = (
       };
     }
 
+    const maxAllowedSellAmount = parseEther(
+      readThresholds().maxAllowedSellAmount.toFixed(0),
+    );
+
+    if (amount > maxAllowedSellAmount) {
+      return {
+        allowed: false,
+        reason: `approve() amount exceeds maximum allowed sell amount (${maxAllowedSellAmount.toString()} in wei)`,
+      };
+    }
+
     return { allowed: true };
   } catch {
     return { allowed: false, reason: 'Cannot decode approve() calldata' };
@@ -266,9 +279,9 @@ export const validateSendTransaction = async (
     };
   }
 
-  const { tokens, cowVaultRelayer, cowSettlement } =
+  const { sellTokens, cowVaultRelayer, cowSettlement } =
     getNetworkTxConfig(chainId);
-  const allowedTargets = new Set([...tokens, cowSettlement]);
+  const allowedTargets = new Set([...sellTokens, cowSettlement]);
 
   if (!allowedTargets.has(txTo.toLocaleLowerCase() as Address)) {
     return {
@@ -282,7 +295,7 @@ export const validateSendTransaction = async (
     return validateSettlerSignature(data, ctx);
 
   // Other tokens — only approve(), no ETH value
-  if (tokens.has(txTo)) {
+  if (sellTokens.has(txTo)) {
     return {
       ...validateApproveSpender(data, cowVaultRelayer),
       result: undefined,
