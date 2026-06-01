@@ -43,8 +43,8 @@ export const useCowSwapEthereumProvider = (
         } catch (error) {
           if (error instanceof Error) {
             await openTransactionGuardModal(error.message);
-            throw error; // re-throw to ensure the error is propagated to the caller
           }
+          throw error; // re-throw to ensure the error is propagated to the caller
         }
 
         return walletClient.request(
