@@ -7,6 +7,7 @@ import {
   hexToBigInt,
   maxUint256,
   parseEther,
+  formatEther,
 } from 'viem';
 import { sepolia } from 'viem/chains';
 import z from 'zod';
@@ -141,7 +142,7 @@ const validatePreSetSignature = async (
     if (orderUIDRecalculated !== orderUID) {
       return {
         allowed: false,
-        reason: `Order UID mismatch. Expected ${orderUID}, got ${orderUIDRecalculated}`,
+        reason: `Order UID does not match verified order data.`,
       };
     }
 
@@ -203,7 +204,7 @@ const validateApproveSpender = (
     if (amount > maxAllowedSellAmount) {
       return {
         allowed: false,
-        reason: `approve() amount exceeds maximum allowed sell amount (${maxAllowedSellAmount.toString()} in wei)`,
+        reason: `approve() amount(${formatEther(amount)}) exceeds maximum allowed sell amount (${formatEther(maxAllowedSellAmount)})`,
       };
     }
 
@@ -292,7 +293,7 @@ export const validateSendTransaction = async (
     };
   }
 
-  // CoW Protocol contracts — trust any call
+  // CoW Protocol - only preSetSignature and only for smart wallets(can't sign messages)
   if (isAddressEqual(txTo, cowSettlement))
     return validateSettlerSignature(data, ctx);
 

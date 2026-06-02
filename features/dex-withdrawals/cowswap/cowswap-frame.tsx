@@ -122,6 +122,7 @@ export const CowswapFrame = () => {
       // Trading options
       //
 
+      // TODO: disable more features after package update
       tradeType: TradeType.SWAP,
       enabledTradeTypes: [TradeType.SWAP],
       sell: {
@@ -221,7 +222,7 @@ export const CowswapFrame = () => {
     const handlers: CowSwapWidgetProps['listeners'] = [
       {
         event: CowWidgetEvents.ON_POSTED_ORDER,
-        handler: async () => {
+        handler: () => {
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapPosted);
         },
       },
@@ -246,7 +247,7 @@ export const CowswapFrame = () => {
       },
       {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
-        handler: async (payload: OnTradeParamsPayload) => {
+        handler: (payload: OnTradeParamsPayload) => {
           reportTradeParams(payload);
         },
       },

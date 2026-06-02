@@ -1,4 +1,3 @@
-import invariant from 'tiny-invariant';
 import { isAddressEqual } from 'viem';
 import { sepolia } from 'viem/chains';
 import z from 'zod';
@@ -85,13 +84,13 @@ export const validateCowSwapOrderMessage = async (
   if (orderMessage.validTo - nowSeconds > MAX_ORDER_AGE_SECONDS) {
     return {
       allowed: false,
-      reason: `Order validTo is too far in the future. validTo: ${orderMessage.validTo}, now: ${nowSeconds}`,
+      reason: `Order validTo is too far in the future. validTo timestamp: ${orderMessage.validTo}`,
     };
   }
   if (orderMessage.validTo < nowSeconds) {
     return {
       allowed: false,
-      reason: `Order validTo has already passed. validTo: ${orderMessage.validTo}, now: ${nowSeconds}`,
+      reason: `Order validTo has already passed. validTo timestamp: ${orderMessage.validTo}`,
     };
   }
 
@@ -203,9 +202,6 @@ export const validateSignTypedData = async (
     };
   }
 
-  if (order.primaryType === 'Order') {
-    return await validateCowSwapOrder(order, ctx);
-  }
-
-  invariant(false, 'Unreachable code');
+  // Only order type is supported, other message types are blocked on schema level
+  return await validateCowSwapOrder(order, ctx);
 };

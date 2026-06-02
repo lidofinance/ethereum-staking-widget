@@ -31,7 +31,6 @@ type OracleOutcome = {
 
 const applyOracleResult = (
   result: OracleResult,
-  meetsThreshold: boolean,
   t: Thresholds,
 ): OracleOutcome => {
   if (result.ok) {
@@ -48,15 +47,11 @@ const applyOracleResult = (
 
   switch (result.reason) {
     case 'unavailable':
-      if (meetsThreshold) {
-        return {
-          level: 'blocked',
-          messages: ['Oracle verification temporarily unavailable'],
-          verified: false,
-        };
-      }
-      // Swap is below oracle threshold — no concern
-      return { level: 'safe', messages: [], verified: false };
+      return {
+        level: 'blocked',
+        messages: ['Oracle verification temporarily unavailable'],
+        verified: false,
+      };
     case 'unsupported':
       return {
         level: 'blocked',
@@ -139,11 +134,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
 
       if (shouldCheckOracle) {
         const result = await verifyWithOracle(payload);
-        const outcome = applyOracleResult(
-          result,
-          meetsThreshold,
-          tradeThresholds,
-        );
+        const outcome = applyOracleResult(result, tradeThresholds);
         finalLevel = outcome.level;
         finalMessages = outcome.messages;
         oracleVerified = outcome.verified;
