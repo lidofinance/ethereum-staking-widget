@@ -268,7 +268,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     async (reason: string) => {
       await showModal(
         'blocked',
-        [`We could not verify safety of signed transaction`, reason],
+        [`Safety of the signed transaction could not be verified: ${reason}`],
         false,
       );
     },
