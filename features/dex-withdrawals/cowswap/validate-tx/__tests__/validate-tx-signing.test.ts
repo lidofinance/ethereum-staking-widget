@@ -259,14 +259,14 @@ describe('validateSendTransaction', () => {
   });
 
   describe('token approve validation', () => {
-    const tokens = [
+    // Only sell tokens (stETH/wstETH) are valid approve targets.
+    // Buy tokens (USDC, USDT, WETH) are rejected at the target-allowlist level.
+    const sellTokens = [
       ['stETH', STETH],
       ['wstETH', WSTETH],
-      ['USDC', USDC],
-      ['USDT', USDT],
     ] as const;
 
-    it.each(tokens)(
+    it.each(sellTokens)(
       'allows approve(VaultRelayer) on %s',
       async (_name, tokenAddr) => {
         const result = await validateSendTransaction(
@@ -277,7 +277,7 @@ describe('validateSendTransaction', () => {
       },
     );
 
-    it.each(tokens)(
+    it.each(sellTokens)(
       'blocks approve(attacker) on %s',
       async (_name, tokenAddr) => {
         const result = await validateSendTransaction(
@@ -289,7 +289,7 @@ describe('validateSendTransaction', () => {
       },
     );
 
-    it.each(tokens)('blocks transfer() on %s', async (_name, tokenAddr) => {
+    it.each(sellTokens)('blocks transfer() on %s', async (_name, tokenAddr) => {
       const result = await validateSendTransaction(
         [{ to: tokenAddr, data: buildTransfer(ATTACKER) }],
         mainnetCtx,
@@ -297,6 +297,21 @@ describe('validateSendTransaction', () => {
       expect(result.allowed).toBe(false);
       expect(result.reason).toContain('Expected approve(), got transfer()');
     });
+
+    it.each([
+      ['USDC', USDC],
+      ['USDT', USDT],
+    ] as const)(
+      'rejects %s as a transaction target (buy token, not in sell-token allowlist)',
+      async (_name, tokenAddr) => {
+        const result = await validateSendTransaction(
+          [{ to: tokenAddr, data: buildApprove(COW_VAULT_RELAYER) }],
+          mainnetCtx,
+        );
+        expect(result.allowed).toBe(false);
+        expect(result.reason).toContain('not allowed');
+      },
+    );
 
     it('blocks approve with ETH value on non-WETH token', async () => {
       const result = await validateSendTransaction(
@@ -377,12 +392,13 @@ describe('validateSendTransaction', () => {
       expect(result.allowed).toBe(false);
     });
 
-    it('allows approve(VaultRelayer) on WETH', async () => {
+    it('rejects approve(VaultRelayer) on WETH (buy token, not in sell-token allowlist)', async () => {
       const result = await validateSendTransaction(
         [{ to: WETH, data: buildApprove(COW_VAULT_RELAYER) }],
         mainnetCtx,
       );
-      expect(result.allowed).toBe(true);
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('not allowed');
     });
 
     it('blocks approve(attacker) on WETH', async () => {
@@ -391,7 +407,6 @@ describe('validateSendTransaction', () => {
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('VaultRelayer');
     });
 
     it('blocks transfer() on WETH', async () => {
@@ -400,7 +415,6 @@ describe('validateSendTransaction', () => {
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Expected approve(), got transfer()');
     });
 
     it('blocks unknown selector on WETH', async () => {
@@ -495,12 +509,12 @@ describe('validateSendTransaction', () => {
       expect(result.allowed).toBe(false);
     });
 
-    it('allows approve(VaultRelayer) on Sepolia WETH', async () => {
+    it('rejects approve(VaultRelayer) on Sepolia WETH (buy token, not in sell-token allowlist)', async () => {
       const result = await validateSendTransaction(
         [{ to: SEPOLIA_WETH, data: buildApprove(SEPOLIA_COW_VAULT_RELAYER) }],
         sepoliaCtx,
       );
-      expect(result.allowed).toBe(true);
+      expect(result.allowed).toBe(false);
     });
 
     it('rejects mainnet WETH on Sepolia', async () => {
@@ -679,7 +693,7 @@ describe('validateSendCalls', () => {
   });
 
   describe('Sepolia batches', () => {
-    it('allows Sepolia WETH + Settlement batch', async () => {
+    it('allows Sepolia stETH + Settlement batch', async () => {
       vi.mocked(standardFetcher).mockResolvedValue(
         buildOrderApiResponse(
           SEPOLIA_FEE_RECIPIENT,
@@ -693,7 +707,7 @@ describe('validateSendCalls', () => {
           {
             calls: [
               {
-                to: SEPOLIA_WETH,
+                to: SEPOLIA_STETH,
                 data: buildApprove(SEPOLIA_COW_VAULT_RELAYER),
               },
               {

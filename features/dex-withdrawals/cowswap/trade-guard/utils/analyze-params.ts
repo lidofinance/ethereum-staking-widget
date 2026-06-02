@@ -1,3 +1,4 @@
+import { isAddress } from 'viem';
 import { DEFAULT_THRESHOLDS, type Thresholds } from '../consts';
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
 
@@ -10,7 +11,7 @@ type AnalysisResult = {
   isStructural: boolean;
 };
 
-// Structural validation: token whitelist, recipient, sell limit.
+// Structural validation: token whitelist, sell limit. Signing validation is handled by tx validation
 // All price verification is delegated to the Chainlink oracle.
 export const analyzeParams = (
   params: OnTradeParamsPayload,
@@ -18,8 +19,17 @@ export const analyzeParams = (
 ): AnalysisResult => {
   const sellAddr = params.sellToken?.address.toLowerCase();
   const buyAddr = params.buyToken?.address.toLowerCase();
+  const sellUnits = safeParseDecimal(params.sellTokenAmount?.units?.toString());
+  const symbol = params.sellToken?.symbol;
 
-  if (!sellAddr || !buyAddr) {
+  if (
+    !sellAddr ||
+    !isAddress(sellAddr) ||
+    !buyAddr ||
+    !isAddress(buyAddr) ||
+    sellUnits === null ||
+    !symbol
+  ) {
     return {
       level: 'blocked',
       messages: [
@@ -30,8 +40,7 @@ export const analyzeParams = (
   }
 
   // Max sell amount
-  const sellUnits = safeParseDecimal(params.sellTokenAmount?.units?.toString());
-  const symbol = params.sellToken?.symbol;
+
   if (sellUnits !== null && sellUnits > t.maxAllowedSellAmount) {
     return {
       level: 'blocked',

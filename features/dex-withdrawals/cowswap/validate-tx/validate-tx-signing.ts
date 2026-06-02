@@ -8,6 +8,7 @@ import {
   maxUint256,
   parseEther,
 } from 'viem';
+import { sepolia } from 'viem/chains';
 import z from 'zod';
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -27,7 +28,7 @@ import {
   ValidationResult,
 } from './utils';
 import { CowSettlementAbi } from '../abi';
-import { COWSWAP_ORDER_API } from '../consts';
+import { COWSWAP_API_TIMEOUT_MS, COWSWAP_ORDER_API } from '../consts';
 import { readThresholds } from '../trade-guard/utils';
 
 // ================================================================
@@ -93,9 +94,10 @@ const CowSwapGetOrderResponseSchema = z.object({
 });
 
 const fetchOrderByUID = async (orderUID: Hex, chainId: number) => {
-  const environment = chainId === 11155111 ? 'sepolia' : 'mainnet';
+  const environment = chainId === sepolia.id ? 'sepolia' : 'mainnet';
   const result = await standardFetcher(
     COWSWAP_ORDER_API(orderUID, environment),
+    { timeoutMs: COWSWAP_API_TIMEOUT_MS },
   );
 
   return CowSwapGetOrderResponseSchema.parse(result);

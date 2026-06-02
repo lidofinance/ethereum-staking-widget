@@ -17,6 +17,7 @@ import {
   MODAL_INITIAL_STATE,
   type TradeGuardModalState,
 } from './trade-guard-modal';
+import invariant from 'tiny-invariant';
 
 // ---------------------------------------------------------------------------
 // Oracle result → level/messages
@@ -45,28 +46,28 @@ const applyOracleResult = (
     return { level, messages, verified: true };
   }
 
-  if (result.reason === 'unavailable') {
-    if (meetsThreshold) {
+  switch (result.reason) {
+    case 'unavailable':
+      if (meetsThreshold) {
+        return {
+          level: 'blocked',
+          messages: ['Oracle verification temporarily unavailable'],
+          verified: false,
+        };
+      }
+      // Swap is below oracle threshold — no concern
+      return { level: 'safe', messages: [], verified: false };
+    case 'unsupported':
       return {
         level: 'blocked',
-        messages: ['Oracle verification temporarily unavailable'],
+        messages: [
+          'Oracle price verification not available for this token pair',
+        ],
         verified: false,
       };
-    }
-
-    // Swap is below oracle threshold — no concern
-    return { level: 'safe', messages: [], verified: false };
+    default:
+      return { level: 'safe', messages: [], verified: false };
   }
-
-  if (result.reason === 'unsupported') {
-    return {
-      level: 'blocked',
-      messages: ['Oracle price verification not available for this token pair'],
-      verified: false,
-    };
-  }
-
-  return { level: 'safe', messages: [], verified: false };
 };
 
 // ---------------------------------------------------------------------------
@@ -129,9 +130,10 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
       const sellUnits = safeParseDecimal(
         payload.sellTokenAmount?.units?.toString(),
       );
+      // Should never happen due to analyzeParams checks
+      invariant(sellUnits !== null, 'Invalid sell amount units');
       // QA clamping already applied in readThresholds()
       const meetsThreshold =
-        sellUnits !== null &&
         sellUnits >= tradeThresholds.minSellUnitsToTriggerOracle;
       const shouldCheckOracle = !isTestnet && !isStructural && meetsThreshold;
 
@@ -156,13 +158,27 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
         return false;
       }
 
+      if (
+        payload.sellTokenAmount?.units === undefined ||
+        payload.buyTokenAmount?.units === undefined ||
+        payload.sellToken?.address === undefined ||
+        payload.buyToken?.address === undefined ||
+        payload.minimumReceiveBuyAmount?.units === undefined
+      ) {
+        await showModal(
+          'blocked',
+          ['Incomplete trade parameters — cannot verify order'],
+          false,
+        );
+        return false;
+      }
+
       // Store validated params for provider-level EIP-712 verification
       lastValidatedTradeRef.current = {
-        sellToken: payload.sellToken?.address ?? '',
-        buyToken: payload.buyToken?.address ?? '',
-        sellAmountUnits: payload.sellTokenAmount?.units?.toString() ?? '',
-        buyAmountMinUnits:
-          payload.minimumReceiveBuyAmount?.units?.toString() ?? '',
+        sellToken: payload.sellToken.address,
+        buyToken: payload.buyToken.address,
+        sellAmountUnits: payload.sellTokenAmount.units.toString(),
+        buyAmountMinUnits: payload.minimumReceiveBuyAmount.units.toString(),
       };
 
       return true;

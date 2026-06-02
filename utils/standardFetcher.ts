@@ -17,13 +17,37 @@ const extractError = async (response: Response) => {
   }
 };
 
-type StandardFetcher = <T>(url: string, params?: RequestInit) => Promise<T>;
+type StandardFetcherParams = RequestInit & {
+  timeoutMs?: number;
+};
+
+type StandardFetcher = <T>(
+  url: string,
+  params?: StandardFetcherParams,
+) => Promise<T>;
 
 export const standardFetcher: StandardFetcher = async (url, params) => {
+  const { timeoutMs, ...fetchParams } = params || {};
+  const controller = new AbortController();
+  const timeout = timeoutMs
+    ? setTimeout(
+        () =>
+          controller.abort(
+            new FetcherError(`Request timed out after ${timeoutMs} ms`, 500),
+          ),
+        timeoutMs,
+      )
+    : null;
+
   const response = await fetch(url, {
     ...DEFAULT_PARAMS,
-    ...params,
+    ...fetchParams,
+    signal: controller.signal,
   });
+
+  if (timeout) {
+    clearTimeout(timeout);
+  }
 
   if (!response.ok) {
     throw new FetcherError(await extractError(response), response.status);

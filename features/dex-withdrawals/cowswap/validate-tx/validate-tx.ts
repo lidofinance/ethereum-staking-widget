@@ -1,7 +1,5 @@
-import {
-  BLOCKED_RPC_METHODS,
-  COWSWAP_WIDGET_ALLOWED_RPC_METHODS,
-} from '../consts';
+import { mainnet, sepolia } from 'viem/chains';
+import { COWSWAP_WIDGET_ALLOWED_RPC_METHODS } from '../consts';
 import { OrderData, ValidationContext, jsonRpcRequestSchema } from './utils';
 import {
   validateSendCalls,
@@ -24,9 +22,16 @@ export const validateTx = async (request: unknown, ctx: ValidationContext) => {
 
   const { method, params } = sanitizedRequest;
 
-  // Level 1: block dangerous RPC methods
-  if (BLOCKED_RPC_METHODS.has(method)) {
-    throw new Error(`RPC method "${method}" is not allowed`);
+  if (
+    [
+      'eth_signTypedData_v4',
+      'eth_sendTransaction',
+      'wallet_sendCalls',
+    ].includes(method) &&
+    ctx.chainId !== mainnet.id &&
+    ctx.chainId !== sepolia.id
+  ) {
+    throw new Error(`Signing is not allowed on chainId ${ctx.chainId}`);
   }
 
   switch (method) {
@@ -58,7 +63,6 @@ export const validateTx = async (request: unknown, ctx: ValidationContext) => {
       }
       break;
     }
-
     case 'wallet_sendCalls': {
       const result = await validateSendCalls(params, ctx);
       if (!result.allowed) {
@@ -73,9 +77,7 @@ export const validateTx = async (request: unknown, ctx: ValidationContext) => {
   }
   // Last line of defense, against unexpected RPC methods
   if (!COWSWAP_WIDGET_ALLOWED_RPC_METHODS.has(method)) {
-    console.warn(
-      `[DEX Provider] RPC method "${method}" blocked by namespace filter`,
-    );
+    console.warn(`[DEX Provider] RPC method "${method}" blocked`);
     throw new Error(`RPC method "${method}" is not allowed`);
   }
 

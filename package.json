@@ -63,7 +63,6 @@
     "reef-knot": "8.1.0",
     "styled-components": "^5.3.5",
     "tiny-invariant": "^1.1.0",
-    "uuid": "^14.0.0",
     "viem": "2.45.0",
     "wagmi": "3.4.1",
     "zod": "^4.1.12"

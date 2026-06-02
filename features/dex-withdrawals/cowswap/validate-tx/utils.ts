@@ -9,7 +9,9 @@ import {
   type Address,
   type Hex,
 } from 'viem';
+import { sepolia } from 'viem/chains';
 import z from 'zod';
+// This is transitive dependency of @cowprotocol/widget-react, so it's version always tied to it
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MetadataApi } from '@cowprotocol/sdk-app-data';
 
@@ -97,7 +99,7 @@ const SEPOLIA_CONFIG = buildNetworkTxConfig(
 export const jsonRpcRequestSchema = z.object({
   method: z.string(),
   params: z.array(z.unknown()).optional(),
-  id: z.number(),
+  id: z.number().optional(),
 });
 
 export const addressSchema = z
@@ -253,7 +255,7 @@ export type OrderData = z.infer<typeof CowSwapGPv2OrderSchema>;
 // ---- Helpers ----
 
 export const getNetworkTxConfig = (chainId: number): NetworkTxConfig => {
-  if (chainId === 11155111) return SEPOLIA_CONFIG;
+  if (chainId === sepolia.id) return SEPOLIA_CONFIG;
   return MAINNET_CONFIG;
 };
 
@@ -273,7 +275,11 @@ export const getAppDataHex = async (
 
   const { appDataHex } = await api.getAppDataInfo(appData);
 
-  return appDataHex as Hex;
+  if (!isHex(appDataHex)) {
+    throw new Error('Received invalid appDataHex from Metadata API');
+  }
+
+  return appDataHex;
 };
 
 export const hashCowswapOrder = (

@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import {
   memo,
   useMemo,
@@ -78,7 +77,7 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
 
   const openModal: ModalContextValue['openModal'] = useCallback(
     (modal, props) => {
-      const modalSession = uuid();
+      const modalSession = self.crypto.randomUUID();
       modalSessionRef.current = modalSession;
       setModalState({ modal, props });
 

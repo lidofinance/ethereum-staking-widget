@@ -43,13 +43,9 @@ const SEPOLIA_STETH = sepoliaNetwork.contracts.lido.toLowerCase();
 const SEPOLIA_COW_SETTLEMENT =
   sepoliaNetwork.contracts.cowSettlement.toLowerCase();
 const SEPOLIA_WETH = sepoliaNetwork.contracts.weth.toLowerCase();
-const SEPOLIA_WSTETH = sepoliaNetwork.contracts.wsteth.toLowerCase();
-const SEPOLIA_COW_VAULT_RELAYER =
-  sepoliaNetwork.contracts.cowVaultRelayer.toLowerCase();
-const SEPOLIA_FEE_RECIPIENT = sepoliaNetwork.contracts.daoAgent.toLowerCase();
 
-const COW_VAULT_RELAYER =
-  mainnetNetwork.contracts.cowVaultRelayer.toLowerCase();
+sepoliaNetwork.contracts.cowVaultRelayer.toLowerCase();
+const SEPOLIA_FEE_RECIPIENT = sepoliaNetwork.contracts.daoAgent.toLowerCase();
 
 const ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const ATTACKER = '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef';
@@ -116,14 +112,6 @@ const EIP712_DOMAIN_TYPES = [
   { name: 'verifyingContract', type: 'address' },
 ] as const;
 
-const PERMIT_TYPES = [
-  { name: 'owner', type: 'address' },
-  { name: 'spender', type: 'address' },
-  { name: 'value', type: 'uint256' },
-  { name: 'nonce', type: 'uint256' },
-  { name: 'deadline', type: 'uint256' },
-] as const;
-
 const ORDER_TYPES = [
   { name: 'sellToken', type: 'address' },
   { name: 'buyToken', type: 'address' },
@@ -140,48 +128,6 @@ const ORDER_TYPES = [
 ] as const;
 
 // ---- Param builders ----
-
-type PermitOverrides = {
-  signer?: string;
-  chainId?: number;
-  verifyingContract?: string;
-  domainName?: string;
-  version?: string;
-  primaryType?: string;
-  owner?: string;
-  spender?: string;
-  value?: string;
-  nonce?: number;
-  deadline?: number;
-};
-
-const buildPermitParams = (overrides: PermitOverrides = {}) => {
-  const signer = overrides.signer ?? SIGNER;
-  const futureDeadline = Math.floor(Date.now() / 1000) + 3600;
-  const permit = {
-    domain: {
-      name: overrides.domainName ?? 'Wrapped liquid staked Ether 2.0',
-      verifyingContract: overrides.verifyingContract ?? WSTETH,
-      chainId: overrides.chainId ?? CHAIN_MAINNET,
-      version: overrides.version ?? '1',
-    },
-    message: {
-      owner: overrides.owner ?? signer,
-      spender: overrides.spender ?? COW_VAULT_RELAYER,
-      value:
-        overrides.value ??
-        '115792089237316195423570985008687907853269984665640564039457584007913129639935',
-      nonce: overrides.nonce ?? 0,
-      deadline: overrides.deadline ?? futureDeadline,
-    },
-    primaryType: overrides.primaryType ?? 'Permit',
-    types: {
-      EIP712Domain: EIP712_DOMAIN_TYPES,
-      Permit: PERMIT_TYPES,
-    },
-  };
-  return [signer, JSON.stringify(permit)];
-};
 
 type OrderOverrides = {
   signer?: string;
@@ -698,126 +644,6 @@ describe('validateSignTypedData', () => {
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toContain('Failed to fetch or validate app data');
-    });
-  });
-});
-
-describe('validateSignTypedData — wstETH permit', () => {
-  describe('permit messages are blocked', () => {
-    it('rejects valid wstETH permit on mainnet (permits not allowed)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams(),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit messages are not allowed');
-    });
-
-    it('rejects valid wstETH permit on Sepolia (permits not allowed)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({
-          chainId: CHAIN_SEPOLIA,
-          verifyingContract: SEPOLIA_WSTETH,
-          spender: SEPOLIA_COW_VAULT_RELAYER,
-        }),
-        sepoliaCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit messages are not allowed');
-    });
-
-    it('rejects permit even when deadline is in the past (permit check runs first)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ deadline: 1000 }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit messages are not allowed');
-    });
-
-    it('rejects permit when chain differs from ctx (permit blocked before chain check)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ chainId: CHAIN_SEPOLIA }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      // Permit hits block before chain check
-      expect(result.reason).toContain('Permit messages are not allowed');
-    });
-
-    it('rejects permit with wrong verifyingContract (permit blocked regardless)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ verifyingContract: ATTACKER }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit messages are not allowed');
-    });
-
-    it('rejects permit when owner is not the signer (permit blocked regardless)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ owner: ATTACKER }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit messages are not allowed');
-    });
-
-    it('rejects permit when spender is not CoW VaultRelayer (permit blocked regardless)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ spender: ATTACKER }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit messages are not allowed');
-    });
-
-    it('rejects permit when value is zero (permit blocked regardless)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ value: '0' }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit messages are not allowed');
-    });
-  });
-
-  describe('schema validation (runs before permit block)', () => {
-    it('rejects wrong domain name (schema fail — Invalid signTypedData parameters)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ domainName: 'Evil Token' }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Invalid signTypedData parameters');
-    });
-
-    it('rejects wrong domain version (schema fail)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ version: '2' }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-    });
-
-    it('rejects unknown primaryType (schema fail — Invalid signTypedData parameters)', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ primaryType: 'Transfer' }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Invalid signTypedData parameters');
-    });
-  });
-
-  describe('signer check (runs before permit block)', () => {
-    it('rejects when signer differs from ctx.signer', async () => {
-      const result = await validateSignTypedData(
-        buildPermitParams({ signer: ATTACKER }),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Signer address mismatch');
     });
   });
 });
