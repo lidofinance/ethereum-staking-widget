@@ -484,7 +484,9 @@ describe('validateSendTransaction', () => {
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Order UID mismatch');
+      expect(result.reason).toContain(
+        'Order UID does not match verified order data',
+      );
     });
 
     it('rejects when fetch of order data fails', async () => {
