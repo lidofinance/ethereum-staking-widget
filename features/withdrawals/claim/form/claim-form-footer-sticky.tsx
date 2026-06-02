@@ -22,7 +22,6 @@ const STICK_CHECKPOINT_OFFSET =
 
 type ScrollState = {
   isSticked: boolean;
-  footerShift: number;
 };
 
 type ScrollStateSetter = <
@@ -49,7 +48,6 @@ export const ClaimFormFooterSticky: FC<
   // frequent operations performant during scroll
   const { current: scrollState } = useRef<ScrollState>({
     isSticked: false,
-    footerShift: -1,
   });
 
   const setStateAndUpdate = useCallback<ScrollStateSetter>(
@@ -70,7 +68,6 @@ export const ClaimFormFooterSticky: FC<
     const { y: screenH, x: screenW } = getScreenSize();
     const rectRequests = elRequests.getBoundingClientRect();
     const rectFooter = elFooter.getBoundingClientRect();
-    const footerHeight = elFooter.clientHeight;
     const menuOffset = screenW < NAV_MOBILE_MAX_WIDTH ? NAV_MOBILE_HEIGHT : 0;
 
     // Calcs
@@ -87,17 +84,8 @@ export const ClaimFormFooterSticky: FC<
       if (!scrollState.isSticked) {
         setStateAndUpdate('isSticked', true);
       }
-
-      const currFooterShift =
-        footerHeight - Math.min(distanceFromElStart, footerHeight) - menuOffset;
-      if (currFooterShift !== scrollState.footerShift) {
-        elFooter.style.setProperty('bottom', `${-currFooterShift}px`);
-        scrollState.footerShift = currFooterShift;
-      }
     } else {
       if (scrollState.isSticked) {
-        scrollState.footerShift = -1;
-        elFooter.style.removeProperty('bottom');
         setStateAndUpdate('isSticked', false);
       }
     }
@@ -107,7 +95,6 @@ export const ClaimFormFooterSticky: FC<
 
   const positionInitializatorEffect = useCallback(() => {
     if (!isEnabled) return;
-    const elFooter = refFooter.current;
 
     // Event subscriptions
     window.addEventListener('resize', updatePosition, { passive: true });
@@ -116,8 +103,6 @@ export const ClaimFormFooterSticky: FC<
     return () => {
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition);
-      scrollState.footerShift = -1;
-      if (elFooter) elFooter.style.removeProperty('bottom');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEnabled]);

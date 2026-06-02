@@ -85,7 +85,7 @@ export const ClaimFooterBodyEnder = styled.div`
 
 export const ClaimFormFooterWrapper = styled.div<{ isSticked: boolean }>`
   position: ${({ isSticked }) => (isSticked ? 'sticky' : 'relative')};
-  bottom: 0;
+  bottom: ${({ isSticked }) => (isSticked ? `60px` : '0px')};
   ${({ isSticked }) =>
     isSticked &&
     css`
