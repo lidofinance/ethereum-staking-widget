@@ -1,3 +1,5 @@
+/* eslint-disable no-console, no-prototype-builtins */
+
 export const openKeys = [
   'SELF_ORIGIN',
   'ROOT_ORIGIN',
@@ -5,6 +7,10 @@ export const openKeys = [
   'HELP_ORIGIN',
   'RESEARCH_ORIGIN',
   'BLOG_ORIGIN',
+
+  'BASE_PATH',
+  'IPFS_MODE',
+  'DEVNET_OVERRIDES',
 
   'SUPPORTED_CHAINS',
   'DEFAULT_CHAIN',
@@ -17,6 +23,7 @@ export const openKeys = [
   'ENABLE_QA_HELPERS',
 
   'REWARDS_BACKEND',
+  'VALIDATION_SERVICE_BASE_PATH',
 
   'RATE_LIMIT',
   'RATE_LIMIT_TIME_FRAME',
@@ -31,7 +38,6 @@ export const openKeys = [
 
 export const secretKeys = [
   'EL_RPC_URLS_1',
-  'EL_RPC_URLS_5',
   'EL_RPC_URLS_10',
   'EL_RPC_URLS_130',
   'EL_RPC_URLS_1301',

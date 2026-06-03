@@ -87,6 +87,10 @@ export default withBundleAnalyzer({
     newNextLinkBehavior: true,
   },
   webpack(config) {
+    // Fixes an issue with ox package which is a part of viem
+    // ox contains dynamic imports and webpack throws a warning for this type of imports
+    config.module.exprContextCritical = false;
+
     config.module.rules.push(
       // Teach webpack to import svg and md files
       {
@@ -161,10 +165,11 @@ export default withBundleAnalyzer({
             key: 'x-dns-prefetch-control',
             value: 'on',
           },
-          // This header is overwritten by CF, but we still align value just in case
+          // This header is overwritten by CF, but we still align value just in case.
+          // 31536000 (1 year) is the minimum required by hstspreload.org.
           {
             key: 'strict-transport-security',
-            value: 'max-age=2592000; includeSubDomains; preload',
+            value: 'max-age=31536000; includeSubDomains; preload',
           },
           {
             key: 'referrer-policy',
