@@ -13,8 +13,8 @@
         130, 1135, 1923
       ],
       "earnVaultsBanner": {
-        "showOnStakeForm": false,
-        "showAfterStake": false
+        "showOnStakeForm": true,
+        "showAfterStake": true
       },
       "earnVaults": [
         { "name": "eth" },
