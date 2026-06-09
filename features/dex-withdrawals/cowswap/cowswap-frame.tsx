@@ -5,7 +5,7 @@ import {
   CowSwapWidgetProps,
   TradeType,
 } from '@cowprotocol/widget-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
 
@@ -25,6 +25,8 @@ import {
   DEX_BUY_TOKEN_LIST_URL,
   WHEN_PRICE_IMPACT_IS_HIGH_THAN,
   LIDO_APP_CODE,
+  COWSWAP_BASE_URL,
+  MAX_ORDER_AGE_MINUTES,
 } from './consts';
 import { LoaderStyled, DexWrapper } from './styles';
 import {
@@ -32,7 +34,7 @@ import {
   useCspBlocked,
   useFeeRecipient,
   useIsGhAvailable,
-  useLoadingTimeout,
+  useLoadingStates,
   useRefetchBalances,
 } from './hooks';
 
@@ -69,7 +71,8 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 };
 
 export const CowswapFrame = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  // throws on loading timeout/onError
+  const { isLoading, onLoaded, onError } = useLoadingStates();
 
   const { isTestnet } = useDappStatus();
   const { validateAddress } = useAddressValidation();
@@ -82,7 +85,6 @@ export const CowswapFrame = () => {
   // throw on CSP violation
   useCspBlocked();
   // throw on loading timeout
-  useLoadingTimeout(isLoading);
 
   const {
     modalState,
@@ -116,7 +118,7 @@ export const CowswapFrame = () => {
       standaloneMode: false,
       // for testnets only sepolia
       chainId: isTestnet ? 11155111 : 1,
-      baseUrl: 'https://swap.cow.fi',
+      baseUrl: COWSWAP_BASE_URL,
 
       //
       // Trading options
@@ -153,6 +155,10 @@ export const CowswapFrame = () => {
         whenPriceImpactIsHigherThan: WHEN_PRICE_IMPACT_IS_HIGH_THAN,
       },
       disableCrossChainSwap: true,
+      disableCustomRecipient: true,
+      disableEIP2612Permits: true,
+      disableInfiniteApprove: true,
+      forcedOrderDeadline: MAX_ORDER_AGE_MINUTES,
 
       //
       // UI options
@@ -263,7 +269,11 @@ export const CowswapFrame = () => {
           provider={provider}
           params={params}
           listeners={listeners}
-          onReady={() => setIsLoading(false)}
+          enableSafeSdkBridge={false}
+          onLoadingError={() =>
+            onError(new Error('Failed to load CoW Swap widget'))
+          }
+          onReady={onLoaded}
         />
         <LoaderStyled $isVisible={isLoading} />
       </DexWrapper>
