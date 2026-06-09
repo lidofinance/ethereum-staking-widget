@@ -72,7 +72,8 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 
 export const CowswapFrame = () => {
   // throws on loading timeout/onError
-  const { isLoading, onLoaded, onError } = useLoadingStates();
+  const { isLoading, onLoaded, onError, triggerRefresh, refreshId } =
+    useLoadingStates();
 
   const { isTestnet } = useDappStatus();
   const { validateAddress } = useAddressValidation();
@@ -211,12 +212,15 @@ export const CowswapFrame = () => {
           return await validate();
         },
       },
+      //ignored by widget but triggers refresh
+      __EXTERNAL_REFRESH_ID__: refreshId,
     }),
     [
       isTestnet,
       isGithubAvailable,
       daoAgentAddress,
       themeName,
+      refreshId,
       checkSellLimit,
       validateApproval,
       validate,
@@ -254,13 +258,24 @@ export const CowswapFrame = () => {
       {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
         handler: (payload: OnTradeParamsPayload) => {
+          const sellTokenSymbol = payload.sellToken?.symbol?.toLowerCase();
+
+          // Force widget refresh to reset invalid token selection
+          if (
+            sellTokenSymbol &&
+            sellTokenSymbol !== 'steth' &&
+            sellTokenSymbol !== 'wsteth'
+          ) {
+            triggerRefresh();
+            return;
+          }
           reportTradeParams(payload);
         },
       },
     ];
 
     return handlers;
-  }, [refreshBalances, reportTradeParams]);
+  }, [refreshBalances, reportTradeParams, triggerRefresh]);
 
   return (
     <>

@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { COWSWAP_WIDGET_LOADING_TIMEOUT_MS } from '../consts';
+import { debounce } from 'lodash';
 
 export const useLoadingStates = () => {
+  const [refreshId, setRefreshId] = useState('<INITIAL_UUID>');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -22,5 +24,11 @@ export const useLoadingStates = () => {
 
   const onLoaded = useCallback(() => setIsLoading(false), []);
   const onError = useCallback((error: Error) => setError(error), []);
-  return { isLoading, onLoaded, onError };
+
+  // Gives widget time to process refresh
+  const triggerRefresh = useMemo(
+    () => debounce(() => setRefreshId(window.crypto.randomUUID()), 500),
+    [],
+  );
+  return { isLoading, onLoaded, onError, triggerRefresh, refreshId };
 };
