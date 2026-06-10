@@ -8,10 +8,7 @@ import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { useStETHByWstETH } from 'modules/web3/hooks/use-stETH-by-wstETH';
 import { TOKENS } from 'consts/tokens';
 import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
-import {
-  CollectorContract,
-  SyncDepositQueueContract,
-} from '../types/contracts';
+import { CollectorContract, DepositQueueContract } from '../types/contracts';
 
 export type DepositParams = {
   isDepositPossible: boolean;
@@ -31,7 +28,7 @@ export const usePreviewDeposit = <DepositToken extends string>({
   amount,
   token,
 }: {
-  depositQueue: SyncDepositQueueContract;
+  depositQueue: DepositQueueContract;
   collector: CollectorContract;
   amount?: bigint | null;
   token?: DepositToken;
