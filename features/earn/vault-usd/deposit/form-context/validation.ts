@@ -14,6 +14,7 @@ import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-m
 import { ValidationError } from 'shared/hook-form/validation/validation-error';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 const validateUsdAmount: (
   field: string,
@@ -30,7 +31,7 @@ const validateUsdAmount: (
 };
 
 const messageMaxBalance = (max: bigint, token: string) =>
-  `Entered ${token} amount exceeds your available balance of ${formatUnits(max, 6)}`;
+  `Entered ${token} amount exceeds your available balance of ${formatUnits(max, getTokenDecimals(token))}`;
 
 export const UsdVaultDepositFormValidationResolver: Resolver<
   USDDepositFormValues,

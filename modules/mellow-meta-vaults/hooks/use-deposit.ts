@@ -20,8 +20,10 @@ import { getReferralAddress } from 'utils/get-referral-address';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { type Token, TOKENS } from 'consts/tokens';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
+import { SYNC_DEPOSIT_QUEUE_ABI } from '../abi';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { SyncDepositQueueGetter } from '../types/deposit-queue-getter';
+import { DepositQueueGetter } from '../types/deposit-queue-getter';
+import { SyncDepositQueueWritableContract } from '../types/contracts';
 
 type DepositArgs = {
   amount: bigint;
@@ -36,7 +38,7 @@ export const useDeposit = <DepositQueueToken extends string>({
   matomoEventStart,
   matomoEventSuccess,
 }: {
-  depositQueueGetter: SyncDepositQueueGetter<DepositQueueToken>;
+  depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
   txModalStages: TxModalStages;
   onRetry?: () => void;
   matomoEventStart?: MATOMO_EVENT_TYPE;
@@ -59,6 +61,13 @@ export const useDeposit = <DepositQueueToken extends string>({
           walletClient: core.web3Provider as WalletClient,
           token: token as DepositQueueToken,
         });
+        // Both async and sync deposit queue ABIs expose an identical `deposit(assets, referral, merkleProof)`
+        // signature. Casting to the sync variant gives accurate call-site types while avoiding the
+        // uncallable union that TypeScript produces when `depositQueue` is `Async | Sync`.
+        const depositFn = depositQueue.write
+          .deposit as SyncDepositQueueWritableContract['write']['deposit'];
+        const estimateDepositGasFn = depositQueue.estimateGas
+          .deposit as SyncDepositQueueWritableContract['estimateGas']['deposit'];
 
         const depositTokenContract = getContract({
           address: tokenAddress,
@@ -167,13 +176,13 @@ export const useDeposit = <DepositQueueToken extends string>({
             await core.performTransaction({
               getGasLimit: async (opts) =>
                 applyRoundUpTxParameter(
-                  await depositQueue.estimateGas.deposit(depositArgs, {
+                  await estimateDepositGasFn(depositArgs, {
                     ...opts,
                     value: msgValue,
                   }),
                 ),
               sendTransaction: (opts) => {
-                return depositQueue.write.deposit(depositArgs, {
+                return depositFn(depositArgs, {
                   ...opts,
                   value: msgValue,
                 });
@@ -205,13 +214,16 @@ export const useDeposit = <DepositQueueToken extends string>({
                 const receipt = await core.rpcProvider.getTransactionReceipt({
                   hash: txHash,
                 });
+                // `Deposited` is only emitted by sync deposits (USDC/USDT). For async deposits
+                // this returns an empty array and `receivedShares` stays undefined.
+                // Using SYNC_DEPOSIT_QUEUE_ABI directly gives typed `log.args` without casting.
                 const claimedLog = parseEventLogs({
-                  abi: depositQueue.abi,
+                  abi: SYNC_DEPOSIT_QUEUE_ABI,
                   logs: receipt.logs,
                   eventName: 'Deposited',
                 }).find(
                   (log) =>
-                    log.args.account?.toLowerCase() === address?.toLowerCase(),
+                    log.args.account.toLowerCase() === address?.toLowerCase(),
                 );
                 receivedShares = claimedLog?.args.shares;
               } catch {

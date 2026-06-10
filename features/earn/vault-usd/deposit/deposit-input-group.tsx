@@ -21,6 +21,9 @@ const trackTokenSelect = (value: string) => {
     case TOKENS.usdt:
       trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnUsdSelectTokenUsdt);
       break;
+    case TOKENS.usde:
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnUsdSelectTokenUsde);
+      break;
     default:
       break;
   }

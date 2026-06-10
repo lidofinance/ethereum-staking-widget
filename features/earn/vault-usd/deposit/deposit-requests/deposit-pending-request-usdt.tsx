@@ -1,4 +1,4 @@
-import { useUsdcUsd } from 'shared/hooks/use-usdc-usd';
+import { useUsdtToUsd } from 'shared/hooks/use-usdt-to-usd';
 import {
   UsdVaultDepositPendingRequest,
   DepositPendingRequestProps,
@@ -8,7 +8,7 @@ type Props = Omit<DepositPendingRequestProps, 'usdAmount'>;
 
 export const UsdVaultDepositPendingRequestUSDT = (props: Props) => {
   const { request } = props;
-  const { usdAmount } = useUsdcUsd(request.assets);
+  const { usdAmount } = useUsdtToUsd(request.assets);
 
   return (
     <UsdVaultDepositPendingRequest

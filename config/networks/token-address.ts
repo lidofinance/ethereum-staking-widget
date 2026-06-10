@@ -16,6 +16,7 @@ const TOKENS_TO_CONTRACTS: Record<
   [TOKENS.weth]: CONTRACT_NAMES.weth,
   [TOKENS.usdc]: CONTRACT_NAMES.usdc,
   [TOKENS.usdt]: CONTRACT_NAMES.usdt,
+  [TOKENS.usde]: CONTRACT_NAMES.usde,
   [TOKENS.gg]: CONTRACT_NAMES.ggvVault,
   [TOKENS.dvsteth]: CONTRACT_NAMES.dvvVault,
   [TOKENS.streth]: CONTRACT_NAMES.stgShareManagerSTRETH,

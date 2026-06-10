@@ -2,7 +2,7 @@ import { useController, useFormState, useFormContext } from 'react-hook-form';
 
 import { Option, Eth, Steth, Wsteth, OptionValue } from '@lidofinance/lido-ui';
 import { TokenWethIcon } from 'assets/earn';
-import { TokenUsdcIcon, TokenUsdtIcon } from 'assets/earn-v2';
+import { TokenUsdcIcon, TokenUsdeIcon, TokenUsdtIcon } from 'assets/earn-v2';
 
 import {
   getTokenDisplayName,
@@ -23,6 +23,7 @@ const iconsMap: { [key in TOKEN_DISPLAY_NAMES]?: JSX.Element } = {
   ['wstETH']: <Wsteth />,
   ['USDC']: <TokenUsdcIcon width={24} height={24} />,
   ['USDT']: <TokenUsdtIcon width={24} height={24} />,
+  ['USDe']: <TokenUsdeIcon width={24} height={24} />,
 } as const;
 
 type TokenSelectHookFormProps = {

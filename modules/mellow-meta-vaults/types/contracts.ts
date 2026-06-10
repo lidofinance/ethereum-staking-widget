@@ -25,9 +25,6 @@ export type VaultContract = ContractReadonly<typeof VAULT_ABI>;
 
 export type VaultWritableContract = Contract<typeof VAULT_ABI>;
 
-/**
- * @deprecated Use SyncDepositQueueContract instead
- */
 export type AsyncDepositQueueContract = ContractReadonly<
   typeof DEPOSIT_QUEUE_ABI
 >;
@@ -36,9 +33,10 @@ export type SyncDepositQueueContract = ContractReadonly<
   typeof SYNC_DEPOSIT_QUEUE_ABI
 >;
 
-/**
- * @deprecated Use SyncDepositQueueWritableContract instead
- */
+export type DepositQueueContract =
+  | AsyncDepositQueueContract
+  | SyncDepositQueueContract;
+
 export type AsyncDepositQueueWritableContract = Contract<
   typeof DEPOSIT_QUEUE_ABI
 >;
@@ -46,6 +44,10 @@ export type AsyncDepositQueueWritableContract = Contract<
 export type SyncDepositQueueWritableContract = Contract<
   typeof SYNC_DEPOSIT_QUEUE_ABI
 >;
+
+export type DepositQueueWritableContract =
+  | AsyncDepositQueueWritableContract
+  | SyncDepositQueueWritableContract;
 
 export type RedeemQueueContract = ContractReadonly<typeof REDEEM_QUEUE_ABI>;
 

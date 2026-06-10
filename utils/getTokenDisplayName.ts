@@ -21,6 +21,7 @@ export const TOKEN_DISPLAY_NAMES = {
   [TOKEN_SYMBOLS.earnusd]: TOKEN_SYMBOLS.earnusd,
   [TOKEN_SYMBOLS.usdc]: TOKEN_SYMBOLS.usdc,
   [TOKEN_SYMBOLS.usdt]: TOKEN_SYMBOLS.usdt,
+  [TOKEN_SYMBOLS.usde]: TOKEN_SYMBOLS.usde,
 } as const;
 
 export type TOKEN_DISPLAY_NAMES = keyof typeof TOKEN_DISPLAY_NAMES;

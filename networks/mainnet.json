@@ -54,6 +54,7 @@
     "usdVault": "0x014e6DA8F283C4aF65B2AA0f201438680A004452",
     "usdDepositQueueUSDC": "0xC75E7E73B25fEa8bB23EB55CC48BA55067b5be76",
     "usdDepositQueueUSDT": "0xEeC5041c47Cba1e31321AC6941Bf09Ad60645B73",
+    "usdDepositQueueUSDE": "0xeec37568b01e0c4d5028501a49e024b475e2d7ca",
     "usdSyncDepositQueueUSDC": "0xf6AFAf6afcAe116dD37A779D50fE6c5fa6f8C8f5",
     "usdSyncDepositQueueUSDT": "0x534d0bEb82C47cf703BFb9E959297658b65Ec8E9",
     "usdShareManagerEARNUSD": "0x4Ce1ac8F43E0E5BD7A346A98aF777bF8fbeA1981",
@@ -61,7 +62,8 @@
     "usdCollector": "0x40DA86d29AF2fe980733bD54E364e7507505b41B",
 
     "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+    "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "usde": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3"
   },
   "api": {}
 }

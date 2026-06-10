@@ -6,6 +6,7 @@ import { asToken } from 'utils/as-token';
 
 import { useUsdVaultDepositCancel } from '../hooks';
 import { UsdVaultDepositPendingRequestUSDC } from './deposit-pending-request-usdc';
+import { UsdVaultDepositPendingRequestUSDE } from './deposit-pending-request-usde';
 import { UsdVaultDepositPendingRequestUSDT } from './deposit-pending-request-usdt';
 import type { UsdDepositToken } from '../../types';
 
@@ -18,6 +19,7 @@ type PendingDepositRequestsProps = {
 const requestComponentMap = {
   [TOKENS.usdc]: UsdVaultDepositPendingRequestUSDC,
   [TOKENS.usdt]: UsdVaultDepositPendingRequestUSDT,
+  [TOKENS.usde]: UsdVaultDepositPendingRequestUSDE,
 };
 
 export const UsdVaultDepositPendingRequests: FC<

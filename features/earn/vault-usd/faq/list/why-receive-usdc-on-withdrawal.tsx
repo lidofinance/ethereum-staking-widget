@@ -4,7 +4,7 @@ import { FaqItem } from 'features/earn/shared/v2/faq';
 export const WhyReceiveUsdcOnWithdrawal: FC<{ id?: string }> = ({ id }) => {
   return (
     <FaqItem
-      summary="Why, even though deposits are made in USDC/USDT, do I only receive USDC on withdrawal?"
+      summary="Why, even though deposits are made in USDC/USDT/USDe, do I only receive USDC on withdrawal?"
       id={id}
     >
       <p>
