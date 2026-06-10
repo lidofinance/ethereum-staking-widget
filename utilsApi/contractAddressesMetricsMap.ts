@@ -28,9 +28,16 @@ import { ENSRegistryAbi } from 'abi/ens-registry-abi';
 import { ENSResolverAbi } from 'abi/ens-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
+import {
+  CowSettlementAbi,
+  CowVaultRelayerAbi,
+} from 'features/dex-withdrawals/cowswap';
+// Tokens ABIs
 import { wethABI } from 'abi/weth-abi';
 import { usdtABI } from 'abi/usdt-abi';
 import { usdcABI } from 'abi/usdc-abi';
+import { usdsABI } from 'abi/usds-abi';
+import { wbtcABI } from 'abi/wbtc-abi';
 
 // Earn contracts ABIs
 // GGV
@@ -73,6 +80,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.lidoLocator]: LidoLocatorAbi,
   [CONTRACT_NAMES.lido]: StethAbi,
   [CONTRACT_NAMES.wsteth]: WstethABI,
+  [CONTRACT_NAMES.daoAgent]: [],
   [CONTRACT_NAMES.withdrawalQueue]: WithdrawalQueueAbi,
   [CONTRACT_NAMES.L2stETH]: rebasableL2StethAbi,
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
@@ -86,14 +94,22 @@ export const METRIC_CONTRACT_ABIS = {
   // Side contracts ABIs
   [CONTRACT_NAMES.aggregatorEthUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdtUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorDaiUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorBtcUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
+  [CONTRACT_NAMES.cowVaultRelayer]: CowVaultRelayerAbi,
+  [CONTRACT_NAMES.cowSettlement]: CowSettlementAbi,
   // 3rd party tokens
   [CONTRACT_NAMES.weth]: wethABI,
   [CONTRACT_NAMES.usdc]: usdcABI,
   [CONTRACT_NAMES.usdt]: usdtABI,
+  [CONTRACT_NAMES.usds]: usdsABI,
+  [CONTRACT_NAMES.wbtc]: wbtcABI,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,

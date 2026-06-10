@@ -2,8 +2,8 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import type { z } from 'zod';
 import type {
   ManifestSchema,
-  ManifestConfigWithdrawalDexes,
   ManifestConfigPages,
+  ManifestConfigWithdrawalDexIntegrations,
 } from './validate';
 
 export type Manifest = z.infer<typeof ManifestSchema>;
@@ -23,8 +23,8 @@ export type ManifestConfigVaultApyType =
 export type ManifestConfigPage =
   (typeof ManifestConfigPages)[keyof typeof ManifestConfigPages];
 
-export type ManifestConfigDex =
-  (typeof ManifestConfigWithdrawalDexes)[keyof typeof ManifestConfigWithdrawalDexes];
+export type ManifestConfigDexIntegration =
+  (typeof ManifestConfigWithdrawalDexIntegrations)[keyof typeof ManifestConfigWithdrawalDexIntegrations];
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {

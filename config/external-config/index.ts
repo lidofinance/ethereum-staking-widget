@@ -8,7 +8,7 @@ export type {
   ManifestConfigVaultEntry,
   ManifestConfigVaultApyType,
   ManifestConfigPage,
-  ManifestConfigDex,
+  ManifestConfigDexIntegration,
   ManifestConfigEarnVault,
 } from './types';
 export {
@@ -19,5 +19,5 @@ export {
 export {
   ManifestSchema,
   ManifestConfigPages,
-  ManifestConfigWithdrawalDexes,
+  ManifestConfigWithdrawalDexIntegrations,
 } from './validate';

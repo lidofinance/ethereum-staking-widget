@@ -101,37 +101,45 @@ const FeatureFlagsSchema = z
   .partial();
 
 //
-// Enabled Withdrawal Dexes
+// Withdrawal Dex
 //
 
-export const ManifestConfigWithdrawalDexes = {
-  paraswap: 'paraswap',
-  openOcean: 'open-ocean',
-  oneInch: 'one-inch',
-  bebop: 'bebop',
-  jumper: 'jumper',
+export const ManifestConfigWithdrawalDexIntegrations = {
+  cowSwap: 'cowswap',
 } as const;
 
-export const DexWithdrawalsApiSchema = z.enum(
-  Object.values(ManifestConfigWithdrawalDexes),
+export const ManifestConfigWithdrawalDexIntegrationsSchema = z.enum(
+  Object.values(ManifestConfigWithdrawalDexIntegrations),
 );
 
-// Filter out unknown dexes
-const EnabledWithdrawalDexesSchema = z.preprocess(
-  (obj) => {
-    if (Array.isArray(obj)) {
-      return obj.filter(
-        (dex) => DexWithdrawalsApiSchema.safeParse(dex).success,
-      );
-    }
-    return obj;
-  },
-  z
-    .array(DexWithdrawalsApiSchema)
-    .refine((items) => new Set(items).size === items.length, {
-      message: 'All items in the array must be unique',
+const DexWithdrawalIntegrationEntrySchema = z
+  .preprocess(
+    (obj) => {
+      if (
+        obj &&
+        typeof obj === 'object' &&
+        'integration' in obj &&
+        ManifestConfigWithdrawalDexIntegrationsSchema.safeParse(obj.integration)
+          .success
+      ) {
+        return obj;
+      }
+      // if we don't recognize the integration key, we disable it
+      return {
+        integration: 'cowswap' as const,
+        enabled: false,
+      };
+    },
+    z.object({
+      integration: ManifestConfigWithdrawalDexIntegrationsSchema,
+      enabled: z.boolean().optional().default(false),
     }),
-);
+  )
+  .optional()
+  .default({
+    integration: 'cowswap',
+    enabled: false,
+  });
 
 //
 // Pages
@@ -208,7 +216,7 @@ const MultiChainBannerSchema = z
 //
 
 const ManifestConfigSchema = z.object({
-  enabledWithdrawalDexes: EnabledWithdrawalDexesSchema.optional().default([]),
+  withdrawalDex: DexWithdrawalIntegrationEntrySchema,
   multiChainBanner: MultiChainBannerSchema.optional().default([]),
   featureFlags: FeatureFlagsSchema.optional().default({}),
   earnVaults: EarnVaultListSchema.optional().default([]),

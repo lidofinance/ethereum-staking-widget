@@ -26,8 +26,11 @@ export const API_NAMES = {};
 export const CONTRACT_NAMES = {
   // Main Lido contract
   lido: 'lido',
+  lidoLocator: 'lidoLocator',
+  daoAgent: 'daoAgent',
   wsteth: 'wsteth',
   withdrawalQueue: 'withdrawalQueue',
+  stakingRouter: 'stakingRouter',
   // SI
   wstethReferralStaker: 'wstethReferralStaker',
   // DualGovernance
@@ -38,18 +41,24 @@ export const CONTRACT_NAMES = {
   // l2 contracts
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
-  // Aux contracts
+  // 3rd party contracts
   aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
-  stakingRouter: 'stakingRouter',
+  aggregatorUsdcUsdPriceFeed: 'aggregatorUsdcUsdPriceFeed',
+  aggregatorUsdtUsdPriceFeed: 'aggregatorUsdtUsdPriceFeed',
+  aggregatorDaiUsdPriceFeed: 'aggregatorDaiUsdPriceFeed',
+  aggregatorBtcUsdPriceFeed: 'aggregatorBtcUsdPriceFeed',
   stethCurve: 'stethCurve',
-  lidoLocator: 'lidoLocator',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
+  cowVaultRelayer: 'cowVaultRelayer',
+  cowSettlement: 'cowSettlement',
   // 3rd party tokens
   weth: 'weth',
   usdc: 'usdc',
   usdt: 'usdt',
+  usds: 'usds',
+  wbtc: 'wbtc',
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',

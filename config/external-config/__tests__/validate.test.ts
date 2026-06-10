@@ -78,53 +78,63 @@ describe('ManifestSchema', () => {
       const result = ManifestSchema.parse({ '1': validEntry });
       const config = result['1']?.config;
       expect(config).toBeDefined();
-      expect(config?.enabledWithdrawalDexes).toEqual([]);
+      expect(config?.withdrawalDex).toEqual({
+        integration: 'cowswap',
+        enabled: false,
+      });
       expect(config?.earnVaults).toEqual([]);
       expect(config?.featureFlags).toEqual({});
       expect(config?.pages).toEqual({});
     });
   });
 
-  describe('config.enabledWithdrawalDexes', () => {
-    it('accepts known dex values', () => {
-      const result = ManifestSchema.parse({
-        '1': {
-          ...validEntry,
-          config: { enabledWithdrawalDexes: ['paraswap', 'bebop'] },
-        },
-      });
-      expect(result['1']?.config?.enabledWithdrawalDexes).toEqual([
-        'paraswap',
-        'bebop',
-      ]);
-    });
-
-    it('filters out unknown dex values (forward compatibility)', () => {
-      const result = ManifestSchema.parse({
-        '1': {
-          ...validEntry,
-          config: { enabledWithdrawalDexes: ['paraswap', 'unknown-dex'] },
-        },
-      });
-      expect(result['1']?.config?.enabledWithdrawalDexes).toEqual(['paraswap']);
-    });
-
-    it('throws on duplicate dex entries', () => {
-      expect(() =>
-        ManifestSchema.parse({
-          '1': {
-            ...validEntry,
-            config: { enabledWithdrawalDexes: ['paraswap', 'paraswap'] },
-          },
-        }),
-      ).toThrow();
-    });
-
-    it('defaults to empty array when omitted', () => {
+  describe('config.withdrawalDex', () => {
+    it('defaults to disabled cowswap when omitted', () => {
       const result = ManifestSchema.parse({
         '1': { ...validEntry, config: {} },
       });
-      expect(result['1']?.config?.enabledWithdrawalDexes).toEqual([]);
+      expect(result['1']?.config?.withdrawalDex).toEqual({
+        integration: 'cowswap',
+        enabled: false,
+      });
+    });
+
+    it('accepts valid cowswap integration', () => {
+      const result = ManifestSchema.parse({
+        '1': {
+          ...validEntry,
+          config: { withdrawalDex: { integration: 'cowswap', enabled: true } },
+        },
+      });
+      expect(result['1']?.config?.withdrawalDex).toEqual({
+        integration: 'cowswap',
+        enabled: true,
+      });
+    });
+
+    it('defaults enabled to false when not specified', () => {
+      const result = ManifestSchema.parse({
+        '1': {
+          ...validEntry,
+          config: { withdrawalDex: { integration: 'cowswap' } },
+        },
+      });
+      expect(result['1']?.config?.withdrawalDex?.enabled).toBe(false);
+    });
+
+    it('ignores unrecognized integration key and returns default (forward compatibility)', () => {
+      const result = ManifestSchema.parse({
+        '1': {
+          ...validEntry,
+          config: {
+            withdrawalDex: { integration: 'unknown', enabled: true },
+          },
+        },
+      });
+      expect(result['1']?.config?.withdrawalDex).toEqual({
+        integration: 'cowswap',
+        enabled: false,
+      });
     });
   });
 

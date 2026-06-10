@@ -1,21 +1,34 @@
 {
   "contracts": {
     "lidoLocator": "0xC1d0b3DE6792Bf6b4b37EccdcC24e45978Cfd2Eb",
-    "aggregatorEthUsdPriceFeed": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-    "aggregatorStEthUsdPriceFeed": "0xcfe54b5cd566ab89272946f602d76ea879cab4a8",
-    "stethCurve": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
-    "stakingRouter": "0xFdDf38947aFB03C621C71b06C9C70bce73f12999",
-    "withdrawalQueue": "0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1",
+    "daoAgent": "0x3e40d73eb977dc6a537af587d48316fee66e9c8c",
     "lido": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
     "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
-    "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
-    "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    "wstethReferralStaker": "0xa88f0329C2c4ce51ba3fc619BBf44efE7120Dd0d",
+    "stakingRouter": "0xFdDf38947aFB03C621C71b06C9C70bce73f12999",
+    "withdrawalQueue": "0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1",
 
+    "wstethReferralStaker": "0xa88f0329C2c4ce51ba3fc619BBf44efE7120Dd0d",
     "dualGovernance": "0xC1db28B3301331277e307FDCfF8DE28242A4486E",
     "escrow": "0x165813A31446a98c84E20Dda8C101BB3C8228e1c",
     "emergencyProtectedTimelock": "0xCE0425301C85c5Ea2A0873A2dEe44d78E02D2316",
     "dgConfigProvider": "0xa1692Af6FDfdD1030E4E9c4Bc429986FA64CB5EF",
+
+    "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "usds": "0xdc035d45d973e3ec169d2276ddab16f1e407384f",
+    "wbtc": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+
+    "aggregatorEthUsdPriceFeed": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+    "aggregatorStEthUsdPriceFeed": "0xcfe54b5cd566ab89272946f602d76ea879cab4a8",
+    "aggregatorUsdcUsdPriceFeed": "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
+    "aggregatorUsdtUsdPriceFeed": "0x3E7d1eAB13ad0104d2750B8863b489D65364e32D",
+    "aggregatorDaiUsdPriceFeed": "0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9",
+    "aggregatorBtcUsdPriceFeed": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
+    "stethCurve": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
+    "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
+    "cowVaultRelayer": "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110",
+    "cowSettlement": "0x9008D19f58AAbD9eD0D60971565AA8510560ab41",
 
     "ggvVault": "0xef417FCE1883c6653E7dC6AF7c6F85CCDE84Aa09",
     "ggvTeller": "0x4C74ccA483A278Bcb90Aea3f8F565e56202D82B2",
@@ -58,10 +71,7 @@
     "usdSyncDepositQueueUSDT": "0x534d0bEb82C47cf703BFb9E959297658b65Ec8E9",
     "usdShareManagerEARNUSD": "0x4Ce1ac8F43E0E5BD7A346A98aF777bF8fbeA1981",
     "usdRedeemQueueUSDC": "0x9e36A74FE278906a76e7615263e46a83fC40c47F",
-    "usdCollector": "0x40DA86d29AF2fe980733bD54E364e7507505b41B",
-
-    "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+    "usdCollector": "0x40DA86d29AF2fe980733bD54E364e7507505b41B"
   },
   "api": {}
 }

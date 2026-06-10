@@ -11,6 +11,7 @@ import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules'
 import { config } from '../get-config';
 import { secretConfig } from '../get-secret-config';
 import { IPFS_BASE_SCRIPT_HASH } from 'features/ipfs';
+import { COWSWAP_BASE_URL } from 'features/dex-withdrawals/cowswap/consts';
 
 const trustedHosts = secretConfig.cspTrustedHosts
   ? secretConfig.cspTrustedHosts.split(',')
@@ -58,6 +59,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     // frame-src takes precedence over child-src for iframes in modern browsers
     frameSrc: [
       "'self'",
+      COWSWAP_BASE_URL,
       'https://*.walletconnect.org',
       'https://*.walletconnect.com',
     ],
