@@ -77,7 +77,7 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
 
   const openModal: ModalContextValue['openModal'] = useCallback(
     (modal, props) => {
-      const modalSession = self.crypto.randomUUID();
+      const modalSession = window.crypto.randomUUID();
       modalSessionRef.current = modalSession;
       setModalState({ modal, props });
 
