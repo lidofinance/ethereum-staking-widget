@@ -12,7 +12,7 @@ import { ConvertWSTETHtoETH } from './list/convert-wsteth-to-eth';
 import { WhySTETH } from './list/why-steth';
 import { HowLongToWithdraw } from './list/how-long-to-withdraw';
 import { WithdrawalPeriodCircumstances } from './list/withdrawal-period-circumstances';
-import { WithdrawalFee } from './list/withdrawaal-fee';
+import { WithdrawalFee } from './list/withdrawal-fee';
 import { ClaimableAmountDifference } from './list/claimable-amount-difference';
 import { TurboMode } from './list/turbo-mode';
 import { BunkerMode } from './list/bunker-mode';

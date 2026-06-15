@@ -15,25 +15,39 @@ import {
   useValidationResults,
 } from '../request-form-context';
 import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
+import { useWaitingTime } from 'features/withdrawals/hooks';
 
 export const TransactionInfo = () => {
   const { isDappActive } = useDappStatus();
   const { isApprovalFlow, isApprovalFlowLoading, allowance } =
     useRequestFormData();
-  const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
+  const token = useWatch<RequestFormInputType, 'token'>({
+    name: 'token' as const,
+  });
+
+  const amount = useWatch<RequestFormInputType, 'amount'>({
+    name: 'amount' as const,
+  });
   const { requests } = useValidationResults();
-  const unlockCostTooltip = isApprovalFlow ? undefined : (
-    <>Lido leverages gasless token unlocks via ERC-2612 permits</>
-  );
+
+  const { value: waitingTime, isLoading: isWaitingTimeLoading } =
+    useWaitingTime(amount, {
+      isApproximate: true,
+    });
+
   const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
     useWithdrawRequestTxPrice({
-      token,
+      token: token,
       isApprovalFlow,
       requestCount: requests?.length,
     });
 
   const { txCostUsd: approveTxCostInUsd, isLoading: isApproveTxCostLoading } =
     useTxCostInUsd(useApproveGasLimit());
+
+  const unlockCostTooltip = isApprovalFlow ? undefined : (
+    <>Lido leverages gasless token unlocks via ERC-2612 permits</>
+  );
 
   return (
     <>
@@ -59,6 +73,13 @@ export const TransactionInfo = () => {
         isBlank={!isDappActive}
         loading={isApprovalFlowLoading}
       />
+      <DataTableRow
+        title="Waiting time"
+        data-testid="waitingTime"
+        loading={isWaitingTimeLoading}
+      >
+        {waitingTime}
+      </DataTableRow>
       {token === TOKENS_TO_WITHDRAWLS.stETH ? (
         <DataTableRow data-testid="exchangeRate" title="Exchange rate">
           1 stETH = 1 ETH
