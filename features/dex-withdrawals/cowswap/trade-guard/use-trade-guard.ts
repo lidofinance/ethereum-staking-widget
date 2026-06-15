@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-
+import { Address, isAddress } from 'viem';
 import type { TradeGuardLevel, OnTradeParamsPayload } from './types';
 import { useOracleRates, type OracleResult } from './use-oracle-rates';
 import type { Thresholds } from './consts';
@@ -37,9 +37,7 @@ const applyOracleResult = (
     const level = resolveLevel(result.deviation, t);
     const messages =
       result.deviation >= t.oracleDeviationBlock
-        ? [
-            `Oracle price deviation: ${result.deviation.toFixed(1)}% (Chainlink verification)`,
-          ]
+        ? [`Oracle price deviation: ${result.deviation.toFixed(1)}%`]
         : [];
 
     return { level, messages, verified: true };
@@ -76,8 +74,6 @@ type UseTradeGuardOptions = {
 export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
   const [modalState, setModalState] =
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
-  const sellExceededRef = useRef(false);
-  const tokenSymbolRef = useRef('');
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
   const lastValidatedTradeRef = useRef<ValidatedTradeSnapshot | null>(null);
   const { verifyWithOracle } = useOracleRates();
@@ -107,6 +103,23 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
   // Swap gate: structural checks → oracle check → modal
   const validateTrade = useCallback(
     async (payload: OnTradeParamsPayload): Promise<boolean> => {
+      if (
+        payload.sellTokenAmount?.units === undefined ||
+        payload.buyTokenAmount?.units === undefined ||
+        payload.sellToken?.address === undefined ||
+        isAddress(payload.sellToken?.address, { strict: false }) === false ||
+        payload.buyToken?.address === undefined ||
+        isAddress(payload.buyToken?.address, { strict: false }) === false ||
+        payload.minimumReceiveBuyAmount?.units === undefined
+      ) {
+        await showModal(
+          'blocked',
+          ['Incomplete trade parameters — cannot verify order'],
+          false,
+        );
+        return false;
+      }
+
       // Invalidate previous snapshot — prevents stale data if this call fails
       lastValidatedTradeRef.current = null;
 
@@ -123,7 +136,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
       // Oracle verification — skip for structural blocks (oracle is irrelevant
       // for token whitelist, recipient mismatch, etc.)
       const sellUnits = safeParseDecimal(
-        payload.sellTokenAmount?.units?.toString(),
+        payload.sellTokenAmount.units?.toString(),
       );
       // Should never happen due to analyzeParams checks
       invariant(sellUnits !== null, 'Invalid sell amount units');
@@ -149,27 +162,12 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
         return false;
       }
 
-      if (
-        payload.sellTokenAmount?.units === undefined ||
-        payload.buyTokenAmount?.units === undefined ||
-        payload.sellToken?.address === undefined ||
-        payload.buyToken?.address === undefined ||
-        payload.minimumReceiveBuyAmount?.units === undefined
-      ) {
-        await showModal(
-          'blocked',
-          ['Incomplete trade parameters — cannot verify order'],
-          false,
-        );
-        return false;
-      }
-
       // Store validated params for provider-level EIP-712 verification
       lastValidatedTradeRef.current = {
-        sellToken: payload.sellToken.address,
-        buyToken: payload.buyToken.address,
-        sellAmountUnits: payload.sellTokenAmount.units.toString(),
-        buyAmountMinUnits: payload.minimumReceiveBuyAmount.units.toString(),
+        sellToken: payload.sellToken.address.toLowerCase() as Address,
+        buyToken: payload.buyToken.address.toLowerCase() as Address,
+        sellAmountUnits: payload.sellTokenAmount.units,
+        buyAmountMinUnits: payload.minimumReceiveBuyAmount.units,
       };
 
       return true;
@@ -186,12 +184,6 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
   /** Call from ON_CHANGE_TRADE_PARAMS to track current params. */
   const reportTradeParams = useCallback((payload: OnTradeParamsPayload) => {
     lastTradeParamsRef.current = payload;
-
-    // Track sell limit
-    const t = readThresholds();
-    const units = safeParseDecimal(payload.sellTokenAmount?.units?.toString());
-    sellExceededRef.current = units !== null && units > t.maxAllowedSellAmount;
-    tokenSymbolRef.current = payload.sellToken?.symbol ?? '';
   }, []);
 
   /** Structural pre-check on approval — uses last ON_CHANGE_TRADE_PARAMS data. */
@@ -217,24 +209,6 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     return true;
   }, [showModal]);
 
-  /** Stable callback — safe to call from memoized widget hooks.
-   *  Shows a neutral "limit" modal and returns false when exceeded. */
-  const checkSellLimit = useCallback(async (): Promise<boolean> => {
-    if (!sellExceededRef.current) return true;
-
-    const tradeThresholds = readThresholds();
-    const symbol = tokenSymbolRef.current || 'tokens';
-    await showModal(
-      'limit',
-      [
-        `Sell amount exceeds maximum allowed (${tradeThresholds.maxAllowedSellAmount.toLocaleString()} ${symbol})`,
-      ],
-      false,
-    );
-
-    return false;
-  }, [showModal]);
-
   /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
   const verifySignedOrder = useCallback((order: OrderData): string | null => {
     // Amount checks against last validated payload
@@ -243,12 +217,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     if (!snapshot) {
       return 'No validated trade on record — order signing rejected';
     }
-    if (
-      snapshot.buyAmountMinUnits === '' ||
-      snapshot.sellAmountUnits === '' ||
-      snapshot.buyToken === '' ||
-      snapshot.sellToken === ''
-    ) {
+    if (snapshot.buyAmountMinUnits === '' || snapshot.sellAmountUnits === '') {
       return 'Trade parameters incomplete — cannot verify order';
     }
 
@@ -272,7 +241,6 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     validateTrade,
     validateApproval,
     reportTradeParams,
-    checkSellLimit,
     openTransactionGuardModal,
     verifySignedOrder,
   };

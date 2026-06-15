@@ -35,9 +35,7 @@ export const useCowSwapEthereumProvider = (
             const error = verifySignedOrder(order);
 
             if (error) {
-              throw new Error(
-                `Signed order does not match validated order: ${error}`,
-              );
+              throw new Error(error);
             }
           }
         } catch (error) {

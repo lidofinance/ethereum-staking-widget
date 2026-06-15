@@ -1,4 +1,4 @@
-import { parseUnits } from 'viem';
+import { type Address, ethAddress, isAddressEqual, parseUnits } from 'viem';
 
 import mainnetConfig from 'networks/mainnet.json';
 
@@ -10,8 +10,8 @@ import type { OrderData } from '../../validate-tx';
 
 /** Snapshot of the validated onBeforeTrade payload (human-readable units). */
 export type ValidatedTradeSnapshot = {
-  sellToken: string;
-  buyToken: string;
+  sellToken: Address;
+  buyToken: Address;
   sellAmountUnits: string;
   buyAmountMinUnits: string;
 };
@@ -21,12 +21,11 @@ export type ValidatedTradeSnapshot = {
 // ---------------------------------------------------------------------------
 
 const c = mainnetConfig.contracts;
-const ETH_PLACEHOLDER = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 const TOKEN_DECIMALS: Record<string, number> = {
   [c.lido.toLowerCase()]: 18, // stETH
   [c.wsteth.toLowerCase()]: 18, // wstETH
-  [ETH_PLACEHOLDER]: 18, // ETH placeholder
+  [ethAddress]: 18, // ETH placeholder
   [c.weth.toLowerCase()]: 18, // WETH
   [c.usdc.toLowerCase()]: 6, // USDC
   [c.usdt.toLowerCase()]: 6, // USDT
@@ -66,10 +65,10 @@ export const verifyOrderAmounts = (
   snapshot: ValidatedTradeSnapshot,
 ): string | null => {
   // Token addresses must match
-  if (order.sellToken.toLowerCase() !== snapshot.sellToken.toLowerCase()) {
+  if (!isAddressEqual(order.sellToken, snapshot.sellToken)) {
     return 'Sell token in order differs from validated trade';
   }
-  if (order.buyToken.toLowerCase() !== snapshot.buyToken.toLowerCase()) {
+  if (!isAddressEqual(order.buyToken, snapshot.buyToken)) {
     return 'Buy token in order differs from validated trade';
   }
 
@@ -82,10 +81,10 @@ export const verifyOrderAmounts = (
 
   // Fail-closed: if we can't convert units, we can't verify amounts
   if (expectedSell === null) {
-    return 'Cannot verify sell amount: token decimals unknown';
+    return 'Cannot verify sell amount — token decimals unknown';
   }
   if (expectedBuyMin === null) {
-    return 'Cannot verify buy amount: token decimals unknown';
+    return 'Cannot verify buy amount — token decimals unknown';
   }
 
   // Sell amount: order must not sell more than validated

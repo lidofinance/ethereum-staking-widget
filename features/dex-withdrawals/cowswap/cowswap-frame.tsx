@@ -93,7 +93,6 @@ export const CowswapFrame = () => {
     validateTrade,
     validateApproval,
     reportTradeParams,
-    checkSellLimit,
     openTransactionGuardModal,
     verifySignedOrder,
   } = useTradeGuard({
@@ -188,18 +187,14 @@ export const CowswapFrame = () => {
 
       hooks: {
         onBeforeApproval: async () => {
-          if (!(await checkSellLimit())) return false;
           if (!(await validateApproval())) return false;
-
           return await validate();
         },
+        // wETH unwrap/wrap is not allowed and not needed for withdrawal dex
         onBeforeWrapOrUnwrap: async () => {
-          if (!(await checkSellLimit())) return false;
-
-          return await validate();
+          return false;
         },
         onBeforeTrade: async (payload) => {
-          if (!(await checkSellLimit())) return false;
           if (!(await validateTrade(payload))) return false;
 
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart);
@@ -221,7 +216,6 @@ export const CowswapFrame = () => {
       daoAgentAddress,
       themeName,
       refreshId,
-      checkSellLimit,
       validateApproval,
       validate,
       validateTrade,

@@ -41,7 +41,7 @@ export const analyzeParams = (
 
   // Max sell amount
 
-  if (sellUnits !== null && sellUnits > t.maxAllowedSellAmount) {
+  if (sellUnits > t.maxAllowedSellAmount) {
     return {
       level: 'blocked',
       messages: [

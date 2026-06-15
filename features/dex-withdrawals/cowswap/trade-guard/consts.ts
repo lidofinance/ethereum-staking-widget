@@ -1,11 +1,10 @@
-import type { Address } from 'viem';
+import { type Address, ethAddress } from 'viem';
 
 import mainnetConfig from 'networks/mainnet.json';
 
 import { PARTNER_FEE_BPS } from '../consts';
 
 import type { ChainlinkFeedConfig } from './types';
-import { getTokenAddress } from 'config/networks/token-address';
 
 // Partner fee as a percentage (0.3%) — subtracted from deviation calculations
 // because it's a known fixed cost the user has agreed to, not an unexpected loss
@@ -29,8 +28,6 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
 // --- Resolve mainnet addresses from network config ---
 
 const c = mainnetConfig.contracts;
-
-const ETH_PLACEHOLDER = (getTokenAddress(1, 'ETH') as string).toLowerCase();
 
 // --- Chainlink Price Feeds (Mainnet) ---
 
@@ -64,7 +61,7 @@ export const CHAINLINK_FEEDS: Record<string, ChainlinkFeedConfig> = {
 
 // Map buy token address → Chainlink feed key for USD price
 export const BUY_TOKEN_FEED_MAP: Record<string, string> = {
-  [ETH_PLACEHOLDER]: 'ETH_USD',
+  [ethAddress]: 'ETH_USD',
   [c.weth.toLowerCase()]: 'ETH_USD',
   [c.usdc.toLowerCase()]: 'USDC_USD',
   [c.usdt.toLowerCase()]: 'USDT_USD',

@@ -286,26 +286,20 @@ export const validateSendTransaction = async (
     getNetworkTxConfig(chainId);
   const allowedTargets = new Set([...sellTokens, cowSettlement]);
 
-  if (!allowedTargets.has(txTo.toLocaleLowerCase() as Address)) {
-    return {
-      allowed: false,
-      reason: `Transaction to ${txTo} is not allowed. Only token contracts and CoW Protocol addresses are permitted.`,
-    };
-  }
+  if (allowedTargets.has(txTo.toLocaleLowerCase() as Address)) {
+    // CoW Protocol - only preSetSignature and only for smart wallets(can't sign messages)
+    if (isAddressEqual(txTo, cowSettlement))
+      return validateSettlerSignature(data, ctx);
 
-  // CoW Protocol - only preSetSignature and only for smart wallets(can't sign messages)
-  if (isAddressEqual(txTo, cowSettlement))
-    return validateSettlerSignature(data, ctx);
-
-  // Other tokens — only approve(), no ETH value
-  if (sellTokens.has(txTo)) {
     return {
       ...validateApproveSpender(data, cowVaultRelayer),
       result: undefined,
     };
   }
-
-  return { allowed: false, reason: `Unexpected target: ${txTo}` };
+  return {
+    allowed: false,
+    reason: `Transaction to ${txTo} is not allowed.`,
+  };
 };
 
 const sendCallsParamsSchema = z.tuple([
@@ -349,7 +343,7 @@ export const validateSendCalls = async (
     if (!result.allowed) {
       return {
         allowed: false,
-        reason: `Call #${i} in batch blocked: ${result.reason}`,
+        reason: `Call #${i} in batch blocked - ${result.reason}`,
       };
     }
     if (result.result) {
