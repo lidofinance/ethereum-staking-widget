@@ -2,8 +2,12 @@ import styled from 'styled-components';
 
 import { FormController } from 'shared/hook-form/form-controller';
 
-export const VaultForm = styled(FormController)`
+type VaultFormProps = {
+  $gap?: number;
+};
+
+export const VaultForm = styled(FormController)<VaultFormProps>`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: ${({ $gap = 8 }) => $gap}px;
 `;
