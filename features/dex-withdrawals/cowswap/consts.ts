@@ -3,6 +3,7 @@ import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
 export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
   // read-only
   'eth_accounts',
+  'eth_requestAccounts',
   'eth_chainId',
   'eth_call',
   'eth_estimateGas',
@@ -10,6 +11,10 @@ export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
   'eth_getTransactionReceipt',
   'eth_getTransactionCount',
   'eth_feeHistory',
+  // EIP-2255
+  'wallet_requestPermissions',
+  'wallet_getPermissions',
+  'wallet_revokePermissions',
   // EOA
   'eth_signTypedData_v4',
   'eth_sendTransaction',
