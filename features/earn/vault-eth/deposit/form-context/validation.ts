@@ -1,5 +1,4 @@
 import type { Resolver } from 'react-hook-form';
-import { formatEther } from 'viem';
 import invariant from 'tiny-invariant';
 import type {
   ETHDepositFormValidationContext,
@@ -14,13 +13,10 @@ import { validateBigintMin } from 'shared/hook-form/validation/validate-bigint-m
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { type TokenSymbol } from 'consts/tokens';
 
-const messageMaxBalance = (max: bigint, token: TokenSymbol) =>
-  `Entered ${getTokenDisplayName(
-    token,
-  )} amount exceeds your available balance of ${formatEther(max)}`;
+const messageMaxBalance = (_max: bigint, token: TokenSymbol) =>
+  `Insufficient ${token} balance`;
 
 export const EthVaultDepositFormValidationResolver: Resolver<
   ETHDepositFormValues,

@@ -7,7 +7,7 @@ type InputGroupProps = React.ComponentProps<typeof InputGroup>;
 
 type InputGroupStyleProps = {
   success?: InputGroupProps['success'];
-  bottomSpacing?: boolean;
+  bottomSpacing?: number;
 };
 
 type InputGroupHookFormProps = InputGroupProps &
@@ -17,7 +17,7 @@ type InputGroupHookFormProps = InputGroupProps &
 
 const InputGroupStyled = styled(InputGroup)<InputGroupStyleProps>`
   margin-bottom: ${({ theme, bottomSpacing }) =>
-    bottomSpacing ? theme.spaceMap.md : 0}px;
+    bottomSpacing ?? theme.spaceMap.md}px;
   z-index: 2;
   span:nth-of-type(2) {
     white-space: unset;
@@ -26,7 +26,7 @@ const InputGroupStyled = styled(InputGroup)<InputGroupStyleProps>`
 
 export const InputGroupHookForm: React.FC<InputGroupHookFormProps> = ({
   errorField,
-  bottomSpacing = true,
+  bottomSpacing,
   ...props
 }) => {
   const { errors } = useFormState<Record<string, unknown>>({
