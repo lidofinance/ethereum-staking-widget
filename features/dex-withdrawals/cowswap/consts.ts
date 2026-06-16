@@ -28,14 +28,21 @@ export const COWSWAP_WIDGET_LOADING_TIMEOUT_MS = 1_000 * 60 * 2; // 2 minutes
 export const MAX_ORDER_AGE_SECONDS = 60 * 60 * 24; // 1 day
 export const MAX_ORDER_AGE_MINUTES = Math.floor(MAX_ORDER_AGE_SECONDS / 60);
 
-// staging https://staging.swap.cow.fi
-// production https://swap.cow.fi
-export const COWSWAP_BASE_URL = 'https://staging.swap.cow.fi';
-export const DEX_SELL_TOKEN_LIST_URL = `${GITHUB_RAW_MAIN_PATH}/public/token-lists/withdrawals-dex-sell-tokenlist.json`;
-export const DEX_BUY_TOKEN_LIST_URL = `${GITHUB_RAW_MAIN_PATH}/public/token-lists/withdrawals-dex-buy-tokenlist.json`;
+export const IS_COWSWAP_STAGING = true;
+
+export const COWSWAP_BASE_URL = IS_COWSWAP_STAGING
+  ? 'https://staging.swap.cow.fi'
+  : 'https://swap.cow.fi';
+
+// there is barn.api.cow.fi staging for API, but UI(even staging) uses prod API
+const COWSWAP_API_BASE_URL = 'https://api.cow.fi';
+
 export const COWSWAP_APPDATA_API = (appDataHex: string, environment: string) =>
-  `https://api.cow.fi/${environment}/api/v1/app_data/${appDataHex}`;
+  `${COWSWAP_API_BASE_URL}/${environment}/api/v1/app_data/${appDataHex}`;
 export const COWSWAP_ORDER_API = (orderUID: string, environment: string) =>
-  `https://api.cow.fi/${environment}/api/v1/orders/${orderUID}`;
+  `${COWSWAP_API_BASE_URL}/${environment}/api/v1/orders/${orderUID}`;
 
 export const COWSWAP_API_TIMEOUT_MS = 30_000; // 30 seconds
+
+export const DEX_SELL_TOKEN_LIST_URL = `${GITHUB_RAW_MAIN_PATH}/public/token-lists/withdrawals-dex-sell-tokenlist.json`;
+export const DEX_BUY_TOKEN_LIST_URL = `${GITHUB_RAW_MAIN_PATH}/public/token-lists/withdrawals-dex-buy-tokenlist.json`;
