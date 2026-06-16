@@ -33,7 +33,7 @@ export const COWSWAP_WIDGET_LOADING_TIMEOUT_MS = 1_000 * 60 * 2; // 2 minutes
 export const MAX_ORDER_AGE_SECONDS = 60 * 60 * 24; // 1 day
 export const MAX_ORDER_AGE_MINUTES = Math.floor(MAX_ORDER_AGE_SECONDS / 60);
 
-export const IS_COWSWAP_STAGING = true;
+export const IS_COWSWAP_STAGING = false;
 
 export const COWSWAP_BASE_URL = IS_COWSWAP_STAGING
   ? 'https://staging.swap.cow.fi'
