@@ -9,8 +9,6 @@ export const CHAINS_COLORS: {
   [CHAINS.Sepolia]: '#FFD700',
   [CHAINS.Optimism]: '#da3737',
   [CHAINS.OptimismSepolia]: '#da3737',
-  [CHAINS.Soneium]: '#630876',
-  [CHAINS.SoneiumMinato]: '#630876',
   [CHAINS.Unichain]: '#FC0FA4',
   [CHAINS.UnichainSepolia]: '#FC0FA4',
 };

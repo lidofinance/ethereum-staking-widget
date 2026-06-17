@@ -8,10 +8,16 @@ import { UserConfigDefaultType } from './types';
 
 import { CHAINS } from 'consts/chains';
 
+const KNOWN_CHAIN_IDS = new Set<number>(
+  Object.values(CHAINS).filter((v): v is number => typeof v === 'number'),
+);
+
 export const getUserConfigDefault = (): UserConfigDefaultType => {
   return {
     defaultChain: Number(config.defaultChain),
-    supportedChainIds: config.supportedChains,
+    supportedChainIds: config.supportedChains.filter((id) =>
+      KNOWN_CHAIN_IDS.has(id),
+    ),
     prefillUnsafeElRpcUrls: {
       [CHAINS.Mainnet]: config.prefillUnsafeElRpcUrls1,
       [CHAINS.Holesky]: config.prefillUnsafeElRpcUrls17000,
@@ -19,8 +25,6 @@ export const getUserConfigDefault = (): UserConfigDefaultType => {
       [CHAINS.Sepolia]: config.prefillUnsafeElRpcUrls11155111,
       [CHAINS.Optimism]: config.prefillUnsafeElRpcUrls10,
       [CHAINS.OptimismSepolia]: config.prefillUnsafeElRpcUrls11155420,
-      [CHAINS.Soneium]: config.prefillUnsafeElRpcUrls1868,
-      [CHAINS.SoneiumMinato]: config.prefillUnsafeElRpcUrls1946,
       [CHAINS.Unichain]: config.prefillUnsafeElRpcUrls130,
       [CHAINS.UnichainSepolia]: config.prefillUnsafeElRpcUrls1301,
     },

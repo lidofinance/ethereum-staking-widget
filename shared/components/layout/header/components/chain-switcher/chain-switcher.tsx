@@ -17,7 +17,6 @@ type IconsMapType = Record<number, ChainOption>;
 
 const overriddenChainNames: Record<number, string> = {
   10: 'Optimism',
-  1868: 'Soneium',
   130: 'Unichain',
 };
 
