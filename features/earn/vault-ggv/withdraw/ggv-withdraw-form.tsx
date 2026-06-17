@@ -19,7 +19,7 @@ import { GGVWhenNoActiveRequests } from './ggv-when-no-active-requests';
 export const GGVWithdrawForm: FC = () => {
   return (
     <GGVWithdrawFormProvider>
-      <VaultForm data-testid="withdraw-form">
+      <VaultForm $gap={12} data-testid="withdraw-form">
         <GGVWithdrawRequest />
         <GGVWhenNoActiveRequests>
           <GGVWithdrawWarning />

@@ -31,7 +31,7 @@ export const STGDepositForm = () => {
 
   return (
     <STGDepositFormProvider>
-      <VaultForm data-testid="deposit-form">
+      <VaultForm $gap={12} data-testid="deposit-form">
         <STGDepositWarning />
         <VaultFormSection>
           <STGDepositRequests />

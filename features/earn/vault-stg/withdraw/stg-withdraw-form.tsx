@@ -17,7 +17,7 @@ import { STGWithdrawWarning } from './stg-withdraw-warning';
 
 const STGWithdrawFormContent: FC = () => {
   return (
-    <VaultForm data-testid="withdraw-form">
+    <VaultForm $gap={12} data-testid="withdraw-form">
       <STGWithdrawWarning />
       <VaultFormSection>
         <STGWithdrawRequests />
