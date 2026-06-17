@@ -18,7 +18,7 @@ export const GGVDepositForm: FC = () => {
 
   return (
     <GGVDepositFormProvider>
-      <VaultForm data-testid="deposit-form">
+      <VaultForm $gap={12} data-testid="deposit-form">
         <GGVDepositWarning />
         {!isVaultDeprecated && (
           <>

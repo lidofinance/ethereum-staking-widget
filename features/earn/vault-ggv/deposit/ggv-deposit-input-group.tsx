@@ -60,7 +60,7 @@ export const GGVDepositInputGroup: React.FC = () => {
   const { disabled } = useFormState();
 
   return (
-    <InputGroupHookForm errorField="amount" bottomSpacing={false}>
+    <InputGroupHookForm errorField="amount" bottomSpacing={0}>
       <TokenSelectHookForm
         errorField="amount"
         fieldName="token"

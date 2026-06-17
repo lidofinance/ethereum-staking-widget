@@ -19,6 +19,7 @@ type VaultWillReceiveProps = {
   help?: React.ReactNode;
   fallbackMainValue?: string;
   fallbackSecondaryValue?: string;
+  showSecondaryValue?: boolean;
 };
 
 export const VaultWillReceive = ({
@@ -31,6 +32,7 @@ export const VaultWillReceive = ({
   help,
   fallbackMainValue = '-',
   fallbackSecondaryValue = '-',
+  showSecondaryValue = true,
 }: VaultWillReceiveProps) => {
   return (
     <VaultTxInfoRow title={'You will receive'} help={help}>
@@ -47,23 +49,28 @@ export const VaultWillReceive = ({
             {icon}
           </VaultReceiveMainValue>
         </InlineLoader>
-        <InlineLoader isLoading={isLoading} width={80}>
-          <VaultReceiveSecondaryValue>
-            <FormatPrice amount={usdAmount} fallback={fallbackSecondaryValue} />
-            &nbsp;
-            {ethAmount !== undefined && (
-              <>
-                (
-                <FormatToken
-                  amount={ethAmount}
-                  symbol="ETH"
-                  showAmountTip={false}
-                />
-                )
-              </>
-            )}
-          </VaultReceiveSecondaryValue>
-        </InlineLoader>
+        {showSecondaryValue && (
+          <InlineLoader isLoading={isLoading} width={80}>
+            <VaultReceiveSecondaryValue>
+              <FormatPrice
+                amount={usdAmount}
+                fallback={fallbackSecondaryValue}
+              />
+              &nbsp;
+              {ethAmount !== undefined && (
+                <>
+                  (
+                  <FormatToken
+                    amount={ethAmount}
+                    symbol="ETH"
+                    showAmountTip={false}
+                  />
+                  )
+                </>
+              )}
+            </VaultReceiveSecondaryValue>
+          </InlineLoader>
+        )}
       </VaultReceiveValue>
     </VaultTxInfoRow>
   );

@@ -14,7 +14,7 @@ import { DVVWithdrawWarning } from './dvv-withdraw-warning';
 export const DVVWithdrawForm: FC = () => {
   return (
     <DVVWithdrawFormProvider>
-      <VaultForm>
+      <VaultForm $gap={12}>
         <DVVWithdrawWarning />
         <VaultFormSection>
           <DVVWithdrawAvailable />

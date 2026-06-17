@@ -17,7 +17,7 @@ export const DVVDepositForm: FC = () => {
 
   return (
     <DVVDepositFormProvider>
-      <VaultForm data-testid="deposit-form">
+      <VaultForm $gap={12} data-testid="deposit-form">
         <DVVDepositWarning />
         {!isVaultDeprecated && (
           <>
