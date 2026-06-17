@@ -34,6 +34,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const getEnsAddress = useCallback(
     async (value: string) => {
       setAddress('');
+      setAddressError('');
       let result: string | null = null;
       let error: string | null = null;
 
@@ -65,11 +66,13 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
           await getEnsAddress(value);
         } else if (isAddress(value)) {
           setAddress(value);
+          setAddressError('');
         } else {
           setAddress('');
+          setAddressError('');
         }
       }, 200),
-    [getEnsAddress, setAddress],
+    [getEnsAddress, setAddress, setAddressError],
   );
 
   useEffect(() => {
