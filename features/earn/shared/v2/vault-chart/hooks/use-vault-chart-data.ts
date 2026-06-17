@@ -48,7 +48,7 @@ export const useMetavaultChartData = ({
     queryFn: async () => {
       if (!vaultAddress) return null;
 
-      return fetchMetavaultChartData(fromTimestamp, vaultAddress);
+      return fetchMetavaultChartData(vaultAddress, fromTimestamp);
     },
     enabled: !!vaultAddress,
   });
