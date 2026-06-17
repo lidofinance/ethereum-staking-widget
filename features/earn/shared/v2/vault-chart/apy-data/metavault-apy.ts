@@ -65,14 +65,20 @@ export const fetchMetavaultChartData = async (
       ? TIMESTAMP_LAUNCH_DATE
       : fromTimestamp;
 
-  let chartDataEndpoint = `${METAVAULT_CHART_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/historical-data?from_timestamp=${timestamp}`;
+  const url = new URL(
+    `${METAVAULT_CHART_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/historical-data`,
+  );
+  url.searchParams.set('from_timestamp', String(timestamp));
 
   // `days` param switches the endpoint from simple moving average (volatile, legacy) to time-weighted average APY
   if (days > 0) {
-    chartDataEndpoint += `&days=${days}`;
+    url.searchParams.set('days', String(days));
   }
 
-  const data =
-    await standardFetcher<MetavaultChartFetchedData>(chartDataEndpoint);
+  const METAVAULT_CHART_DATA_ENDPOINT = url.toString();
+
+  const data = await standardFetcher<MetavaultChartFetchedData>(
+    METAVAULT_CHART_DATA_ENDPOINT,
+  );
   return METAVAULT_CHART_DATA_SCHEMA.parse(data);
 };
