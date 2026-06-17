@@ -1,6 +1,10 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
+export const SubmitButtonWrapper = styled.div`
+  margin-top: calc(20px - var(--earn-vault-form-gap, 8px));
+`;
+
 export const StyledTooltip = styled(Tooltip)`
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px !important;
   margin-top: 8px;

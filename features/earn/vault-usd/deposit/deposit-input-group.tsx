@@ -1,6 +1,6 @@
 import { useFormState, useWatch } from 'react-hook-form';
 
-import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
+import { VaultInputGroupHookForm } from 'features/earn/shared/vault-input-group-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { UsdDepositToken } from 'features/earn/vault-usd/types';
@@ -42,7 +42,7 @@ export const UsdVaultDepositInputGroup = () => {
   const { disabled } = useFormState();
 
   return (
-    <InputGroupHookForm errorField="amount" bottomSpacing={false}>
+    <VaultInputGroupHookForm errorField="amount">
       <TokenSelectHookForm
         errorField="amount"
         fieldName="token"
@@ -62,6 +62,6 @@ export const UsdVaultDepositInputGroup = () => {
           trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnUsdDepositMax);
         }}
       />
-    </InputGroupHookForm>
+    </VaultInputGroupHookForm>
   );
 };

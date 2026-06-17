@@ -1,5 +1,4 @@
 import type { Resolver } from 'react-hook-form';
-import { formatEther } from 'viem';
 import invariant from 'tiny-invariant';
 
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
@@ -14,8 +13,8 @@ import type {
   EthVaultWithdrawFormValues,
 } from './types';
 
-const messageMaxBalance = (max: bigint, token: string) =>
-  `Entered ${token} amount exceeds your available balance of ${formatEther(max)}`;
+const messageMaxBalance = (_max: bigint, token: string) =>
+  `Insufficient ${token} balance`;
 
 export const EthVaultWithdrawFormValidationResolver: Resolver<
   EthVaultWithdrawFormValues,

@@ -13,7 +13,7 @@ export const STGWithdrawInput: React.FC = () => {
   const { disabled } = useFormState();
 
   return (
-    <InputGroupHookForm errorField="amount" bottomSpacing={false}>
+    <InputGroupHookForm errorField="amount" bottomSpacing={0}>
       <TokenAmountInputHookForm
         leftDecorator={<TokenStrethIcon width={24} height={24} />}
         disabled={disabled}

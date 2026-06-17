@@ -1,5 +1,5 @@
 import type { Resolver } from 'react-hook-form';
-import { formatUnits, maxUint256 } from 'viem';
+import { maxUint256 } from 'viem';
 import invariant from 'tiny-invariant';
 import type {
   USDDepositFormValidationContext,
@@ -30,8 +30,8 @@ const validateUsdAmount: (
     throw new ValidationError(field, `${token} ${field} is not valid`);
 };
 
-const messageMaxBalance = (max: bigint, token: string) =>
-  `Entered ${token} amount exceeds your available balance of ${formatUnits(max, getTokenDecimals(token))}`;
+const messageMaxBalance = (_max: bigint, token: string) =>
+  `Insufficient ${token} balance`;
 
 export const UsdVaultDepositFormValidationResolver: Resolver<
   USDDepositFormValues,
