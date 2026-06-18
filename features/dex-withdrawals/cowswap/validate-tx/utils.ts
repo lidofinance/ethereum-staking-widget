@@ -10,7 +10,7 @@ import {
   type Hex,
 } from 'viem';
 import { sepolia } from 'viem/chains';
-import z from 'zod';
+import { z } from 'zod';
 // This is transitive dependency of @cowprotocol/widget-react, so it's version always tied to it
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MetadataApi } from '@cowprotocol/sdk-app-data';

@@ -1,6 +1,6 @@
 import { isAddressEqual } from 'viem';
 import { sepolia } from 'viem/chains';
-import z from 'zod';
+import { z } from 'zod';
 
 import {
   addressSchema,

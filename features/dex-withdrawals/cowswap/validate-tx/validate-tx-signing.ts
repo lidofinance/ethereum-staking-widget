@@ -10,7 +10,7 @@ import {
   formatEther,
 } from 'viem';
 import { sepolia } from 'viem/chains';
-import z from 'zod';
+import { z } from 'zod';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import { validateCowSwapOrderMessage } from './validate-typed-message';
