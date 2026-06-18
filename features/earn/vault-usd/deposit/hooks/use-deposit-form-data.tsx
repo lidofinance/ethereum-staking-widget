@@ -25,13 +25,18 @@ export const useUsdVaultDepositFormData = () => {
     account: address,
     token: asToken(TOKEN_SYMBOLS.usdt),
   });
+  const usdeBalanceQuery = useStablecoinBalance({
+    account: address,
+    token: asToken(TOKEN_SYMBOLS.usde),
+  });
 
   const asyncValidationContextValue:
     | USDDepositFormAsyncValidationContext
     | undefined = useMemo(() => {
     if (
       usdcBalanceQuery.data == undefined ||
-      usdtBalanceQuery.data == undefined
+      usdtBalanceQuery.data == undefined ||
+      usdeBalanceQuery.data == undefined
     ) {
       return undefined;
     }
@@ -43,8 +48,11 @@ export const useUsdVaultDepositFormData = () => {
       [TOKEN_SYMBOLS.usdt]: {
         balance: usdtBalanceQuery.data,
       },
+      [TOKEN_SYMBOLS.usde]: {
+        balance: usdeBalanceQuery.data,
+      },
     };
-  }, [usdcBalanceQuery.data, usdtBalanceQuery.data]);
+  }, [usdcBalanceQuery.data, usdtBalanceQuery.data, usdeBalanceQuery.data]);
 
   const asyncContext = useAwaiter(asyncValidationContextValue).awaiter;
 
@@ -58,6 +66,7 @@ export const useUsdVaultDepositFormData = () => {
       const tokenBalanceRefetch = {
         [TOKEN_SYMBOLS.usdc]: usdcBalanceQuery.refetch,
         [TOKEN_SYMBOLS.usdt]: usdtBalanceQuery.refetch,
+        [TOKEN_SYMBOLS.usde]: usdeBalanceQuery.refetch,
       }[token];
 
       const options = { cancelRefetch: true, throwOnError: false };
@@ -77,10 +86,18 @@ export const useUsdVaultDepositFormData = () => {
         ),
       ]);
     },
-    [usdcBalanceQuery.refetch, usdtBalanceQuery.refetch, queryClient],
+    [
+      queryClient,
+      usdcBalanceQuery.refetch,
+      usdtBalanceQuery.refetch,
+      usdeBalanceQuery.refetch,
+    ],
   );
 
-  const isLoading = usdcBalanceQuery.isLoading || usdtBalanceQuery.isLoading;
+  const isLoading =
+    usdcBalanceQuery.isLoading ||
+    usdtBalanceQuery.isLoading ||
+    usdeBalanceQuery.isLoading;
 
   return {
     asyncValidationContextValue,

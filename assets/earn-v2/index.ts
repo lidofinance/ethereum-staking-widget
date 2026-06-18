@@ -10,6 +10,7 @@ import { ReactComponent as TokenEarnEthIcon } from './token-earneth.svg';
 import { ReactComponent as TokenEarnUsdIcon } from './token-earnusd.svg';
 import { ReactComponent as TokenUsdcIcon } from './token-usdc.svg';
 import { ReactComponent as TokenUsdtIcon } from './token-usdt.svg';
+import { ReactComponent as TokenUsdeIcon } from './token-usde.svg';
 import { ReactComponent as TokenGGIcon } from './token-gg.svg';
 import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
 import { ReactComponent as TokenStrethIcon } from './token-streth.svg';
@@ -53,6 +54,7 @@ export {
   TokenEarnUsdIcon,
   TokenUsdcIcon,
   TokenUsdtIcon,
+  TokenUsdeIcon,
   TokenGGIcon,
   TokenDvstethIcon,
   TokenStrethIcon,

@@ -31,6 +31,7 @@ import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import { wethABI } from 'abi/weth-abi';
 import { usdtABI } from 'abi/usdt-abi';
 import { usdcABI } from 'abi/usdc-abi';
+import { usdeABI } from 'abi/usde-abi';
 
 // Earn contracts ABIs
 // GGV
@@ -94,6 +95,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.weth]: wethABI,
   [CONTRACT_NAMES.usdc]: usdcABI,
   [CONTRACT_NAMES.usdt]: usdtABI,
+  [CONTRACT_NAMES.usde]: usdeABI,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,
@@ -132,6 +134,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.usdVault]: VAULT_ABI,
   [CONTRACT_NAMES.usdDepositQueueUSDC]: DEPOSIT_QUEUE_ABI,
   [CONTRACT_NAMES.usdDepositQueueUSDT]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.usdDepositQueueUSDE]: DEPOSIT_QUEUE_ABI,
   [CONTRACT_NAMES.usdShareManagerEARNUSD]: SHARE_MANAGER_ABI,
   [CONTRACT_NAMES.usdRedeemQueueUSDC]: REDEEM_QUEUE_ABI,
   [CONTRACT_NAMES.usdSyncDepositQueueUSDC]: SYNC_DEPOSIT_QUEUE_ABI,
@@ -158,6 +161,7 @@ const CONTRACTS_WITH_EVENTS = [
   CONTRACT_NAMES.L2stETH,
   CONTRACT_NAMES.L2wstETH,
   CONTRACT_NAMES.weth,
+  CONTRACT_NAMES.usde,
   // vaults are tokens, have transfer/approval events
   CONTRACT_NAMES.dvvVault,
   CONTRACT_NAMES.ggvVault,

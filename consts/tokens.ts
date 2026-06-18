@@ -21,6 +21,7 @@ export const TOKENS = {
   weth: 'weth',
   usdc: 'usdc',
   usdt: 'usdt',
+  usde: 'usde',
 } as const;
 
 export type Token = keyof typeof TOKENS;
@@ -44,6 +45,7 @@ export const TOKEN_SYMBOLS = asTokenSymbols({
   earnusd: 'earnUSD',
   usdc: 'USDC',
   usdt: 'USDT',
+  usde: 'USDe',
 } as const);
 
 export type TokenSymbols = typeof TOKEN_SYMBOLS;

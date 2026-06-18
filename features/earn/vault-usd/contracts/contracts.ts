@@ -159,6 +159,9 @@ export const getAsyncDepositQueueContractAddress = <
     case TOKENS.usdc:
       contractName = 'usdDepositQueueUSDC';
       break;
+    case TOKENS.usde:
+      contractName = 'usdDepositQueueUSDE';
+      break;
     default:
       throw new Error(`Unsupported token: ${token}`);
   }
@@ -192,6 +195,26 @@ export const getSyncDepositQueueContract = <
   });
 };
 
+export const getDepositQueueContract = <TPublicClient extends PublicClient>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: UsdDepositToken;
+}) => {
+  if (token === TOKENS.usde) {
+    return getContract({
+      abi: DEPOSIT_QUEUE_ABI,
+      address: getAsyncDepositQueueContractAddress({ publicClient, token }),
+      client: {
+        public: publicClient,
+      },
+    });
+  }
+
+  return getSyncDepositQueueContract({ publicClient, token });
+};
+
 export const getSyncDepositQueueWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
@@ -214,9 +237,6 @@ export const getSyncDepositQueueWritableContract = <
   });
 };
 
-/**
- * @deprecated Use getSyncDepositQueueWritableContract instead
- */
 export const getAsyncDepositQueueWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
@@ -236,6 +256,33 @@ export const getAsyncDepositQueueWritableContract = <
       public: publicClient,
       wallet: walletClient,
     },
+  });
+};
+
+export const getDepositQueueWritableContract = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>({
+  publicClient,
+  walletClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  walletClient: TWalletClient;
+  token: UsdDepositToken;
+}) => {
+  if (token === TOKENS.usde) {
+    return getAsyncDepositQueueWritableContract({
+      publicClient,
+      walletClient,
+      token,
+    });
+  }
+
+  return getSyncDepositQueueWritableContract({
+    publicClient,
+    walletClient,
+    token,
   });
 };
 
