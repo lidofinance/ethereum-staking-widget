@@ -21,9 +21,9 @@ export const UsdVaultDepositWillReceive = () => {
       icon={<TokenEarnUsdIcon width={16} height={16} />}
       amount={data.shares}
       symbol={USD_VAULT_TOKEN_SYMBOL}
-      // TODO: show USD amount, check where to get conversion rate for earnETH
+      // TODO: show USD amount, check where to get conversion rate for earnUSD
       // usdAmount={data.usd}
-      fallbackSecondaryValue="" // remove when usdAmount is added
+      showSecondaryValue={false} // remove when usdAmount is added
       isLoading={isLoading}
       help={
         <>

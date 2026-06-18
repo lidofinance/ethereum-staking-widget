@@ -124,7 +124,6 @@ export default class MyDocument extends Document {
           <meta name="twitter:description" content={this.metaDescription} />
           <meta name="twitter:image:src" content={this.metaPreviewImgUrl} />
           <meta name="twitter:site" content="@lidofinance" />
-          <meta name="twitter:creator" content="@lomashuk" />
           <meta name="description" content={this.metaDescription} />
           <meta name="currentChain" content={String(config.defaultChain)} />
           <Fonts />

@@ -1,7 +1,7 @@
 import { useFormState, useWatch } from 'react-hook-form';
 
 import { BALANCE_PADDING, useAA } from 'modules/web3';
-import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
+import { VaultInputGroupHookForm } from 'features/earn/shared/vault-input-group-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
@@ -69,7 +69,7 @@ export const EthVaultDepositInputGroup = () => {
   const { disabled } = useFormState();
 
   return (
-    <InputGroupHookForm errorField="amount" bottomSpacing={false}>
+    <VaultInputGroupHookForm errorField="amount">
       <TokenSelectHookForm
         errorField="amount"
         fieldName="token"
@@ -89,6 +89,6 @@ export const EthVaultDepositInputGroup = () => {
           trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnEthDepositMax);
         }}
       />
-    </InputGroupHookForm>
+    </VaultInputGroupHookForm>
   );
 };

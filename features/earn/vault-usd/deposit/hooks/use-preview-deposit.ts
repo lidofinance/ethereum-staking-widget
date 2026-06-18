@@ -2,10 +2,7 @@ import invariant from 'tiny-invariant';
 import { useMemo } from 'react';
 import { usePreviewDeposit } from 'modules/mellow-meta-vaults';
 import { useMainnetOnlyWagmi } from 'modules/web3';
-import {
-  getCollectorContract,
-  getSyncDepositQueueContract,
-} from '../../contracts';
+import { getCollectorContract, getDepositQueueContract } from '../../contracts';
 import { UsdDepositToken } from '../../types';
 
 export const useUsdVaultPreviewDeposit = ({
@@ -23,8 +20,7 @@ export const useUsdVaultPreviewDeposit = ({
     [publicClientMainnet],
   );
   const depositQueue = useMemo(
-    () =>
-      getSyncDepositQueueContract({ publicClient: publicClientMainnet, token }),
+    () => getDepositQueueContract({ publicClient: publicClientMainnet, token }),
     [publicClientMainnet, token],
   );
 

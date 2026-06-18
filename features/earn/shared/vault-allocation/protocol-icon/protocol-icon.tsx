@@ -7,6 +7,7 @@ import {
   LineaIcon,
   KatanaIcon,
   PlasmaIcon,
+  MantleIcon,
 } from 'assets/earn';
 
 import { Container, Badge, Content } from './styles';
@@ -23,6 +24,7 @@ export const ICONS_BADGE_MAP = {
   linea: <LineaIcon />,
   katana: <KatanaIcon />,
   plasma: <PlasmaIcon />,
+  mantle: <MantleIcon />,
 };
 
 export const ProtocolIcon: FC<ProtocolIconProps> = ({ mainIcon, badge }) => {

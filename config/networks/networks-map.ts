@@ -58,7 +58,9 @@ export const CONTRACT_NAMES = {
   usdc: 'usdc',
   usdt: 'usdt',
   usds: 'usds',
+  usde: 'usde',
   wbtc: 'wbtc',
+
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',
@@ -97,6 +99,7 @@ export const CONTRACT_NAMES = {
   usdVault: 'usdVault',
   usdDepositQueueUSDC: 'usdDepositQueueUSDC',
   usdDepositQueueUSDT: 'usdDepositQueueUSDT',
+  usdDepositQueueUSDE: 'usdDepositQueueUSDE',
   usdSyncDepositQueueUSDC: 'usdSyncDepositQueueUSDC',
   usdSyncDepositQueueUSDT: 'usdSyncDepositQueueUSDT',
   usdShareManagerEARNUSD: 'usdShareManagerEARNUSD',

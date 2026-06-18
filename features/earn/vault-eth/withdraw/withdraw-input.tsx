@@ -1,6 +1,6 @@
 import { useFormState } from 'react-hook-form';
 
-import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
+import { VaultInputGroupHookForm } from 'features/earn/shared/vault-input-group-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { TokenEarnEthIcon } from 'assets/earn-v2';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -14,7 +14,7 @@ export const EthVaultWithdrawInput: React.FC = () => {
   const { disabled } = useFormState();
 
   return (
-    <InputGroupHookForm errorField="amount" bottomSpacing={false}>
+    <VaultInputGroupHookForm errorField="amount">
       <TokenAmountInputHookForm
         leftDecorator={<TokenEarnEthIcon width={24} height={24} />}
         disabled={disabled}
@@ -27,6 +27,6 @@ export const EthVaultWithdrawInput: React.FC = () => {
           trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnEthWithdrawalMax);
         }}
       />
-    </InputGroupHookForm>
+    </VaultInputGroupHookForm>
   );
 };

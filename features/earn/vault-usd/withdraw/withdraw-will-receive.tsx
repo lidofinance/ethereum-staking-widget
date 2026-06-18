@@ -17,7 +17,7 @@ export const UsdVaultWithdrawWillReceive = () => {
       icon={<TokenUsdcIcon width={16} height={16} />}
       amount={usdc}
       symbol={getTokenSymbol(TOKENS.usdc)}
-      fallbackSecondaryValue="" // TODO: remove if usdAmount is added
+      showSecondaryValue={false}
       isLoading={isLoading}
       help={
         <>
