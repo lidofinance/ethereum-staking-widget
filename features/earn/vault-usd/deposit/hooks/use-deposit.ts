@@ -1,7 +1,8 @@
 import { useDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit';
 import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
-import { getSyncDepositQueueWritableContract } from '../../contracts';
+import { TOKENS } from 'consts/tokens';
+import { getDepositQueueWritableContract } from '../../contracts';
 import { USD_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { UsdDepositToken } from '../../types';
 
@@ -10,6 +11,7 @@ export const useUsdVaultDeposit = (onRetry?: () => void) => {
     stageOperationArgs: {
       willReceiveToken: USD_VAULT_TOKEN_SYMBOL,
       operationText: 'Requesting deposit for',
+      isAsyncQueueToken: (token) => token === TOKENS.usde,
     },
     stageApproveArgs: {
       willReceiveToken: USD_VAULT_TOKEN_SYMBOL,
@@ -18,7 +20,7 @@ export const useUsdVaultDeposit = (onRetry?: () => void) => {
   });
 
   return useDeposit<UsdDepositToken>({
-    depositQueueGetter: getSyncDepositQueueWritableContract,
+    depositQueueGetter: getDepositQueueWritableContract,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnUsdDepositingStart,

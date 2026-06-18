@@ -23,7 +23,8 @@ import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 import { config } from 'config';
 import { getTokenAddress } from 'config/networks/token-address';
 import { Token, TOKEN_SYMBOLS } from 'consts/tokens';
-import { useUsdcUsd } from 'shared/hooks/use-usdc-usd';
+import { useStableToUsd } from 'shared/hooks/use-stable-to-usd';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 const selectBalance = (data: GetBalanceData) => data.value;
 
@@ -339,7 +340,7 @@ export const useStablecoinBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: {
-  token: Extract<Token, 'usdc' | 'usdt'>;
+  token: Extract<Token, 'usdc' | 'usdt' | 'usde'>;
   account?: Address;
   shouldSubscribeToUpdates?: boolean;
 }) => {
@@ -366,11 +367,16 @@ export const useStablecoinBalance = ({
     shouldSubscribeToUpdates,
   );
 
-  const { usdcAmount, usdAmount } = useUsdcUsd(balanceData.data);
+  const decimals = getTokenDecimals(token);
+  const { stableAmount, usdAmount } = useStableToUsd(
+    balanceData.data,
+    decimals,
+  );
 
   return {
     ...balanceData,
-    usdcAmount,
+    usdcAmount: stableAmount,
+    stableAmount,
     usdAmount,
     tokenAddress: contract ? contract.address : undefined,
     isLoading: balanceData.isLoading,

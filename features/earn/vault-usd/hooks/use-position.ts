@@ -4,7 +4,7 @@ import invariant from 'tiny-invariant';
 import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 import { getShareManagerEARNUSD } from '../contracts';
 import { getUsdWithdrawalParams } from '../withdraw/utils';
-import { useUsdcUsd } from 'shared/hooks/use-usdc-usd';
+import { useUsdcToUsd } from 'shared/hooks/use-usdc-to-usd';
 import { USD_VAULT_QUERY_SCOPE } from '../consts';
 
 export const useUsdVaultPosition = () => {
@@ -56,7 +56,7 @@ export const useUsdVaultPosition = () => {
   const data = isEnabled ? earnusdBalanceQuery.data : undefined;
   const usdc = earnusdToUsdcQuery.data;
 
-  const { usdAmount, ...usdQuery } = useUsdcUsd(usdc);
+  const { usdAmount, ...usdQuery } = useUsdcToUsd(usdc);
 
   return {
     ...earnusdBalanceQuery,

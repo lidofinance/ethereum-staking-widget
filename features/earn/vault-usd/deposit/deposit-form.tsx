@@ -10,6 +10,7 @@ import { UsdVaultAvailableDeposit } from './available-deposit';
 import { UsdVaultDepositSubmitButton } from './deposit-submit-button';
 import { UsdVaultDepositRequests } from './deposit-requests';
 import { useUsdVaultAvailable } from '../hooks/use-vault-available';
+import { UsdVaultDepositTimeRow } from './deposit-time-row';
 
 export const UsdVaultDepositForm = () => {
   const { isUsdVaultAvailable, isDepositEnabled, depositPauseReasonText } =
@@ -30,6 +31,7 @@ export const UsdVaultDepositForm = () => {
         </VaultFormSection>
         <VaultTxInfo>
           <UsdVaultDepositWillReceive />
+          <UsdVaultDepositTimeRow />
         </VaultTxInfo>
         <UsdVaultDepositSubmitButton />
       </VaultForm>

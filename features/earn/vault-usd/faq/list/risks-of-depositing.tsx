@@ -36,7 +36,7 @@ export const RisksOfDepositing: FC<{ id?: string }> = ({ id }) => {
       </p>
       <ul>
         <li>
-          <strong>Lending Risk:</strong> Lending USDC/USDT in third-party
+          <strong>Lending Risk:</strong> Lending USDC/USDT/USDe in third-party
           protocols carries the risk of bad debt or insolvency events at the
           protocol level. This risk is mitigated by using lending protocols like
           Aave which have deep liquidity and implement their own risk management

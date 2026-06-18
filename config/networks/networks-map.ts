@@ -50,6 +50,7 @@ export const CONTRACT_NAMES = {
   weth: 'weth',
   usdc: 'usdc',
   usdt: 'usdt',
+  usde: 'usde',
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',
@@ -88,6 +89,7 @@ export const CONTRACT_NAMES = {
   usdVault: 'usdVault',
   usdDepositQueueUSDC: 'usdDepositQueueUSDC',
   usdDepositQueueUSDT: 'usdDepositQueueUSDT',
+  usdDepositQueueUSDE: 'usdDepositQueueUSDE',
   usdSyncDepositQueueUSDC: 'usdSyncDepositQueueUSDC',
   usdSyncDepositQueueUSDT: 'usdSyncDepositQueueUSDT',
   usdShareManagerEARNUSD: 'usdShareManagerEARNUSD',

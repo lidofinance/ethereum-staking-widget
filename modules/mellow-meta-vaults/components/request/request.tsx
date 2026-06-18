@@ -69,7 +69,7 @@ export const Request = ({
     );
 
   return (
-    <RequestContainer>
+    <RequestContainer data-testid="vault-request">
       <Entry>
         <TokenLogo>{tokenLogo}</TokenLogo>
         <AmountContainer>
