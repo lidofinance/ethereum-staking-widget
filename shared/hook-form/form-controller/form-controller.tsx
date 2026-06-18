@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import { FC, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useDappStatus } from 'modules/web3';
@@ -13,27 +13,21 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
   ...props
 }) => {
   const { isDappActive } = useDappStatus();
-  const { handleSubmit, reset: resetDefault, getValues } = useFormContext();
+  const { handleSubmit, reset: resetDefault } = useFormContext();
   const {
     onSubmit,
     onReset: resetContext,
     retryEvent,
   } = useFormControllerContext();
 
-  const reset = resetContext ? resetContext : resetDefault;
-
-  const resetWithValues = useCallback(() => {
-    reset(getValues());
-  }, [getValues, reset]);
-
   // Bind submit action
   const doSubmit = useMemo(
     () =>
       handleSubmit(async (args) => {
         const success = await onSubmit(args);
-        if (success) reset(args);
+        if (success) resetContext ? resetContext(args) : resetDefault();
       }),
-    [handleSubmit, onSubmit, reset],
+    [handleSubmit, onSubmit, resetDefault, resetContext],
   );
 
   // Bind retry callback
@@ -43,14 +37,14 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
 
   // Reset form amount after disconnect wallet
   useEffect(() => {
-    if (!isDappActive) resetWithValues();
+    if (!isDappActive) resetDefault();
     // reset will be captured when active changes
     // so we don't need it in deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDappActive]);
 
   // Reset the form when chain id or wallet address changed
-  useWagmiConnectionChangedCallback(resetWithValues);
+  useWagmiConnectionChangedCallback(resetDefault);
 
   return (
     <form autoComplete="off" onSubmit={doSubmit} {...props}>

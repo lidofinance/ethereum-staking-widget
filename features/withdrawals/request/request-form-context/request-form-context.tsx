@@ -59,13 +59,6 @@ export const useValidationResults = () => {
   return value;
 };
 
-const DEFAULT_VALUES: RequestFormInputType = {
-  amount: null,
-  token: TOKENS_TO_WITHDRAWLS.stETH,
-  mode: 'lido',
-  requests: null,
-};
-
 //
 // Joint provider for form state, data, intermediate validation results
 //
@@ -84,14 +77,23 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
     RequestFormInputType,
     RequestFormValidationContextType
   >({
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: {
+      amount: null,
+      token: TOKENS_TO_WITHDRAWLS.stETH,
+      mode: 'lido',
+      requests: null,
+    },
     context: validationContext,
     criteriaMode: 'firstError',
     mode: 'onChange',
     resolver: RequestFormValidationResolver,
   });
 
-  const { reset, watch } = formObject;
+  const {
+    reset,
+    watch,
+    formState: { defaultValues },
+  } = formObject;
   const [token, amount] = watch(['token', 'amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
@@ -148,14 +150,14 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
         onSubmit,
         onReset: (args: RequestFormInputType) => {
           reset({
-            ...DEFAULT_VALUES,
+            ...defaultValues,
             mode: args.mode,
             token: args.token,
           });
         },
         retryEvent,
       }),
-      [onSubmit, retryEvent, reset],
+      [onSubmit, retryEvent, reset, defaultValues],
     );
 
   return (
