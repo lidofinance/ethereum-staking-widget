@@ -3,6 +3,7 @@ import { type Address, ethAddress, isAddressEqual, parseUnits } from 'viem';
 import mainnetConfig from 'networks/mainnet.json';
 
 import type { OrderData } from '../../validate-tx';
+import { TRADE_VERIFICATION_ERROR } from '../consts';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -66,10 +67,10 @@ export const verifyOrderAmounts = (
 ): string | null => {
   // Token addresses must match
   if (!isAddressEqual(order.sellToken, snapshot.sellToken)) {
-    return 'Sell token in order differs from validated trade';
+    return TRADE_VERIFICATION_ERROR(1001);
   }
   if (!isAddressEqual(order.buyToken, snapshot.buyToken)) {
-    return 'Buy token in order differs from validated trade';
+    return TRADE_VERIFICATION_ERROR(1002);
   }
 
   // Convert validated units to raw for comparison
@@ -81,20 +82,20 @@ export const verifyOrderAmounts = (
 
   // Fail-closed: if we can't convert units, we can't verify amounts
   if (expectedSell === null) {
-    return 'Cannot verify sell amount — token decimals unknown';
+    return TRADE_VERIFICATION_ERROR(1003);
   }
   if (expectedBuyMin === null) {
-    return 'Cannot verify buy amount — token decimals unknown';
+    return TRADE_VERIFICATION_ERROR(1004);
   }
 
   // Sell amount: order must not sell more than validated
   if (orderSell > expectedSell) {
-    return `Order sells more than validated (${order.sellAmount} > ${expectedSell})`;
+    return TRADE_VERIFICATION_ERROR(1005);
   }
 
   // Buy amount (minimum receive): order must not accept less than validated
   if (orderBuy < expectedBuyMin) {
-    return `Order minimum receive is less than validated (${order.buyAmount} < ${expectedBuyMin})`;
+    return TRADE_VERIFICATION_ERROR(1006);
   }
 
   return null;

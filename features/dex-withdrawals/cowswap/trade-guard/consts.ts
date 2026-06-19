@@ -5,6 +5,7 @@ import mainnetConfig from 'networks/mainnet.json';
 import { PARTNER_FEE_BPS } from '../consts';
 
 import type { ChainlinkFeedConfig } from './types';
+import { LOCALE } from 'config/groups/locale';
 
 // Partner fee as a percentage (0.3%) — subtracted from deviation calculations
 // because it's a known fixed cost the user has agreed to, not an unexpected loss
@@ -104,3 +105,22 @@ export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
     max: 200_000n * CHAINLINK_SCALE,
   },
 };
+
+export const TRADE_BUILD_ERROR = (code?: number) =>
+  `Trade build failed — order information unavailable${
+    code ? ` (code ${code})` : ''
+  }`;
+
+export const TRADE_VERIFICATION_ERROR = (code?: number) =>
+  `Trade verification failed — order information unavailable${
+    code ? ` (code ${code})` : ''
+  }`;
+
+export const TRADE_SIZE_ERROR = (amount: number, symbol: string) =>
+  `Single transactions are capped at ${amount.toLocaleString(LOCALE)} ${symbol}. This limit exists to protect you from outsized losses due to slippage, MEV, and execution risk. Split your order into smaller trades to continue.`;
+
+export const TRADE_ORACLE_DEVIATION_ERROR = (
+  deviationPercent: number,
+  oracleDeviationThreshold: number,
+) =>
+  `Oracle price differs from trade one by ${deviationPercent.toFixed(1)}%. Maximum is ${oracleDeviationThreshold.toFixed(1)}%”`;

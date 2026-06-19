@@ -20,6 +20,7 @@ import {
 } from '../consts';
 
 import { standardFetcher } from 'utils/standardFetcher';
+import { TRANSACTION_ERROR } from './consts';
 
 const typedMessageSchema = z.tuple([
   addressSchema, // signer
@@ -43,7 +44,7 @@ const fetchAppData = async (
   const parseResult = AppDataApiResponseSchema.safeParse(result);
 
   if (!parseResult.success) {
-    throw new Error(`Invalid app data response: ${parseResult.error}`);
+    throw new Error(TRANSACTION_ERROR(2003));
   }
 
   return parseResult.data.fullAppData;
@@ -61,21 +62,21 @@ export const validateCowSwapOrderMessage = async (
   if (!sellTokens.has(orderMessage.sellToken)) {
     return {
       allowed: false,
-      reason: `Sell token ${orderMessage.sellToken} is not in the allowed list`,
+      reason: TRANSACTION_ERROR(2004),
     };
   }
 
   if (!buyTokens.has(orderMessage.buyToken)) {
     return {
       allowed: false,
-      reason: `Buy token ${orderMessage.buyToken} is not in the allowed list`,
+      reason: TRANSACTION_ERROR(2005),
     };
   }
 
   if (!isAddressEqual(orderMessage.receiver, ctx.signer)) {
     return {
       allowed: false,
-      reason: `Receiver address cannot be different from the signer address`,
+      reason: TRANSACTION_ERROR(2006),
     };
   }
 
@@ -84,13 +85,13 @@ export const validateCowSwapOrderMessage = async (
   if (orderMessage.validTo - nowSeconds > MAX_ORDER_AGE_SECONDS) {
     return {
       allowed: false,
-      reason: `Order validTo is too far in the future. validTo timestamp: ${orderMessage.validTo}`,
+      reason: TRANSACTION_ERROR(2007),
     };
   }
   if (orderMessage.validTo < nowSeconds) {
     return {
       allowed: false,
-      reason: `Order validTo has already passed. validTo timestamp: ${orderMessage.validTo}`,
+      reason: TRANSACTION_ERROR(2008),
     };
   }
 
@@ -99,7 +100,7 @@ export const validateCowSwapOrderMessage = async (
     if (!parseResult.success) {
       return {
         allowed: false,
-        reason: `Invalid order appData: ${parseResult.error}`,
+        reason: TRANSACTION_ERROR(2009),
       };
     }
   }
@@ -112,7 +113,7 @@ export const validateCowSwapOrderMessage = async (
     if (!isAddressEqual(appData.metadata.partnerFee.recipient, feeRecipient)) {
       return {
         allowed: false,
-        reason: `Partner fee recipient mismatch. Expected ${feeRecipient}, got ${appData.metadata.partnerFee.recipient}`,
+        reason: TRANSACTION_ERROR(2010),
       };
     }
 
@@ -125,7 +126,7 @@ export const validateCowSwapOrderMessage = async (
     ) {
       return {
         allowed: false,
-        reason: `Pre/Post Hooks are not allowed`,
+        reason: TRANSACTION_ERROR(2011),
       };
     }
 
@@ -134,13 +135,13 @@ export const validateCowSwapOrderMessage = async (
     if (appDataHex !== orderMessage.appData) {
       return {
         allowed: false,
-        reason: `App data mismatch. Expected ${orderMessage.appData}, got ${appDataHex}`,
+        reason: TRANSACTION_ERROR(2012),
       };
     }
   } catch (error) {
     return {
       allowed: false,
-      reason: `Failed to fetch or validate app data: ${(error as Error).message}`,
+      reason: TRANSACTION_ERROR(2013),
     };
   }
 
@@ -159,7 +160,7 @@ export const validateCowSwapOrder = async (
   if (order.domain.chainId !== ctx.chainId) {
     return {
       allowed: false,
-      reason: `Chain ID mismatch. Expected ${ctx.chainId}, got ${order.domain.chainId}`,
+      reason: TRANSACTION_ERROR(2014),
     };
   }
 
@@ -168,7 +169,7 @@ export const validateCowSwapOrder = async (
   if (!isAddressEqual(order.domain.verifyingContract, cowSettlement)) {
     return {
       allowed: false,
-      reason: `Verifying contract mismatch. Expected ${cowSettlement}, got ${order.domain.verifyingContract}`,
+      reason: TRANSACTION_ERROR(2015),
     };
   }
 
@@ -189,7 +190,7 @@ export const validateSignTypedData = async (
     return {
       allowed: false,
       result: undefined,
-      reason: `Invalid signTypedData parameters: ${parseResult.error}`,
+      reason: TRANSACTION_ERROR(2016),
     };
   }
 
@@ -198,7 +199,7 @@ export const validateSignTypedData = async (
   if (!isAddressEqual(signer, ctx.signer)) {
     return {
       allowed: false,
-      reason: `Signer address mismatch. Expected ${ctx.signer}, got ${signer}`,
+      reason: TRANSACTION_ERROR(2017),
     };
   }
 

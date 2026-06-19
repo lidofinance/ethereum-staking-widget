@@ -2,7 +2,11 @@ import { useCallback, useRef, useState } from 'react';
 import { Address, isAddress } from 'viem';
 import type { TradeGuardLevel, OnTradeParamsPayload } from './types';
 import { useOracleRates, type OracleResult } from './use-oracle-rates';
-import type { Thresholds } from './consts';
+import {
+  TRADE_BUILD_ERROR,
+  TRADE_ORACLE_DEVIATION_ERROR,
+  type Thresholds,
+} from './consts';
 import {
   safeParseDecimal,
   resolveLevel,
@@ -37,7 +41,12 @@ const applyOracleResult = (
     const level = resolveLevel(result.deviation, t);
     const messages =
       result.deviation >= t.oracleDeviationBlock
-        ? [`Oracle price deviation: ${result.deviation.toFixed(1)}%`]
+        ? [
+            TRADE_ORACLE_DEVIATION_ERROR(
+              result.deviation,
+              t.oracleDeviationBlock,
+            ),
+          ]
         : [];
 
     return { level, messages, verified: true };
@@ -47,15 +56,13 @@ const applyOracleResult = (
     case 'unavailable':
       return {
         level: 'blocked',
-        messages: ['Oracle verification temporarily unavailable'],
+        messages: [TRADE_BUILD_ERROR(1004)],
         verified: false,
       };
     case 'unsupported':
       return {
         level: 'blocked',
-        messages: [
-          'Oracle price verification not available for this token pair',
-        ],
+        messages: [TRADE_BUILD_ERROR(1005)],
         verified: false,
       };
     default:
@@ -112,11 +119,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
         isAddress(payload.buyToken?.address, { strict: false }) === false ||
         payload.minimumReceiveBuyAmount?.units === undefined
       ) {
-        await showModal(
-          'blocked',
-          ['Incomplete trade parameters — cannot verify order'],
-          false,
-        );
+        await showModal('blocked', [TRADE_BUILD_ERROR(1002)], false);
         return false;
       }
 
@@ -190,11 +193,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
   const validateApproval = useCallback(async (): Promise<boolean> => {
     const payload = lastTradeParamsRef.current;
     if (!payload) {
-      await showModal(
-        'blocked',
-        ['Trade parameters unavailable — cannot verify approval'],
-        false,
-      );
+      await showModal('blocked', [TRADE_BUILD_ERROR(1003)], false);
       return false;
     }
 
@@ -214,11 +213,12 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     // Amount checks against last validated payload
     const snapshot = lastValidatedTradeRef.current;
 
-    if (!snapshot) {
-      return 'No validated trade on record — order signing rejected';
-    }
-    if (snapshot.buyAmountMinUnits === '' || snapshot.sellAmountUnits === '') {
-      return 'Trade parameters incomplete — cannot verify order';
+    if (
+      !snapshot ||
+      snapshot.buyAmountMinUnits === '' ||
+      snapshot.sellAmountUnits === ''
+    ) {
+      return TRADE_BUILD_ERROR(1001);
     }
 
     return verifyOrderAmounts(order, snapshot);
@@ -228,7 +228,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     async (reason: string) => {
       await showModal(
         'blocked',
-        [`Safety of the signed transaction could not be verified: ${reason}`],
+        [`Safety of the transaction could not be verified.`, reason],
         false,
       );
     },

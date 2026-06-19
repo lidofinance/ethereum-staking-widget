@@ -7,7 +7,6 @@ import {
   hexToBigInt,
   maxUint256,
   parseEther,
-  formatEther,
 } from 'viem';
 import { sepolia } from 'viem/chains';
 import { z } from 'zod';
@@ -31,6 +30,7 @@ import {
 import { CowSettlementAbi } from '../abi';
 import { COWSWAP_API_TIMEOUT_MS, COWSWAP_ORDER_API } from '../consts';
 import { readThresholds } from '../trade-guard/utils';
+import { TRANSACTION_ERROR } from './consts';
 
 // ================================================================
 //  Public validation functions
@@ -141,7 +141,7 @@ const validatePreSetSignature = async (
     if (orderUIDRecalculated !== orderUID) {
       return {
         allowed: false,
-        reason: `Order UID does not match verified order data.`,
+        reason: TRANSACTION_ERROR(2018),
       };
     }
 
@@ -159,7 +159,7 @@ const validatePreSetSignature = async (
   } catch (error) {
     return {
       allowed: false,
-      reason: `Failed to fetch order data for UID ${orderUID}: ${error}`,
+      reason: TRANSACTION_ERROR(2019),
     };
   }
 };
@@ -177,7 +177,7 @@ const validateApproveSpender = (
     if (functionName !== 'approve' || !args) {
       return {
         allowed: false,
-        reason: `Expected approve(), got ${functionName}()`,
+        reason: TRANSACTION_ERROR(2020),
       };
     }
 
@@ -185,14 +185,14 @@ const validateApproveSpender = (
     if (!isAddressEqual(spender, cowVaultRelayer)) {
       return {
         allowed: false,
-        reason: `approve() spender must be CoW VaultRelayer (${cowVaultRelayer}), got ${spender}`,
+        reason: TRANSACTION_ERROR(2023),
       };
     }
 
     if (amount === maxUint256) {
       return {
         allowed: false,
-        reason: `approve() with infinite amount is not allowed`,
+        reason: TRANSACTION_ERROR(2024),
       };
     }
 
@@ -203,13 +203,13 @@ const validateApproveSpender = (
     if (amount > maxAllowedSellAmount) {
       return {
         allowed: false,
-        reason: `approve() amount(${formatEther(amount)}) exceeds maximum allowed sell amount (${formatEther(maxAllowedSellAmount)})`,
+        reason: TRANSACTION_ERROR(2025),
       };
     }
 
     return { allowed: true };
   } catch {
-    return { allowed: false, reason: 'Cannot decode approve() calldata' };
+    return { allowed: false, reason: TRANSACTION_ERROR(2026) };
   }
 };
 
@@ -226,7 +226,7 @@ const validateSettlerSignature = async (
     if (functionName !== 'setPreSignature' || !args) {
       return {
         allowed: false,
-        reason: `Expected setPreSignature(), got ${functionName}()`,
+        reason: TRANSACTION_ERROR(2027),
       };
     }
 
@@ -235,7 +235,7 @@ const validateSettlerSignature = async (
     if (!orderUID || !signature) {
       return {
         allowed: false,
-        reason: `setPreSignature() requires orderUID and signature arguments`,
+        reason: TRANSACTION_ERROR(2028),
       };
     }
 
@@ -243,7 +243,7 @@ const validateSettlerSignature = async (
   } catch {
     return {
       allowed: false,
-      reason: 'Cannot decode setPreSignature() calldata',
+      reason: TRANSACTION_ERROR(2029),
     };
   }
 };
@@ -268,7 +268,7 @@ export const validateSendTransaction = async (
   if (!parseResult.success) {
     return {
       allowed: false,
-      reason: `Invalid transaction parameters: ${parseResult.error}`,
+      reason: TRANSACTION_ERROR(2030),
     };
   }
 
@@ -277,7 +277,7 @@ export const validateSendTransaction = async (
   if (value && hexToBigInt(value) > 0n) {
     return {
       allowed: false,
-      reason: `ETH value is not allowed in transactions`,
+      reason: TRANSACTION_ERROR(2031),
     };
   }
 
@@ -297,7 +297,7 @@ export const validateSendTransaction = async (
   }
   return {
     allowed: false,
-    reason: `Transaction to ${txTo} is not allowed.`,
+    reason: TRANSACTION_ERROR(2032),
   };
 };
 
@@ -329,7 +329,7 @@ export const validateSendCalls = async (
   if (!parseResult.success) {
     return {
       allowed: false,
-      reason: `Invalid sendCalls parameters: ${parseResult.error}`,
+      reason: TRANSACTION_ERROR(2033),
     };
   }
 
@@ -337,19 +337,19 @@ export const validateSendCalls = async (
 
   let order: OrderData | undefined = undefined;
 
-  for (const [i, call] of calls.entries()) {
+  for (const [_, call] of calls.entries()) {
     const result = await validateSendTransaction([call], ctx);
     if (!result.allowed) {
       return {
         allowed: false,
-        reason: `Call #${i} in batch blocked - ${result.reason}`,
+        reason: TRANSACTION_ERROR(2034),
       };
     }
     if (result.result) {
       if (order) {
         return {
           allowed: false,
-          reason: `Multiple order messages in batch calls are not allowed`,
+          reason: TRANSACTION_ERROR(2035),
         };
       }
       order = result.result;
@@ -359,7 +359,7 @@ export const validateSendCalls = async (
   if (!order) {
     return {
       allowed: false,
-      reason: `Batch calls must include at least one valid order message transaction`,
+      reason: TRANSACTION_ERROR(2036),
     };
   }
 

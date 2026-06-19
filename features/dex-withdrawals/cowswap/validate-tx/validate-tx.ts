@@ -6,6 +6,7 @@ import {
   validateSendTransaction,
 } from './validate-tx-signing';
 import { validateSignTypedData } from './validate-typed-message';
+import { TRANSACTION_ERROR } from './consts';
 
 export const validateTx = async (request: unknown, ctx: ValidationContext) => {
   let order: OrderData | undefined = undefined;
@@ -31,7 +32,7 @@ export const validateTx = async (request: unknown, ctx: ValidationContext) => {
     ctx.chainId !== mainnet.id &&
     ctx.chainId !== sepolia.id
   ) {
-    throw new Error(`Signing is not allowed on chainId ${ctx.chainId}`);
+    throw new Error(TRANSACTION_ERROR(2001));
   }
 
   switch (method) {
@@ -78,7 +79,7 @@ export const validateTx = async (request: unknown, ctx: ValidationContext) => {
   // Last line of defense, against unexpected RPC methods
   if (!COWSWAP_WIDGET_ALLOWED_RPC_METHODS.has(method)) {
     console.warn(`[DEX Provider] RPC method "${method}" blocked`);
-    throw new Error(`RPC method "${method}" is not allowed`);
+    throw new Error(TRANSACTION_ERROR(2002));
   }
 
   return {

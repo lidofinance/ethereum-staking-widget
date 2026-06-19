@@ -105,7 +105,6 @@ describe('analyzeParams', () => {
       const result = analyzeParams(payload);
       expect(result.level).toBe('blocked');
       expect(result.isStructural).toBe(true);
-      expect(result.messages[0]).toContain('Token information unavailable');
     });
 
     it('returns blocked when buy token is missing', () => {

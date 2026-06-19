@@ -1,5 +1,10 @@
 import { isAddress } from 'viem';
-import { DEFAULT_THRESHOLDS, type Thresholds } from '../consts';
+import {
+  DEFAULT_THRESHOLDS,
+  TRADE_BUILD_ERROR,
+  TRADE_SIZE_ERROR,
+  type Thresholds,
+} from '../consts';
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
 
 import { safeParseDecimal } from './safe-parse-decimal';
@@ -32,9 +37,7 @@ export const analyzeParams = (
   ) {
     return {
       level: 'blocked',
-      messages: [
-        'Token information unavailable — swap cannot be fully verified',
-      ],
+      messages: [TRADE_BUILD_ERROR(1006)],
       isStructural: true,
     };
   }
@@ -44,9 +47,7 @@ export const analyzeParams = (
   if (sellUnits > t.maxAllowedSellAmount) {
     return {
       level: 'blocked',
-      messages: [
-        `Single transactions are capped at ${t.maxAllowedSellAmount.toLocaleString()} ${symbol}. This limit exists to protect you from outsized losses due to slippage, MEV, and execution risk. Split your order into smaller trades to continue.`,
-      ],
+      messages: [TRADE_SIZE_ERROR(t.maxAllowedSellAmount, symbol)],
       isStructural: true,
     };
   }
