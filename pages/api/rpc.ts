@@ -20,21 +20,11 @@ import {
   METRIC_CONTRACT_EVENT_ADDRESSES,
 } from 'utilsApi/contractAddressesMetricsMap';
 
-// ENS Universal Resolver — needed for ENS name resolution on the rewards page.
-// viem's getEnsAddress calls this contract; it is not a Lido contract so it's
-// not in METRIC_CONTRACT_ADDRESSES, but we must allow it through the proxy.
-const ENS_EXTRA_ALLOWED_CALL_ADDRESSES: Record<string, string[]> = {
-  [String(CHAINS.Mainnet)]: ['0xeeeeeeee14d718c2b47d9923deab1335e144eeee'],
-};
-
 const allowedCallAddresses: Record<string, string[]> = Object.entries(
   METRIC_CONTRACT_ADDRESSES,
 ).reduce(
   (acc, [chainId, addresses]) => {
-    acc[chainId] = [
-      ...Object.keys(addresses),
-      ...(ENS_EXTRA_ALLOWED_CALL_ADDRESSES[chainId] ?? []),
-    ];
+    acc[chainId] = Object.keys(addresses);
     return acc;
   },
   {} as Record<string, string[]>,
