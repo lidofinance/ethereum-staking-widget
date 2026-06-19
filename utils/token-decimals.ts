@@ -1,9 +1,14 @@
 import type { Token } from 'consts/tokens';
+import {
+  USDC_DECIMALS,
+  USDE_DECIMALS,
+  USDT_DECIMALS,
+} from 'features/earn/vault-usd/consts';
 
 const TOKEN_DECIMALS: Partial<Record<Token, number>> = {
-  // Stablecoin tokens (6 decimals)
-  usdc: 6,
-  usdt: 6,
+  usdc: USDC_DECIMALS,
+  usdt: USDT_DECIMALS,
+  usde: USDE_DECIMALS,
 };
 
 // Default to 18 decimals for tokens not listed in TOKEN_DECIMALS

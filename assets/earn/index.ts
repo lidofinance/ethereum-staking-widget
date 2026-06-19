@@ -67,6 +67,7 @@ export { ReactComponent as ReIcon } from './allocation/re.svg';
 export { ReactComponent as UsdcIcon } from './allocation/usdc.svg';
 export { ReactComponent as SusdeIcon } from './allocation/susde.svg';
 export { ReactComponent as UsdtIcon } from './allocation/usdt.svg';
+export { ReactComponent as MantleIcon } from './allocation/mantle.svg';
 
 import { ReactComponent as ShieldCheckIcon } from './shield-check.svg';
 

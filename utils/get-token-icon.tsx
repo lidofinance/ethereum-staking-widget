@@ -7,6 +7,7 @@ import {
 } from 'assets/earn';
 import {
   TokenUsdcIcon,
+  TokenUsdeIcon,
   TokenUsdtIcon,
   TokenStrethIcon,
   TokenDvstethIcon,
@@ -35,6 +36,8 @@ export const getTokenIcon = (t: Token | TokenSymbol) => {
       return <TokenUsdtIcon />;
     case TOKENS.usdc:
       return <TokenUsdcIcon />;
+    case TOKENS.usde:
+      return <TokenUsdeIcon />;
     case TOKENS.gg:
       return <TokenGGIcon />;
     case TOKENS.dvsteth:
