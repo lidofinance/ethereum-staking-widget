@@ -147,12 +147,8 @@ export const METRIC_CONTRACT_ABIS = {
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;
 
-export const getMetricContractAbi = (
-  contractName: MetricContractName,
-): Abi | undefined => {
-  return (METRIC_CONTRACT_ABIS as Partial<Record<MetricContractName, Abi>>)[
-    contractName
-  ];
+export const getMetricContractAbi = (contractName: MetricContractName): Abi => {
+  return METRIC_CONTRACT_ABIS[contractName];
 };
 
 const supportedChainsWithMainnet: CHAINS[] = config.supportedChains.includes(

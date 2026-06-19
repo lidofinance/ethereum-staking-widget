@@ -362,4 +362,4 @@ export const ENSUniversalResolverAbi = [
     stateMutability: 'view',
     type: 'function',
   },
-];
+] as const;
