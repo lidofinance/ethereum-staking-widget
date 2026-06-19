@@ -1,4 +1,4 @@
-export const ENSResolverAbi = [
+export const ENSPublicResolverAbi = [
   {
     inputs: [{ internalType: 'contract ENS', name: '_ens', type: 'address' }],
     stateMutability: 'nonpayable',

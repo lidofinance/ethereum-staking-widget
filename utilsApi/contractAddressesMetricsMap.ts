@@ -25,7 +25,8 @@ import {
 // Side contracts ABIs
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { ENSRegistryAbi } from 'abi/ens-registry-abi';
-import { ENSResolverAbi } from 'abi/ens-resolver-abi';
+import { ENSPublicResolverAbi } from 'abi/ens-public-resolver-abi';
+import { ENSUniversalResolverAbi } from 'abi/ens-universal-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import { wethABI } from 'abi/weth-abi';
@@ -88,7 +89,9 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
-  [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
+  [CONTRACT_NAMES.ensPublicResolver]: ENSPublicResolverAbi,
+  [CONTRACT_NAMES.ensUniversalResolver]: ENSUniversalResolverAbi,
+  // ADD universal resolver Abi here
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
   // 3rd party tokens
   [CONTRACT_NAMES.weth]: wethABI,
@@ -141,8 +144,12 @@ export const METRIC_CONTRACT_ABIS = {
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;
 
-export const getMetricContractAbi = (contractName: MetricContractName): Abi => {
-  return METRIC_CONTRACT_ABIS[contractName];
+export const getMetricContractAbi = (
+  contractName: MetricContractName,
+): Abi | undefined => {
+  return (METRIC_CONTRACT_ABIS as Partial<Record<MetricContractName, Abi>>)[
+    contractName
+  ];
 };
 
 const supportedChainsWithMainnet: CHAINS[] = config.supportedChains.includes(
