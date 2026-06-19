@@ -92,7 +92,6 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSPublicResolverAbi,
   [CONTRACT_NAMES.ensUniversalResolver]: ENSUniversalResolverAbi,
-  // ADD universal resolver Abi here
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
   // 3rd party tokens
   [CONTRACT_NAMES.weth]: wethABI,
