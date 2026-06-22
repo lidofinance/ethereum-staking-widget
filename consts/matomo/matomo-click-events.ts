@@ -53,15 +53,6 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack',
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismWithdrawalsRequestAndClaim = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismWithdrawalsRequestAndClaim',
 
-  // Soneium
-  faqHowCanIGetWstethOnSoneiumWrapLink = 'faqHowCanIGetWstethOnSoneiumWrapLink',
-  faqHowCanIGetWstethOnSoneiumBridgeYourWstETHFromEthereumToSoneium = 'faqHowCanIGetWstethOnSoneiumBridgeYourWstETHFromEthereumToSoneium',
-  faqHowCanIGetWstethOnSoneiumIntegrations = 'faqHowCanIGetWstethOnSoneiumIntegrations',
-  faqHowCanIUseWstethOnSoneiumDefiProtocols = 'faqHowCanIUseWstethOnSoneiumDefiProtocols',
-  faqHowCouldIUnwrapWstETHBackToStETHOnSoneiumUnwrapLink = 'faqHowCouldIUnwrapWstETHBackToStETHOnSoneiumUnwrapLink',
-  faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromSoneiumBridgeYourWstETHOrStETHBack = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromSoneiumBridgeYourWstETHOrStETHBack',
-  faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromSoneiumWithdrawalsRequestAndClaim = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromSoneiumWithdrawalsRequestAndClaim',
-
   // Unichain
   faqHowCanIGetWstethOnUnichainWrapLink = 'faqHowCanIGetWstethOnUnichainWrapLink',
   faqHowCanIGetWstethOnUnichainBridgeYourWstETHFromEthereumToUnichain = 'faqHowCanIGetWstethOnUnichainBridgeYourWstETHFromEthereumToUnichain',
@@ -285,11 +276,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH (Optimism)',
     'eth_widget_faq_howgetwsteth_wrap_optimism',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnSoneiumWrapLink]: [
-    'Ethereum_Staking_Widget',
-    'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH (Soneium)',
-    'eth_widget_faq_howgetwsteth_wrap_soneium',
-  ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnUnichainWrapLink]: [
     'Ethereum_Staking_Widget',
     'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH (Unichain)',
@@ -301,12 +287,6 @@ export const MATOMO_CLICK_EVENTS: Record<
       'Push «bridge your wstETH from Ethereum to Optimism» in How can I get wstETH on Optimism?',
       'eth_widget_faq_howCanIGetWstethOnOptimism_bridgeYourWstETHFromEthereumToOptimism',
     ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnSoneiumBridgeYourWstETHFromEthereumToSoneium]:
-    [
-      'Ethereum_Staking_Widget',
-      'Push «bridge your wstETH from Ethereum to Soneium» in How can I get wstETH on Soneium?',
-      'eth_widget_faq_howCanIGetWstethOnSoneium_bridgeYourWstETHFromEthereumToSoneium',
-    ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnUnichainBridgeYourWstETHFromEthereumToUnichain]:
     [
       'Ethereum_Staking_Widget',
@@ -317,11 +297,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «DEX Lido integrations» in FAQ How can I get wstETH (Optimism)',
     'eth_widget_faq_howgetwsteth_dexLidoIntegrations_optimism',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnSoneiumIntegrations]: [
-    'Ethereum_Staking_Widget',
-    'Push «DEX Lido integrations» in FAQ How can I get wstETH (Soneium)',
-    'eth_widget_faq_howgetwsteth_dexLidoIntegrations_soneium',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnUnichainIntegrations]: [
     'Ethereum_Staking_Widget',
@@ -342,11 +317,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «L2» How can I use wstETH? (Optimism)',
     'eth_widget_faq_howCanIUseWstETH_l2_optimism',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethOnSoneiumDefiProtocols]: [
-    'Ethereum_Staking_Widget',
-    'Push «L2» How can I use wstETH? (Soneium)',
-    'eth_widget_faq_howCanIUseWstETH_l2_soneium',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethOnUnichainDefiProtocols]: [
     'Ethereum_Staking_Widget',
@@ -369,12 +339,6 @@ export const MATOMO_CLICK_EVENTS: Record<
       'Push «Wrap & Unwrap staking widget» How could I unwrap wstETH back to stETH on Optimism?',
       'eth_widget_faq_howCouldIUnwrapWstETHBackToStETHOnOptimismUnwrapLink',
     ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCouldIUnwrapWstETHBackToStETHOnSoneiumUnwrapLink]:
-    [
-      'Ethereum_Staking_Widget',
-      'Push «Wrap & Unwrap staking widget» How could I unwrap wstETH back to stETH on Soneium?',
-      'eth_widget_faq_howCouldIUnwrapWstETHBackToStETHOnSoneiumUnwrapLink',
-    ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCouldIUnwrapWstETHBackToStETHOnUnichainUnwrapLink]:
     [
       'Ethereum_Staking_Widget',
@@ -387,12 +351,6 @@ export const MATOMO_CLICK_EVENTS: Record<
       'Push «bridge your wstETH or stETH back» What happens if I want to unstake ETH on Ethereum? Can I do that from Optimism?',
       'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack',
     ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromSoneiumBridgeYourWstETHOrStETHBack]:
-    [
-      'Ethereum_Staking_Widget',
-      'Push «bridge your wstETH or stETH back» What happens if I want to unstake ETH on Ethereum? Can I do that from Soneium?',
-      'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromSoneiumBridgeYourWstETHOrStETHBack',
-    ],
   [MATOMO_CLICK_EVENTS_TYPES.faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack]:
     [
       'Ethereum_Staking_Widget',
@@ -404,12 +362,6 @@ export const MATOMO_CLICK_EVENTS: Record<
       'Ethereum_Staking_Widget',
       'Push «Withdrawals Request and Claim» What happens if I want to unstake ETH on Ethereum? Can I do that from Optimism?',
       'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismWithdrawalsRequestAndClaim',
-    ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromSoneiumWithdrawalsRequestAndClaim]:
-    [
-      'Ethereum_Staking_Widget',
-      'Push «Withdrawals Request and Claim» What happens if I want to unstake ETH on Ethereum? Can I do that from Soneium?',
-      'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromSoneiumWithdrawalsRequestAndClaim',
     ],
   [MATOMO_CLICK_EVENTS_TYPES.faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim]:
     [
