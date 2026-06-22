@@ -1,21 +1,9 @@
 /* eslint-disable func-style */
 /* eslint-disable import/no-extraneous-dependencies */
-import {
-  vi,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-  type Mock,
-} from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 vi.mock('utils/standardFetcher', () => ({
   standardFetcher: vi.fn(),
-}));
-
-vi.mock('@cowprotocol/sdk-app-data', () => ({
-  MetadataApi: vi.fn(),
 }));
 
 import {
@@ -23,10 +11,11 @@ import {
   validateSendCalls,
 } from '../validate-tx-signing';
 import { hashCowswapOrder, calculateOrderUID } from '../utils';
-import { encodeFunctionData } from 'viem';
+import { encodeFunctionData, keccak256, toHex } from 'viem';
+// json-stringify-deterministic is a transitive dependency (see utils.ts)
+import stringify from 'json-stringify-deterministic';
 import { CowSettlementAbi } from '../../abi';
 import { standardFetcher } from 'utils/standardFetcher';
-import { MetadataApi } from '@cowprotocol/sdk-app-data';
 
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
@@ -61,10 +50,32 @@ const sepoliaCtx = { chainId: CHAIN_SEPOLIA, signer: SIGNER };
 
 // ---- Order data for Settlement tests ----
 
-const APP_DATA =
-  '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`;
+// The appData document the order API returns, keyed by partner fee recipient.
+const buildFullAppData = (feeRecipient: string): string =>
+  JSON.stringify({
+    appCode: 'Lido Staking Widget',
+    metadata: {
+      orderClass: { orderClass: 'market' },
+      partnerFee: { recipient: feeRecipient, volumeBps: 30 },
+      quote: { slippageBips: 100, smartSlippage: false },
+      widget: { appCode: 'Lido Staking Widget', environment: 'mainnet' },
+    },
+    version: '1.0.0',
+  });
 
-const TEST_VALID_TO = Math.floor(Date.now() / 1000) + 3600;
+// keccak256 of the deterministically-stringified appData — mirrors
+// getAppDataHex() in utils.ts. The validator derives the order's appData from
+// this, so order UIDs must be computed with the matching hash.
+const hashFullAppData = (fullAppData: string): `0x${string}` =>
+  keccak256(toHex(stringify(JSON.parse(fullAppData))));
+
+const APP_DATA = hashFullAppData(buildFullAppData(FEE_RECIPIENT));
+const SEPOLIA_APP_DATA = hashFullAppData(
+  buildFullAppData(SEPOLIA_FEE_RECIPIENT),
+);
+
+// Within MAX_ORDER_AGE_SECONDS (30 min) so the validTo check passes
+const TEST_VALID_TO = Math.floor(Date.now() / 1000) + 600;
 
 const TEST_ORDER = {
   sellToken: STETH as `0x${string}`,
@@ -92,12 +103,14 @@ const TEST_ORDER_UID = calculateOrderUID(
   TEST_VALID_TO,
 );
 
-// Sepolia order UID (uses Sepolia WETH as buy token)
+// Sepolia order UID (uses Sepolia WETH as buy token and the Sepolia-recipient
+// appData hash, since the validator derives appData from the fetched document)
 const SEPOLIA_ORDER_HASH = hashCowswapOrder(
   {
     ...TEST_ORDER,
     sellToken: SEPOLIA_STETH as `0x${string}`,
     buyToken: SEPOLIA_WETH as `0x${string}`,
+    appData: SEPOLIA_APP_DATA,
   },
   CHAIN_SEPOLIA,
   COW_SETTLEMENT as `0x${string}`,
@@ -131,16 +144,7 @@ const buildOrderApiResponse = (
   class: 'market',
   settlementContract: COW_SETTLEMENT,
   isLiquidityOrder: false,
-  fullAppData: JSON.stringify({
-    appCode: 'Lido Staking Widget',
-    metadata: {
-      orderClass: { orderClass: 'market' },
-      partnerFee: { recipient: feeRecipient, volumeBps: 30 },
-      quote: { slippageBips: 100, smartSlippage: false },
-      widget: { appCode: 'Lido Staking Widget', environment: 'mainnet' },
-    },
-    version: '1.0.0',
-  }),
+  fullAppData: buildFullAppData(feeRecipient),
   quote: {
     gasAmount: '0',
     gasPrice: '0',
@@ -168,12 +172,6 @@ const buildOrderApiResponse = (
   signature: '0x',
   interactions: { pre: [], post: [] },
 });
-
-function buildMetadataApiMock(appDataHex = APP_DATA) {
-  return function MockMetadataApi(this: any) {
-    this.getAppDataInfo = vi.fn().mockResolvedValue({ appDataHex });
-  };
-}
 
 // ---- Calldata builders ----
 
@@ -204,7 +202,6 @@ const WITHDRAW_SELECTOR = '0x2e1a7d4d' + '0'.repeat(64);
 
 beforeEach(() => {
   vi.mocked(standardFetcher).mockResolvedValue(buildOrderApiResponse());
-  (MetadataApi as unknown as Mock).mockImplementation(buildMetadataApiMock());
 });
 
 afterEach(() => vi.resetAllMocks());

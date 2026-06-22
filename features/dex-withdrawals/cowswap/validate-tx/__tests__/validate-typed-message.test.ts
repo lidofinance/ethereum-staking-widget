@@ -1,26 +1,17 @@
 /* eslint-disable func-style */
 /* eslint-disable import/no-extraneous-dependencies */
-import {
-  vi,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-  type Mock,
-} from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 vi.mock('utils/standardFetcher', () => ({
   standardFetcher: vi.fn(),
 }));
 
-vi.mock('@cowprotocol/sdk-app-data', () => ({
-  MetadataApi: vi.fn(),
-}));
+import { keccak256, toHex } from 'viem';
+// json-stringify-deterministic is a transitive dependency (see utils.ts)
+import stringify from 'json-stringify-deterministic';
 
 import { validateSignTypedData } from '../validate-typed-message';
 import { standardFetcher } from 'utils/standardFetcher';
-import { MetadataApi } from '@cowprotocol/sdk-app-data';
 
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
@@ -56,8 +47,11 @@ const sepoliaCtx = { chainId: CHAIN_SEPOLIA, signer: SIGNER as `0x${string}` };
 
 // ---- App data response helper ----
 
-const APP_DATA =
-  '0x0000000000000000000000000000000000000000000000000000000000000000';
+// keccak256 of the deterministically-stringified appData document — mirrors
+// getAppDataHex() in utils.ts, which is how the validator derives the hash the
+// order's appData field is checked against.
+const hashFullAppData = (fullAppData: string): `0x${string}` =>
+  keccak256(toHex(stringify(JSON.parse(fullAppData))));
 
 const REAL_APP_DATA_HASH =
   '0x04c6e64bf43a255e35ceb6178cc12b21d3feb190c8cf003927f868dcd1a6c189';
@@ -96,12 +90,10 @@ const buildAppDataResponse = (
   return { fullAppData };
 };
 
-const buildMetadataApiMock = (appDataHex: string = APP_DATA) => {
-  function MockMetadataApi(this: any) {
-    this.getAppDataInfo = vi.fn().mockResolvedValue({ appDataHex });
-  }
-  return MockMetadataApi;
-};
+// Default appData document the fetch mock returns, and its canonical hash.
+// Orders must carry this hash in their appData field to pass validation.
+const DEFAULT_APP_DATA_RESPONSE = buildAppDataResponse(FEE_RECIPIENT);
+const APP_DATA = hashFullAppData(DEFAULT_APP_DATA_RESPONSE.fullAppData);
 
 // ---- EIP-712 type definitions ----
 
@@ -152,7 +144,8 @@ type OrderOverrides = {
 
 const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
   const signer = overrides.signer ?? SIGNER;
-  const defaultValidTo = Math.floor(Date.now() / 1000) + 3600;
+  // Within MAX_ORDER_AGE_SECONDS (30 min) so the validTo check passes
+  const defaultValidTo = Math.floor(Date.now() / 1000) + 600;
   const order = {
     domain: {
       name: overrides.domainName ?? 'Gnosis Protocol',
@@ -186,12 +179,7 @@ const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
 // ---- Setup / teardown ----
 
 beforeEach(() => {
-  vi.mocked(standardFetcher).mockResolvedValue(
-    buildAppDataResponse(FEE_RECIPIENT),
-  );
-  (MetadataApi as unknown as Mock).mockImplementation(
-    buildMetadataApiMock(APP_DATA),
-  );
+  vi.mocked(standardFetcher).mockResolvedValue(DEFAULT_APP_DATA_RESPONSE);
 });
 
 afterEach(() => vi.resetAllMocks());
@@ -249,15 +237,15 @@ describe('validateSignTypedData', () => {
     });
 
     it('allows valid order on Sepolia', async () => {
-      vi.mocked(standardFetcher).mockResolvedValue(
-        buildAppDataResponse(SEPOLIA_FEE_RECIPIENT),
-      );
+      const sepoliaAppData = buildAppDataResponse(SEPOLIA_FEE_RECIPIENT);
+      vi.mocked(standardFetcher).mockResolvedValue(sepoliaAppData);
       const result = await validateSignTypedData(
         buildTypedDataParams({
           chainId: CHAIN_SEPOLIA,
           verifyingContract: SEPOLIA_COW_SETTLEMENT,
           sellToken: SEPOLIA_STETH,
           buyToken: SEPOLIA_WETH,
+          appData: hashFullAppData(sepoliaAppData.fullAppData),
         }),
         sepoliaCtx,
       );
@@ -298,7 +286,7 @@ describe('validateSignTypedData', () => {
         }),
       });
       const result = await validateSignTypedData(
-        buildTypedDataParams(),
+        buildTypedDataParams({ appData: REAL_APP_DATA_HASH }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(true);
@@ -485,9 +473,6 @@ describe('validateSignTypedData', () => {
     });
 
     it('rejects real stETH→ETH order with receiver replaced by attacker', async () => {
-      (MetadataApi as unknown as Mock).mockImplementation(
-        buildMetadataApiMock(REAL_APP_DATA_HASH),
-      );
       vi.mocked(standardFetcher).mockResolvedValue({
         fullAppData: JSON.stringify({
           appCode: 'Lido Staking Widget',
@@ -533,8 +518,8 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toBeDefined();
     });
 
-    it('rejects validTo too far in future (> MAX_ORDER_AGE_SECONDS = 86400s)', async () => {
-      const tooFarValidTo = Math.floor(Date.now() / 1000) + 86400 + 3600;
+    it('rejects validTo too far in future (> MAX_ORDER_AGE_SECONDS = 1800s)', async () => {
+      const tooFarValidTo = Math.floor(Date.now() / 1000) + 1800 + 600;
       const result = await validateSignTypedData(
         buildTypedDataParams({ validTo: tooFarValidTo }),
         mainnetCtx,
@@ -615,29 +600,13 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toBeDefined();
     });
 
-    it('rejects when appData hash mismatches order.appData (MetadataApi returns different hash)', async () => {
+    it('rejects when computed appData hash mismatches order.appData', async () => {
+      // Fetch returns the valid default document, but the order carries a
+      // different appData hash than the one the validator derives from it.
       const wrongHash =
         '0x1111111111111111111111111111111111111111111111111111111111111111';
-      (MetadataApi as unknown as Mock).mockImplementation(
-        buildMetadataApiMock(wrongHash),
-      );
       const result = await validateSignTypedData(
-        buildTypedDataParams(),
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toBeDefined();
-    });
-
-    it('rejects when MetadataApi throws', async () => {
-      function ThrowingMetadataApi(this: any) {
-        this.getAppDataInfo = vi
-          .fn()
-          .mockRejectedValue(new Error('MetadataApi error'));
-      }
-      (MetadataApi as unknown as Mock).mockImplementation(ThrowingMetadataApi);
-      const result = await validateSignTypedData(
-        buildTypedDataParams(),
+        buildTypedDataParams({ appData: wrongHash }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
@@ -706,11 +675,10 @@ describe('validateCowSwapOrderMessage — hooks in appData', () => {
   });
 
   it('allows order when hooks object is present but both pre and post are empty arrays', async () => {
-    vi.mocked(standardFetcher).mockResolvedValue(
-      buildAppDataWithHooks(FEE_RECIPIENT, { pre: [], post: [] }),
-    );
+    const appData = buildAppDataWithHooks(FEE_RECIPIENT, { pre: [], post: [] });
+    vi.mocked(standardFetcher).mockResolvedValue(appData);
     const result = await validateSignTypedData(
-      buildTypedDataParams(),
+      buildTypedDataParams({ appData: hashFullAppData(appData.fullAppData) }),
       mainnetCtx,
     );
     expect(result.allowed).toBe(true);
