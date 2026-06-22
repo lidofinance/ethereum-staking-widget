@@ -1,7 +1,6 @@
 import {
   encodePacked,
   hashTypedData,
-  hexToBytes,
   isAddress,
   isHex,
   keccak256,
@@ -13,7 +12,7 @@ import { sepolia } from 'viem/chains';
 import { z } from 'zod';
 // This is transitive dependency of @cowprotocol/widget-react, so it's version always tied to it
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { MetadataApi } from '@cowprotocol/sdk-app-data';
+import stringify from 'json-stringify-deterministic';
 
 import { getTokenAddress } from 'config/networks/token-address';
 
@@ -259,25 +258,10 @@ export const getNetworkTxConfig = (chainId: number): NetworkTxConfig => {
   return MAINNET_CONFIG;
 };
 
-export const getAppDataHex = async (
-  appData: z.infer<typeof AppDataSchema>,
-): Promise<Hex> => {
-  const api = new MetadataApi({
-    // This crude hack absolves us from installing ethers.js
-    utils: {
-      // this two just pipe into each other so no need to match interface exactly between them
-      toUtf8Bytes: (str: string): Hex => toHex(str),
-      keccak256: (data: Hex): Hex => keccak256(data), //  just output hex string,
-      // this is used later and must match interface
-      arrayify: (hexString: Hex): Uint8Array => hexToBytes(hexString),
-    },
-  } as any);
+export const getAppDataHex = (appData: z.infer<typeof AppDataSchema>): Hex => {
+  const stringified = stringify(appData);
 
-  const { appDataHex } = await api.getAppDataInfo(appData);
-
-  if (!isHex(appDataHex)) {
-    throw new Error('Received invalid appDataHex from Metadata API');
-  }
+  const appDataHex = keccak256(toHex(stringified));
 
   return appDataHex;
 };

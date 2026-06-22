@@ -124,7 +124,6 @@ export const CowswapFrame = () => {
       // Trading options
       //
 
-      // TODO: disable more features after package update
       tradeType: TradeType.SWAP,
       enabledTradeTypes: [TradeType.SWAP],
       sell: {

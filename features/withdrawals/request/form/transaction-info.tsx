@@ -37,7 +37,7 @@ export const TransactionInfo = () => {
 
   const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
     useWithdrawRequestTxPrice({
-      token: token,
+      token,
       isApprovalFlow,
       requestCount: requests?.length,
     });

@@ -111,7 +111,7 @@ const validatePreSetSignature = async (
   const { chainId } = ctx;
   try {
     const orderData = await fetchOrderByUID(orderUID, chainId);
-    const appDataHex = await getAppDataHex(orderData.fullAppData);
+    const appDataHex = getAppDataHex(orderData.fullAppData);
 
     const { cowSettlement } = getNetworkTxConfig(chainId);
 

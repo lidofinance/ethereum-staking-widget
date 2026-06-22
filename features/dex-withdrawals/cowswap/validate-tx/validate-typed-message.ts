@@ -130,7 +130,7 @@ export const validateCowSwapOrderMessage = async (
       };
     }
 
-    const appDataHex = await getAppDataHex(appData);
+    const appDataHex = getAppDataHex(appData);
 
     if (appDataHex !== orderMessage.appData) {
       return {
