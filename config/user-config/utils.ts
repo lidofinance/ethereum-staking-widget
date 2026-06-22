@@ -6,11 +6,7 @@
 import { config } from '../get-config';
 import { UserConfigDefaultType } from './types';
 
-import { CHAINS } from 'consts/chains';
-
-const KNOWN_CHAIN_IDS = new Set<number>(
-  Object.values(CHAINS).filter((v): v is number => typeof v === 'number'),
-);
+import { CHAINS, KNOWN_CHAIN_IDS } from 'consts/chains';
 
 export const getUserConfigDefault = (): UserConfigDefaultType => {
   return {

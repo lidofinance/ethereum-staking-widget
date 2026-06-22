@@ -14,6 +14,7 @@ import {
   isSDKSupportedChainAndChainIsL1,
   isSDKSupportedL2Chain,
   isSDKSupportedChain,
+  KNOWN_CHAIN_IDS,
 } from 'consts/chains';
 import { config } from 'config';
 import { ModalProvider } from 'providers/modal-provider';
@@ -141,8 +142,8 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
             : undefined,
 
           isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
-          supportedChainIds: config.supportedChains.filter((chain) =>
-            isSDKSupportedChain(chain),
+          supportedChainIds: config.supportedChains.filter(
+            (chain) => isSDKSupportedChain(chain) && KNOWN_CHAIN_IDS.has(chain),
           ),
         }),
         [chainId, walletChainId],
@@ -201,7 +202,9 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
           isChainIdOnL2: false,
           supportedChainIds: config.supportedChains.filter(
             (chain) =>
-              isSDKSupportedChain(chain) && !isSDKSupportedL2Chain(chain),
+              isSDKSupportedChain(chain) &&
+              !isSDKSupportedL2Chain(chain) &&
+              KNOWN_CHAIN_IDS.has(chain),
           ),
         }),
         [chainId, walletChainId],
