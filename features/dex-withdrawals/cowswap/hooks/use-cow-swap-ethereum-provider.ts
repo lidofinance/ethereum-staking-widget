@@ -5,6 +5,7 @@ import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 import { useDappStatus } from 'modules/web3';
 
 import { OrderData, validateRpcRequest } from '../validate-tx';
+import { COWSWAP_ENABLED_CHAIN_IDS } from '../consts';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
@@ -17,8 +18,14 @@ export const useCowSwapEthereumProvider = (
   const { connector } = useConnection();
 
   return useMemo(() => {
-    if (!walletClient || !connector) return undefined;
-
+    if (
+      !walletClient ||
+      !connector ||
+      walletClient.chain.id !== chainId ||
+      !COWSWAP_ENABLED_CHAIN_IDS.has(chainId)
+    ) {
+      return undefined;
+    }
     return {
       request: async <T>(payload: JsonRpcRequest): Promise<T> => {
         try {
@@ -48,10 +55,19 @@ export const useCowSwapEthereumProvider = (
           throw error; // re-throw to ensure the error is propagated to the caller
         }
 
-        return walletClient.request(
-          payload as Parameters<typeof walletClient.request>[0],
-          { dedupe: true },
-        );
+        try {
+          return walletClient.request(
+            payload as Parameters<typeof walletClient.request>[0],
+            { dedupe: true },
+          );
+        } catch (error) {
+          console.error(
+            '[useCowSwapEthereumProvider] Error during walletClient.request:',
+            error,
+          );
+          // silent cowswap error to prevent huge error messages
+          throw new Error('Failed to process RPC request');
+        }
       },
       on: (eventName: string, handler: unknown) => {
         connector.emitter.on(

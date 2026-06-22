@@ -39,10 +39,20 @@ export const FallbackContainer = styled.div`
   }
 `;
 
-export const DexWrapper = styled.div`
+export const DexWrapper = styled.div<{ $consumeBottomSpace?: boolean }>`
   position: relative;
   width: 100%;
   height: 100%;
+
+  ${({ $consumeBottomSpace, theme }) =>
+    $consumeBottomSpace &&
+    css`
+      margin-bottom: -${theme.spaceMap.xxl}px;
+
+      ${({ theme }) => theme.mediaQueries.md} {
+        margin-bottom: -${theme.spaceMap.lg}px;
+      }
+    `}
 `;
 
 const fadeOut = keyframes`

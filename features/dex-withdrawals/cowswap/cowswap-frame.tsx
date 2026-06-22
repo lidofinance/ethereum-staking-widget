@@ -72,7 +72,7 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 
 export const CowswapFrame = () => {
   // throws on loading timeout/onError
-  const { isLoading, onLoaded, onError, triggerRefresh, refreshId } =
+  const { isLoading, isLoaded, onLoaded, onError, triggerRefresh, refreshId } =
     useLoadingStates();
 
   const { isTestnet } = useDappStatus();
@@ -272,7 +272,7 @@ export const CowswapFrame = () => {
 
   return (
     <>
-      <DexWrapper>
+      <DexWrapper $consumeBottomSpace={isLoaded}>
         <CowSwapWidget
           provider={provider}
           params={params}

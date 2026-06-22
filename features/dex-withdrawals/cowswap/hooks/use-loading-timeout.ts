@@ -30,5 +30,12 @@ export const useLoadingStates = () => {
     () => debounce(() => setRefreshId(window.crypto.randomUUID()), 500),
     [],
   );
-  return { isLoading, onLoaded, onError, triggerRefresh, refreshId };
+  return {
+    isLoading,
+    isLoaded: !isLoading && !error,
+    onLoaded,
+    onError,
+    triggerRefresh,
+    refreshId,
+  };
 };

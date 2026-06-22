@@ -1,4 +1,5 @@
 import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
+import { mainnet, sepolia } from 'viem/chains';
 
 export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
   // read-only
@@ -34,6 +35,11 @@ export const MAX_ORDER_AGE_SECONDS = 60 * 30; // 30 minutes
 export const MAX_ORDER_AGE_MINUTES = Math.floor(MAX_ORDER_AGE_SECONDS / 60);
 
 export const IS_COWSWAP_STAGING = false;
+
+export const COWSWAP_ENABLED_CHAIN_IDS = new Set<number>([
+  mainnet.id,
+  sepolia.id,
+]); // mainnet, sepolia
 
 export const COWSWAP_BASE_URL = IS_COWSWAP_STAGING
   ? 'https://staging.swap.cow.fi'
