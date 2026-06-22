@@ -49,9 +49,13 @@ type TransactionModalContentProps = {
 };
 
 export const TransactionModalContent = memo(
-  (props: TransactionModalContentProps) => {
-    const { icon, title, description, footerHint, footer } = props;
-
+  ({
+    icon,
+    title,
+    description,
+    footerHint,
+    footer,
+  }: TransactionModalContentProps) => {
     return (
       <Wrap data-testid="txStage">
         {icon}

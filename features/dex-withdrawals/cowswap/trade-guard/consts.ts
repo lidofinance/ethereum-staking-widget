@@ -123,4 +123,4 @@ export const TRADE_ORACLE_DEVIATION_ERROR = (
   deviationPercent: number,
   oracleDeviationThreshold: number,
 ) =>
-  `Oracle price differs from trade one by ${deviationPercent.toFixed(1)}%. Maximum is ${oracleDeviationThreshold.toFixed(1)}%”`;
+  `Oracle price differs from trade one by ${deviationPercent.toFixed(1)}%. Maximum is ${oracleDeviationThreshold.toFixed(1)}%`;
