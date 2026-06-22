@@ -4,7 +4,7 @@ import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
 import { useDappStatus } from 'modules/web3';
 
-import { OrderData, validateTx } from '../validate-tx';
+import { OrderData, validateRpcRequest } from '../validate-tx';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
@@ -22,10 +22,13 @@ export const useCowSwapEthereumProvider = (
     return {
       request: async <T>(payload: JsonRpcRequest): Promise<T> => {
         try {
-          const { order, sanitizedRequest } = await validateTx(payload, {
-            chainId,
-            signer: walletClient.account.address,
-          });
+          const { order, sanitizedRequest } = await validateRpcRequest(
+            payload,
+            {
+              chainId,
+              signer: walletClient.account.address,
+            },
+          );
 
           // this prevents extra fields to be passed along with the orginal request
           payload = sanitizedRequest as typeof payload;

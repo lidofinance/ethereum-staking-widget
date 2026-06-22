@@ -190,25 +190,45 @@ export const AppDataSchema = z.object({
   version: z.string(),
 });
 
-export const cowSwapOrderSchema = z.object({
-  domain: z.object({
-    name: z.literal('Gnosis Protocol'),
-    version: z.literal('v2'),
-    chainId: z.number(),
-    verifyingContract: addressSchema,
+const cowSwapOrderDomainSchema = z.object({
+  name: z.literal('Gnosis Protocol'),
+  version: z.literal('v2'),
+  chainId: z.number(),
+  verifyingContract: addressSchema,
+});
+
+const eip712DomainTypeSchema = z.tuple([
+  z.object({ name: z.literal('name'), type: z.literal('string') }),
+  z.object({ name: z.literal('version'), type: z.literal('string') }),
+  z.object({ name: z.literal('chainId'), type: z.literal('uint256') }),
+  z.object({
+    name: z.literal('verifyingContract'),
+    type: z.literal('address'),
   }),
+]);
+
+export const cowSwapCancelOrderSchema = z.object({
+  domain: cowSwapOrderDomainSchema,
+  message: z.object({
+    orderUids: z
+      .array(hexSchema)
+      .length(1, { message: 'only single order UID is allowed' }),
+  }),
+  primaryType: z.literal('OrderCancellations'),
+  types: z.object({
+    EIP712Domain: eip712DomainTypeSchema,
+    OrderCancellations: z.tuple([
+      z.object({ name: z.literal('orderUids'), type: z.literal('bytes[]') }),
+    ]),
+  }),
+});
+
+export const cowSwapOrderSchema = z.object({
+  domain: cowSwapOrderDomainSchema,
   message: CowSwapGPv2OrderSchema,
   primaryType: z.literal('Order'),
   types: z.object({
-    EIP712Domain: z.tuple([
-      z.object({ name: z.literal('name'), type: z.literal('string') }),
-      z.object({ name: z.literal('version'), type: z.literal('string') }),
-      z.object({ name: z.literal('chainId'), type: z.literal('uint256') }),
-      z.object({
-        name: z.literal('verifyingContract'),
-        type: z.literal('address'),
-      }),
-    ]),
+    EIP712Domain: eip712DomainTypeSchema,
     Order: z.tuple([
       z.object({ name: z.literal('sellToken'), type: z.literal('address') }),
       z.object({ name: z.literal('buyToken'), type: z.literal('address') }),
@@ -234,6 +254,11 @@ export const cowSwapOrderSchema = z.object({
     ]),
   }),
 });
+
+export const cowSwapSignTypedDataSchema = z.union([
+  cowSwapOrderSchema,
+  cowSwapCancelOrderSchema,
+]);
 
 // ---- Types ----
 

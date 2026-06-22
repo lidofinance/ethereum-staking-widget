@@ -9,9 +9,11 @@ import {
   jsonStringSchema,
   AppDataSchema,
   getAppDataHex,
-  cowSwapOrderSchema,
+  cowSwapSignTypedDataSchema,
   ValidationContext,
   OrderData,
+  cowSwapOrderSchema,
+  cowSwapCancelOrderSchema,
 } from './utils';
 import {
   MAX_ORDER_AGE_SECONDS,
@@ -24,7 +26,7 @@ import { TRANSACTION_ERROR } from './consts';
 
 const typedMessageSchema = z.tuple([
   addressSchema, // signer
-  jsonStringSchema(cowSwapOrderSchema),
+  jsonStringSchema(cowSwapSignTypedDataSchema),
 ]);
 
 const AppDataApiResponseSchema = z.object({
@@ -176,6 +178,29 @@ export const validateCowSwapOrder = async (
   return await validateCowSwapOrderMessage(order.message, ctx);
 };
 
+export const validateCowSwapCancelOrder = async (
+  order: z.infer<typeof cowSwapCancelOrderSchema>,
+  ctx: ValidationContext,
+): Promise<ValidationResult<undefined>> => {
+  if (order.domain.chainId !== ctx.chainId) {
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2020),
+    };
+  }
+
+  const { cowSettlement } = getNetworkTxConfig(ctx.chainId);
+
+  if (!isAddressEqual(order.domain.verifyingContract, cowSettlement)) {
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2021),
+    };
+  }
+
+  return { allowed: true, result: undefined };
+};
+
 /**
  * Validates eth_signTypedData_v4 (EIP-712) parameters.
  * Returns the parsed OrderFields so that order values can be checked via trade guard
@@ -203,6 +228,8 @@ export const validateSignTypedData = async (
     };
   }
 
-  // Only order type is supported, other message types are blocked on schema level
+  if (order.primaryType === 'OrderCancellations')
+    return validateCowSwapCancelOrder(order, ctx);
+
   return await validateCowSwapOrder(order, ctx);
 };

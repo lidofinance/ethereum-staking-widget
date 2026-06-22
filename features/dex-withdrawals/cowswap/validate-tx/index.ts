@@ -1,3 +1,3 @@
-export { validateTx } from './validate-tx';
+export { validateRpcRequest } from './validate-tx';
 
 export type { OrderData } from './utils';

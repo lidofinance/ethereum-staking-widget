@@ -8,7 +8,10 @@ import {
 import { validateSignTypedData } from './validate-typed-message';
 import { TRANSACTION_ERROR } from './consts';
 
-export const validateTx = async (request: unknown, ctx: ValidationContext) => {
+export const validateRpcRequest = async (
+  request: unknown,
+  ctx: ValidationContext,
+) => {
   let order: OrderData | undefined = undefined;
 
   const {
@@ -37,8 +40,7 @@ export const validateTx = async (request: unknown, ctx: ValidationContext) => {
 
   switch (method) {
     case 'eth_signTypedData_v4': {
-      // Defense-in-depth: verify CowSwap order before signing
-      // !NB: this validation modifies the params to override the wstETH permit deadline
+      // Defense-in-depth: verify CowSwap order (or order cancellation) before signing
       const { allowed, result, reason } = await validateSignTypedData(
         params,
         ctx,
@@ -55,6 +57,7 @@ export const validateTx = async (request: unknown, ctx: ValidationContext) => {
     }
     case 'eth_sendTransaction': {
       const result = await validateSendTransaction(params, ctx);
+
       if (!result.allowed) {
         console.warn('[DEX Provider] Transaction blocked:', result.reason);
         throw new Error(result.reason);

@@ -216,30 +216,36 @@ const validateApproveSpender = (
 const validateSettlerSignature = async (
   data: Hex,
   ctx: ValidationContext,
-): Promise<ValidationResult<OrderData>> => {
+): Promise<ValidationResult<OrderData | undefined>> => {
   try {
     const { functionName, args } = decodeFunctionData({
       abi: CowSettlementAbi,
       data: data,
     });
 
-    if (functionName !== 'setPreSignature' || !args) {
+    if (functionName == 'setPreSignature') {
+      const [orderUID, signature] = args;
+
+      if (!orderUID || !signature) {
+        return {
+          allowed: false,
+          reason: TRANSACTION_ERROR(2028),
+        };
+      }
+
+      return validatePreSetSignature(orderUID, ctx);
+    } else if (functionName == 'invalidateOrder') {
+      // we allow to cancel any order and no need to validate the order
       return {
-        allowed: false,
-        reason: TRANSACTION_ERROR(2027),
+        result: undefined,
+        allowed: true,
       };
     }
 
-    const [orderUID, signature] = args;
-
-    if (!orderUID || !signature) {
-      return {
-        allowed: false,
-        reason: TRANSACTION_ERROR(2028),
-      };
-    }
-
-    return validatePreSetSignature(orderUID, ctx);
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2027),
+    };
   } catch {
     return {
       allowed: false,
