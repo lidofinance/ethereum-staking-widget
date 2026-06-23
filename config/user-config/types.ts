@@ -10,8 +10,6 @@ export type UserConfigDefaultType = {
     [CHAINS.Sepolia]: string[];
     [CHAINS.OptimismSepolia]: string[];
     [CHAINS.Optimism]: string[];
-    [CHAINS.Soneium]: string[];
-    [CHAINS.SoneiumMinato]: string[];
     [CHAINS.Unichain]: string[];
     [CHAINS.UnichainSepolia]: string[];
   };

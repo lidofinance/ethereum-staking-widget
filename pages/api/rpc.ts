@@ -81,8 +81,6 @@ const rpc =
       [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
       [CHAINS.Optimism]: secretConfig.rpcUrls_10,
       [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,
-      [CHAINS.Soneium]: secretConfig.rpcUrls_1868,
-      [CHAINS.SoneiumMinato]: secretConfig.rpcUrls_1946,
       [CHAINS.Unichain]: secretConfig.rpcUrls_130,
       [CHAINS.UnichainSepolia]: secretConfig.rpcUrls_1301,
     },

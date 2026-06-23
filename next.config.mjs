@@ -275,9 +275,6 @@ export default withBundleAnalyzer({
     // Optimism rpcs
     rpcUrls_10: process.env.EL_RPC_URLS_10,
     rpcUrls_11155420: process.env.EL_RPC_URLS_11155420,
-    // Soneium rpcs
-    rpcUrls_1868: process.env.EL_RPC_URLS_1868,
-    rpcUrls_1946: process.env.EL_RPC_URLS_1946,
     // Unichain rpcs
     rpcUrls_130: process.env.EL_RPC_URLS_130,
     rpcUrls_1301: process.env.EL_RPC_URLS_1301,
