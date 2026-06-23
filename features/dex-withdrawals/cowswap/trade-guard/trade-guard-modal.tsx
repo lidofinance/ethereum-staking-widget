@@ -11,18 +11,23 @@ import type { TradeGuardLevel } from './types';
 
 const MessageList = styled.div`
   text-align: center;
-  margin: 0 0 24px;
-  padding-left: 20px;
+  margin: 0 0 ${({ theme }) => theme.spaceMap.xl}px;
+  padding: 0 ${({ theme }) => theme.spaceMap.md}px;
   font-size: 14px;
-  line-height: 1.6;
   color: var(--lido-color-textSecondary);
 `;
 
 const OracleBadge = styled.span`
   display: block;
+  margin: 0 auto ${({ theme }) => theme.spaceMap.sm}px;
+  padding: ${({ theme }) => theme.spaceMap.xs}px 12px;
+  width: fit-content;
+  border-radius: 15px;
+
   font-size: 12px;
   color: var(--lido-color-textSecondary);
-  margin-bottom: 16px;
+  background-color: ${({ theme }) =>
+    theme.name === 'dark' ? 'var(--custom-background-dark)' : '#F5F5F7'};
 `;
 
 export type TradeGuardModalState = {

@@ -23,7 +23,7 @@ export const TxStageFail = ({ failedText, onRetry }: TxStageFailProps) => {
   return (
     <TransactionModalContent
       title="Transaction Failed"
-      icon={<StageIconFail />}
+      icon={<StageIconFail showLedger={false} />}
       description={failedText ?? 'Something went wrong'}
       footerHint={
         failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
