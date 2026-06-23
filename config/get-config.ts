@@ -1,3 +1,4 @@
+import { KNOWN_CHAIN_IDS } from 'consts/chains';
 import { getPreConfig, PreConfigType } from './get-preconfig';
 import * as cache from './groups/cache';
 import * as ipfs from './groups/ipfs';
@@ -20,6 +21,7 @@ export type ConfigType = {
   PreConfigType;
 
 export const getConfig = (): ConfigType => {
+  const preConfig = getPreConfig();
   return {
     isClientSide: typeof window !== 'undefined',
     isServerSide: typeof window === 'undefined',
@@ -33,7 +35,10 @@ export const getConfig = (): ConfigType => {
     ...withdrawalQueueEstimate,
 
     // highest priority
-    ...getPreConfig(),
+    ...preConfig,
+    supportedChains: preConfig.supportedChains.filter((id) =>
+      KNOWN_CHAIN_IDS.has(id),
+    ),
   };
 };
 

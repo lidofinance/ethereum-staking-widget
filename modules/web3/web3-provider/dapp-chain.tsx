@@ -14,7 +14,6 @@ import {
   isSDKSupportedChainAndChainIsL1,
   isSDKSupportedL2Chain,
   isSDKSupportedChain,
-  KNOWN_CHAIN_IDS,
 } from 'consts/chains';
 import { config } from 'config';
 import { ModalProvider } from 'providers/modal-provider';
@@ -114,8 +113,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
     if (
       !walletChainId ||
       !config.supportedChains.includes(walletChainId) ||
-      !isSDKSupportedChain(walletChainId) ||
-      !KNOWN_CHAIN_IDS.has(walletChainId)
+      !isSDKSupportedChain(walletChainId)
     ) {
       // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
       // It also works on the first rendering, but we don't care.
@@ -143,9 +141,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
             : undefined,
 
           isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
-          supportedChainIds: config.supportedChains.filter(
-            (chain) => isSDKSupportedChain(chain) && KNOWN_CHAIN_IDS.has(chain),
-          ),
+          supportedChainIds: config.supportedChains.filter(isSDKSupportedChain),
         }),
         [chainId, walletChainId],
       )}
@@ -172,8 +168,7 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
     if (
       !walletChainId ||
       !config.supportedChains.includes(walletChainId) ||
-      !isSDKSupportedChainAndChainIsL1(walletChainId) ||
-      !KNOWN_CHAIN_IDS.has(walletChainId)
+      !isSDKSupportedChainAndChainIsL1(walletChainId)
     ) {
       // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
       // It also works on the first rendering, but we don't care.
@@ -204,9 +199,7 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
           isChainIdOnL2: false,
           supportedChainIds: config.supportedChains.filter(
             (chain) =>
-              isSDKSupportedChain(chain) &&
-              !isSDKSupportedL2Chain(chain) &&
-              KNOWN_CHAIN_IDS.has(chain),
+              isSDKSupportedChain(chain) && !isSDKSupportedL2Chain(chain),
           ),
         }),
         [chainId, walletChainId],
