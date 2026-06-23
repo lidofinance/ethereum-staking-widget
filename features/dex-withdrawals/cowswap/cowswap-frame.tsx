@@ -278,9 +278,11 @@ export const CowswapFrame = () => {
           params={params}
           listeners={listeners}
           enableSafeSdkBridge={false}
-          onLoadingError={() =>
-            onError(new Error('Failed to load CoW Swap widget'))
-          }
+          onLoadingError={() => {
+            // eslint-disable-next-line no-console
+            console.log('onLoadingError');
+            onError(new Error('Failed to load CoW Swap widget'));
+          }}
           onReady={onLoaded}
         />
         <LoaderStyled $isVisible={isLoading} />

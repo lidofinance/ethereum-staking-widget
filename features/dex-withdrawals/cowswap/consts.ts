@@ -43,7 +43,7 @@ export const COWSWAP_ENABLED_CHAIN_IDS = new Set<number>([
 
 export const COWSWAP_BASE_URL = IS_COWSWAP_STAGING
   ? 'https://staging.swap.cow.fi'
-  : 'https://swap.cow.fi';
+  : 'https://feat-fix-widget-retry-logic.swap-dev-5u6.pages.dev/';
 
 // there is barn.api.cow.fi staging for API, but UI(even staging) uses prod API
 const COWSWAP_API_BASE_URL = 'https://api.cow.fi';
