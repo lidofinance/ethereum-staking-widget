@@ -3,16 +3,8 @@ import {
   SUPPORTED_CHAINS as SDK_SUPPORTED_CHAINS,
 } from '@lidofinance/lido-ethereum-sdk/common';
 
-export enum CHAINS {
-  Mainnet = 1,
-  Holesky = 17000,
-  Hoodi = 560048,
-  Sepolia = 11155111,
-  Optimism = 10,
-  OptimismSepolia = 11155420,
-  Unichain = 130,
-  UnichainSepolia = 1301,
-}
+import { CHAINS } from 'config/chains';
+export { CHAINS } from 'config/chains';
 
 export enum LIDO_MULTICHAIN_CHAINS {
   Optimism = 10,
