@@ -114,7 +114,8 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
     if (
       !walletChainId ||
       !config.supportedChains.includes(walletChainId) ||
-      !isSDKSupportedChain(walletChainId)
+      !isSDKSupportedChain(walletChainId) ||
+      !KNOWN_CHAIN_IDS.has(walletChainId)
     ) {
       // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
       // It also works on the first rendering, but we don't care.
@@ -171,7 +172,8 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
     if (
       !walletChainId ||
       !config.supportedChains.includes(walletChainId) ||
-      !isSDKSupportedChainAndChainIsL1(walletChainId)
+      !isSDKSupportedChainAndChainIsL1(walletChainId) ||
+      !KNOWN_CHAIN_IDS.has(walletChainId)
     ) {
       // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
       // It also works on the first rendering, but we don't care.
