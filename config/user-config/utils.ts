@@ -6,14 +6,12 @@
 import { config } from '../get-config';
 import { UserConfigDefaultType } from './types';
 
-import { CHAINS, KNOWN_CHAIN_IDS } from 'consts/chains';
+import { CHAINS } from 'consts/chains';
 
 export const getUserConfigDefault = (): UserConfigDefaultType => {
   return {
     defaultChain: Number(config.defaultChain),
-    supportedChainIds: config.supportedChains.filter((id) =>
-      KNOWN_CHAIN_IDS.has(id),
-    ),
+    supportedChainIds: config.supportedChains,
     prefillUnsafeElRpcUrls: {
       [CHAINS.Mainnet]: config.prefillUnsafeElRpcUrls1,
       [CHAINS.Holesky]: config.prefillUnsafeElRpcUrls17000,
