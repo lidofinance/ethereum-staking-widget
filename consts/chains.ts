@@ -24,10 +24,6 @@ export enum LIDO_MULTICHAIN_CHAINS {
   Metis = 1088,
 }
 
-export const KNOWN_CHAIN_IDS = new Set<number>(
-  Object.values(CHAINS).filter((v): v is number => typeof v === 'number'),
-);
-
 // TODO: move to @lidofinance/lido-ethereum-sdk package
 
 export const isSDKSupportedChain = (chainId?: CHAINS) => {
