@@ -73,12 +73,6 @@ export const prefillUnsafeElRpcUrls10 =
 export const prefillUnsafeElRpcUrls11155420 =
   process.env.PREFILL_UNSAFE_EL_RPC_URLS_11155420?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls1868 =
-  process.env.PREFILL_UNSAFE_EL_RPC_URLS_1868?.split(',') ?? [];
-/** @type string[] */
-export const prefillUnsafeElRpcUrls1946 =
-  process.env.PREFILL_UNSAFE_EL_RPC_URLS_1946?.split(',') ?? [];
-/** @type string[] */
 export const prefillUnsafeElRpcUrls130 =
   process.env.PREFILL_UNSAFE_EL_RPC_URLS_130?.split(',') ?? [];
 /** @type string[] */

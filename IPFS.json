@@ -8,10 +8,7 @@
         "integration": "cowswap",
         "enabled": false
       },
-      "multiChainBanner": [
-        324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443, 48900, 1868,
-        130, 1135, 1923
-      ],
+      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
       "earnVaultsBanner": {
         "showOnStakeForm": true,
         "showAfterStake": true
@@ -57,10 +54,7 @@
         "integration": "cowswap",
         "enabled": true
       },
-      "multiChainBanner": [
-        324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443, 48900, 1868,
-        130, 1135, 1923
-      ],
+      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
       "earnVaultsBanner": {
         "showOnStakeForm": true,
         "showAfterStake": true
