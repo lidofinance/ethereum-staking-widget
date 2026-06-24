@@ -56,7 +56,7 @@ export const useCowSwapEthereumProvider = (
         }
 
         try {
-          return walletClient.request(
+          return await walletClient.request(
             payload as Parameters<typeof walletClient.request>[0],
             { dedupe: true },
           );
