@@ -6,6 +6,8 @@ import { useDappStatus } from 'modules/web3';
 
 import { OrderData, validateRpcRequest } from '../validate-tx';
 import { COWSWAP_ENABLED_CHAIN_IDS } from '../consts';
+import { UserRejectedRequestError } from 'viem';
+import { ErrorMessage } from 'utils/getErrorMessage';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
@@ -28,34 +30,39 @@ export const useCowSwapEthereumProvider = (
     }
     return {
       request: async <T>(payload: JsonRpcRequest): Promise<T> => {
+        // transaction request block
         try {
-          const { order, sanitizedRequest } = await validateRpcRequest(
-            payload,
-            {
-              chainId,
-              signer: walletClient.account.address,
-            },
-          );
+          // validation block, opens modal and throws error if validation fails
+          try {
+            const { order, sanitizedRequest } = await validateRpcRequest(
+              payload,
+              {
+                chainId,
+                signer: walletClient.account.address,
+              },
+            );
 
-          // this prevents extra fields to be passed along with the orginal request
-          payload = sanitizedRequest as typeof payload;
+            // this prevents extra fields to be passed along with the orginal request
+            payload = sanitizedRequest as typeof payload;
 
-          // Validate order trade  params, order can be recovered from different signing methods
-          if (order) {
-            const error = verifySignedOrder(order);
+            // Validate order trade  params, order can be recovered from different signing methods
+            if (order) {
+              const error = verifySignedOrder(order);
 
-            if (error) {
-              throw new Error(error);
+              if (error) {
+                throw new Error(error);
+              }
             }
+          } catch (error) {
+            if (error instanceof Error) {
+              await openTransactionGuardModal(error.message);
+            }
+            throw {
+              code: UserRejectedRequestError.code,
+              message: ErrorMessage.SOMETHING_WRONG,
+            };
           }
-        } catch (error) {
-          if (error instanceof Error) {
-            await openTransactionGuardModal(error.message);
-          }
-          throw error; // re-throw to ensure the error is propagated to the caller
-        }
 
-        try {
           return await walletClient.request(
             payload as Parameters<typeof walletClient.request>[0],
             { dedupe: true },
@@ -65,8 +72,17 @@ export const useCowSwapEthereumProvider = (
             '[useCowSwapEthereumProvider] Error during walletClient.request:',
             error,
           );
-          // silent cowswap error to prevent huge error messages
-          throw new Error('Failed to process RPC request');
+
+          // Handle specific error cases and throw user-friendly messages
+          if (error instanceof UserRejectedRequestError) {
+            throw {
+              code: UserRejectedRequestError.code,
+              message: ErrorMessage.DENIED_SIG,
+            };
+          }
+
+          // throw error further
+          throw error;
         }
       },
       on: (eventName: string, handler: unknown) => {

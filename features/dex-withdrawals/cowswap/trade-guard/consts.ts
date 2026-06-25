@@ -23,7 +23,7 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
   oracleDeviationBlock: 4,
   maxAllowedSellAmount: 5_000,
   // Minimum sell amount (in token units) to trigger Chainlink oracle verification
-  minSellUnitsToTriggerOracle: 1,
+  minSellUnitsToTriggerOracle: 0.5,
 };
 
 // --- Resolve mainnet addresses from network config ---
