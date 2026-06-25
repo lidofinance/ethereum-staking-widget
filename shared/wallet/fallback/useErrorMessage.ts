@@ -20,7 +20,7 @@ export const useErrorMessage = (toActionText?: string): string | undefined => {
   // Errors from chain state
 
   if (isAccountActive && !isChainMatched) {
-    return `Wrong network. Please switch to ${getPrettyChainName(chainId)} in your wallet to ${toActionText}.`;
+    return `Wrong network. Please switch to ${getPrettyChainName(chainId)} in your wallet ${toActionText}.`;
   }
 
   if (!isSupportedChain) {

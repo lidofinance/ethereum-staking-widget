@@ -141,9 +141,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
             : undefined,
 
           isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
-          supportedChainIds: config.supportedChains.filter((chain) =>
-            isSDKSupportedChain(chain),
-          ),
+          supportedChainIds: config.supportedChains.filter(isSDKSupportedChain),
         }),
         [chainId, walletChainId],
       )}

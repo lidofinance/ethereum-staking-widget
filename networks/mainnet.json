@@ -28,6 +28,7 @@
     "aggregatorBtcUsdPriceFeed": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
     "stethCurve": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
     "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
+    "ensUniversalResolver": "0xeEeEEEeE14D718C2B47D9923Deab1335E144EeEe",
     "cowVaultRelayer": "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110",
     "cowSettlement": "0x9008D19f58AAbD9eD0D60971565AA8510560ab41",
 

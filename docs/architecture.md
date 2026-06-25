@@ -91,7 +91,7 @@ Account Abstraction (safe-global, ERC-4337) supported via reef-knot.
 ### Supported networks
 
 - **L1:** Mainnet (1), Sepolia (11155111), Hoodi (560048)
-- **L2:** Optimism (10), Optimism Sepolia (11155420), Soneium (1868), Soneium Minato (1946), Unichain (130), Unichain Sepolia (1301)
+- **L2:** Optimism (10), Optimism Sepolia (11155420), Unichain (130), Unichain Sepolia (1301)
 
 ### L2 feature support
 

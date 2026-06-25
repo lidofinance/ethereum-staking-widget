@@ -25,7 +25,8 @@ import {
 // Side contracts ABIs
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { ENSRegistryAbi } from 'abi/ens-registry-abi';
-import { ENSResolverAbi } from 'abi/ens-resolver-abi';
+import { ENSPublicResolverAbi } from 'abi/ens-public-resolver-abi';
+import { ENSUniversalResolverAbi } from 'abi/ens-universal-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import {
@@ -101,7 +102,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.aggregatorBtcUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
-  [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
+  [CONTRACT_NAMES.ensPublicResolver]: ENSPublicResolverAbi,
+  [CONTRACT_NAMES.ensUniversalResolver]: ENSUniversalResolverAbi,
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
   [CONTRACT_NAMES.cowVaultRelayer]: CowVaultRelayerAbi,
   [CONTRACT_NAMES.cowSettlement]: CowSettlementAbi,
