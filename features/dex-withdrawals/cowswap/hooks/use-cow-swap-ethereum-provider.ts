@@ -63,10 +63,12 @@ export const useCowSwapEthereumProvider = (
               message: ErrorMessage.SOMETHING_WRONG,
             };
           }
-
+          // NB!: client.request can throw on timeout for actions like signing
+          // this is not a behavior wallet specific methods client.sign<...> have
+          // but it's hard to match raw RPC body to viem dev-friendly args and methods
           return await walletClient.request(
             payload as Parameters<typeof walletClient.request>[0],
-            { dedupe: true },
+            { dedupe: true, retryCount: 0 },
           );
         } catch (error) {
           console.error(
