@@ -38,7 +38,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
       invariant(address, 'needs address');
       const tokenAddress = getTokenAddress(core.chainId, token);
       // used as substitute for ETH in previewDeposit
-      const wethAddress = getTokenAddress(core.chainId, 'wETH');
+      const wethAddress = getTokenAddress(core.chainId, 'WETH');
       invariant(tokenAddress, 'Token address is not defined');
       invariant(wethAddress, 'WETH address is not defined');
 

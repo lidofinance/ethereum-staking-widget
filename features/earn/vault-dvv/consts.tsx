@@ -10,7 +10,7 @@ export const SSV_TOKEN_SYMBOL = 'SSV';
 
 export const MELLOW_POINT_SYMBOL = 'Mellow';
 
-export const DVV_DEPOSIT_TOKENS = ['ETH', 'wETH'] as DVVDepositTokens[];
+export const DVV_DEPOSIT_TOKENS = ['ETH', 'WETH'] as DVVDepositTokens[];
 
 export const SSV_CLAIM_URL = (address: Address) =>
   `https://www.ssvrewards.com/?address=${address.toLowerCase()}&tab=lido`;
