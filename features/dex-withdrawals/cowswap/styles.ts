@@ -37,7 +37,7 @@ export const DexWrapper = styled.div<{ $consumeBottomSpace?: boolean }>`
   ${({ $consumeBottomSpace, theme }) =>
     $consumeBottomSpace &&
     css`
-      margin-bottom: -${theme.spaceMap.xxl}px;
+      margin-bottom: -${theme.spaceMap.md}px;
 
       ${({ theme }) => theme.mediaQueries.md} {
         margin-bottom: -${theme.spaceMap.lg}px;
