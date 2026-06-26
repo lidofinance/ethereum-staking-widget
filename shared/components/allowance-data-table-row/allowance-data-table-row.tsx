@@ -4,7 +4,7 @@ import { DataTableRow } from '@lidofinance/lido-ui';
 
 import { LIDO_TOKENS_VALUES } from 'consts/tokens';
 import { FormatToken } from 'shared/formatters';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 
 export type AllowanceDataTableRowProps = Omit<
   React.ComponentProps<typeof DataTableRow>,
@@ -34,10 +34,7 @@ export const AllowanceDataTableRow = ({
       ) : isInfiniteAllowance ? (
         'Infinite'
       ) : (
-        <FormatToken
-          amount={allowance || 0n}
-          symbol={getTokenDisplayName(token)}
-        />
+        <FormatToken amount={allowance || 0n} symbol={getTokenSymbol(token)} />
       )}
     </DataTableRow>
   );

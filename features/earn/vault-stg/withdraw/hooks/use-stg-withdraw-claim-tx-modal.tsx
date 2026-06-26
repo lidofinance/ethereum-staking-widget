@@ -6,13 +6,13 @@ import {
   useTransactionModalStage,
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 
 const STAGE_OPERATION_ARGS = {
-  willReceiveToken: getTokenDisplayName('wstETH'),
-  token: getTokenDisplayName('wstETH'),
+  willReceiveToken: getTokenSymbol('wstETH'),
+  token: getTokenSymbol('wstETH'),
   operationText: 'Claiming',
 };
 

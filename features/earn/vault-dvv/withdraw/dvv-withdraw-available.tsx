@@ -1,5 +1,5 @@
 import { VaultAvailable } from 'features/earn/shared/vault-available';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { useDVVPosition } from '../hooks/use-dvv-position';
 
 export const DVVWithdrawAvailable = () => {
@@ -8,7 +8,7 @@ export const DVVWithdrawAvailable = () => {
   return (
     <VaultAvailable
       label="Available to withdraw"
-      symbol={getTokenDisplayName('dvstETH')}
+      symbol={TOKEN_SYMBOLS.dvsteth}
       amount={sharesBalance}
       isLoading={isLoading}
     />

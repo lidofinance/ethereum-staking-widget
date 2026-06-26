@@ -3,6 +3,7 @@ import { useFormState } from 'react-hook-form';
 import { TokenDvstethIcon } from 'assets/earn';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { useDVVPosition } from '../hooks/use-dvv-position';
@@ -18,7 +19,7 @@ export const DVVWithdrawInput = () => {
       }
       disabled={disabled}
       fieldName="amount"
-      token={'dvstETH'}
+      token={TOKEN_SYMBOLS.dvsteth}
       data-testid="withdraw-input"
       maxValue={data?.sharesBalance}
       onMaxClick={() => {

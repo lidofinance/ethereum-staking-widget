@@ -12,7 +12,7 @@ import {
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxRequestStageSuccess } from './tx-stage-request-success';
 
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import type { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 
 const STAGE_APPROVE_ARGS = {
@@ -50,7 +50,7 @@ const getTxModalStagesRequest = (
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
       />,
     ),
 
@@ -63,7 +63,7 @@ const getTxModalStagesRequest = (
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         isPending
         txHash={txHash}
       />,
@@ -74,7 +74,7 @@ const getTxModalStagesRequest = (
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
       />,
     ),
 
@@ -88,7 +88,7 @@ const getTxModalStagesRequest = (
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         isPending
         isAA={isAA}
         txHash={txHash}
@@ -99,7 +99,7 @@ const getTxModalStagesRequest = (
     transitStage(
       <TxRequestStageSuccess
         amount={amount}
-        tokenName={getTokenDisplayName(token)}
+        tokenName={getTokenSymbol(token)}
         txHash={txHash}
       />,
       {

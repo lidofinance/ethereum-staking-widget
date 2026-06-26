@@ -8,15 +8,15 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { VaultDepositTxStageSuccess } from 'features/earn/shared/vault-deposit-tx-stage-success';
 import { GGV_TOKEN_SYMBOL } from '../../consts';
 
 const STAGE_OPERATION_ARGS = {
   // on cancel you receive back gg
-  willReceiveToken: getTokenDisplayName('gg'),
+  willReceiveToken: getTokenSymbol('gg'),
   // request is displayed in wsteth
-  token: getTokenDisplayName('wstETH'),
+  token: getTokenSymbol('wstETH'),
 
   operationText: 'cancelling withdrawal for',
 };

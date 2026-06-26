@@ -8,18 +8,18 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { VaultDepositTxStageSuccess } from 'features/earn/shared/vault-deposit-tx-stage-success/vault-deposit-tx-stage-success';
 
 const STAGE_APPROVE_ARGS = {
-  willReceiveToken: getTokenDisplayName('wstETH'),
-  token: getTokenDisplayName('dvstETH'),
+  willReceiveToken: TOKEN_SYMBOLS.wsteth,
+  token: TOKEN_SYMBOLS.dvsteth,
   operationText: 'Unlocking',
 };
 
 const STAGE_OPERATION_ARGS = {
-  willReceiveToken: getTokenDisplayName('wstETH'),
-  token: getTokenDisplayName('dvstETH'),
+  willReceiveToken: TOKEN_SYMBOLS.wsteth,
+  token: TOKEN_SYMBOLS.dvsteth,
   operationText: 'requesting withdrawal for',
 };
 

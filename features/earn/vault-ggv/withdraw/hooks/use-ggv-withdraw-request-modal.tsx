@@ -8,19 +8,19 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { VaultCustomTxStageSuccess } from 'features/earn/shared/vault-custom-tx-stage-success';
 import { FormatToken } from 'shared/formatters';
 
 const STAGE_APPROVE_ARGS = {
-  willReceiveToken: getTokenDisplayName('wstETH'),
-  token: getTokenDisplayName('gg'),
+  willReceiveToken: getTokenSymbol('wstETH'),
+  token: getTokenSymbol('gg'),
   operationText: 'Unlocking',
 };
 
 const STAGE_OPERATION_ARGS = {
-  willReceiveToken: getTokenDisplayName('wstETH'),
-  token: getTokenDisplayName('gg'),
+  willReceiveToken: getTokenSymbol('wstETH'),
+  token: getTokenSymbol('gg'),
   operationText: 'requesting withdrawal for',
 };
 
@@ -82,7 +82,7 @@ const getTxModalStagesRequest = (
             Request to withdraw{' '}
             <FormatToken
               amount={willReceive}
-              symbol={getTokenDisplayName('wstETH')}
+              symbol={getTokenSymbol('wstETH')}
             />{' '}
             has been sent.
           </>
