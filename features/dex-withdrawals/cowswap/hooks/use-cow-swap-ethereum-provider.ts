@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
+import { InvalidRequestRpcError, UserRejectedRequestError } from 'viem';
 
 import { useDappStatus } from 'modules/web3';
+import { ErrorMessage } from 'utils/getErrorMessage';
 
 import { OrderData, validateRpcRequest } from '../validate-tx';
 import { COWSWAP_ENABLED_CHAIN_IDS } from '../consts';
-import { UserRejectedRequestError } from 'viem';
-import { ErrorMessage } from 'utils/getErrorMessage';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
@@ -57,8 +57,9 @@ export const useCowSwapEthereumProvider = (
             if (error instanceof Error) {
               await openTransactionGuardModal(error.message);
             }
+
             throw {
-              code: UserRejectedRequestError.code,
+              code: InvalidRequestRpcError.code,
               message: ErrorMessage.SOMETHING_WRONG,
             };
           }
