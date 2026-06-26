@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
-import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
-import { InvalidRequestRpcError, UserRejectedRequestError } from 'viem';
+import { useConnection, useWalletClient } from 'wagmi';
+import { InvalidRequestRpcError, toHex, UserRejectedRequestError } from 'viem';
 
 import { useDappStatus } from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
@@ -87,10 +87,45 @@ export const useCowSwapEthereumProvider = (
         }
       },
       on: (eventName: string, handler: unknown) => {
-        connector.emitter.on(
-          eventName as keyof ConnectorEventMap,
-          handler as never,
-        );
+        // Connecting EIP1193 provider events to wagmi connector events
+        // Wagmi connector can be made from EIP1193 provider, but not the other way around
+        // Cowswap provider: https://eips.ethereum.org/EIPS/eip-1193
+        // Wagmi connector: https://github.com/wevm/wagmi/blob/main/packages/core/src/connectors/injected.ts
+        const handlerFn = handler as (args: any) => void;
+
+        switch (eventName) {
+          case 'accountsChanged':
+            connector.emitter.on('change', ({ accounts }) => {
+              if (accounts && Array.isArray(accounts)) {
+                handlerFn(accounts);
+              }
+            });
+            break;
+          case 'chainChanged':
+            connector.emitter.on('change', ({ chainId }) => {
+              if (chainId) {
+                handlerFn(toHex(chainId));
+              }
+            });
+            break;
+          case 'connect':
+            // connect event has side effects in wagmi connectors, but if we are here, connector is ready so we can emit event in next tick
+            // https://github.com/wevm/wagmi/blob/81b621114a75d5ee94e9bb7d52c94c7d9b8ca1a8/packages/core/src/connectors/injected.ts#L462
+            setTimeout(() => {
+              handlerFn({ chainId: toHex(chainId) });
+            }, 0);
+            break;
+          case 'disconnect':
+          case 'close':
+            connector.emitter.on('disconnect', (error) => {
+              handlerFn(error);
+            });
+            break;
+          default:
+            console.warn(
+              `[useCowSwapEthereumProvider] Unhandled event: ${eventName}`,
+            );
+        }
       },
     };
   }, [

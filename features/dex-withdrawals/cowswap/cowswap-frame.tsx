@@ -11,7 +11,6 @@ import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
 
 import { LOCALE } from 'config/groups/locale';
 import { useTheme } from 'styled-components';
-import { useWalletClient } from 'wagmi';
 import { useAddressValidation } from 'providers/address-validation-provider';
 import { themeDark, themeLight } from '@lidofinance/lido-ui';
 import { useDappStatus } from 'modules/web3';
@@ -75,9 +74,8 @@ export const CowswapFrame = () => {
   const { isLoading, isLoaded, onLoaded, onError, triggerRefresh, refreshId } =
     useLoadingStates();
 
-  const { isTestnet } = useDappStatus();
+  const { address, isTestnet } = useDappStatus();
   const { validateAddress } = useAddressValidation();
-  const { data: walletClient } = useWalletClient();
   const { name: themeName } = useTheme();
   // Fall back to self-hosted token lists if GitHub is unavailable
   const isGithubAvailable = useIsGhAvailable();
@@ -100,9 +98,9 @@ export const CowswapFrame = () => {
   });
 
   const validate = useCallback(async () => {
-    const isValid = await validateAddress(walletClient?.account.address);
+    const isValid = await validateAddress(address);
     return isValid;
-  }, [validateAddress, walletClient?.account.address]);
+  }, [validateAddress, address]);
 
   const provider = useCowSwapEthereumProvider(
     verifySignedOrder,
