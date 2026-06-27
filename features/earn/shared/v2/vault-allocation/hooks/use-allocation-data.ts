@@ -24,8 +24,8 @@ import {
 
 type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
 
-// Hides entries that would display as 0.00% in the UI
-const MIN_DISPLAY_PERCENT = 0.01;
+// FormatPercent renders one decimal, so smaller values are displayed as 0%.
+const MIN_DISPLAY_PERCENT = 0.05;
 const isVisible = (allocation: number): boolean =>
   allocation >= MIN_DISPLAY_PERCENT;
 
@@ -186,9 +186,11 @@ const parseNestedGroup = (
   };
 };
 
-const parseFlatItems = (allocations: ApiAllocation[]): FlatAllocationItem[] => {
+const parseFlatItems = (
+  allocations: ApiAllocation[],
+  summaryRows = createAllocationSummaryRows(),
+): FlatAllocationItem[] => {
   const items: FlatAllocationItem[] = [];
-  const summaryRows = createAllocationSummaryRows();
 
   for (const alloc of allocations) {
     const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
@@ -250,31 +252,43 @@ export const useAllocationData = (
 
     const groups: AllocationGroup[] = [];
     const flatAllocations: ApiAllocation[] = [];
+    const topLevelSummaryRows = createAllocationSummaryRows();
 
     for (const alloc of apiData.allocations) {
       if (alloc.type === 'nested') {
         const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
-        groups.push(parseNestedGroup(alloc, tvlUSD));
+        const group = parseNestedGroup(alloc, tvlUSD);
+
+        if (isVisible(group.allocation)) {
+          groups.push(group);
+        } else {
+          addToAllocationSummaryRow(
+            topLevelSummaryRows,
+            'others',
+            group.allocation,
+            group.tvlUSD,
+          );
+        }
       } else {
         flatAllocations.push(alloc);
       }
     }
 
-    const filteredGroups = groups.filter((g) => isVisible(g.allocation));
-    const filteredFlatItems = parseFlatItems(flatAllocations).filter((item) =>
-      isVisible(item.allocation),
-    );
+    const filteredFlatItems = parseFlatItems(
+      flatAllocations,
+      topLevelSummaryRows,
+    ).filter((item) => isVisible(item.allocation));
 
     const totalTvlUsd = parseTvlUSD(
       apiData.totalTvl.usd,
       apiData.totalTvl.usd_decimals,
     );
-    const chartData = buildChartData([...filteredGroups, ...filteredFlatItems]);
+    const chartData = buildChartData([...groups, ...filteredFlatItems]);
 
     return {
       lastUpdated: Number(apiData.lastUpdate),
       chartData,
-      groups: filteredGroups,
+      groups,
       ...(filteredFlatItems.length > 0 && { flatItems: filteredFlatItems }),
       totalTvlUsd,
     };
