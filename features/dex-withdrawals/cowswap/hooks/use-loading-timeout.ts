@@ -5,7 +5,8 @@ import { useDappStatus } from 'modules/web3';
 
 export const useLoadingStates = () => {
   const { address, chainId } = useDappStatus();
-  const [refreshId, setRefreshId] = useState('<INITIAL_UUID>');
+  // Refresh ID is used to trigger a refresh of the widget state even when they params change
+  const [refreshId, setRefreshId] = useState('<INITIAL_HYDRATION_SAFE_UUID>');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 

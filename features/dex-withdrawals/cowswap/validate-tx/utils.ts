@@ -145,7 +145,7 @@ export const CowSwapGPv2OrderSchema = z.object({
   buyToken: addressSchema,
   sellAmount: bigintStringSchema,
   buyAmount: bigintStringSchema,
-  validTo: z.number(),
+  validTo: z.int32(),
   kind: z.literal('sell'),
   partiallyFillable: z.literal(false),
   appData: hexSchema,
@@ -276,6 +276,11 @@ export type ValidationContext = {
 
 export type OrderData = z.infer<typeof CowSwapGPv2OrderSchema>;
 
+export type CancelOrderData = {
+  isCancel: true;
+  orderUid: Hex;
+};
+
 // ---- Helpers ----
 
 export const getNetworkTxConfig = (chainId: number): NetworkTxConfig => {
@@ -339,4 +344,10 @@ export const calculateOrderUID = (
     ['bytes32', 'address', 'uint32'],
     [orderHash, signer, validTo],
   );
+};
+
+export const isCancelOrder = (
+  order: OrderData | CancelOrderData,
+): order is CancelOrderData => {
+  return 'isCancel' in order && order.isCancel;
 };

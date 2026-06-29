@@ -66,7 +66,7 @@ const applyOracleResult = (
         verified: false,
       };
     default:
-      return { level: 'safe', messages: [], verified: false };
+      invariant(false, `Unknown oracle result reason: ${result.reason}`);
   }
 };
 
@@ -141,8 +141,11 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
       const sellUnits = safeParseDecimal(
         payload.sellTokenAmount.units?.toString(),
       );
-      // Should never happen due to analyzeParams checks
-      invariant(sellUnits !== null, 'Invalid sell amount units');
+
+      if (!sellUnits) {
+        await showModal('blocked', [TRADE_BUILD_ERROR(1007)], false);
+        return false;
+      }
       // QA clamping already applied in readThresholds()
       const meetsThreshold =
         sellUnits >= tradeThresholds.minSellUnitsToTriggerOracle;

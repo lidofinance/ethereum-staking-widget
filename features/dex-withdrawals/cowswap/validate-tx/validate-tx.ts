@@ -1,6 +1,11 @@
 import { mainnet, sepolia } from 'viem/chains';
 import { COWSWAP_WIDGET_ALLOWED_RPC_METHODS } from '../consts';
-import { OrderData, ValidationContext, jsonRpcRequestSchema } from './utils';
+import {
+  OrderData,
+  ValidationContext,
+  isCancelOrder,
+  jsonRpcRequestSchema,
+} from './utils';
 import {
   validateSendCalls,
   validateSendTransaction,
@@ -62,7 +67,7 @@ export const validateRpcRequest = async (
         console.warn('[DEX Provider] Transaction blocked:', result.reason);
         throw new Error(result.reason);
       }
-      if (result.result) {
+      if (result.result && !isCancelOrder(result.result)) {
         order = result.result;
       }
       break;
@@ -73,7 +78,7 @@ export const validateRpcRequest = async (
         console.warn('[DEX Provider] Batch call blocked:', result.reason);
         throw new Error(result.reason);
       }
-      if (result.result) {
+      if (result.result && !isCancelOrder(result.result)) {
         order = result.result;
       }
       break;

@@ -12,10 +12,8 @@ export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
   'eth_getTransactionReceipt',
   'eth_getTransactionCount',
   'eth_feeHistory',
-  // EIP-2255
-  'wallet_requestPermissions',
+  // EIP-2255 (only-read)
   'wallet_getPermissions',
-  'wallet_revokePermissions',
   // EOA
   'eth_signTypedData_v4',
   'eth_sendTransaction',

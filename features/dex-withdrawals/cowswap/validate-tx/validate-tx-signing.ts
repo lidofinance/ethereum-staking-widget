@@ -18,10 +18,12 @@ import {
   AppDataSchema,
   bigintStringSchema,
   calculateOrderUID,
+  CancelOrderData,
   getAppDataHex,
   getNetworkTxConfig,
   hashCowswapOrder,
   hexSchema,
+  isCancelOrder,
   jsonStringSchema,
   OrderData,
   ValidationContext,
@@ -79,7 +81,7 @@ const CowSwapGetOrderResponseSchema = z.object({
   receiver: addressSchema,
   sellAmount: bigintStringSchema,
   buyAmount: bigintStringSchema,
-  validTo: z.number(),
+  validTo: z.int32(),
   appData: hexSchema,
   feeAmount: bigintStringSchema,
   kind: z.literal('sell'),
@@ -216,7 +218,7 @@ const validateApproveSpender = (
 const validateSettlerSignature = async (
   data: Hex,
   ctx: ValidationContext,
-): Promise<ValidationResult<OrderData | undefined>> => {
+): Promise<ValidationResult<OrderData | CancelOrderData>> => {
   try {
     const { functionName, args } = decodeFunctionData({
       abi: CowSettlementAbi,
@@ -236,8 +238,9 @@ const validateSettlerSignature = async (
       return validatePreSetSignature(orderUID, ctx);
     } else if (functionName == 'invalidateOrder') {
       // we allow to cancel any order and no need to validate the order
+      const [orderUID] = args;
       return {
-        result: undefined,
+        result: { isCancel: true, orderUid: orderUID },
         allowed: true,
       };
     }
@@ -267,7 +270,7 @@ const validateSettlerSignature = async (
 export const validateSendTransaction = async (
   params: unknown,
   ctx: ValidationContext,
-): Promise<ValidationResult<OrderData | undefined>> => {
+): Promise<ValidationResult<OrderData | undefined | CancelOrderData>> => {
   const { chainId } = ctx;
   const parseResult = sendTransactionParamsSchema.safeParse(params);
 
@@ -329,7 +332,7 @@ const sendCallsParamsSchema = z.tuple([
 export const validateSendCalls = async (
   params: unknown,
   ctx: ValidationContext,
-): Promise<ValidationResult<OrderData>> => {
+): Promise<ValidationResult<OrderData | CancelOrderData>> => {
   const parseResult = sendCallsParamsSchema.safeParse(params);
 
   if (!parseResult.success) {
@@ -341,7 +344,7 @@ export const validateSendCalls = async (
 
   const calls = parseResult.data[0].calls;
 
-  let order: OrderData | undefined = undefined;
+  let order: OrderData | CancelOrderData | undefined = undefined;
 
   for (const [_, call] of calls.entries()) {
     const result = await validateSendTransaction([call], ctx);
@@ -353,6 +356,7 @@ export const validateSendCalls = async (
     }
     if (result.result) {
       if (order) {
+        // only 1 order/cancel per call batch
         return {
           allowed: false,
           reason: TRANSACTION_ERROR(2035),
@@ -366,6 +370,14 @@ export const validateSendCalls = async (
     return {
       allowed: false,
       reason: TRANSACTION_ERROR(2036),
+    };
+  }
+
+  if (isCancelOrder(order) && calls.length > 1) {
+    // during cancel, no other calls are allowed
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2037),
     };
   }
 
