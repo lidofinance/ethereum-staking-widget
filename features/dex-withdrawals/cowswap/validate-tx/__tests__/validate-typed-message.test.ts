@@ -10,7 +10,10 @@ import { keccak256, toHex } from 'viem';
 // json-stringify-deterministic is a transitive dependency (see utils.ts)
 import stringify from 'json-stringify-deterministic';
 
-import { validateSignTypedData } from '../validate-typed-message';
+import {
+  validateSignTypedData,
+  validateCowSwapOrderMessage,
+} from '../validate-typed-message';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import mainnetNetwork from 'networks/mainnet.json';
@@ -171,6 +174,34 @@ const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
     types: {
       EIP712Domain: EIP712_DOMAIN_TYPES,
       Order: ORDER_TYPES,
+    },
+  };
+  return [signer, JSON.stringify(order)];
+};
+
+type CancelOverrides = {
+  signer?: string;
+  chainId?: number;
+  verifyingContract?: string;
+  orderUid?: string;
+};
+
+const buildCancelParams = (overrides: CancelOverrides = {}) => {
+  const signer = overrides.signer ?? SIGNER;
+  const order = {
+    domain: {
+      name: 'Gnosis Protocol',
+      version: 'v2',
+      chainId: overrides.chainId ?? CHAIN_MAINNET,
+      verifyingContract: overrides.verifyingContract ?? COW_SETTLEMENT,
+    },
+    message: {
+      orderUids: [overrides.orderUid ?? '0x1234'],
+    },
+    primaryType: 'OrderCancellations',
+    types: {
+      EIP712Domain: EIP712_DOMAIN_TYPES,
+      OrderCancellations: [{ name: 'orderUids', type: 'bytes[]' }],
     },
   };
   return [signer, JSON.stringify(order)];
@@ -385,6 +416,24 @@ describe('validateSignTypedData', () => {
     it('rejects when sellTokenBalance is not erc20', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellTokenBalance: 'external' }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+    });
+
+    it('rejects when sellAmount is not a valid bigint string', async () => {
+      // bigintStringSchema rejects a non-numeric amount (BigInt() throws).
+      const result = await validateSignTypedData(
+        buildTypedDataParams({ sellAmount: 'not-a-number' }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBeDefined();
+    });
+
+    it('rejects when sellAmount is a negative bigint string', async () => {
+      const result = await validateSignTypedData(
+        buildTypedDataParams({ sellAmount: '-1' }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
@@ -612,6 +661,85 @@ describe('validateSignTypedData', () => {
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
+  });
+});
+
+describe('validateSignTypedData — order cancellation (OrderCancellations)', () => {
+  it('allows a valid cancellation on mainnet', async () => {
+    const result = await validateSignTypedData(buildCancelParams(), mainnetCtx);
+    expect(result.allowed).toBe(true);
+  });
+
+  it('rejects cancellation when domain chainId differs from ctx.chainId', async () => {
+    const result = await validateSignTypedData(
+      buildCancelParams({ chainId: CHAIN_SEPOLIA }),
+      mainnetCtx,
+    );
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toBeDefined();
+  });
+
+  it('rejects cancellation when verifyingContract is not CoW Settlement', async () => {
+    const result = await validateSignTypedData(
+      buildCancelParams({ verifyingContract: ATTACKER }),
+      mainnetCtx,
+    );
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toBeDefined();
+  });
+
+  it('rejects cancellation with more than one order UID', async () => {
+    // schema requires exactly one order UID
+    const order = {
+      domain: {
+        name: 'Gnosis Protocol',
+        version: 'v2',
+        chainId: CHAIN_MAINNET,
+        verifyingContract: COW_SETTLEMENT,
+      },
+      message: { orderUids: ['0x1234', '0x5678'] },
+      primaryType: 'OrderCancellations',
+      types: {
+        EIP712Domain: EIP712_DOMAIN_TYPES,
+        OrderCancellations: [{ name: 'orderUids', type: 'bytes[]' }],
+      },
+    };
+    const result = await validateSignTypedData(
+      [SIGNER, JSON.stringify(order)],
+      mainnetCtx,
+    );
+    expect(result.allowed).toBe(false);
+  });
+});
+
+describe('validateCowSwapOrderMessage — prefetched appData', () => {
+  // A valid, in-window order message (bigint amounts) used to exercise the
+  // prefetched-appData branch directly.
+  const buildOrderMessage = () => ({
+    sellToken: STETH as `0x${string}`,
+    buyToken: WETH as `0x${string}`,
+    sellAmount: 1000000000000000000n,
+    buyAmount: 950000000000000000n,
+    validTo: Math.floor(Date.now() / 1000) + 600,
+    kind: 'sell' as const,
+    partiallyFillable: false as const,
+    appData: APP_DATA,
+    receiver: SIGNER as `0x${string}`,
+    feeAmount: 0n,
+    sellTokenBalance: 'erc20' as const,
+    buyTokenBalance: 'erc20' as const,
+  });
+
+  it('rejects when prefetched appData fails schema validation', async () => {
+    const result = await validateCowSwapOrderMessage(
+      buildOrderMessage(),
+      mainnetCtx,
+      { not: 'valid-app-data' } as never,
+    );
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toBeDefined();
+    // Fetch must not be used when appData is supplied inline.
+    expect(vi.mocked(standardFetcher)).not.toHaveBeenCalled();
   });
 });
 

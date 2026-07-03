@@ -11,10 +11,17 @@ import {
   validateSendCalls,
 } from '../validate-tx-signing';
 import { hashCowswapOrder, calculateOrderUID } from '../utils';
-import { encodeFunctionData, keccak256, toHex } from 'viem';
+import {
+  encodeFunctionData,
+  erc20Abi,
+  keccak256,
+  parseEther,
+  toHex,
+} from 'viem';
 // json-stringify-deterministic is a transitive dependency (see utils.ts)
 import stringify from 'json-stringify-deterministic';
 import { CowSettlementAbi } from '../../abi';
+import { TRANSACTION_ERROR } from '../consts';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import mainnetNetwork from 'networks/mainnet.json';
@@ -194,6 +201,47 @@ const buildSetPreSignature = (orderUID = TEST_ORDER_UID, signed = true) =>
     args: [orderUID, signed],
   });
 
+// Helper: build approve(spender, amount) calldata with an explicit amount
+const buildApproveAmount = (spender: string, amount: bigint) =>
+  encodeFunctionData({
+    abi: erc20Abi,
+    functionName: 'approve',
+    args: [spender as `0x${string}`, amount],
+  });
+
+// Helper: build invalidateOrder(bytes orderUid) calldata (order cancellation)
+const buildInvalidateOrder = (orderUID = TEST_ORDER_UID) =>
+  encodeFunctionData({
+    abi: CowSettlementAbi,
+    functionName: 'invalidateOrder',
+    args: [orderUID],
+  });
+
+// Helper: a valid CoW Settlement call that is neither setPreSignature nor
+// invalidateOrder (decodes cleanly but is not an allowed settler action)
+const buildUnknownSettlerCall = () =>
+  encodeFunctionData({
+    abi: CowSettlementAbi,
+    functionName: 'freeFilledAmountStorage',
+    args: [[]],
+  });
+
+// ---- Attacker appData order (UID matches, but message validation fails) ----
+// An order whose fetched appData names the attacker as the partner-fee
+// recipient. The order UID is derived from that appData, so UID recalculation
+// succeeds — the rejection happens later, inside order-message validation.
+const ATTACKER_APP_DATA = hashFullAppData(buildFullAppData(ATTACKER));
+const ATTACKER_ORDER_HASH = hashCowswapOrder(
+  { ...TEST_ORDER, appData: ATTACKER_APP_DATA },
+  CHAIN_MAINNET,
+  COW_SETTLEMENT as `0x${string}`,
+);
+const ATTACKER_ORDER_UID = calculateOrderUID(
+  ATTACKER_ORDER_HASH,
+  SIGNER,
+  TEST_VALID_TO,
+);
+
 // Selectors
 const DEPOSIT_SELECTOR = '0xd0e30db0';
 const WITHDRAW_SELECTOR = '0x2e1a7d4d' + '0'.repeat(64);
@@ -207,6 +255,16 @@ beforeEach(() => {
 afterEach(() => vi.resetAllMocks());
 
 // ================================================================
+
+describe('TRANSACTION_ERROR', () => {
+  it('appends the code when one is provided', () => {
+    expect(TRANSACTION_ERROR(2030)).toContain('(code 2030)');
+  });
+
+  it('omits the code suffix when none is provided', () => {
+    expect(TRANSACTION_ERROR()).toBe('Structural verification failed');
+  });
+});
 
 describe('validateSendTransaction', () => {
   describe('basic validation', () => {
@@ -369,6 +427,35 @@ describe('validateSendTransaction', () => {
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
+
+    it('rejects approve above maxAllowedSellAmount (5000) on stETH', async () => {
+      // maxAllowedSellAmount is 5000 ether — an approval of 6000 is finite
+      // (not maxUint256) but exceeds the per-tx sell cap.
+      const result = await validateSendTransaction(
+        [
+          {
+            to: STETH,
+            data: buildApproveAmount(COW_VAULT_RELAYER, parseEther('6000')),
+          },
+        ],
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBeDefined();
+    });
+
+    it('allows approve at the maxAllowedSellAmount (5000) boundary on stETH', async () => {
+      const result = await validateSendTransaction(
+        [
+          {
+            to: STETH,
+            data: buildApproveAmount(COW_VAULT_RELAYER, parseEther('5000')),
+          },
+        ],
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(true);
+    });
   });
 
   describe('WETH operations', () => {
@@ -493,6 +580,50 @@ describe('validateSendTransaction', () => {
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
+
+    it('rejects presign when UID matches but order message validation fails', async () => {
+      // Fetched order names the attacker as partner-fee recipient. The UID is
+      // derived from that appData so recalculation matches, but the order
+      // message validation then rejects the bad recipient.
+      vi.mocked(standardFetcher).mockResolvedValue(
+        buildOrderApiResponse(ATTACKER, STETH, ATTACKER_ORDER_UID, WETH),
+      );
+      const result = await validateSendTransaction(
+        [
+          {
+            to: COW_SETTLEMENT,
+            data: buildSetPreSignature(ATTACKER_ORDER_UID),
+          },
+        ],
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBeDefined();
+    });
+
+    it('allows invalidateOrder (order cancellation) on CoW Settlement', async () => {
+      const result = await validateSendTransaction(
+        [{ to: COW_SETTLEMENT, data: buildInvalidateOrder() }],
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(true);
+      if (!result.allowed) return;
+      expect(result.result).toEqual({
+        isCancel: true,
+        orderUid: TEST_ORDER_UID,
+      });
+    });
+
+    it('rejects a valid-but-unsupported CoW Settlement function', async () => {
+      // freeFilledAmountStorage decodes cleanly but is neither setPreSignature
+      // nor invalidateOrder — must be rejected.
+      const result = await validateSendTransaction(
+        [{ to: COW_SETTLEMENT, data: buildUnknownSettlerCall() }],
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBeDefined();
+    });
   });
 
   describe('Sepolia testnet', () => {
@@ -610,6 +741,19 @@ describe('validateSendCalls', () => {
       );
       expect(result.allowed).toBe(false);
     });
+
+    it('allows a lone invalidateOrder (cancel) batch', async () => {
+      const result = await validateSendCalls(
+        [{ calls: [{ to: COW_SETTLEMENT, data: buildInvalidateOrder() }] }],
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(true);
+      if (!result.allowed) return;
+      expect(result.result).toEqual({
+        isCancel: true,
+        orderUid: TEST_ORDER_UID,
+      });
+    });
   });
 
   describe('invalid batches', () => {
@@ -653,6 +797,23 @@ describe('validateSendCalls', () => {
             calls: [
               { to: COW_SETTLEMENT, data: buildSetPreSignature() },
               { to: COW_SETTLEMENT, data: buildSetPreSignature() },
+            ],
+          },
+        ],
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBeDefined();
+    });
+
+    it('rejects a cancel batched with any other call', async () => {
+      // A cancellation must be the only call in the batch.
+      const result = await validateSendCalls(
+        [
+          {
+            calls: [
+              { to: COW_SETTLEMENT, data: buildInvalidateOrder() },
+              { to: STETH, data: buildApprove(COW_VAULT_RELAYER) },
             ],
           },
         ],

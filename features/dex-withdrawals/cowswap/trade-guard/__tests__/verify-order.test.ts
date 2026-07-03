@@ -70,6 +70,20 @@ describe('verifyOrderAmounts', () => {
     expect(verifyOrderAmounts(order, snapshot)).toBeDefined();
   });
 
+  it('rejects when sell units string is unparseable (fail-closed)', () => {
+    // Known token (decimals defined) but parseUnits throws on a bad decimal
+    // string → unitsToRaw returns null → verification fails.
+    const snapshot = makeSnapshot({ sellAmountUnits: 'not-a-number' });
+    expect(verifyOrderAmounts(makeOrder(), snapshot)).toBeDefined();
+  });
+
+  it('rejects when buy-min units string is unparseable (fail-closed)', () => {
+    // Sell units convert fine, but the buy-min units string is invalid →
+    // expectedBuyMin is null → verification fails.
+    const snapshot = makeSnapshot({ buyAmountMinUnits: '0.1.2' });
+    expect(verifyOrderAmounts(makeOrder(), snapshot)).toBeDefined();
+  });
+
   describe('USDC (6 decimals)', () => {
     const usdcOrder = makeOrder({
       sellToken: STETH,
