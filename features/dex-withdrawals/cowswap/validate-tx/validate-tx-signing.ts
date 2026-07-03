@@ -81,7 +81,7 @@ const CowSwapGetOrderResponseSchema = z.object({
   receiver: addressSchema,
   sellAmount: bigintStringSchema,
   buyAmount: bigintStringSchema,
-  validTo: z.int32(),
+  validTo: z.uint32(),
   appData: hexSchema,
   feeAmount: bigintStringSchema,
   kind: z.literal('sell'),

@@ -145,7 +145,7 @@ export const CowSwapGPv2OrderSchema = z.object({
   buyToken: addressSchema,
   sellAmount: bigintStringSchema,
   buyAmount: bigintStringSchema,
-  validTo: z.int32(),
+  validTo: z.uint32(),
   kind: z.literal('sell'),
   partiallyFillable: z.literal(false),
   appData: hexSchema,

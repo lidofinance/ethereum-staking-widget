@@ -51,7 +51,6 @@ type TradeGuardModalProps = {
 
 const TITLE_TEXT: Record<string, string> = {
   blocked: 'Swap unavailable',
-  limit: 'Swap unavailable',
 };
 
 export const TradeGuardModal = ({ state, onClose }: TradeGuardModalProps) => {

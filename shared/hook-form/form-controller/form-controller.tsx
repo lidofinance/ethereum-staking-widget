@@ -10,16 +10,22 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
   children,
   ...props
 }) => {
-  const { handleSubmit, reset: resetDefault, getValues } = useFormContext();
+  const { handleSubmit, reset: resetHookForm, getValues } = useFormContext();
   const {
     onSubmit,
-    onReset: resetContext,
+    onReset: resetCustom,
     retryEvent,
   } = useFormControllerContext();
 
   const reset = useMemo(() => {
-    return resetContext ? resetContext : resetDefault;
-  }, [resetContext, resetDefault]);
+    return resetCustom
+      ? // for custom callback we provide current form values so that they can be used to build reset form state
+        // e.g. leave selected token but reset amount
+        resetCustom
+      : // for default hook-form reset we shim the argument, because hook-form reset expects the new form values as argument
+        // this resets form to default values provided to useForm
+        () => resetHookForm();
+  }, [resetCustom, resetHookForm]);
 
   // Bind submit action
   const doSubmit = useMemo(

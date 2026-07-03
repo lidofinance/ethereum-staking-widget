@@ -11,6 +11,23 @@ import { COWSWAP_ENABLED_CHAIN_IDS } from '../consts';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
+const CLEANUP_SET = new Set<() => void>();
+
+const addCleanup = (fn: () => void) => {
+  CLEANUP_SET.add(fn);
+};
+
+const cleanup = () => {
+  for (const fn of CLEANUP_SET) {
+    try {
+      fn();
+    } catch (error) {
+      console.error('[useCowSwapEthereumProvider] Cleanup error:', error);
+    }
+  }
+  CLEANUP_SET.clear();
+};
+
 export const useCowSwapEthereumProvider = (
   verifySignedOrder: VerifyOrder,
   openTransactionGuardModal: (reason: string) => Promise<void>,
@@ -26,6 +43,7 @@ export const useCowSwapEthereumProvider = (
       walletClient.chain.id !== chainId ||
       !COWSWAP_ENABLED_CHAIN_IDS.has(chainId)
     ) {
+      cleanup();
       return undefined;
     }
     return {
@@ -95,19 +113,31 @@ export const useCowSwapEthereumProvider = (
         // Wagmi connector: https://github.com/wevm/wagmi/blob/main/packages/core/src/connectors/injected.ts
         const handlerFn = handler as (args: any) => void;
 
+        let connectorHandler: Parameters<
+          NonNullable<typeof connector>['emitter']['on']
+        >[1];
+
         switch (eventName) {
           case 'accountsChanged':
-            connector.emitter.on('change', ({ accounts }) => {
+            connectorHandler = ({ accounts }: any) => {
               if (accounts && Array.isArray(accounts)) {
                 handlerFn(accounts);
               }
+            };
+            connector.emitter.on('change', connectorHandler);
+            addCleanup(() => {
+              connector?.emitter?.off?.('change', connectorHandler);
             });
             break;
           case 'chainChanged':
-            connector.emitter.on('change', ({ chainId }) => {
+            connectorHandler = ({ chainId }: any) => {
               if (chainId) {
                 handlerFn(toHex(chainId));
               }
+            };
+            connector.emitter.on('change', connectorHandler);
+            addCleanup(() => {
+              connector?.emitter?.off?.('change', connectorHandler);
             });
             break;
           case 'connect':
@@ -119,8 +149,12 @@ export const useCowSwapEthereumProvider = (
             break;
           case 'disconnect':
           case 'close':
-            connector.emitter.on('disconnect', (error) => {
+            connectorHandler = (error: any) => {
               handlerFn(error);
+            };
+            connector.emitter.on('disconnect', connectorHandler);
+            addCleanup(() => {
+              connector?.emitter?.off?.('disconnect', connectorHandler);
             });
             break;
           default:
