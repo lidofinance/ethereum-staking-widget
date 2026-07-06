@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
 import { useConnection, useWalletClient } from 'wagmi';
 import { InvalidRequestRpcError, toHex, UserRejectedRequestError } from 'viem';
@@ -36,6 +36,13 @@ export const useCowSwapEthereumProvider = (
   const { data: walletClient } = useWalletClient();
   const { connector } = useConnection();
 
+  // clean up on unmount
+  useEffect(() => {
+    return () => {
+      cleanup();
+    };
+  }, []);
+
   return useMemo(() => {
     if (
       !walletClient ||
@@ -43,9 +50,9 @@ export const useCowSwapEthereumProvider = (
       walletClient.chain.id !== chainId ||
       !COWSWAP_ENABLED_CHAIN_IDS.has(chainId)
     ) {
-      cleanup();
       return undefined;
     }
+    cleanup();
     return {
       request: async <T>(payload: JsonRpcRequest): Promise<T> => {
         // transaction request block
@@ -89,11 +96,6 @@ export const useCowSwapEthereumProvider = (
             { dedupe: true, retryCount: 0 },
           );
         } catch (error) {
-          console.error(
-            '[useCowSwapEthereumProvider] Error during walletClient.request:',
-            error,
-          );
-
           // Handle specific error cases and throw user-friendly messages
           if (error instanceof UserRejectedRequestError) {
             throw {
@@ -101,6 +103,11 @@ export const useCowSwapEthereumProvider = (
               message: ErrorMessage.DENIED_SIG,
             };
           }
+
+          console.error(
+            '[useCowSwapEthereumProvider] Error during provider request:',
+            error,
+          );
 
           // throw error further
           throw error;

@@ -26,6 +26,7 @@ export const useLoadingStates = () => {
   }
 
   // Reset loading state when address or chainId changes
+  // Works specifically on clean up to avoid race conditions on first load
   useEffect(() => {
     return () => {
       setIsLoading((oldLoading) => {
