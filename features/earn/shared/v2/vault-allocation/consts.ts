@@ -8,6 +8,7 @@ import {
   UsdtIcon,
   MapleIcon,
   MorphoIcon,
+  EarnUsdIcon,
 } from 'assets/earn';
 
 export const METAVAULT_CHART_ORIGIN = 'https://api.mellow.finance';
@@ -35,6 +36,7 @@ export const ALLOCATION_PROTOCOL_IDS_KNOWN = [
   'ethereum-maple-syrupusdt',
   'ethereum-metamorpho-senpyusdmain',
   'ethereum-morpho-pt-reusd-usdc',
+  'earnusd',
 ] as const;
 
 export const ALLOCATION_ICONS_BY_ID: {
@@ -59,6 +61,7 @@ export const ALLOCATION_ICONS_BY_ID: {
   'ethereum-maple-syrupusdt': MapleIcon,
   'ethereum-metamorpho-senpyusdmain': MorphoIcon,
   'ethereum-morpho-pt-reusd-usdc': MorphoIcon,
+  earnusd: EarnUsdIcon,
 };
 
 export const ALLOCATION_PENDING_ID = 'pending-deposits';
