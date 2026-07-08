@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
+import { useLidoSDKL2 } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
 import {
@@ -50,6 +51,7 @@ export const useWrapFormData = () => {
 // Data provider
 //
 export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { isL2 } = useLidoSDKL2();
   const networkData = useWrapFormNetworkData();
   const validationContextPromise = useWrapFormValidationContext({
     networkData,
@@ -128,12 +130,12 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       onReset: ({ token }: WrapFormInputType) => {
         reset({
           ...defaultValues,
-          token,
+          token: isL2 ? TOKENS_TO_WRAP.stETH : token,
         });
       },
       retryEvent,
     }),
-    [onSubmit, retryEvent, reset, defaultValues],
+    [onSubmit, retryEvent, reset, defaultValues, isL2],
   );
 
   return (
