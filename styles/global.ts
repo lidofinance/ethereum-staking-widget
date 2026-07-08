@@ -25,6 +25,7 @@ const GlobalStyle = createGlobalStyle`
     --footer-mobile-margin-bottom: 60px;
     
     --custom-background-secondary: ${({ theme }) => (theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35')} ;
+    --custom-background-dark: #28282f;
   }
   * {
     margin: 0;

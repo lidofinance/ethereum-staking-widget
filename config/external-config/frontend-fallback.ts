@@ -11,8 +11,7 @@ export const overrideManifestConfig = (
 ): ManifestEntry['config'] => {
   return {
     ...config,
-    enabledWithdrawalDexes:
-      override.enabledWithdrawalDexes ?? config.enabledWithdrawalDexes ?? [],
+    withdrawalDex: { ...config.withdrawalDex, ...override.withdrawalDex },
     featureFlags: { ...config.featureFlags, ...override.featureFlags },
     multiChainBanner: override.multiChainBanner ?? config.multiChainBanner,
     earnVaults: override.earnVaults ?? config.earnVaults,

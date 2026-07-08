@@ -1,8 +1,5 @@
 import { config } from 'config';
 
-export const ETHPLORER_TOKEN_ENDPOINT =
-  'https://api.ethplorer.io/getTokenInfo/';
-
 export const enum API_ROUTES {
   RPC = 'api/rpc',
   METRICS = 'api/metrics',
@@ -19,7 +16,13 @@ export const enum ETH_API_ROUTES {
   STETH_SMA_APR = '/v1/protocol/steth/apr/sma',
   STETH_APR = '/v1/protocol/steth/apr',
   SWAP_ONE_INCH = '/v1/swap/one-inch',
+  /**
+   * @deprecated not used anymore
+   */
   SWAP_JUMPER = '/v1/swap/jumper',
+  /**
+   * @deprecated not used anymore
+   */
   CURVE_APR = '/v1/pool/curve/steth-eth/apr/last',
 }
 

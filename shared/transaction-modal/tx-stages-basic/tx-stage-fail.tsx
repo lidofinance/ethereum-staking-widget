@@ -4,7 +4,7 @@ import { ErrorMessage } from 'utils';
 import { Loader } from '@lidofinance/lido-ui';
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconFail } from './icons';
-import { RetryButtonStyled, LoaderWrapper } from './styles';
+import { ModalFooterButton, LoaderWrapper } from './styles';
 
 type TxStageFailProps = {
   failedText?: string | null;
@@ -23,13 +23,13 @@ export const TxStageFail = ({ failedText, onRetry }: TxStageFailProps) => {
   return (
     <TransactionModalContent
       title="Transaction Failed"
-      icon={<StageIconFail />}
+      icon={<StageIconFail showLedger={false} />}
       description={failedText ?? 'Something went wrong'}
       footerHint={
         failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
         onRetry &&
         (!isLoading ? (
-          <RetryButtonStyled onClick={handleRetry}>Retry</RetryButtonStyled>
+          <ModalFooterButton onClick={handleRetry}>Retry</ModalFooterButton>
         ) : (
           <LoaderWrapper>
             <Loader size="small" />

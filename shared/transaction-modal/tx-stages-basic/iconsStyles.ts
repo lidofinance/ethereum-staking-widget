@@ -11,7 +11,6 @@ export const LedgerIconWrapper = styled.div`
 `;
 
 export const IconWrapper = styled.div`
-  height: 64px;
   width: 100%;
   text-align: center;
 `;

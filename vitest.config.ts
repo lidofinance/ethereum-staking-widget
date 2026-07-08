@@ -55,5 +55,20 @@ export default defineConfig({
     globals: true,
     include: ['**/*.{test,tests,spec}.{ts,tsx,js,jsx}'],
     setupFiles: ['./vitest.setup.ts'],
+    coverage: {
+      provider: 'v8',
+      // Output goes to /coverage, which is already gitignored (# testing).
+      reportsDirectory: './coverage',
+      reporter: ['text', 'html', 'lcov'],
+      // Report only files actually exercised by tests. The suite is sparse, so
+      // instrumenting the whole project would drown the summary in 0%-covered
+      // files. Pass an explicit path (e.g. `--coverage.all`) for a full sweep.
+      all: false,
+      exclude: [
+        '**/*.{test,tests,spec}.{ts,tsx,js,jsx}',
+        '**/__tests__/**',
+        '**/*.d.ts',
+      ],
+    },
   },
 });

@@ -1,5 +1,5 @@
 import { SendCallsError } from 'modules/web3';
-import { UnknownBundleIdError } from 'viem';
+import { UnknownBundleIdError, UserRejectedRequestError } from 'viem';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import debounce from 'lodash/debounce';
 
@@ -94,6 +94,10 @@ export const extractCodeFromError = (
 
   if (error instanceof UnknownBundleIdError) {
     return 'BUNDLE_NOT_FOUND';
+  }
+
+  if (error instanceof UserRejectedRequestError) {
+    return 'ACTION_REJECTED';
   }
 
   if (
