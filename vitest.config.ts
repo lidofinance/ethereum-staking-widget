@@ -57,7 +57,6 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
-      // Output goes to /coverage, which is already gitignored (# testing).
       reportsDirectory: './coverage',
       reporter: ['text', 'html', 'lcov'],
       // Report only files actually exercised by tests. The suite is sparse, so

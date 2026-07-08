@@ -19,7 +19,10 @@ import { getTokenAddress } from 'config/networks/token-address';
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
+type ContactsMap = typeof mainnetNetwork.contracts;
+
 import { LIDO_APP_CODE, MAX_SLIPPAGE, PARTNER_FEE_BPS } from '../consts';
+import invariant from 'tiny-invariant';
 
 // ---- Contract addresses from network configs ----
 
@@ -29,9 +32,7 @@ const SELL_TOKEN_KEYS = ['lido', 'wsteth'] as const;
 const BUY_TOKEN_KEYS = ['weth', 'usdc', 'usdt', 'usds', 'wbtc'] as const;
 const DEX_TOKEN_KEYS = [...SELL_TOKEN_KEYS, ...BUY_TOKEN_KEYS] as const;
 
-const collectTokenAddresses = (
-  contracts: Record<string, Address>,
-): Set<Address> => {
+const collectTokenAddresses = (contracts: ContactsMap): Set<Address> => {
   const addresses = new Set<Address>();
   for (const key of DEX_TOKEN_KEYS) {
     const addr = contracts[key];
@@ -40,9 +41,7 @@ const collectTokenAddresses = (
   return addresses;
 };
 
-const collectSellTokenAddresses = (
-  contracts: Record<string, Address>,
-): Set<Address> => {
+const collectSellTokenAddresses = (contracts: ContactsMap): Set<Address> => {
   const addresses = new Set<Address>();
   for (const key of SELL_TOKEN_KEYS) {
     const addr = contracts[key];
@@ -51,18 +50,17 @@ const collectSellTokenAddresses = (
   return addresses;
 };
 
-const collectBuyTokenAddresses = (
-  contracts: Record<string, Address>,
-): Set<Address> => {
+const collectBuyTokenAddresses = (contracts: ContactsMap): Set<Address> => {
   const addresses = new Set<Address>();
   for (const key of BUY_TOKEN_KEYS) {
     const addr = contracts[key];
     if (addr) addresses.add(addr.toLowerCase() as Address);
   }
+
+  const ethAddress = getTokenAddress(1, 'eth');
+  invariant(ethAddress, 'eth address is undefined');
   // 0xeeee...
-  addresses.add(
-    (getTokenAddress(1, 'eth') as Address).toLowerCase() as Address,
-  );
+  addresses.add(ethAddress.toLowerCase() as Address);
   return addresses;
 };
 
@@ -75,9 +73,7 @@ type NetworkTxConfig = {
   feeRecipient: Address;
 };
 
-const buildNetworkTxConfig = (
-  contracts: Record<string, Address>,
-): NetworkTxConfig => ({
+const buildNetworkTxConfig = (contracts: ContactsMap): NetworkTxConfig => ({
   tokens: collectTokenAddresses(contracts),
   sellTokens: collectSellTokenAddresses(contracts),
   buyTokens: collectBuyTokenAddresses(contracts),
@@ -86,11 +82,10 @@ const buildNetworkTxConfig = (
   feeRecipient: contracts.daoAgent.toLowerCase() as Address,
 });
 
-const MAINNET_CONFIG = buildNetworkTxConfig(
-  mainnetNetwork.contracts as Record<string, Address>,
-);
+const MAINNET_CONFIG = buildNetworkTxConfig(mainnetNetwork.contracts);
+// Most tokens are missing on Sepolia, so we only validation is partial and support for this testnet is limited
 const SEPOLIA_CONFIG = buildNetworkTxConfig(
-  sepoliaNetwork.contracts as Record<string, Address>,
+  sepoliaNetwork.contracts as ContactsMap,
 );
 
 // ---- Schemas -----
