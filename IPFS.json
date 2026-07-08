@@ -6,7 +6,7 @@
       "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
       "withdrawalDex": {
         "integration": "cowswap",
-        "enabled": false
+        "enabled": true
       },
       "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
       "earnVaultsBanner": {

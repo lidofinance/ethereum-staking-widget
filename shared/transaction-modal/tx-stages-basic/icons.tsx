@@ -17,13 +17,17 @@ import {
   WarningIcon,
 } from './iconsStyles';
 
+type StageIconProps = {
+  showLedger?: boolean;
+};
+
 const createStageIcon = (
   iconEl: React.ReactNode,
   ledgerEl: React.ReactNode,
 ) => {
-  return () => {
+  return ({ showLedger = true }: StageIconProps) => {
     const { isLedger } = useConnectorInfo();
-    if (isLedger) {
+    if (isLedger && showLedger) {
       return <LedgerIconWrapper>{ledgerEl}</LedgerIconWrapper>;
     }
     return <IconWrapper>{iconEl}</IconWrapper>;

@@ -1,0 +1,97 @@
+import { mainnet, sepolia } from 'viem/chains';
+import { COWSWAP_WIDGET_ALLOWED_RPC_METHODS } from '../consts';
+import {
+  OrderData,
+  ValidationContext,
+  isCancelOrder,
+  jsonRpcRequestSchema,
+} from './utils';
+import {
+  validateSendCalls,
+  validateSendTransaction,
+} from './validate-tx-signing';
+import { validateSignTypedData } from './validate-typed-message';
+import { TRANSACTION_ERROR } from './consts';
+
+export const validateRpcRequest = async (
+  request: unknown,
+  ctx: ValidationContext,
+) => {
+  let order: OrderData | undefined = undefined;
+
+  const {
+    data: sanitizedRequest,
+    success,
+    error,
+  } = jsonRpcRequestSchema.safeParse(request);
+
+  if (!success) {
+    throw new Error(`Invalid JSON-RPC request, error: ${error.message}`);
+  }
+
+  const { method, params } = sanitizedRequest;
+
+  if (
+    [
+      'eth_signTypedData_v4',
+      'eth_sendTransaction',
+      'wallet_sendCalls',
+    ].includes(method) &&
+    ctx.chainId !== mainnet.id &&
+    ctx.chainId !== sepolia.id
+  ) {
+    throw new Error(TRANSACTION_ERROR(2001));
+  }
+
+  switch (method) {
+    case 'eth_signTypedData_v4': {
+      // Defense-in-depth: verify CowSwap order (or order cancellation) before signing
+      const { allowed, result, reason } = await validateSignTypedData(
+        params,
+        ctx,
+      );
+
+      if (!allowed) {
+        console.warn('[DEX Provider] Signing Typed Data blocked:', reason);
+        throw new Error(reason);
+      }
+      if (result) {
+        order = result;
+      }
+      break;
+    }
+    case 'eth_sendTransaction': {
+      const result = await validateSendTransaction(params, ctx);
+
+      if (!result.allowed) {
+        console.warn('[DEX Provider] Transaction blocked:', result.reason);
+        throw new Error(result.reason);
+      }
+      if (result.result && !isCancelOrder(result.result)) {
+        order = result.result;
+      }
+      break;
+    }
+    case 'wallet_sendCalls': {
+      const result = await validateSendCalls(params, ctx);
+      if (!result.allowed) {
+        console.warn('[DEX Provider] Batch call blocked:', result.reason);
+        throw new Error(result.reason);
+      }
+      if (result.result && !isCancelOrder(result.result)) {
+        order = result.result;
+      }
+      break;
+    }
+  }
+  // Last line of defense, against unexpected RPC methods
+  if (!COWSWAP_WIDGET_ALLOWED_RPC_METHODS.has(method)) {
+    console.warn(`[DEX Provider] RPC method "${method}" blocked`);
+    throw new Error(TRANSACTION_ERROR(2002));
+  }
+
+  return {
+    order,
+    sanitizedRequest,
+  };
+};

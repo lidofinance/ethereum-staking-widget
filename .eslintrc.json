@@ -43,6 +43,18 @@
       {
         "checksVoidReturn": false
       }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "zod",
+            "importNames": ["default"],
+            "message": "Default import from 'zod' bypasses the jitless alias. Use named imports: import { z } from 'zod'."
+          }
+        ]
+      }
     ]
   },
   "settings": {

@@ -32,7 +32,6 @@ export const InlineLoaderSmall = styled(InlineLoader)`
 
 export const LidoOptionContainer = styled.div`
   width: 100%;
-  min-height: 82px;
 
   background-color: var(--custom-background-secondary);
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;

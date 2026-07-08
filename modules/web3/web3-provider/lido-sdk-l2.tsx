@@ -42,19 +42,19 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
         ? walletChain
         : config.defaultChain;
   }, [isChainMatched, chainId, walletChain, supportedChainIds]);
-  const { data: walletClient } = useWalletClient({ chainId: sdkChainId });
 
-  const publicClient = usePublicClient({ chainId });
+  const { data: walletClient } = useWalletClient({ chainId: sdkChainId });
+  const publicClient = usePublicClient({ chainId: sdkChainId });
 
   const contextValue = useMemo(() => {
     // @ts-expect-error: typing (viem + LidoSDK)
     const core = new LidoSDKCore({
-      chainId,
+      chainId: sdkChainId,
       logMode: 'none',
-      rpcProvider: publicClient,
-      web3Provider: walletClient,
+      publicClient,
+      walletClient,
       customLidoLocatorAddress: getContractAddress(
-        chainId,
+        sdkChainId,
         CONTRACT_NAMES.lidoLocator,
       ),
     });
@@ -63,9 +63,9 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
       chainId: core.chainId,
       core,
       l2: new LidoSDKL2({ core }),
-      isL2: !!LIDO_L2_CONTRACT_ADDRESSES[chainId as CHAINS],
+      isL2: !!LIDO_L2_CONTRACT_ADDRESSES[sdkChainId as CHAINS],
     };
-  }, [chainId, publicClient, walletClient]);
+  }, [publicClient, sdkChainId, walletClient]);
   return (
     <LidoSDKL2Context.Provider value={contextValue}>
       {children}

@@ -6,7 +6,7 @@ export const BannerWrap = styled.div`
   padding: 16px;
   border-radius: 16px;
   background-color: ${({ theme }) =>
-    theme.name === 'dark' ? '#28282f' : '#f2f3fc'};
+    theme.name === 'dark' ? 'var(--custom-background-dark)' : '#f2f3fc'};
 `;
 
 export const BannerTitleText = styled.div`

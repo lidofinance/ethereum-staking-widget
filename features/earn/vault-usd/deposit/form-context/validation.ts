@@ -14,7 +14,6 @@ import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-m
 import { ValidationError } from 'shared/hook-form/validation/validation-error';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
-import { getTokenDecimals } from 'utils/token-decimals';
 
 const validateUsdAmount: (
   field: string,

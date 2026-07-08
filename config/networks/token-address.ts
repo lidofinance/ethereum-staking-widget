@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import { ethAddress, getAddress, type Address } from 'viem';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { CONTRACT_NAMES, getNetworkConfigMapByChain } from './networks-map';
@@ -29,8 +29,8 @@ export const getTokenAddress = (
   _token: TokenSymbol | Token,
 ): Address | undefined => {
   const token = asToken(_token);
-
-  if (token === TOKENS.eth) return '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  // 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+  if (token === TOKENS.eth) return getAddress(ethAddress);
 
   return TOKENS_TO_CONTRACTS[token]
     ? getNetworkConfigMapByChain(chain)?.contracts[TOKENS_TO_CONTRACTS[token]]
