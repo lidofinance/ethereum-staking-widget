@@ -103,11 +103,46 @@ describe('extractCodeFromError', () => {
     expect(extractCodeFromError(error)).toBe('ACTION_REJECTED');
   });
 
+  // Hardware-wallet cancel: the transport surfaces the decline as viem
+  // InternalRpcError (-32603) — `name`/`code` no longer signal a rejection,
+  // so detection must fall back to the message. Both messages are verbatim
+  // from Ledger repros in the withdrawals DEX (CoW) flow.
+  test('extracts ACTION_REJECTED from InternalRpcError on Ledger approve cancel', () => {
+    const error = {
+      name: 'InternalRpcError',
+      code: -32603,
+      message:
+        'An internal error was received.\n\nDetails: Ledger: User rejected action on device\nVersion: viem@2.50.4',
+    };
+    expect(extractCodeFromError(error)).toBe('ACTION_REJECTED');
+  });
+
+  test('extracts ACTION_REJECTED from InternalRpcError on Ledger typed-data cancel', () => {
+    const error = {
+      name: 'InternalRpcError',
+      code: -32603,
+      message:
+        'An internal error was received.\n\nDetails: Keyring Controller signTypedMessage: HardwareWalletError: Ledger: User rejected action on device\nVersion: viem@2.50.4',
+    };
+    expect(extractCodeFromError(error)).toBe('ACTION_REJECTED');
+  });
+
   test('extracts ENABLE_BLIND_SIGNING from wrapped ledger error message', () => {
     const error = {
       name: 'UnknownRpcError',
       message:
         'An unknown RPC error occurred.\nDetails: Please enable Blind signing or Contract data in the Ethereum app Settings\nVersion: viem@2.50.4',
+    };
+    expect(extractCodeFromError(error)).toBe('ENABLE_BLIND_SIGNING');
+  });
+
+  // Blind signing disabled on EIP-712 signing: hw-app-eth does not remap
+  // 0x6a80 there, the raw transport status reaches the widget
+  test('extracts ENABLE_BLIND_SIGNING from raw 0x6a80 transport status', () => {
+    const error = {
+      name: 'UnknownRpcError',
+      message:
+        'An unknown RPC error occurred.\nDetails: Ledger device: Invalid data received (0x6a80)\nVersion: viem@2.50.4',
     };
     expect(extractCodeFromError(error)).toBe('ENABLE_BLIND_SIGNING');
   });
