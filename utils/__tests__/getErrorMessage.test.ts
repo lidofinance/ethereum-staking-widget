@@ -82,4 +82,42 @@ describe('extractCodeFromError', () => {
     const error = { error: { code: 'INVALID_ARGUMENT' } };
     expect(extractCodeFromError(error)).toBe('INVALID_ARGUMENT');
   });
+
+  // Ledger Live sends code 3 for any signing failure; viem wraps it into
+  // UnknownRpcError keeping the original message in details
+  test('extracts ACTION_REJECTED from viem-wrapped Ledger Live decline', () => {
+    const error = {
+      name: 'UnknownRpcError',
+      message:
+        'An unknown RPC error occurred.\nDetails: 3: Transaction declined\nVersion: viem@2.50.4',
+    };
+    expect(extractCodeFromError(error)).toBe('ACTION_REJECTED');
+  });
+
+  test('extracts ACTION_REJECTED from viem-wrapped Ledger Live typed data decline', () => {
+    const error = {
+      name: 'UnknownRpcError',
+      message:
+        'An unknown RPC error occurred.\nDetails: 3: Typed Data message signed declined\nVersion: viem@2.50.4',
+    };
+    expect(extractCodeFromError(error)).toBe('ACTION_REJECTED');
+  });
+
+  test('extracts ENABLE_BLIND_SIGNING from wrapped ledger error message', () => {
+    const error = {
+      name: 'UnknownRpcError',
+      message:
+        'An unknown RPC error occurred.\nDetails: Please enable Blind signing or Contract data in the Ethereum app Settings\nVersion: viem@2.50.4',
+    };
+    expect(extractCodeFromError(error)).toBe('ENABLE_BLIND_SIGNING');
+  });
+
+  test('extracts DEVICE_LOCKED from wrapped ledger error message', () => {
+    const error = {
+      name: 'UnknownRpcError',
+      message:
+        'An unknown RPC error occurred.\nDetails: Ledger device: Locked device (0x5515)\nVersion: viem@2.50.4',
+    };
+    expect(extractCodeFromError(error)).toBe('DEVICE_LOCKED');
+  });
 });

@@ -19,6 +19,7 @@ import type { ValidatedTradeSnapshot } from './utils/verify-order';
 import type { OrderData } from '../validate-tx';
 import {
   MODAL_INITIAL_STATE,
+  type SigningHelpTip,
   type TradeGuardModalState,
 } from './trade-guard-modal';
 import invariant from 'tiny-invariant';
@@ -97,12 +98,21 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
       level: TradeGuardLevel,
       messages: string[],
       oracleVerified: boolean,
+      title?: string,
+      helpTip?: SigningHelpTip,
     ): Promise<boolean> =>
       new Promise((resolve) => {
         // Resolve any pending modal before opening a new one
         resolveRef.current?.(false);
         resolveRef.current = resolve;
-        setModalState({ open: true, level, messages, oracleVerified });
+        setModalState({
+          open: true,
+          level,
+          messages,
+          oracleVerified,
+          title,
+          helpTip,
+        });
       }),
     [],
   );
@@ -238,6 +248,14 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     [showModal],
   );
 
+  // The CoW iframe cannot render custom error texts — we show them ourselves
+  const openSigningErrorModal = useCallback(
+    async (reason: string, helpTip?: SigningHelpTip) => {
+      await showModal('blocked', [reason], false, 'Signing failed', helpTip);
+    },
+    [showModal],
+  );
+
   return {
     modalState,
     handleModalClose,
@@ -245,6 +263,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     validateApproval,
     reportTradeParams,
     openTransactionGuardModal,
+    openSigningErrorModal,
     verifySignedOrder,
   };
 };

@@ -141,6 +141,15 @@ export const extractCodeFromError = (
     )
       return 'ACTION_REJECTED';
 
+    // Wrapped ledger errors (e.g. by viem) lose `name` but keep the message
+    if (
+      normalizedMessage.includes('blind signing') ||
+      normalizedMessage.includes('enable contract data')
+    )
+      return 'ENABLE_BLIND_SIGNING';
+
+    if (normalizedMessage.includes('locked device')) return 'DEVICE_LOCKED';
+
     if (normalizedMessage.includes('not enough ether for gas'))
       return 'INSUFFICIENT_FUNDS';
   }

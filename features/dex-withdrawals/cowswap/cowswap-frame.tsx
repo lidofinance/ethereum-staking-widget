@@ -92,6 +92,7 @@ export const CowswapFrame = () => {
     validateApproval,
     reportTradeParams,
     openTransactionGuardModal,
+    openSigningErrorModal,
     verifySignedOrder,
   } = useTradeGuard({
     isTestnet,
@@ -105,6 +106,7 @@ export const CowswapFrame = () => {
   const provider = useCowSwapEthereumProvider(
     verifySignedOrder,
     openTransactionGuardModal,
+    openSigningErrorModal,
   );
 
   const params = useMemo<CowSwapWidgetParams>(
