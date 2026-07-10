@@ -63,9 +63,9 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
         ? walletChainId
         : config.defaultChain;
   }, [isChainMatched, chainId, walletChainId, supportedChainIds]);
-  const { data: walletClient } = useWalletClient({ chainId: sdkChainId });
 
-  const publicClient = usePublicClient({ chainId });
+  const { data: walletClient } = useWalletClient({ chainId: sdkChainId });
+  const publicClient = usePublicClient({ chainId: sdkChainId });
 
   // reset internal wagmi state after disconnect
   const wagmiConfig = useConfig();
@@ -87,12 +87,12 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const contextValue = useMemo(() => {
     // @ts-expect-error: typing (viem + LidoSDK)
     const core = new LidoSDKCore({
-      chainId,
+      chainId: sdkChainId,
       logMode: 'none',
-      rpcProvider: publicClient,
-      web3Provider: walletClient,
+      publicClient,
+      walletClient,
       customLidoLocatorAddress: getContractAddress(
-        chainId,
+        sdkChainId,
         CONTRACT_NAMES.lidoLocator,
       ),
     });
@@ -118,7 +118,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       subscribeToTokenUpdates: subscribe,
       // the L2 module you can to find in the 'modules/web3/web3-provider/lido-sdk-l2.tsx'
     };
-  }, [chainId, publicClient, subscribe, walletClient]);
+  }, [publicClient, sdkChainId, subscribe, walletClient]);
   return (
     <LidoSDKContext.Provider value={contextValue}>
       {children}

@@ -22,9 +22,10 @@ export const BottomButtons = styled.div`
   }
 `;
 
-export const RetryButtonStyled = styled.span`
+export const ModalFooterButton = styled.span`
   cursor: pointer;
   color: var(--lido-color-primary);
+  padding: 12px;
 `;
 
 export const Grid = styled.div`

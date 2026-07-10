@@ -15,15 +15,19 @@ export const Wrap = styled.div`
 export const Title = styled(Text).attrs({
   size: 'sm',
 })`
-  margin-top: ${({ theme }) => theme.spaceMap.xl}px;
+  margin-top: ${({ theme }) => theme.spaceMap.xxl}px;
   font-weight: 800;
   text-align: center;
 `;
 
-export const Description = styled(Text).attrs({
+export const DescriptionText = styled(Text).attrs({
   size: 'xs',
   color: 'secondary',
 })`
+  text-align: center;
+`;
+
+export const Description = styled.div`
   margin-top: ${({ theme }) => theme.spaceMap.xs}px;
   text-align: center;
 `;
@@ -32,12 +36,16 @@ export const Footer = styled.div`
   margin-top: ${({ theme }) => theme.spaceMap.xxl}px;
 `;
 
-export const FooterHint = styled(Text).attrs({
+export const FooterHint = styled.div`
+  text-align: center;
+  margin: calc(${({ theme }) => theme.spaceMap.xxl}px + 12px) 0 12px;
+`;
+
+export const FooterHintText = styled(Text).attrs({
   size: 'xxs',
   color: 'secondary',
 })`
   text-align: center;
-  margin-top: ${({ theme }) => theme.spaceMap.xxl}px;
 `;
 
 type TransactionModalContentProps = {
@@ -49,16 +57,32 @@ type TransactionModalContentProps = {
 };
 
 export const TransactionModalContent = memo(
-  (props: TransactionModalContentProps) => {
-    const { icon, title, description, footerHint, footer } = props;
-
+  ({
+    icon,
+    title,
+    description,
+    footerHint,
+    footer,
+  }: TransactionModalContentProps) => {
     return (
       <Wrap data-testid="txStage">
         {icon}
         <Title data-testid="title">{title}</Title>
-        <Description data-testid="description">{description}</Description>
+        <Description data-testid="description">
+          {typeof description === 'string' ? (
+            <DescriptionText>{description}</DescriptionText>
+          ) : (
+            description
+          )}
+        </Description>
         {footerHint && (
-          <FooterHint data-testid="footerHint">{footerHint}</FooterHint>
+          <FooterHint data-testid="footerHint">
+            {typeof footerHint === 'string' ? (
+              <FooterHintText>{footerHint}</FooterHintText>
+            ) : (
+              footerHint
+            )}
+          </FooterHint>
         )}
         {footer && <Footer data-testid="footer">{footer}</Footer>}
       </Wrap>

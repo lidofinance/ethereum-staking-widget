@@ -1,4 +1,4 @@
-import { Switch } from 'shared/components';
+import { DisclaimerSection, LegalDisclaimer, Switch } from 'shared/components';
 
 import { WITHDRAWALS_CLAIM_PATH, WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
 
@@ -6,6 +6,7 @@ import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './contexts/withdrawals-context';
 import { Claim } from './claim';
 import { Request } from './request';
+import { DexDisclaimer } from './request/dex-disclaimer';
 
 const withdrawalRoutes = [
   {
@@ -24,6 +25,10 @@ export const WithdrawalsTabs = () => {
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
       {isClaimTab ? <Claim /> : <Request />}
+      <DisclaimerSection>
+        {!isClaimTab && <DexDisclaimer />}
+        <LegalDisclaimer />
+      </DisclaimerSection>
     </ClaimDataProvider>
   );
 };

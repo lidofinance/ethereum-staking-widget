@@ -148,11 +148,11 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
     useMemo(
       () => ({
         onSubmit,
-        onReset: ({ mode, token }: RequestFormInputType) => {
+        onReset: (args: RequestFormInputType) => {
           reset({
             ...defaultValues,
-            mode,
-            token,
+            mode: args.mode,
+            token: args.token,
           });
         },
         retryEvent,

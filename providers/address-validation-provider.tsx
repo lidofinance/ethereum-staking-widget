@@ -16,23 +16,20 @@ import {
 import { useApiAddressValidation } from 'shared/hooks/use-api-address-validation';
 import { Address } from 'viem';
 
-const AddressValidationContext = createContext<{
+type AddressValidationContextType = {
   isValidAddress: boolean;
   setIsValidAddress: (show: boolean) => void;
   validateAddress: (address?: Address) => Promise<boolean>;
-}>({
-  isValidAddress: true,
-  setIsValidAddress: () => {},
-  validateAddress: async () => {
-    return true;
-  },
-});
+};
+
+const AddressValidationContext =
+  createContext<AddressValidationContextType | null>(null);
 AddressValidationContext.displayName = 'AddressValidationContext';
 
 export const useAddressValidation = () => {
   const value = useContext(AddressValidationContext);
   invariant(
-    value !== null,
+    value,
     'useAddressValidation was used used outside of AddressValidationProvider',
   );
   return value;
@@ -155,6 +152,7 @@ export const AddressValidationProvider = ({
   validationFile?: AddressValidationFile;
 }) => {
   const validateAddressAPI = useApiAddressValidation();
+  // Tracks UI state, can be reset
   const [isValidAddress, setIsValidAddress] = useState(true);
   const queryClient = useQueryClient();
 
@@ -223,6 +221,7 @@ export const AddressValidationProvider = ({
 
       // Default to valid if no validation data available
       setIsValidAddress(true);
+
       return true;
     },
     [validateAddressAPI, validateAddressFile, validationFile],

@@ -7,7 +7,7 @@ import { useEthVaultDepositRequests } from '../hooks';
 export const EthVaultDepositSubmitButton = () => {
   const { isDepositLockedForCurrentToken, token } = useETHDepositForm();
   // stETH deposits go through the wstETH queue, so check wstETH for claimable request state
-  const depositRequests = useEthVaultDepositRequests();
+  const { claimableRequests } = useEthVaultDepositRequests();
   const { isEthVaultAvailable } = useEthVaultAvailable();
 
   // stETH is wrapped into wstETH on deposit, so clarify that in the tooltip
@@ -21,7 +21,7 @@ export const EthVaultDepositSubmitButton = () => {
       isVaultAvailable={isEthVaultAvailable}
       isDepositLockedForCurrentToken={isDepositLockedForCurrentToken}
       tokenDisplayName={tokenDisplayName}
-      isClaimable={depositRequests?.claimableRequests.length > 0}
+      isClaimable={claimableRequests.length > 0}
     />
   );
 };

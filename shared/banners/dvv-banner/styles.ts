@@ -5,7 +5,7 @@ import { BannerWrap } from '../shared-banner-partials';
 export const Wrap = styled(BannerWrap)`
   background: ${({ theme }) =>
     theme.name === 'dark'
-      ? '#28282F'
+      ? 'var(--custom-background-dark)'
       : 'radial-gradient(25% 100% at 60% 10%, #ecf2ff 0%, #ebedff 100%)'};
   color: var(--lido-color-text);
 `;
