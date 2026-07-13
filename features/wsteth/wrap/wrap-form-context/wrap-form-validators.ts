@@ -10,13 +10,13 @@ import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 
 import type { WrapFormInputType, WrapFormValidationContext } from './types';
 
 const messageMaxAmount = (max: bigint, token: TOKENS_TO_WRAP) =>
-  `Entered ${getTokenDisplayName(
+  `Entered ${getTokenSymbol(
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;
 

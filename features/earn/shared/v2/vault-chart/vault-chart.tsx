@@ -184,12 +184,12 @@ export const VaultChart = (props: VaultChartProps) => {
 
   const isApyChart = activeChart === CHART_TYPE.apy;
 
-  // TODO: break this up into variables for more clear logic
-  const isChartLoading = isApyChart
-    ? isVaultLoading ||
-      (isUSDVault && isTreasuryLoading) ||
-      (isETHVault && isStakingLoading)
-    : isVaultLoading;
+  const isUsdApyChartLoading = isUSDVault && isTreasuryLoading;
+  const isEthApyChartLoading = isETHVault && isStakingLoading;
+  const isVaultApyChartLoading =
+    isVaultLoading || isUsdApyChartLoading || isEthApyChartLoading;
+
+  const isChartLoading = isApyChart ? isVaultApyChartLoading : isVaultLoading;
 
   const isNoDataAvailable = isLoadingError || (!!data && data.length === 0);
 

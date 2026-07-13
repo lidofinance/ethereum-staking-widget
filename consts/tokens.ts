@@ -37,7 +37,7 @@ export const TOKEN_SYMBOLS = asTokenSymbols({
   steth: LIDO_TOKENS.steth,
   wsteth: LIDO_TOKENS.wsteth,
   unsteth: LIDO_TOKENS.unsteth,
-  weth: 'wETH',
+  weth: 'WETH',
   gg: 'GG',
   dvsteth: 'DVstETH',
   streth: 'strETH',

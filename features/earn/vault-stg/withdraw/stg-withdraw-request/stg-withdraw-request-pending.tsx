@@ -1,6 +1,6 @@
 import { InlineLoader } from 'features/earn/shared/inline-loader';
 import { TokenStrethIcon } from 'assets/earn';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { STGRequest } from '../../components/stg-request/stg-request';
 import type { WithdrawRequestData } from '../types';
 import { useSTGPreviewWithdraw } from '../hooks/use-stg-preview-withdraw';
@@ -18,7 +18,7 @@ export const STGWithdrawRequestPending = ({
         key={request.timestamp}
         tokenLogo={<TokenStrethIcon />}
         tokenAmount={request.shares}
-        tokenName={getTokenDisplayName('strETH')}
+        tokenName={getTokenSymbol('strETH')}
         tokenAmountUSD={data?.usd ?? 0}
         createdDateTimestamp={request.timestamp}
       />

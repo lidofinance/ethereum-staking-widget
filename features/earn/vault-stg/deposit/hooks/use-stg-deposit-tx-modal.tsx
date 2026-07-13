@@ -7,10 +7,7 @@ import {
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 
-import {
-  getTokenDisplayName,
-  TOKEN_DISPLAY_NAMES,
-} from 'utils/getTokenDisplayName';
+import { getTokenSymbol, TokenSymbol } from 'utils/get-token-symbol';
 import { STG_TOKEN_SYMBOL } from '../../consts';
 import { STGDepositTxStageSuccess } from '../stg-deposit-tx-stage-success';
 
@@ -29,43 +26,39 @@ const getTxModalStagesRequest = (
 ) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  signApproval: (amount: bigint, token: TOKEN_DISPLAY_NAMES) =>
+  signApproval: (amount: bigint, token: TokenSymbol) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
       />,
     ),
 
-  pendingApproval: (
-    amount: bigint,
-    token: TOKEN_DISPLAY_NAMES,
-    txHash?: Hash,
-  ) =>
+  pendingApproval: (amount: bigint, token: TokenSymbol, txHash?: Hash) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         isPending
         txHash={txHash}
       />,
     ),
 
-  sign: (amount: bigint, token: TOKEN_DISPLAY_NAMES) =>
+  sign: (amount: bigint, token: TokenSymbol) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={true}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         amount={amount}
       />,
     ),
 
   pending: (
     amount: bigint,
-    token: TOKEN_DISPLAY_NAMES,
+    token: TokenSymbol,
     txHash?: Hash,
     isAA?: boolean,
   ) =>
@@ -74,14 +67,14 @@ const getTxModalStagesRequest = (
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={false}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         isPending
         isAA={isAA}
         txHash={txHash}
       />,
     ),
 
-  success: (amount: bigint, token: TOKEN_DISPLAY_NAMES, txHash?: Hash) =>
+  success: (amount: bigint, token: TokenSymbol, txHash?: Hash) =>
     transitStage(
       <STGDepositTxStageSuccess
         txHash={txHash}

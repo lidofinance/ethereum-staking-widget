@@ -8,7 +8,7 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
@@ -28,7 +28,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
       />,
     ),
 
@@ -37,7 +37,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         isPending
         txHash={txHash}
       />,
@@ -48,7 +48,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         willReceive={willReceive}
       />,
     ),
@@ -64,7 +64,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         willReceive={willReceive}
         isPending
         txHash={txHash}

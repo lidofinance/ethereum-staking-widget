@@ -1,6 +1,6 @@
 import { Hash } from 'viem';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
-import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
+import { TokenSymbol } from 'utils/get-token-symbol';
 import {
   NotificationContainer,
   NotificationTitle,
@@ -11,7 +11,7 @@ import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 type Props = {
   txHash?: Hash;
   amount: bigint;
-  token: TOKEN_DISPLAY_NAMES;
+  token: TokenSymbol;
 };
 
 const Notification = () => (

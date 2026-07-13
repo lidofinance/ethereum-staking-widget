@@ -1,5 +1,5 @@
 import { STGRequest } from '../../components/stg-request/stg-request';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { DepositRequest } from '../hooks/use-stg-deposit-requests';
 import { getTokenIcon } from 'utils/get-token-icon';
 
@@ -28,7 +28,7 @@ export const STGDepositPendingRequest = ({
       key={token}
       tokenLogo={getTokenIcon(token)}
       tokenAmount={assets}
-      tokenName={getTokenDisplayName(token)}
+      tokenName={getTokenSymbol(token)}
       tokenAmountUSD={usdAmount}
       createdDateTimestamp={request.createdTimestamp}
       actionText="Cancel"

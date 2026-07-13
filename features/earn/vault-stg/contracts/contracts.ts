@@ -269,7 +269,7 @@ export const getSTGDepositQueueContract = <TPublicClient extends PublicClient>({
     case 'ETH':
       contract = getSTGDepositQueueContractETH(publicClient);
       break;
-    case 'wETH':
+    case 'WETH':
       contract = getSTGDepositQueueContractWETH(publicClient);
       break;
     case 'wstETH':
@@ -301,7 +301,7 @@ export const getSTGDepositQueueWritableContract = <
         walletClient,
       );
       break;
-    case 'wETH':
+    case 'WETH':
       contract = getSTGDepositQueueWritableContractWETH(
         publicClient,
         walletClient,

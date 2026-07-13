@@ -1,5 +1,5 @@
 import { FormatPrice, FormatToken } from 'shared/formatters';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
 import { TokenWstethIcon } from 'assets/earn';
@@ -36,7 +36,7 @@ const RequestEntry = ({
       </RequestIcon>
       <RequestMainBalance>
         <FormatToken
-          symbol={getTokenDisplayName('wstETH')}
+          symbol={getTokenSymbol('wstETH')}
           trimEllipsis
           amount={request.metadata.amountOfAssets}
           data-testid="request-amount"

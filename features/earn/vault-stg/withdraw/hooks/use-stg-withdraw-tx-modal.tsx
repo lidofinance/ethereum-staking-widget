@@ -6,13 +6,13 @@ import {
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { FormatToken } from 'shared/formatters';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 
 const STAGE_OPERATION_ARGS = {
-  willReceiveToken: getTokenDisplayName('wstETH'),
-  token: getTokenDisplayName('wstETH'),
+  willReceiveToken: getTokenSymbol('wstETH'),
+  token: getTokenSymbol('wstETH'),
   operationText: 'requesting withdrawal for',
 };
 
@@ -51,10 +51,7 @@ const getTxModalStagesRequest = (
         description={
           <>
             Request to withdraw{' '}
-            <FormatToken
-              amount={amount}
-              symbol={getTokenDisplayName('wstETH')}
-            />{' '}
+            <FormatToken amount={amount} symbol={getTokenSymbol('wstETH')} />{' '}
             has been sent.
           </>
         }

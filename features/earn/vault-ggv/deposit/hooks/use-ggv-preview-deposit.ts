@@ -66,7 +66,7 @@ export const useGGVPreviewDeposit = (
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           getTokenAddress(
             publicClient.chain.id,
-            token === 'ETH' ? 'wETH' : token,
+            token === 'ETH' ? 'WETH' : token,
           )!,
           amount,
           vault.address,

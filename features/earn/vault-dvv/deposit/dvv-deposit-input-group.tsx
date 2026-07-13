@@ -6,7 +6,7 @@ import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
+import { TokenSymbol } from 'utils/get-token-symbol';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
@@ -15,12 +15,12 @@ import { useDVVDepositForm } from './form-context';
 import { DVV_DEPOSIT_TOKENS } from '../consts';
 import { useDVVDepositEthGasLimit } from './hooks/use-dvv-deposit-eth-gas-limit';
 
-const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
+const trackTokenSelect = (value: TokenSymbol) => {
   switch (value) {
     case 'ETH':
       trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvSelectTokenEth);
       break;
-    case 'wETH':
+    case 'WETH':
       trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvSelectTokenWeth);
       break;
     default:

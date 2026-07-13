@@ -7,7 +7,7 @@ export const GGV_TOKEN_SYMBOL = TOKEN_SYMBOLS.gg;
 
 export const GGV_DEPOSIT_TOKENS: GGVDepositTokens[] = [
   'ETH',
-  'wETH',
+  'WETH',
   'stETH',
   'wstETH',
 ];

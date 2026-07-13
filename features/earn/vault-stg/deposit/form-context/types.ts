@@ -3,7 +3,7 @@ import type { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 export type STGDepositTokens =
   | (typeof LIDO_TOKENS)['eth']
   | (typeof LIDO_TOKENS)['wsteth']
-  | 'wETH';
+  | 'WETH';
 
 export type STGDepositFormValues = {
   amount: null | bigint;
