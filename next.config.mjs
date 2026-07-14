@@ -241,7 +241,10 @@ export default withBundleAnalyzer({
         source: '/token-lists/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, HEAD, OPTIONS' },
           { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
+          { key: 'X-Robots-Tag', value: 'noindex' },
+          { key: CACHE_CONTROL_HEADER, value: CACHE_CONTROL_VALUE },
         ],
       },
       ...CACHE_CONTROL_PAGES.map((page) => ({
