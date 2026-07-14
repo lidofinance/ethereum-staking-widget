@@ -23,6 +23,7 @@ type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
 const MIN_DISPLAY_PERCENT = 0.1;
 const MAX_SUBVAULT_POSITIONS = 20;
 const EMPTY_ALLOCATION_LABEL_ALLOWLIST: readonly string[] = [];
+const EMPTY_HIDDEN_ALLOCATION_IDS: readonly string[] = [];
 const isVisible = (allocation: number): boolean =>
   allocation >= MIN_DISPLAY_PERCENT;
 
@@ -36,58 +37,46 @@ const parseTvlUSD = (amount: string, decimals: number): number =>
 
 const normalizeLabelWord = (word: string): string => word.toLowerCase();
 
-const getDisallowedLabelWords = (
+const isLabelAllowed = (
   label: string,
   allowlist: ReadonlySet<string>,
-): string[] => {
+): boolean => {
   const normalizedLabel = label.trim();
-  if (!normalizedLabel) return ['<empty-label>'];
+  if (!normalizedLabel) return false;
 
-  return [
-    ...new Set(
-      normalizedLabel
-        .split(/[\s/]+/u)
-        .map(normalizeLabelWord)
-        .filter((word) => !allowlist.has(word)),
-    ),
-  ];
+  return normalizedLabel
+    .split(/[\s/]+/u)
+    .map(normalizeLabelWord)
+    .every((word) => allowlist.has(word));
 };
 
-type AllocationDiagnosticReason =
+type DiagnosticAllocationReason =
+  | 'hidden-by-config'
   | 'label-not-allowlisted'
   | 'below-min-display-percent'
   | 'max-subvault-positions';
 
-const warnAllocationMovedToOthers = (
-  reason: AllocationDiagnosticReason,
-  allocation: {
-    id: string;
-    label: string;
-    sharePercent: number;
-    category?: string;
-    protocol?: string;
-    chain?: string;
-  },
-  details: Record<string, unknown> = {},
-): void => {
-  const { id, label, sharePercent, category, protocol, chain } = allocation;
+type DiagnosticAllocationData = {
+  id: string;
+  sharePercent: number;
+};
 
+const warnAllocationMovedToOthers = (
+  reason: DiagnosticAllocationReason,
+  id: string,
+): void => {
   console.warn('[Vault allocation] Allocation moved to Others', {
     reason,
     id,
-    label,
-    sharePercent,
-    category,
-    protocol,
-    chain,
-    ...details,
   });
 };
 
 // Entries that match these categories are accumulated into the
 // Available / Pending / Others rows shown in the allocation table.
 const ALLOCATION_SUMMARY_KEYS = ['available', 'pending', 'others'] as const;
-const ALLOCATION_NON_OTHER_SUMMARY_KEYS = ['available', 'pending'] as const;
+const ALLOCATION_NON_OTHER_SUMMARY_KEYS = ALLOCATION_SUMMARY_KEYS.filter(
+  (key) => key !== 'others',
+);
 type AllocationSummaryKey = (typeof ALLOCATION_SUMMARY_KEYS)[number];
 type AllocationSummaryRows = Record<
   AllocationSummaryKey,
@@ -120,6 +109,24 @@ const addToAllocationSummaryRow = (
   summaryRows[key].tvlUSD += tvlUSD;
 };
 
+const moveAllocationToOthers = (
+  summaryRows: AllocationSummaryRows,
+  allocation: DiagnosticAllocationData,
+  tvlUSD: number,
+  reason: DiagnosticAllocationReason,
+): void => {
+  warnAllocationMovedToOthers(reason, allocation.id);
+
+  if (allocation.sharePercent <= 0) return;
+
+  addToAllocationSummaryRow(
+    summaryRows,
+    'others',
+    allocation.sharePercent,
+    tvlUSD,
+  );
+};
+
 const moveInvisibleSummaryRowsToOthers = (
   summaryRows: AllocationSummaryRows,
 ): void => {
@@ -133,8 +140,8 @@ const moveInvisibleSummaryRowsToOthers = (
         summary.allocation,
         summary.tvlUSD,
       );
-      summary.allocation = 0;
-      summary.tvlUSD = 0;
+
+      summaryRows[key] = { allocation: 0, tvlUSD: 0 };
     }
   }
 };
@@ -142,7 +149,6 @@ const moveInvisibleSummaryRowsToOthers = (
 const limitNestedItems = (
   items: AllocationSubItem[],
   summaryRows: AllocationSummaryRows,
-  parentId: string,
 ): AllocationSubItem[] => {
   items.sort(sortByAllocationDescending);
 
@@ -151,25 +157,14 @@ const limitNestedItems = (
   }
 
   for (const item of items.slice(MAX_SUBVAULT_POSITIONS)) {
-    warnAllocationMovedToOthers(
-      'max-subvault-positions',
+    moveAllocationToOthers(
+      summaryRows,
       {
         id: item.id,
-        label: item.label,
         sharePercent: item.allocation,
-        chain: item.chain,
       },
-      {
-        scope: 'nested',
-        parentId,
-        limit: MAX_SUBVAULT_POSITIONS,
-      },
-    );
-    addToAllocationSummaryRow(
-      summaryRows,
-      'others',
-      item.allocation,
       item.tvlUSD,
+      'max-subvault-positions',
     );
   }
 
@@ -188,6 +183,54 @@ const getAllocationSummaryKey = (
   category === 'protocol'
     ? undefined
     : ALLOCATION_SUMMARY_KEY_BY_CATEGORY[category];
+
+type AllocationDisposition =
+  | { type: 'summary'; key: AllocationSummaryKey }
+  | { type: 'others'; reason: DiagnosticAllocationReason }
+  | { type: 'visible' }
+  | { type: 'ignored' };
+
+const classifyAllocation = (
+  allocation: DiagnosticAllocationData & {
+    label: string;
+    category: ApiAllocation['category'];
+  },
+  labelAllowlist: ReadonlySet<string>,
+  hiddenAllocationIds: ReadonlySet<string>,
+  options: { includeSummary?: boolean; includeVisibility?: boolean } = {},
+): AllocationDisposition => {
+  if (hiddenAllocationIds.has(allocation.id)) {
+    return { type: 'others', reason: 'hidden-by-config' };
+  }
+
+  if (options.includeSummary !== false) {
+    const summaryKey = getAllocationSummaryKey(allocation.category);
+    if (summaryKey) return { type: 'summary', key: summaryKey };
+  }
+
+  if (!isLabelAllowed(allocation.label, labelAllowlist)) {
+    return {
+      type: 'others',
+      reason: 'label-not-allowlisted',
+    };
+  }
+
+  if (
+    options.includeVisibility === false ||
+    isVisible(allocation.sharePercent)
+  ) {
+    return { type: 'visible' };
+  }
+
+  if (allocation.sharePercent > 0) {
+    return {
+      type: 'others',
+      reason: 'below-min-display-percent',
+    };
+  }
+
+  return { type: 'ignored' };
+};
 
 const appendNestedSummaryRows = (
   items: AllocationSubItem[],
@@ -236,6 +279,7 @@ const parseNestedGroup = (
   alloc: ApiAllocation,
   tvlUSD: number,
   labelAllowlist: ReadonlySet<string>,
+  hiddenAllocationIds: ReadonlySet<string>,
 ): AllocationGroup => {
   const summaryRows = createAllocationSummaryRows();
   const knownItems: AllocationSubItem[] = [];
@@ -244,31 +288,22 @@ const parseNestedGroup = (
     // Nested sub-allocations only carry a share, so derive their TVL from the
     // parent vault TVL before applying the same category rules as flat items.
     const subTvl = tvlUSD * (sub.sharePercent / 100);
-    const summaryKey = getAllocationSummaryKey(sub.category);
-    const disallowedWords = getDisallowedLabelWords(sub.label, labelAllowlist);
+    const disposition = classifyAllocation(
+      sub,
+      labelAllowlist,
+      hiddenAllocationIds,
+    );
 
-    if (summaryKey) {
+    if (disposition.type === 'summary') {
       addToAllocationSummaryRow(
         summaryRows,
-        summaryKey,
+        disposition.key,
         sub.sharePercent,
         subTvl,
       );
-    } else if (disallowedWords.length > 0) {
-      warnAllocationMovedToOthers('label-not-allowlisted', sub, {
-        scope: 'nested',
-        parentId: alloc.id,
-        disallowedWords,
-      });
-      if (sub.sharePercent > 0) {
-        addToAllocationSummaryRow(
-          summaryRows,
-          'others',
-          sub.sharePercent,
-          subTvl,
-        );
-      }
-    } else if (isVisible(sub.sharePercent)) {
+    } else if (disposition.type === 'others') {
+      moveAllocationToOthers(summaryRows, sub, subTvl, disposition.reason);
+    } else if (disposition.type === 'visible') {
       knownItems.push({
         label: sub.label,
         id: sub.id,
@@ -277,23 +312,11 @@ const parseNestedGroup = (
         allocation: sub.sharePercent,
         tvlUSD: subTvl,
       });
-    } else if (sub.sharePercent > 0) {
-      warnAllocationMovedToOthers('below-min-display-percent', sub, {
-        scope: 'nested',
-        parentId: alloc.id,
-        minDisplayPercent: MIN_DISPLAY_PERCENT,
-      });
-      addToAllocationSummaryRow(
-        summaryRows,
-        'others',
-        sub.sharePercent,
-        subTvl,
-      );
     }
   }
 
   moveInvisibleSummaryRowsToOthers(summaryRows);
-  const limitedItems = limitNestedItems(knownItems, summaryRows, alloc.id);
+  const limitedItems = limitNestedItems(knownItems, summaryRows);
   appendNestedSummaryRows(limitedItems, summaryRows);
 
   return {
@@ -308,39 +331,29 @@ const parseNestedGroup = (
 const parseFlatItems = (
   allocations: ApiAllocation[],
   labelAllowlist: ReadonlySet<string>,
+  hiddenAllocationIds: ReadonlySet<string>,
   summaryRows = createAllocationSummaryRows(),
 ): FlatAllocationItem[] => {
   const items: FlatAllocationItem[] = [];
 
   for (const alloc of allocations) {
     const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
-    const summaryKey = getAllocationSummaryKey(alloc.category);
-    const disallowedWords = getDisallowedLabelWords(
-      alloc.label,
+    const disposition = classifyAllocation(
+      alloc,
       labelAllowlist,
+      hiddenAllocationIds,
     );
 
-    if (summaryKey) {
+    if (disposition.type === 'summary') {
       addToAllocationSummaryRow(
         summaryRows,
-        summaryKey,
+        disposition.key,
         alloc.sharePercent,
         tvlUSD,
       );
-    } else if (disallowedWords.length > 0) {
-      warnAllocationMovedToOthers('label-not-allowlisted', alloc, {
-        scope: 'flat',
-        disallowedWords,
-      });
-      if (alloc.sharePercent > 0) {
-        addToAllocationSummaryRow(
-          summaryRows,
-          'others',
-          alloc.sharePercent,
-          tvlUSD,
-        );
-      }
-    } else if (isVisible(alloc.sharePercent)) {
+    } else if (disposition.type === 'others') {
+      moveAllocationToOthers(summaryRows, alloc, tvlUSD, disposition.reason);
+    } else if (disposition.type === 'visible') {
       items.push({
         name: alloc.label,
         chain: alloc.chain,
@@ -348,17 +361,6 @@ const parseFlatItems = (
         allocation: alloc.sharePercent,
         tvlUSD,
       });
-    } else if (alloc.sharePercent > 0) {
-      warnAllocationMovedToOthers('below-min-display-percent', alloc, {
-        scope: 'flat',
-        minDisplayPercent: MIN_DISPLAY_PERCENT,
-      });
-      addToAllocationSummaryRow(
-        summaryRows,
-        'others',
-        alloc.sharePercent,
-        tvlUSD,
-      );
     }
   }
 
@@ -398,6 +400,7 @@ const buildChartData = (
 export const useAllocationData = (
   apiData?: MetavaultsAllocationFetchedData,
   allocationLabelAllowlist: readonly string[] = EMPTY_ALLOCATION_LABEL_ALLOWLIST,
+  hiddenAllocationIds: readonly string[] = EMPTY_HIDDEN_ALLOCATION_IDS,
 ): AllocationTableData => {
   return useMemo(() => {
     if (!apiData)
@@ -409,6 +412,7 @@ export const useAllocationData = (
     const labelAllowlist = new Set(
       allocationLabelAllowlist.map(normalizeLabelWord),
     );
+    const hiddenIds = new Set(hiddenAllocationIds);
 
     if (labelAllowlist.size === 0) {
       console.warn(
@@ -419,41 +423,40 @@ export const useAllocationData = (
     for (const alloc of apiData.allocations) {
       if (alloc.type === 'nested') {
         const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
-        const disallowedWords = getDisallowedLabelWords(
-          alloc.label,
+        // A subvault is not a summary entry itself, and its display threshold
+        // is checked after its children have been parsed.
+        const disposition = classifyAllocation(
+          alloc,
           labelAllowlist,
+          hiddenIds,
+          { includeSummary: false, includeVisibility: false },
         );
 
-        if (disallowedWords.length > 0) {
-          warnAllocationMovedToOthers('label-not-allowlisted', alloc, {
-            scope: 'subvault',
-            disallowedWords,
-          });
-          if (alloc.sharePercent > 0) {
-            addToAllocationSummaryRow(
-              topLevelSummaryRows,
-              'others',
-              alloc.sharePercent,
-              tvlUSD,
-            );
-          }
+        if (disposition.type === 'others') {
+          moveAllocationToOthers(
+            topLevelSummaryRows,
+            alloc,
+            tvlUSD,
+            disposition.reason,
+          );
           continue;
         }
 
-        const group = parseNestedGroup(alloc, tvlUSD, labelAllowlist);
+        const group = parseNestedGroup(
+          alloc,
+          tvlUSD,
+          labelAllowlist,
+          hiddenIds,
+        );
 
         if (isVisible(group.allocation)) {
           groups.push(group);
         } else if (group.allocation > 0) {
-          warnAllocationMovedToOthers('below-min-display-percent', alloc, {
-            scope: 'subvault',
-            minDisplayPercent: MIN_DISPLAY_PERCENT,
-          });
-          addToAllocationSummaryRow(
+          moveAllocationToOthers(
             topLevelSummaryRows,
-            'others',
-            group.allocation,
+            alloc,
             group.tvlUSD,
+            'below-min-display-percent',
           );
         }
       } else {
@@ -464,6 +467,7 @@ export const useAllocationData = (
     const flatItems = parseFlatItems(
       flatAllocations,
       labelAllowlist,
+      hiddenIds,
       topLevelSummaryRows,
     );
     groups.sort(sortByAllocationDescending);
@@ -481,5 +485,5 @@ export const useAllocationData = (
       ...(flatItems.length > 0 && { flatItems }),
       totalTvlUsd,
     };
-  }, [allocationLabelAllowlist, apiData]);
+  }, [allocationLabelAllowlist, apiData, hiddenAllocationIds]);
 };

@@ -30,15 +30,21 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
   const { vaultName, footer } = props;
 
   const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
-  const { earnVaultAllocationLabelAllowlist: configuredLabelAllowlist } =
-    useConfig().externalConfig;
+  const {
+    earnVaultAllocationLabelAllowlist: configuredLabelAllowlist,
+    earnVaultAllocationHiddenIds,
+  } = useConfig().externalConfig;
   const allocationLabelAllowlist = useMemo(
     () => getAllocationLabelAllowlist(configuredLabelAllowlist),
     [configuredLabelAllowlist],
   );
 
   const { data, isLoading } = useMetavaultAllocation(vaultAddress);
-  const allocationData = useAllocationData(data, allocationLabelAllowlist);
+  const allocationData = useAllocationData(
+    data,
+    allocationLabelAllowlist,
+    earnVaultAllocationHiddenIds,
+  );
 
   if (isLoading) {
     return (

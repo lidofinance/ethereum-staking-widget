@@ -29,6 +29,7 @@
       "amountBannerEnabled": true
     },
     "earnVaultAllocationLabelAllowlist": [],
+    "earnVaultAllocationHiddenIds": [],
     "pages": {
       "/earn": {
         "showNew": true,

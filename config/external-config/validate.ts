@@ -97,6 +97,10 @@ const EarnVaultAllocationLabelAllowlistSchema = z
   )
   .transform((words) => [...new Set(words.map((word) => word.toLowerCase()))]);
 
+const EarnVaultAllocationHiddenIdsSchema = z
+  .array(z.string().trim().min(1))
+  .transform((ids) => [...new Set(ids)]);
+
 //
 // Feature flags
 //
@@ -237,6 +241,8 @@ const ManifestConfigSchema = z.object({
   earnVaultsBanner: EarnVaultsBannerSchema,
   earnVaultAllocationLabelAllowlist:
     EarnVaultAllocationLabelAllowlistSchema.optional().default([]),
+  earnVaultAllocationHiddenIds:
+    EarnVaultAllocationHiddenIdsSchema.optional().default([]),
   pages: PagesEntrySchema.optional().default({}),
   api: ApiSchema.optional().default({}),
 });

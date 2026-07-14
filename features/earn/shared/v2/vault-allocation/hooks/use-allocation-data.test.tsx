@@ -80,11 +80,12 @@ const createNestedAllocation = (
 const getAllocationData = (
   apiData: MetavaultsAllocationFetchedData,
   labelAllowlist: readonly string[] = TEST_LABEL_ALLOWLIST,
+  hiddenAllocationIds: readonly string[] = [],
 ): AllocationTableData => {
   let result: AllocationTableData | undefined;
 
   const TestComponent: FC = () => {
-    result = useAllocationData(apiData, labelAllowlist);
+    result = useAllocationData(apiData, labelAllowlist, hiddenAllocationIds);
     return null;
   };
 
@@ -103,12 +104,10 @@ describe('useAllocationData grouping and sorting', () => {
     expect(result.flatItems).toBeUndefined();
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
-      expect.objectContaining({
+      {
         reason: 'below-min-display-percent',
         id: 'hidden',
-        scope: 'flat',
-        minDisplayPercent: 0.1,
-      }),
+      },
     );
   });
 
@@ -271,12 +270,10 @@ describe('useAllocationData grouping and sorting', () => {
     expect(items[20]?.allocation).toBe(3);
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
-      expect.objectContaining({
+      {
         reason: 'max-subvault-positions',
         id: 'protocol-2',
-        parentId: 'vault',
-        limit: 20,
-      }),
+      },
     );
   });
 
@@ -313,13 +310,10 @@ describe('useAllocationData grouping and sorting', () => {
     ]);
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
-      expect.objectContaining({
+      {
         reason: 'label-not-allowlisted',
         id: 'invalid',
-        label: 'Aave malicious',
-        parentId: 'strategy',
-        disallowedWords: ['malicious'],
-      }),
+      },
     );
   });
 
@@ -340,12 +334,10 @@ describe('useAllocationData grouping and sorting', () => {
     );
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
-      expect.objectContaining({
+      {
         reason: 'label-not-allowlisted',
         id: 'aave',
-        label: 'Aave',
-        disallowedWords: ['aave'],
-      }),
+      },
     );
   });
 
@@ -397,5 +389,93 @@ describe('useAllocationData grouping and sorting', () => {
       { name: 'SparkLend USDC', allocation: 20 },
       { name: 'Others', allocation: 10 },
     ]);
+  });
+
+  it('moves a hidden flat allocation to Others', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          id: 'hidden-flat',
+          label: 'Allocation',
+          sharePercent: 20,
+        }),
+      ]),
+      TEST_LABEL_ALLOWLIST,
+      ['hidden-flat'],
+    );
+
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({ name: 'Others', allocation: 20 }),
+    ]);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[Vault allocation] Allocation moved to Others',
+      {
+        reason: 'hidden-by-config',
+        id: 'hidden-flat',
+      },
+    );
+  });
+
+  it('moves a hidden subvault to top-level Others', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: 'hidden-vault',
+          label: 'Vault',
+          sharePercent: 30,
+        }),
+      ]),
+      TEST_LABEL_ALLOWLIST,
+      ['hidden-vault'],
+    );
+
+    expect(result.groups).toEqual([]);
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({ name: 'Others', allocation: 30 }),
+    ]);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[Vault allocation] Allocation moved to Others',
+      {
+        reason: 'hidden-by-config',
+        id: 'hidden-vault',
+      },
+    );
+  });
+
+  it('moves a hidden nested allocation to the subvault Others row', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: 'vault',
+          label: 'Vault',
+          sharePercent: 100,
+          allocations: [
+            createNestedAllocation('visible', 60, { label: 'Allocation' }),
+            createNestedAllocation('hidden-nested', 40),
+          ],
+        }),
+      ]),
+      TEST_LABEL_ALLOWLIST,
+      ['hidden-nested'],
+    );
+
+    expect(
+      result.groups[0]?.items.map(({ label, allocation }) => ({
+        label,
+        allocation,
+      })),
+    ).toEqual([
+      { label: 'Allocation', allocation: 60 },
+      { label: 'Others', allocation: 40 },
+    ]);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[Vault allocation] Allocation moved to Others',
+      {
+        reason: 'hidden-by-config',
+        id: 'hidden-nested',
+      },
+    );
   });
 });

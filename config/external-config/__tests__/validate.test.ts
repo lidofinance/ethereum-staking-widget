@@ -91,6 +91,7 @@ describe('ManifestSchema', () => {
       });
       expect(config?.earnVaults).toEqual([]);
       expect(config?.earnVaultAllocationLabelAllowlist).toEqual([]);
+      expect(config?.earnVaultAllocationHiddenIds).toEqual([]);
       expect(config?.featureFlags).toEqual({});
       expect(config?.pages).toEqual({});
     });
@@ -130,6 +131,31 @@ describe('ManifestSchema', () => {
           baseConfig: {
             earnVaultAllocationLabelAllowlist: ['wstETH/ETH'],
           },
+          '1': validEntry,
+        }),
+      ).toThrow();
+    });
+  });
+
+  describe('baseConfig.earnVaultAllocationHiddenIds', () => {
+    it('trims IDs and removes duplicates', () => {
+      const result = parseManifest({
+        baseConfig: {
+          earnVaultAllocationHiddenIds: [' vault-a ', 'vault-a', 'vault-b'],
+        },
+        '1': validEntry,
+      });
+
+      expect(result['1']?.config.earnVaultAllocationHiddenIds).toEqual([
+        'vault-a',
+        'vault-b',
+      ]);
+    });
+
+    it('rejects empty IDs', () => {
+      expect(() =>
+        parseManifest({
+          baseConfig: { earnVaultAllocationHiddenIds: ['  '] },
           '1': validEntry,
         }),
       ).toThrow();
