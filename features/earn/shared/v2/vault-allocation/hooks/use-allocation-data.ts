@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 
 import { randomColor } from 'features/earn/shared/vault-allocation/utils';
+import { getAllocationProtocolIcon } from 'features/earn/shared/vault-allocation/protocol-icon/icon-library';
 import type { MetavaultsAllocationFetchedData } from '../apy-data/metavaults-allocation';
 import type {
   AllocationGroup,
@@ -11,11 +12,6 @@ import type {
   LineDataWithAllocation,
 } from '../types';
 import {
-  type AllocationProtocolId,
-  ALLOCATION_ICONS_BY_ID,
-  ALLOCATION_PROTOCOL_IDS_KNOWN,
-  ALLOCATION_TOKEN_IDS_AVAILABLE,
-  ALLOCATION_PENDING_ID,
   AVAILABLE_TIP,
   OTHER_TIP,
   PENDING_TIP,
@@ -24,24 +20,12 @@ import {
 
 type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
 
-// FormatPercent renders one decimal, so smaller values are displayed as 0%.
-const MIN_DISPLAY_PERCENT = 0.05;
+const MIN_DISPLAY_PERCENT = 0.1;
 const isVisible = (allocation: number): boolean =>
   allocation >= MIN_DISPLAY_PERCENT;
 
 const parseTvlUSD = (amount: string, decimals: number): number =>
   Number(formatUnits(BigInt(amount), decimals));
-
-const ALLOCATION_PROTOCOL_IDS_KNOWN_SET = new Set<string>(
-  ALLOCATION_PROTOCOL_IDS_KNOWN,
-);
-const ALLOCATION_TOKEN_IDS_AVAILABLE_SET = new Set<string>(
-  ALLOCATION_TOKEN_IDS_AVAILABLE,
-);
-const ALLOCATION_TOKEN_IDS_WITH_AVAILABLE_LABEL = new Set<string>([
-  'usdc',
-  'usdt',
-]);
 
 // Entries that match these categories are accumulated into the
 // Available / Pending / Others rows shown in the allocation table.
@@ -62,10 +46,6 @@ const ALLOCATION_SUMMARY_META: Record<
   others: { label: 'Others', id: 'others', info: OTHER_TIP },
 };
 
-type AllocationCategory =
-  | { type: 'summary'; summaryKey: AllocationSummaryKey }
-  | { type: 'protocol'; id: AllocationProtocolId };
-
 const createAllocationSummaryRows = (): AllocationSummaryRows => ({
   available: { allocation: 0, tvlUSD: 0 },
   pending: { allocation: 0, tvlUSD: 0 },
@@ -82,23 +62,37 @@ const addToAllocationSummaryRow = (
   summaryRows[key].tvlUSD += tvlUSD;
 };
 
-const isKnownProtocolId = (id: string): id is AllocationProtocolId =>
-  ALLOCATION_PROTOCOL_IDS_KNOWN_SET.has(id);
+const moveInvisibleSummaryRowsToOthers = (
+  summaryRows: AllocationSummaryRows,
+): void => {
+  for (const key of ['available', 'pending'] as const) {
+    const summary = summaryRows[key];
 
-const getAllocationCategory = (id: string): AllocationCategory => {
-  if (ALLOCATION_TOKEN_IDS_AVAILABLE_SET.has(id))
-    return { type: 'summary', summaryKey: 'available' };
-  if (id === ALLOCATION_PENDING_ID)
-    return { type: 'summary', summaryKey: 'pending' };
-  if (isKnownProtocolId(id)) return { type: 'protocol', id };
-
-  return { type: 'summary', summaryKey: 'others' };
+    if (summary.allocation > 0 && !isVisible(summary.allocation)) {
+      addToAllocationSummaryRow(
+        summaryRows,
+        'others',
+        summary.allocation,
+        summary.tvlUSD,
+      );
+      summary.allocation = 0;
+      summary.tvlUSD = 0;
+    }
+  }
 };
 
-const getFlatAllocationName = (alloc: ApiAllocation): string =>
-  ALLOCATION_TOKEN_IDS_WITH_AVAILABLE_LABEL.has(alloc.id)
-    ? `Available ${alloc.label}`
-    : alloc.label;
+const ALLOCATION_SUMMARY_KEY_BY_CATEGORY = {
+  token: 'available',
+  'pending-deposits': 'pending',
+  other: 'others',
+} as const;
+
+const getAllocationSummaryKey = (
+  category: ApiAllocation['category'],
+): AllocationSummaryKey | undefined =>
+  category === 'protocol'
+    ? undefined
+    : ALLOCATION_SUMMARY_KEY_BY_CATEGORY[category];
 
 const appendNestedSummaryRows = (
   items: AllocationSubItem[],
@@ -107,7 +101,7 @@ const appendNestedSummaryRows = (
   for (const key of ALLOCATION_SUMMARY_KEYS) {
     const summary = summaryRows[key];
 
-    if (summary.allocation > 0) {
+    if (isVisible(summary.allocation)) {
       const meta = ALLOCATION_SUMMARY_META[key];
 
       items.push({
@@ -130,7 +124,7 @@ const appendFlatSummaryRows = (
   for (const key of ALLOCATION_SUMMARY_KEYS) {
     const summary = summaryRows[key];
 
-    if (summary.allocation > 0) {
+    if (isVisible(summary.allocation)) {
       const meta = ALLOCATION_SUMMARY_META[key];
 
       items.push({
@@ -154,34 +148,42 @@ const parseNestedGroup = (
     // Nested sub-allocations only carry a share, so derive their TVL from the
     // parent vault TVL before applying the same category rules as flat items.
     const subTvl = tvlUSD * (sub.sharePercent / 100);
-    const category = getAllocationCategory(sub.id);
+    const summaryKey = getAllocationSummaryKey(sub.category);
 
-    if (category.type === 'summary') {
+    if (summaryKey) {
       addToAllocationSummaryRow(
         summaryRows,
-        category.summaryKey,
+        summaryKey,
         sub.sharePercent,
         subTvl,
       );
-    } else {
+    } else if (isVisible(sub.sharePercent)) {
       knownItems.push({
         label: sub.label,
         id: sub.id,
-        icon: ALLOCATION_ICONS_BY_ID[category.id],
+        icon: getAllocationProtocolIcon(sub.protocol),
         chain: sub.chain,
         allocation: sub.sharePercent,
         tvlUSD: subTvl,
       });
+    } else if (sub.sharePercent > 0) {
+      addToAllocationSummaryRow(
+        summaryRows,
+        'others',
+        sub.sharePercent,
+        subTvl,
+      );
     }
   }
 
+  moveInvisibleSummaryRowsToOthers(summaryRows);
   appendNestedSummaryRows(knownItems, summaryRows);
 
   return {
     name: alloc.label,
     allocation: alloc.sharePercent,
     tvlUSD,
-    items: knownItems.filter((item) => isVisible(item.allocation)),
+    items: knownItems,
     info: SUBVAULTS_TIP_BY_ID[alloc.id],
   };
 };
@@ -194,24 +196,34 @@ const parseFlatItems = (
 
   for (const alloc of allocations) {
     const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
-    const category = getAllocationCategory(alloc.id);
+    const summaryKey = getAllocationSummaryKey(alloc.category);
 
-    if (category.type === 'summary') {
+    if (summaryKey) {
       addToAllocationSummaryRow(
         summaryRows,
-        category.summaryKey,
+        summaryKey,
         alloc.sharePercent,
         tvlUSD,
       );
-    } else {
+    } else if (isVisible(alloc.sharePercent)) {
       items.push({
-        name: getFlatAllocationName(alloc),
+        name: alloc.label,
+        chain: alloc.chain,
+        icon: getAllocationProtocolIcon(alloc.protocol),
         allocation: alloc.sharePercent,
         tvlUSD,
       });
+    } else if (alloc.sharePercent > 0) {
+      addToAllocationSummaryRow(
+        summaryRows,
+        'others',
+        alloc.sharePercent,
+        tvlUSD,
+      );
     }
   }
 
+  moveInvisibleSummaryRowsToOthers(summaryRows);
   appendFlatSummaryRows(items, summaryRows);
 
   return items;
@@ -274,22 +286,19 @@ export const useAllocationData = (
       }
     }
 
-    const filteredFlatItems = parseFlatItems(
-      flatAllocations,
-      topLevelSummaryRows,
-    ).filter((item) => isVisible(item.allocation));
+    const flatItems = parseFlatItems(flatAllocations, topLevelSummaryRows);
 
     const totalTvlUsd = parseTvlUSD(
       apiData.totalTvl.usd,
       apiData.totalTvl.usd_decimals,
     );
-    const chartData = buildChartData([...groups, ...filteredFlatItems]);
+    const chartData = buildChartData([...groups, ...flatItems]);
 
     return {
       lastUpdated: Number(apiData.lastUpdate),
       chartData,
       groups,
-      ...(filteredFlatItems.length > 0 && { flatItems: filteredFlatItems }),
+      ...(flatItems.length > 0 && { flatItems }),
       totalTvlUsd,
     };
   }, [apiData]);

@@ -1,43 +1,25 @@
 import { FC } from 'react';
 
-import {
-  EthereumIcon,
-  BaseIcon,
-  ArbitrumIcon,
-  LineaIcon,
-  KatanaIcon,
-  PlasmaIcon,
-  MantleIcon,
-} from 'assets/earn';
-
 import { Container, Badge, Content } from './styles';
+import { getAllocationChainIcon } from './chain-icon-library';
 
 type ProtocolIconProps = {
   mainIcon: React.ReactNode;
   badge: string;
 };
 
-export const ICONS_BADGE_MAP = {
-  ethereum: <EthereumIcon />,
-  base: <BaseIcon />,
-  arbitrum: <ArbitrumIcon />,
-  linea: <LineaIcon />,
-  katana: <KatanaIcon />,
-  plasma: <PlasmaIcon />,
-  mantle: <MantleIcon />,
-};
-
 export const ProtocolIcon: FC<ProtocolIconProps> = ({ mainIcon, badge }) => {
-  const badgeIcon =
-    ICONS_BADGE_MAP[badge.toLowerCase() as keyof typeof ICONS_BADGE_MAP];
+  const BadgeIcon = getAllocationChainIcon(badge);
 
-  if (!mainIcon || !badgeIcon) return null;
+  if (!mainIcon || !BadgeIcon) return null;
 
   return (
     <Container>
       <Content>{mainIcon}</Content>
       <Badge>
-        <Content>{badgeIcon}</Content>
+        <Content>
+          <BadgeIcon />
+        </Content>
       </Badge>
     </Container>
   );

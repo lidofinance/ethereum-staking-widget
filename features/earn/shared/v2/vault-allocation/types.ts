@@ -26,6 +26,8 @@ export type AllocationGroup = {
 export type FlatAllocationItem = {
   name: string;
   info?: ReactNode;
+  chain?: string;
+  icon?: React.FunctionComponent;
   allocation: number;
   tvlUSD: number;
 };
