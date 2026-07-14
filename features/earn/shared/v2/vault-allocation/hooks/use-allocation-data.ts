@@ -21,8 +21,14 @@ import {
 type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
 
 const MIN_DISPLAY_PERCENT = 0.1;
+const MAX_SUBVAULT_POSITIONS = 20;
 const isVisible = (allocation: number): boolean =>
   allocation >= MIN_DISPLAY_PERCENT;
+
+const sortByAllocationDescending = <T extends { allocation: number }>(
+  left: T,
+  right: T,
+): number => right.allocation - left.allocation;
 
 const parseTvlUSD = (amount: string, decimals: number): number =>
   Number(formatUnits(BigInt(amount), decimals));
@@ -30,6 +36,7 @@ const parseTvlUSD = (amount: string, decimals: number): number =>
 // Entries that match these categories are accumulated into the
 // Available / Pending / Others rows shown in the allocation table.
 const ALLOCATION_SUMMARY_KEYS = ['available', 'pending', 'others'] as const;
+const ALLOCATION_NON_OTHER_SUMMARY_KEYS = ['available', 'pending'] as const;
 type AllocationSummaryKey = (typeof ALLOCATION_SUMMARY_KEYS)[number];
 type AllocationSummaryRows = Record<
   AllocationSummaryKey,
@@ -65,7 +72,7 @@ const addToAllocationSummaryRow = (
 const moveInvisibleSummaryRowsToOthers = (
   summaryRows: AllocationSummaryRows,
 ): void => {
-  for (const key of ['available', 'pending'] as const) {
+  for (const key of ALLOCATION_NON_OTHER_SUMMARY_KEYS) {
     const summary = summaryRows[key];
 
     if (summary.allocation > 0 && !isVisible(summary.allocation)) {
@@ -79,6 +86,28 @@ const moveInvisibleSummaryRowsToOthers = (
       summary.tvlUSD = 0;
     }
   }
+};
+
+const limitNestedItems = (
+  items: AllocationSubItem[],
+  summaryRows: AllocationSummaryRows,
+): AllocationSubItem[] => {
+  items.sort(sortByAllocationDescending);
+
+  if (items.length <= MAX_SUBVAULT_POSITIONS) {
+    return items;
+  }
+
+  for (const item of items.slice(MAX_SUBVAULT_POSITIONS)) {
+    addToAllocationSummaryRow(
+      summaryRows,
+      'others',
+      item.allocation,
+      item.tvlUSD,
+    );
+  }
+
+  return items.slice(0, MAX_SUBVAULT_POSITIONS);
 };
 
 const ALLOCATION_SUMMARY_KEY_BY_CATEGORY = {
@@ -177,13 +206,14 @@ const parseNestedGroup = (
   }
 
   moveInvisibleSummaryRowsToOthers(summaryRows);
-  appendNestedSummaryRows(knownItems, summaryRows);
+  const limitedItems = limitNestedItems(knownItems, summaryRows);
+  appendNestedSummaryRows(limitedItems, summaryRows);
 
   return {
     name: alloc.label,
     allocation: alloc.sharePercent,
     tvlUSD,
-    items: knownItems,
+    items: limitedItems,
     info: SUBVAULTS_TIP_BY_ID[alloc.id],
   };
 };
@@ -223,6 +253,7 @@ const parseFlatItems = (
     }
   }
 
+  items.sort(sortByAllocationDescending);
   moveInvisibleSummaryRowsToOthers(summaryRows);
   appendFlatSummaryRows(items, summaryRows);
 
@@ -287,6 +318,7 @@ export const useAllocationData = (
     }
 
     const flatItems = parseFlatItems(flatAllocations, topLevelSummaryRows);
+    groups.sort(sortByAllocationDescending);
 
     const totalTvlUsd = parseTvlUSD(
       apiData.totalTvl.usd,
