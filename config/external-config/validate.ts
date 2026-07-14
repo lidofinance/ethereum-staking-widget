@@ -151,7 +151,6 @@ export const ManifestConfigPages = {
   Withdrawals: '/withdrawals',
   Rewards: '/rewards',
   Settings: '/settings',
-  Referral: '/referral',
   Earn: '/earn',
 } as const;
 
