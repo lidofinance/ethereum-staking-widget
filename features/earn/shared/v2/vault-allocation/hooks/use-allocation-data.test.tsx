@@ -12,6 +12,13 @@ vi.mock(
   }),
 );
 
+const consoleWarnSpy = vi
+  .spyOn(console, 'warn')
+  .mockImplementation(() => undefined);
+
+beforeEach(() => consoleWarnSpy.mockClear());
+afterAll(() => consoleWarnSpy.mockRestore());
+
 type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
 type ApiNestedAllocation = ApiAllocation['allocations'][number];
 
@@ -44,6 +51,18 @@ const createData = (
   totalTvl: { usd: '100', usd_decimals: 0 },
 });
 
+const TEST_LABEL_ALLOWLIST = [
+  'allocation',
+  'hidden',
+  'vault',
+  'smaller',
+  'larger',
+  'small',
+  'large',
+  'medium',
+  ...Array.from({ length: 22 }, (_, index) => `protocol-${index + 1}`),
+];
+
 const createNestedAllocation = (
   id: string,
   sharePercent: number,
@@ -60,11 +79,12 @@ const createNestedAllocation = (
 
 const getAllocationData = (
   apiData: MetavaultsAllocationFetchedData,
+  labelAllowlist: readonly string[] = TEST_LABEL_ALLOWLIST,
 ): AllocationTableData => {
   let result: AllocationTableData | undefined;
 
   const TestComponent: FC = () => {
-    result = useAllocationData(apiData);
+    result = useAllocationData(apiData, labelAllowlist);
     return null;
   };
 
@@ -81,6 +101,15 @@ describe('useAllocationData grouping and sorting', () => {
     );
 
     expect(result.flatItems).toBeUndefined();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[Vault allocation] Allocation moved to Others',
+      expect.objectContaining({
+        reason: 'below-min-display-percent',
+        id: 'hidden',
+        scope: 'flat',
+        minDisplayPercent: 0.1,
+      }),
+    );
   });
 
   it('hides nested Others when its total is below the display threshold', () => {
@@ -240,5 +269,133 @@ describe('useAllocationData grouping and sorting', () => {
     );
     expect(items[20]?.label).toBe('Others');
     expect(items[20]?.allocation).toBe(3);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[Vault allocation] Allocation moved to Others',
+      expect.objectContaining({
+        reason: 'max-subvault-positions',
+        id: 'protocol-2',
+        parentId: 'vault',
+        limit: 20,
+      }),
+    );
+  });
+
+  it('allows labels when every slash-separated word is allowlisted', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: 'strategy',
+          label: 'Lido stRATEGY',
+          sharePercent: 100,
+          allocations: [
+            createNestedAllocation('valid', 60, {
+              label: 'Aave levered wstETH/ETH',
+            }),
+            createNestedAllocation('invalid', 40, {
+              label: 'Aave malicious',
+            }),
+          ],
+        }),
+      ]),
+      ['lido', 'strategy', 'aave', 'levered', 'wsteth', 'eth'],
+    );
+
+    expect(result.groups[0]?.name).toBe('Lido stRATEGY');
+    expect(
+      result.groups[0]?.items.map(({ label, allocation }) => ({
+        label,
+        allocation,
+      })),
+    ).toEqual([
+      { label: 'Aave levered wstETH/ETH', allocation: 60 },
+      { label: 'Others', allocation: 40 },
+    ]);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[Vault allocation] Allocation moved to Others',
+      expect.objectContaining({
+        reason: 'label-not-allowlisted',
+        id: 'invalid',
+        label: 'Aave malicious',
+        parentId: 'strategy',
+        disallowedWords: ['malicious'],
+      }),
+    );
+  });
+
+  it('warns when the label allowlist is empty', () => {
+    getAllocationData(
+      createData([
+        createFlatAllocation({
+          id: 'aave',
+          label: 'Aave',
+          sharePercent: 10,
+        }),
+      ]),
+      [],
+    );
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[Vault allocation] Label allowlist is empty; API labels will be moved to Others',
+    );
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[Vault allocation] Allocation moved to Others',
+      expect.objectContaining({
+        reason: 'label-not-allowlisted',
+        id: 'aave',
+        label: 'Aave',
+        disallowedWords: ['aave'],
+      }),
+    );
+  });
+
+  it('moves a subvault with a non-allowlisted label to top-level Others', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: 'vault',
+          label: 'Unknown Vault',
+          sharePercent: 10,
+        }),
+      ]),
+      ['vault'],
+    );
+
+    expect(result.groups).toEqual([]);
+    expect(
+      result.flatItems?.map(({ name, allocation }) => ({
+        name,
+        allocation,
+      })),
+    ).toEqual([{ name: 'Others', allocation: 10 }]);
+  });
+
+  it('moves a flat allocation with a non-allowlisted label to Others', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          id: 'valid',
+          label: 'SparkLend USDC',
+          sharePercent: 20,
+        }),
+        createFlatAllocation({
+          id: 'invalid',
+          label: 'Injected Label',
+          sharePercent: 10,
+        }),
+      ]),
+      ['sparklend', 'usdc'],
+    );
+
+    expect(
+      result.flatItems?.map(({ name, allocation }) => ({
+        name,
+        allocation,
+      })),
+    ).toEqual([
+      { name: 'SparkLend USDC', allocation: 20 },
+      { name: 'Others', allocation: 10 },
+    ]);
   });
 });

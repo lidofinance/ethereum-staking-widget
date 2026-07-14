@@ -22,6 +22,7 @@ type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
 
 const MIN_DISPLAY_PERCENT = 0.1;
 const MAX_SUBVAULT_POSITIONS = 20;
+const EMPTY_ALLOCATION_LABEL_ALLOWLIST: readonly string[] = [];
 const isVisible = (allocation: number): boolean =>
   allocation >= MIN_DISPLAY_PERCENT;
 
@@ -32,6 +33,56 @@ const sortByAllocationDescending = <T extends { allocation: number }>(
 
 const parseTvlUSD = (amount: string, decimals: number): number =>
   Number(formatUnits(BigInt(amount), decimals));
+
+const normalizeLabelWord = (word: string): string => word.toLowerCase();
+
+const getDisallowedLabelWords = (
+  label: string,
+  allowlist: ReadonlySet<string>,
+): string[] => {
+  const normalizedLabel = label.trim();
+  if (!normalizedLabel) return ['<empty-label>'];
+
+  return [
+    ...new Set(
+      normalizedLabel
+        .split(/[\s/]+/u)
+        .map(normalizeLabelWord)
+        .filter((word) => !allowlist.has(word)),
+    ),
+  ];
+};
+
+type AllocationDiagnosticReason =
+  | 'label-not-allowlisted'
+  | 'below-min-display-percent'
+  | 'max-subvault-positions';
+
+const warnAllocationMovedToOthers = (
+  reason: AllocationDiagnosticReason,
+  allocation: {
+    id: string;
+    label: string;
+    sharePercent: number;
+    category?: string;
+    protocol?: string;
+    chain?: string;
+  },
+  details: Record<string, unknown> = {},
+): void => {
+  const { id, label, sharePercent, category, protocol, chain } = allocation;
+
+  console.warn('[Vault allocation] Allocation moved to Others', {
+    reason,
+    id,
+    label,
+    sharePercent,
+    category,
+    protocol,
+    chain,
+    ...details,
+  });
+};
 
 // Entries that match these categories are accumulated into the
 // Available / Pending / Others rows shown in the allocation table.
@@ -91,6 +142,7 @@ const moveInvisibleSummaryRowsToOthers = (
 const limitNestedItems = (
   items: AllocationSubItem[],
   summaryRows: AllocationSummaryRows,
+  parentId: string,
 ): AllocationSubItem[] => {
   items.sort(sortByAllocationDescending);
 
@@ -99,6 +151,20 @@ const limitNestedItems = (
   }
 
   for (const item of items.slice(MAX_SUBVAULT_POSITIONS)) {
+    warnAllocationMovedToOthers(
+      'max-subvault-positions',
+      {
+        id: item.id,
+        label: item.label,
+        sharePercent: item.allocation,
+        chain: item.chain,
+      },
+      {
+        scope: 'nested',
+        parentId,
+        limit: MAX_SUBVAULT_POSITIONS,
+      },
+    );
     addToAllocationSummaryRow(
       summaryRows,
       'others',
@@ -169,6 +235,7 @@ const appendFlatSummaryRows = (
 const parseNestedGroup = (
   alloc: ApiAllocation,
   tvlUSD: number,
+  labelAllowlist: ReadonlySet<string>,
 ): AllocationGroup => {
   const summaryRows = createAllocationSummaryRows();
   const knownItems: AllocationSubItem[] = [];
@@ -178,6 +245,7 @@ const parseNestedGroup = (
     // parent vault TVL before applying the same category rules as flat items.
     const subTvl = tvlUSD * (sub.sharePercent / 100);
     const summaryKey = getAllocationSummaryKey(sub.category);
+    const disallowedWords = getDisallowedLabelWords(sub.label, labelAllowlist);
 
     if (summaryKey) {
       addToAllocationSummaryRow(
@@ -186,6 +254,20 @@ const parseNestedGroup = (
         sub.sharePercent,
         subTvl,
       );
+    } else if (disallowedWords.length > 0) {
+      warnAllocationMovedToOthers('label-not-allowlisted', sub, {
+        scope: 'nested',
+        parentId: alloc.id,
+        disallowedWords,
+      });
+      if (sub.sharePercent > 0) {
+        addToAllocationSummaryRow(
+          summaryRows,
+          'others',
+          sub.sharePercent,
+          subTvl,
+        );
+      }
     } else if (isVisible(sub.sharePercent)) {
       knownItems.push({
         label: sub.label,
@@ -196,6 +278,11 @@ const parseNestedGroup = (
         tvlUSD: subTvl,
       });
     } else if (sub.sharePercent > 0) {
+      warnAllocationMovedToOthers('below-min-display-percent', sub, {
+        scope: 'nested',
+        parentId: alloc.id,
+        minDisplayPercent: MIN_DISPLAY_PERCENT,
+      });
       addToAllocationSummaryRow(
         summaryRows,
         'others',
@@ -206,7 +293,7 @@ const parseNestedGroup = (
   }
 
   moveInvisibleSummaryRowsToOthers(summaryRows);
-  const limitedItems = limitNestedItems(knownItems, summaryRows);
+  const limitedItems = limitNestedItems(knownItems, summaryRows, alloc.id);
   appendNestedSummaryRows(limitedItems, summaryRows);
 
   return {
@@ -220,6 +307,7 @@ const parseNestedGroup = (
 
 const parseFlatItems = (
   allocations: ApiAllocation[],
+  labelAllowlist: ReadonlySet<string>,
   summaryRows = createAllocationSummaryRows(),
 ): FlatAllocationItem[] => {
   const items: FlatAllocationItem[] = [];
@@ -227,6 +315,10 @@ const parseFlatItems = (
   for (const alloc of allocations) {
     const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
     const summaryKey = getAllocationSummaryKey(alloc.category);
+    const disallowedWords = getDisallowedLabelWords(
+      alloc.label,
+      labelAllowlist,
+    );
 
     if (summaryKey) {
       addToAllocationSummaryRow(
@@ -235,6 +327,19 @@ const parseFlatItems = (
         alloc.sharePercent,
         tvlUSD,
       );
+    } else if (disallowedWords.length > 0) {
+      warnAllocationMovedToOthers('label-not-allowlisted', alloc, {
+        scope: 'flat',
+        disallowedWords,
+      });
+      if (alloc.sharePercent > 0) {
+        addToAllocationSummaryRow(
+          summaryRows,
+          'others',
+          alloc.sharePercent,
+          tvlUSD,
+        );
+      }
     } else if (isVisible(alloc.sharePercent)) {
       items.push({
         name: alloc.label,
@@ -244,6 +349,10 @@ const parseFlatItems = (
         tvlUSD,
       });
     } else if (alloc.sharePercent > 0) {
+      warnAllocationMovedToOthers('below-min-display-percent', alloc, {
+        scope: 'flat',
+        minDisplayPercent: MIN_DISPLAY_PERCENT,
+      });
       addToAllocationSummaryRow(
         summaryRows,
         'others',
@@ -288,6 +397,7 @@ const buildChartData = (
 
 export const useAllocationData = (
   apiData?: MetavaultsAllocationFetchedData,
+  allocationLabelAllowlist: readonly string[] = EMPTY_ALLOCATION_LABEL_ALLOWLIST,
 ): AllocationTableData => {
   return useMemo(() => {
     if (!apiData)
@@ -296,15 +406,49 @@ export const useAllocationData = (
     const groups: AllocationGroup[] = [];
     const flatAllocations: ApiAllocation[] = [];
     const topLevelSummaryRows = createAllocationSummaryRows();
+    const labelAllowlist = new Set(
+      allocationLabelAllowlist.map(normalizeLabelWord),
+    );
+
+    if (labelAllowlist.size === 0) {
+      console.warn(
+        '[Vault allocation] Label allowlist is empty; API labels will be moved to Others',
+      );
+    }
 
     for (const alloc of apiData.allocations) {
       if (alloc.type === 'nested') {
         const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
-        const group = parseNestedGroup(alloc, tvlUSD);
+        const disallowedWords = getDisallowedLabelWords(
+          alloc.label,
+          labelAllowlist,
+        );
+
+        if (disallowedWords.length > 0) {
+          warnAllocationMovedToOthers('label-not-allowlisted', alloc, {
+            scope: 'subvault',
+            disallowedWords,
+          });
+          if (alloc.sharePercent > 0) {
+            addToAllocationSummaryRow(
+              topLevelSummaryRows,
+              'others',
+              alloc.sharePercent,
+              tvlUSD,
+            );
+          }
+          continue;
+        }
+
+        const group = parseNestedGroup(alloc, tvlUSD, labelAllowlist);
 
         if (isVisible(group.allocation)) {
           groups.push(group);
-        } else {
+        } else if (group.allocation > 0) {
+          warnAllocationMovedToOthers('below-min-display-percent', alloc, {
+            scope: 'subvault',
+            minDisplayPercent: MIN_DISPLAY_PERCENT,
+          });
           addToAllocationSummaryRow(
             topLevelSummaryRows,
             'others',
@@ -317,7 +461,11 @@ export const useAllocationData = (
       }
     }
 
-    const flatItems = parseFlatItems(flatAllocations, topLevelSummaryRows);
+    const flatItems = parseFlatItems(
+      flatAllocations,
+      labelAllowlist,
+      topLevelSummaryRows,
+    );
     groups.sort(sortByAllocationDescending);
 
     const totalTvlUsd = parseTvlUSD(
@@ -333,5 +481,5 @@ export const useAllocationData = (
       ...(flatItems.length > 0 && { flatItems }),
       totalTvlUsd,
     };
-  }, [apiData]);
+  }, [allocationLabelAllowlist, apiData]);
 };

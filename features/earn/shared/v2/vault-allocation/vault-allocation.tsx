@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import {
   ChartLine,
   ChartLineBorderType,
@@ -7,6 +7,7 @@ import {
 } from '@lidofinance/lido-ui';
 
 import { getContractAddress } from 'config/networks/contract-address';
+import { useConfig } from 'config/use-config';
 import { CHAINS } from 'consts/chains';
 import { Section } from 'shared/components';
 import { AllocationLegend } from 'features/earn/shared/vault-allocation/allocation-legend';
@@ -20,6 +21,7 @@ import {
 import { formatLastUpdatedDate } from 'features/earn/shared/vault-allocation/utils';
 
 import { AllocationTable } from './allocation-table/allocation-table';
+import { getAllocationLabelAllowlist } from './consts';
 import { useAllocationData } from './hooks/use-allocation-data';
 import { VaultAllocationProps } from './types';
 import { useMetavaultAllocation } from './hooks/use-metavault-allocation';
@@ -28,9 +30,15 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
   const { vaultName, footer } = props;
 
   const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
+  const { earnVaultAllocationLabelAllowlist: configuredLabelAllowlist } =
+    useConfig().externalConfig;
+  const allocationLabelAllowlist = useMemo(
+    () => getAllocationLabelAllowlist(configuredLabelAllowlist),
+    [configuredLabelAllowlist],
+  );
 
   const { data, isLoading } = useMetavaultAllocation(vaultAddress);
-  const allocationData = useAllocationData(data);
+  const allocationData = useAllocationData(data, allocationLabelAllowlist);
 
   if (isLoading) {
     return (

@@ -7,6 +7,51 @@ export const OTHER_TIP =
 export const PENDING_TIP =
   'The amount of tokens in the process of being deposited to the vault';
 
+export const BASE_ALLOCATION_LABEL_ALLOWLIST = [
+  'aave',
+  'aura',
+  'earnusd',
+  'earnusdc',
+  'earnusde',
+  'eth',
+  'ethena',
+  'gho',
+  'levered',
+  'lido',
+  'main',
+  'mantle',
+  'maple',
+  'metamorpho',
+  'morpho',
+  'plasma',
+  'pt',
+  'pt_srusde',
+  'pyusd',
+  'reusd',
+  'rseth',
+  'sentora',
+  'spark',
+  'sparklend',
+  'strategy',
+  'susde',
+  'syrup',
+  'syrupusdt',
+  'twyne',
+  'usd',
+  'usdc',
+  'usde',
+  'usdt',
+  'usdt0',
+  'weth',
+  'wsteth',
+] as const;
+
+export const getAllocationLabelAllowlist = (
+  configuredWords: readonly string[],
+): string[] => [
+  ...new Set([...BASE_ALLOCATION_LABEL_ALLOWLIST, ...configuredWords]),
+];
+
 const SUBVAULTS_WITH_TIP = ['earnusdc', 'ggv', 'streth'];
 const USDC_VAULT_TIP =
   'A strategy designed to amplify USD yield by combining low-risk and highly liquid stablecoin strategies with carefully selected DeFi strategies.';
