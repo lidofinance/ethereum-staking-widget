@@ -19,10 +19,7 @@ const CopyAddressUrl = ({ address }: { address: string }) => {
       }
 
       const hash = href.split('#')[1].split('?')[0];
-      return (
-        withoutHashAndQuery +
-        getBasedHashHref(hash, { address } as Record<string, string>)
-      );
+      return withoutHashAndQuery + getBasedHashHref(hash, { address });
     } else {
       // Infra version
       const withoutQuery = href.split('?')[0];

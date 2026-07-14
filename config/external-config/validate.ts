@@ -257,10 +257,7 @@ export const ManifestSchema = z.preprocess(
         Object.entries(obj).filter(
           ([key]) => ManifestKeySchema.safeParse(key).success,
         ),
-      ) as Record<
-        z.infer<typeof ManifestKeySchema>,
-        z.infer<typeof ManifestEntrySchema>
-      >;
+      );
     }
     return obj;
   },

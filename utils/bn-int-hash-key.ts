@@ -23,7 +23,7 @@ const isPlainObject = (o: any): o is Record<PropertyKey, unknown> => {
   }
 
   // Handles Objects created by Object.create(<arbitrary prototype>)
-  // eslint-disable-next-line sonarjs/prefer-single-boolean-return
+
   if (Object.getPrototypeOf(o) !== Object.prototype) {
     return false;
   }

@@ -1,4 +1,3 @@
-/* eslint-disable func-style */
 /* eslint-disable import/no-extraneous-dependencies */
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 

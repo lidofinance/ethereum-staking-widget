@@ -20,6 +20,7 @@ import {
   OTHER_TIP,
   PENDING_TIP,
   SUBVAULTS_TIP_BY_ID,
+  SUBVAULTS_WITH_TIP,
 } from '../consts';
 
 type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
@@ -182,7 +183,7 @@ const parseNestedGroup = (
     allocation: alloc.sharePercent,
     tvlUSD,
     items: knownItems.filter((item) => isVisible(item.allocation)),
-    info: SUBVAULTS_TIP_BY_ID[alloc.id],
+    info: SUBVAULTS_TIP_BY_ID[alloc.id as SUBVAULTS_WITH_TIP],
   };
 };
 

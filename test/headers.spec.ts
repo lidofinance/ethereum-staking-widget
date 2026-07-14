@@ -11,7 +11,7 @@ import { CONFIG } from './config.js';
 test.describe('Page Headers', () => {
   const isPreview = !CONFIG.STAND_URL?.includes('branch-preview');
 
-  CACHE_CONTROL_PAGES.map((route) =>
+  CACHE_CONTROL_PAGES.forEach((route) =>
     test(`Page ${route} should have proper headers`, async ({ request }) => {
       // case for only wildcard in config
       if (route == '/favicon:size*') route = '/favicon.ico';
@@ -64,7 +64,7 @@ const TOKEN_LIST_FILES = [
 ];
 
 test.describe('Token list headers', () => {
-  TOKEN_LIST_FILES.map((route) =>
+  TOKEN_LIST_FILES.forEach((route) =>
     test(`File ${route} should have proper headers`, async ({ request }) => {
       const resp = await request.get(route);
       expect(resp.status()).toBe(200);
