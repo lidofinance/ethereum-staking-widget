@@ -10,7 +10,7 @@ import { ReactComponent as MonadIcon } from 'assets/earn/allocation/chain/monad.
 import { ReactComponent as OptimismIcon } from 'assets/earn/allocation/chain/optimism.svg';
 import { ReactComponent as PlasmaIcon } from 'assets/earn/allocation/chain/plasma.svg';
 import { ReactComponent as RobinhoodIcon } from 'assets/earn/allocation/chain/robinhood.svg';
-import { ReactComponent as TbdIcon } from 'assets/earn/allocation/chain/tbd.svg';
+import { ReactComponent as FallbackIcon } from 'assets/earn/allocation/chain/fallback.svg';
 
 type ChainIcon = FC<ComponentProps<'svg'>>;
 
@@ -37,6 +37,6 @@ export const getAllocationChainIcon = (chain?: string): ChainIcon => {
   return (
     (key
       ? ALLOCATION_CHAIN_ICONS[key as keyof typeof ALLOCATION_CHAIN_ICONS]
-      : undefined) ?? TbdIcon
+      : undefined) ?? FallbackIcon
   );
 };

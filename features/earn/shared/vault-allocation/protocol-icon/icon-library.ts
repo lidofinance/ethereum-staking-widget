@@ -16,7 +16,7 @@ import { ReactComponent as PendleIcon } from 'assets/earn/allocation/protocol/pe
 import { ReactComponent as ResolvIcon } from 'assets/earn/allocation/protocol/resolv.svg';
 import { ReactComponent as SparkIcon } from 'assets/earn/allocation/protocol/spark.svg';
 import { ReactComponent as StrataIcon } from 'assets/earn/allocation/protocol/strata.svg';
-import { ReactComponent as TbdIcon } from 'assets/earn/allocation/protocol/tbd.svg';
+import { ReactComponent as FallbackIcon } from 'assets/earn/allocation/protocol/fallback.svg';
 import { ReactComponent as TenorIcon } from 'assets/earn/allocation/protocol/tenor.svg';
 import { ReactComponent as TreehouseIcon } from 'assets/earn/allocation/protocol/treehouse.svg';
 import { ReactComponent as TwyneIcon } from 'assets/earn/allocation/protocol/twyne.svg';
@@ -66,6 +66,6 @@ export const getAllocationProtocolIcon = (
   return (
     (key
       ? ALLOCATION_PROTOCOL_ICONS[key as keyof typeof ALLOCATION_PROTOCOL_ICONS]
-      : undefined) ?? TbdIcon
+      : undefined) ?? FallbackIcon
   );
 };

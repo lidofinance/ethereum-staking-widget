@@ -28,7 +28,7 @@ import { ReactComponent as StethIcon } from 'assets/earn/allocation/token/steth.
 import { ReactComponent as StrethIcon } from 'assets/earn/allocation/token/streth.svg';
 import { ReactComponent as SyrupUsdgIcon } from 'assets/earn/allocation/token/syrup-usdg.svg';
 import { ReactComponent as SyrupUsdtIcon } from 'assets/earn/allocation/token/syrup-usdt.svg';
-import { ReactComponent as TbdIcon } from 'assets/earn/allocation/token/tbd.svg';
+import { ReactComponent as FallbackIcon } from 'assets/earn/allocation/token/fallback.svg';
 import { ReactComponent as TreeIcon } from 'assets/earn/allocation/token/tree.svg';
 import { ReactComponent as UsdcIcon } from 'assets/earn/allocation/token/usdc.svg';
 import { ReactComponent as UsdeIcon } from 'assets/earn/allocation/token/usde.svg';
@@ -89,6 +89,6 @@ export const getAllocationTokenIcon = (token?: string): TokenIcon => {
   return (
     (key
       ? ALLOCATION_TOKEN_ICONS[key as keyof typeof ALLOCATION_TOKEN_ICONS]
-      : undefined) ?? TbdIcon
+      : undefined) ?? FallbackIcon
   );
 };
