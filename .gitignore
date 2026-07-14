@@ -12,6 +12,7 @@ tsconfig.tsbuildinfo
 /test-results/
 /playwright
 /playwright-report
+test/playwright-report
 /playwright/.cache
 
 
