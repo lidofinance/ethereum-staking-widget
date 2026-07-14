@@ -7,7 +7,7 @@ import {
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { STG_TOKEN_SYMBOL } from '../../consts';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
@@ -27,7 +27,7 @@ const getTxModalStagesRequest = (
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={false}
-        token={getTokenDisplayName(STG_TOKEN_SYMBOL)}
+        token={getTokenSymbol(STG_TOKEN_SYMBOL)}
         amount={amount}
       />,
     ),
@@ -38,7 +38,7 @@ const getTxModalStagesRequest = (
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={false}
         amount={amount}
-        token={getTokenDisplayName(STG_TOKEN_SYMBOL)}
+        token={getTokenSymbol(STG_TOKEN_SYMBOL)}
         isPending
         isAA={isAA}
         txHash={txHash}

@@ -57,3 +57,54 @@ test.describe('Page Headers', () => {
     }),
   );
 });
+
+const TOKEN_LIST_FILES = [
+  '/token-lists/withdrawals-dex-buy-tokenlist.json',
+  '/token-lists/withdrawals-dex-sell-tokenlist.json',
+];
+
+test.describe('Token list headers', () => {
+  TOKEN_LIST_FILES.map((route) =>
+    test(`File ${route} should have proper headers`, async ({ request }) => {
+      const resp = await request.get(route);
+      expect(resp.status()).toBe(200);
+      const headers = resp.headers();
+
+      await test.step('Check content type and body', async () => {
+        expect.soft(headers['content-type']).toContain('application/json');
+        // must parse as JSON — corrupt token lists break DEX widget consumers
+        await expect.soft(resp.json()).resolves.toBeTruthy();
+      });
+
+      await test.step('Check cross-origin headers', async () => {
+        expect.soft(headers['access-control-allow-origin']).toBe('*');
+        expect
+          .soft(headers['access-control-allow-methods'])
+          .toBe('GET, HEAD, OPTIONS');
+        expect
+          .soft(headers['cross-origin-resource-policy'])
+          .toBe('cross-origin');
+        expect.soft(headers['x-robots-tag']).toBe('noindex');
+        expect.soft(headers['cache-control']).toBe(CACHE_CONTROL_VALUE);
+      });
+
+      await test.step('Check inherited global headers', async () => {
+        expect.soft(headers['referrer-policy']).toBe('same-origin');
+        expect.soft(headers['x-content-type-options']).toBe('nosniff');
+        expect.soft(headers['x-xss-protection']).toBe('1; mode=block');
+        expect.soft(headers['x-dns-prefetch-control']).toBe('on');
+        expect.soft(headers['x-download-options']).toBe('noopen');
+        expect.soft(headers['x-permitted-cross-domain-policies']).toBe('none');
+
+        // NB: Controlled by CF
+        expect
+          .soft(headers['strict-transport-security'])
+          .toBe('max-age=2592000; includeSubDomains; preload');
+      });
+
+      await test.step('Check undefined headers', async () => {
+        expect.soft(headers[CACHE_CONTROL_HEADER]).toBeUndefined();
+      });
+    }),
+  );
+});

@@ -4,7 +4,7 @@ import type { Resolver } from 'react-hook-form';
 
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
@@ -13,7 +13,7 @@ import type { UnwrapFormInputType, UnwrapFormValidationContext } from './types';
 import { TOKENS_TO_WRAP } from '../../shared/types';
 
 const messageMaxAmount = (max: bigint) =>
-  `Entered ${getTokenDisplayName(
+  `Entered ${getTokenSymbol(
     TOKENS_TO_WRAP.wstETH,
   )} amount exceeds your available balance of ${formatEther(max)}`;
 

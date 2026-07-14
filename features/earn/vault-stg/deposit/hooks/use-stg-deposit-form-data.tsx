@@ -40,7 +40,7 @@ export const useSTGDepositFormData = () => {
       wstETH: {
         balance: wstethBalanceQuery.data,
       },
-      wETH: {
+      WETH: {
         balance: wethBalanceQuery.data,
       },
     };
@@ -58,7 +58,7 @@ export const useSTGDepositFormData = () => {
       const tokenBalanceRefetch = {
         ['ETH']: ethBalanceQuery.refetch,
         ['wstETH']: wstethBalanceQuery.refetch,
-        ['wETH']: wethBalanceQuery.refetch,
+        ['WETH']: wethBalanceQuery.refetch,
       }[token];
 
       const options = { cancelRefetch: true, throwOnError: false };

@@ -52,7 +52,7 @@ export const useGGVDepositFormData = () => {
         balance: wstethBalanceQuery.data,
         maxDeposit: ggvMaxDepositQuery.data.maxWstethDeposit,
       },
-      wETH: {
+      WETH: {
         balance: wethBalanceQuery.data,
         maxDeposit: ggvMaxDepositQuery.data.maxWethDeposit,
       },
@@ -78,7 +78,7 @@ export const useGGVDepositFormData = () => {
         ['ETH']: ethBalanceQuery.refetch,
         ['stETH']: stethBalanceQuery.refetch,
         ['wstETH']: wstethBalanceQuery.refetch,
-        ['wETH']: wethBalanceQuery.refetch,
+        ['WETH']: wethBalanceQuery.refetch,
       }[token];
 
       const options = { cancelRefetch: true, throwOnError: false };

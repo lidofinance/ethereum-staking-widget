@@ -40,7 +40,7 @@ export const useDVVDepositFormData = () => {
         balance: ethBalanceQuery.data,
         maxDeposit,
       },
-      wETH: {
+      WETH: {
         balance: wethBalanceQuery.data,
         maxDeposit,
       },
@@ -58,7 +58,7 @@ export const useDVVDepositFormData = () => {
     (token: DVVDepositFormValues['token']) => {
       const tokenBalanceRefetch = {
         ['ETH']: ethBalanceQuery.refetch,
-        ['wETH']: wethBalanceQuery.refetch,
+        ['WETH']: wethBalanceQuery.refetch,
       }[token];
 
       const options = { cancelRefetch: true, throwOnError: false };

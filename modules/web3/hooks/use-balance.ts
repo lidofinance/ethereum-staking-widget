@@ -311,7 +311,7 @@ export const useWethBalance = ({
 
   const enabled = !!mergedAccount && isChainMatched;
 
-  const wethAddress = getTokenAddress(chainId, 'wETH');
+  const wethAddress = getTokenAddress(chainId, 'WETH');
 
   const contract =
     wethAddress && enabled

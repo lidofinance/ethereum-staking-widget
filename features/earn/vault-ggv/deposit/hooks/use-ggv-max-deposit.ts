@@ -71,7 +71,7 @@ export const useGGVMaxDeposit = () => {
           ...previewArgs,
         ]),
         lens.read.previewDeposit([
-          getTokenAddress(chainId, 'wETH')!,
+          getTokenAddress(chainId, 'WETH')!,
           ...previewArgs,
         ]),
       ]).then(([currentShares, ...rates]) => [

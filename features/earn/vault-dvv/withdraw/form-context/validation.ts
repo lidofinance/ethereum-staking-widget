@@ -7,10 +7,7 @@ import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { validateBigintMin } from 'shared/hook-form/validation/validate-bigint-min';
-import {
-  getTokenDisplayName,
-  TOKEN_DISPLAY_NAMES,
-} from 'utils/getTokenDisplayName';
+import { getTokenSymbol, TokenSymbol } from 'utils/get-token-symbol';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import {
   DVVWithdrawalFormValidationContext,
@@ -18,8 +15,8 @@ import {
 } from '../types';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
 
-const messageMaxBalance = (max: bigint, token: TOKEN_DISPLAY_NAMES) =>
-  `Entered ${getTokenDisplayName(
+const messageMaxBalance = (max: bigint, token: TokenSymbol) =>
+  `Entered ${getTokenSymbol(
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;
 

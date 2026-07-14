@@ -1,6 +1,6 @@
 import type { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
-export type DVVDepositTokens = (typeof LIDO_TOKENS)['eth'] | 'wETH';
+export type DVVDepositTokens = (typeof LIDO_TOKENS)['eth'] | 'WETH';
 
 export type DVVDepositFormValues = {
   amount: bigint | null;

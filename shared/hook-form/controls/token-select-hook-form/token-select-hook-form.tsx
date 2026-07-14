@@ -4,21 +4,18 @@ import { Option, Eth, Steth, Wsteth, OptionValue } from '@lidofinance/lido-ui';
 import { TokenWethIcon } from 'assets/earn';
 import { TokenUsdcIcon, TokenUsdeIcon, TokenUsdtIcon } from 'assets/earn-v2';
 
-import {
-  getTokenDisplayName,
-  TOKEN_DISPLAY_NAMES,
-} from 'utils/getTokenDisplayName';
+import { getTokenSymbol, TokenSymbol } from 'utils/get-token-symbol';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
 import { SelectIconStyle } from './styles';
 
 export type TokenOption = {
   label?: string;
-  token: TOKEN_DISPLAY_NAMES;
+  token: TokenSymbol;
 };
 
-const iconsMap: { [key in TOKEN_DISPLAY_NAMES]?: JSX.Element } = {
+const iconsMap: { [key in TokenSymbol]?: JSX.Element } = {
   ['ETH']: <Eth />,
-  ['wETH']: <TokenWethIcon />,
+  ['WETH']: <TokenWethIcon />,
   ['stETH']: <Steth />,
   ['wstETH']: <Wsteth />,
   ['USDC']: <TokenUsdcIcon width={24} height={24} />,
@@ -31,7 +28,7 @@ type TokenSelectHookFormProps = {
   fieldName?: string;
   resetField?: string;
   errorField?: string;
-  onChange?: (value: TOKEN_DISPLAY_NAMES) => void;
+  onChange?: (value: TokenSymbol) => void;
   warning?: boolean;
   disabled?: boolean;
 };
@@ -45,7 +42,7 @@ export const TokenSelectHookForm = ({
   warning,
   disabled = false,
 }: TokenSelectHookFormProps) => {
-  const { field } = useController<Record<string, TOKEN_DISPLAY_NAMES>>({
+  const { field } = useController<Record<string, TokenSymbol>>({
     name: fieldName,
   });
   const { setValue, clearErrors } = useFormContext();
@@ -74,7 +71,7 @@ export const TokenSelectHookForm = ({
           shouldValidate: false,
         });
         clearErrors(resetField);
-        onChange?.(value as TOKEN_DISPLAY_NAMES);
+        onChange?.(value as TokenSymbol);
       }}
     >
       {options.map(({ label, token }) => (
@@ -84,7 +81,7 @@ export const TokenSelectHookForm = ({
           value={token}
           data-testid={token}
         >
-          {label || getTokenDisplayName(token)}
+          {label || getTokenSymbol(token)}
         </Option>
       ))}
     </SelectIconStyle>

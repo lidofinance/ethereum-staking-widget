@@ -1,5 +1,5 @@
 import { TokenWstethIcon } from 'assets/earn';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { STGRequest } from '../../components/stg-request/stg-request';
 import { WithdrawRequestData } from '../types';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
@@ -20,7 +20,7 @@ export const STGWithdrawRequestClaimable = ({
       key={request.timestamp}
       tokenLogo={<TokenWstethIcon />}
       tokenAmount={request.assets}
-      tokenName={getTokenDisplayName('wstETH')}
+      tokenName={getTokenSymbol('wstETH')}
       tokenAmountUSD={usdAmount ?? 0}
       createdDateTimestamp={request.timestamp}
       actionText="Claim"

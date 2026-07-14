@@ -8,10 +8,7 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 
-import {
-  getTokenDisplayName,
-  TOKEN_DISPLAY_NAMES,
-} from 'utils/getTokenDisplayName';
+import { getTokenSymbol, TokenSymbol } from 'utils/get-token-symbol';
 import { DVV_TOKEN_SYMBOL } from '../../consts';
 import { VaultDepositTxStageSuccess } from 'features/earn/shared/vault-deposit-tx-stage-success';
 
@@ -30,36 +27,32 @@ const getTxModalStagesDeposit = (
 ) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  signApproval: (amount: bigint, token: TOKEN_DISPLAY_NAMES) =>
+  signApproval: (amount: bigint, token: TokenSymbol) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
       />,
     ),
 
-  pendingApproval: (
-    amount: bigint,
-    token: TOKEN_DISPLAY_NAMES,
-    txHash?: Hash,
-  ) =>
+  pendingApproval: (amount: bigint, token: TokenSymbol, txHash?: Hash) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         isPending
         txHash={txHash}
       />,
     ),
 
-  sign: (amount: bigint, willReceive: bigint, token: TOKEN_DISPLAY_NAMES) =>
+  sign: (amount: bigint, willReceive: bigint, token: TokenSymbol) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={false}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         amount={amount}
         willReceive={willReceive}
       />,
@@ -68,7 +61,7 @@ const getTxModalStagesDeposit = (
   pending: (
     amount: bigint,
     willReceive: bigint,
-    token: TOKEN_DISPLAY_NAMES,
+    token: TokenSymbol,
     txHash?: Hash,
     isAA?: boolean,
   ) =>
@@ -78,7 +71,7 @@ const getTxModalStagesDeposit = (
         showOperationInDescription={false}
         willReceive={willReceive}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenSymbol(token)}
         isPending
         isAA={isAA}
         txHash={txHash}

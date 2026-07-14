@@ -1,6 +1,6 @@
 import { VaultAvailable } from 'features/earn/shared/vault-available';
 import { useDVVDepositForm } from './form-context';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 
 export const DVVDepositAvailable = () => {
   const { token, isLoading, maxAmount } = useDVVDepositForm();
@@ -8,7 +8,7 @@ export const DVVDepositAvailable = () => {
   return (
     <VaultAvailable
       label="Available to deposit"
-      symbol={getTokenDisplayName(token)}
+      symbol={getTokenSymbol(token)}
       amount={maxAmount}
       isLoading={isLoading}
     />

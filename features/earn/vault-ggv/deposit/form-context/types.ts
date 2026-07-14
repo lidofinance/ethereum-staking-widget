@@ -4,7 +4,7 @@ export type GGVDepositTokens =
   | (typeof LIDO_TOKENS)['eth']
   | (typeof LIDO_TOKENS)['steth']
   | (typeof LIDO_TOKENS)['wsteth']
-  | 'wETH';
+  | 'WETH';
 
 export type GGVDepositFormValues = {
   amount: null | bigint;

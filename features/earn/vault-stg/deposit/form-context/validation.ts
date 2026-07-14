@@ -14,13 +14,10 @@ import { validateBigintMin } from 'shared/hook-form/validation/validate-bigint-m
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
-import {
-  TOKEN_DISPLAY_NAMES,
-  getTokenDisplayName,
-} from 'utils/getTokenDisplayName';
+import { TokenSymbol, getTokenSymbol } from 'utils/get-token-symbol';
 
-const messageMaxBalance = (max: bigint, token: TOKEN_DISPLAY_NAMES) =>
-  `Entered ${getTokenDisplayName(
+const messageMaxBalance = (max: bigint, token: TokenSymbol) =>
+  `Entered ${getTokenSymbol(
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;
 

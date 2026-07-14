@@ -4,10 +4,18 @@ import { useConnection, useWalletClient } from 'wagmi';
 import { InvalidRequestRpcError, toHex, UserRejectedRequestError } from 'viem';
 
 import { useDappStatus } from 'modules/web3';
-import { ErrorMessage } from 'utils/getErrorMessage';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
+import { ErrorMessage, extractCodeFromError } from 'utils/getErrorMessage';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_ERROR_EVENTS_TYPES } from 'consts/matomo';
 
 import { OrderData, validateRpcRequest } from '../validate-tx';
 import { COWSWAP_ENABLED_CHAIN_IDS } from '../consts';
+import {
+  SIGN_DECLINED_MESSAGE,
+  SIGN_DECLINED_HELP_TIP,
+} from '../trade-guard/consts';
+import type { SigningHelpTip } from '../trade-guard/trade-guard-modal';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
@@ -31,10 +39,15 @@ const cleanup = () => {
 export const useCowSwapEthereumProvider = (
   verifySignedOrder: VerifyOrder,
   openTransactionGuardModal: (reason: string) => Promise<void>,
+  openSigningErrorModal: (
+    reason: string,
+    helpTip?: SigningHelpTip,
+  ) => Promise<void>,
 ): EthereumProvider | undefined => {
   const { chainId } = useDappStatus();
   const { data: walletClient } = useWalletClient();
   const { connector } = useConnection();
+  const isLedgerLive = useIsLedgerLive();
 
   // clean up on unmount
   useEffect(() => {
@@ -96,21 +109,46 @@ export const useCowSwapEthereumProvider = (
             { dedupe: true, retryCount: 0 },
           );
         } catch (error) {
-          // Handle specific error cases and throw user-friendly messages
-          if (error instanceof UserRejectedRequestError) {
-            throw {
-              code: UserRejectedRequestError.code,
-              message: ErrorMessage.DENIED_SIG,
-            };
+          // The CoW iframe ignores thrown error messages and renders its own
+          // text per error code — custom explanations go through our modal
+          switch (extractCodeFromError(error)) {
+            case 'ACTION_REJECTED':
+              // Ledger Live reports any signing failure as a generic decline —
+              // blind signing disabled is indistinguishable from a user cancel
+              if (isLedgerLive && payload.method === 'eth_signTypedData_v4') {
+                trackMatomoEvent(
+                  MATOMO_ERROR_EVENTS_TYPES.DENIED_SIG_LEDGER_LIVE,
+                );
+                await openSigningErrorModal(
+                  SIGN_DECLINED_MESSAGE,
+                  SIGN_DECLINED_HELP_TIP,
+                );
+              }
+              throw {
+                code: UserRejectedRequestError.code,
+                message: ErrorMessage.DENIED_SIG,
+              };
+            case 'ENABLE_BLIND_SIGNING':
+              await openSigningErrorModal(ErrorMessage.ENABLE_BLIND_SIGNING);
+              throw {
+                code: UserRejectedRequestError.code,
+                message: ErrorMessage.ENABLE_BLIND_SIGNING,
+              };
+            case 'DEVICE_LOCKED':
+              await openSigningErrorModal(ErrorMessage.DEVICE_LOCKED);
+              throw {
+                code: UserRejectedRequestError.code,
+                message: ErrorMessage.DEVICE_LOCKED,
+              };
+            default:
+              console.error(
+                '[useCowSwapEthereumProvider] Error during provider request:',
+                error,
+              );
+
+              // throw error further
+              throw error;
           }
-
-          console.error(
-            '[useCowSwapEthereumProvider] Error during provider request:',
-            error,
-          );
-
-          // throw error further
-          throw error;
         }
       },
       on: (eventName: string, handler: unknown) => {
@@ -175,7 +213,9 @@ export const useCowSwapEthereumProvider = (
     walletClient,
     connector,
     chainId,
+    isLedgerLive,
     verifySignedOrder,
     openTransactionGuardModal,
+    openSigningErrorModal,
   ]);
 };

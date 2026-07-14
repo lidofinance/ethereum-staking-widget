@@ -2,6 +2,7 @@ import { useMemo, useRef, useEffect } from 'react';
 import type { TooltipComponentFormatterCallbackParams } from 'echarts';
 import type { Address } from 'viem';
 import * as echarts from 'echarts/core';
+import invariant from 'tiny-invariant';
 
 import {
   formatTvl,
@@ -153,13 +154,14 @@ export const useChartData = (props: UseChartDataProps) => {
 
   // Init chart once on mount. Chart div is always in the DOM (no early return), so ref is set.
   useEffect(() => {
-    if (!chartRef.current) return; // TODO: add invariant that chartRef is set by this point (check if it is safe)
-    const chart = echarts.init(chartRef.current, {}, { renderer: 'svg' });
+    invariant(chartRef.current, 'Chart container should be mounted');
+    const chartContainer = chartRef.current;
+    const chart = echarts.init(chartContainer, {}, { renderer: 'svg' });
     chartInstanceRef.current = chart;
 
     // ECharts fixes size at init; ResizeObserver triggers chart.resize() when the container size changes.
     const resizeObserver = new ResizeObserver(() => chart.resize());
-    resizeObserver.observe(chartRef.current);
+    resizeObserver.observe(chartContainer);
 
     return () => {
       resizeObserver.disconnect();

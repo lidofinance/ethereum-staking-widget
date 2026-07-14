@@ -1,6 +1,6 @@
 import { useFormState, useWatch } from 'react-hook-form';
 import { FormatToken } from 'shared/formatters';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import {
   RequestFormInputType,
   useRequestFormData,
@@ -38,7 +38,7 @@ export const RequestsInfo = () => {
         <FormatToken
           showAmountTip={false}
           amount={maxPerTx}
-          symbol={getTokenDisplayName(token)}
+          symbol={getTokenSymbol(token)}
         />{' '}
         is the maximum amount per one request. Although it will be{' '}
         {requestCount} requests, you will pay one transaction fee.
