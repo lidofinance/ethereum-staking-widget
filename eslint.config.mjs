@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 
 import { defineConfig } from 'eslint/config';
-import { fixupPluginRules, includeIgnoreFile } from '@eslint/compat';
+import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
 import nextPlugin from '@next/eslint-plugin-next';
 import prettierConfig from 'eslint-config-prettier';
@@ -36,6 +36,7 @@ export default defineConfig(
       tseslint.configs.recommended,
       reactPlugin.configs.flat.recommended,
       jsxA11y.flatConfigs.recommended,
+      nextPlugin.configs.recommended,
     ],
     languageOptions: {
       globals: {
@@ -58,8 +59,6 @@ export default defineConfig(
       sonarjs,
       unicorn,
       'react-hooks': reactHooks,
-      // @next/eslint-plugin-next 13 predates eslint 9 (removed context.* APIs)
-      '@next/next': fixupPluginRules(nextPlugin),
     },
     settings: {
       'import/resolver': {
@@ -75,8 +74,6 @@ export default defineConfig(
       },
     },
     rules: {
-      // the plugin is legacy-format, so its preset is spread, not extended
-      ...nextPlugin.configs.recommended.rules,
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
 
