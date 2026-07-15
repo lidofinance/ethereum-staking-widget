@@ -84,10 +84,10 @@ const EarnVaultsBannerSchema = z
   });
 
 //
-// Earn allocation labels
+// Earn allocation
 //
 
-const EarnVaultAllocationLabelAllowlistSchema = z
+const EarnAllocationLabelAllowListSchema = z
   .array(
     z
       .string()
@@ -97,9 +97,17 @@ const EarnVaultAllocationLabelAllowlistSchema = z
   )
   .transform((words) => [...new Set(words.map((word) => word.toLowerCase()))]);
 
-const EarnVaultAllocationHiddenIdsSchema = z
+const EarnAllocationHiddenIdsSchema = z
   .array(z.string().trim().min(1))
   .transform((ids) => [...new Set(ids)]);
+
+const EarnAllocationSchema = z
+  .object({
+    labelAllowList: EarnAllocationLabelAllowListSchema.optional().default([]),
+    hiddenIds: EarnAllocationHiddenIdsSchema.optional().default([]),
+  })
+  .optional()
+  .default({ labelAllowList: [], hiddenIds: [] });
 
 //
 // Feature flags
@@ -239,10 +247,7 @@ const ManifestConfigSchema = z.object({
   featureFlags: FeatureFlagsSchema.optional().default({}),
   earnVaults: EarnVaultListSchema.optional().default([]),
   earnVaultsBanner: EarnVaultsBannerSchema,
-  earnVaultAllocationLabelAllowlist:
-    EarnVaultAllocationLabelAllowlistSchema.optional().default([]),
-  earnVaultAllocationHiddenIds:
-    EarnVaultAllocationHiddenIdsSchema.optional().default([]),
+  earnAllocation: EarnAllocationSchema,
   pages: PagesEntrySchema.optional().default({}),
   api: ApiSchema.optional().default({}),
 });

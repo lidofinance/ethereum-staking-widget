@@ -28,8 +28,10 @@
       "forceAllowance": false,
       "amountBannerEnabled": true
     },
-    "earnVaultAllocationLabelAllowlist": [],
-    "earnVaultAllocationHiddenIds": [],
+    "earnAllocation": {
+      "labelAllowList": [],
+      "hiddenIds": []
+    },
     "pages": {
       "/earn": {
         "showNew": true,

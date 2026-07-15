@@ -31,8 +31,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
 
   const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
   const {
-    earnVaultAllocationLabelAllowlist: configuredLabelAllowlist,
-    earnVaultAllocationHiddenIds,
+    earnAllocation: { labelAllowList: configuredLabelAllowlist, hiddenIds },
   } = useConfig().externalConfig;
   const allocationLabelAllowlist = useMemo(
     () => getAllocationLabelAllowlist(configuredLabelAllowlist),
@@ -43,7 +42,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
   const allocationData = useAllocationData(
     data,
     allocationLabelAllowlist,
-    earnVaultAllocationHiddenIds,
+    hiddenIds,
   );
 
   if (isLoading) {

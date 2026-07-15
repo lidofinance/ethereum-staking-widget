@@ -16,12 +16,10 @@ export const overrideManifestConfig = (
     multiChainBanner: override.multiChainBanner ?? config.multiChainBanner,
     earnVaults: override.earnVaults ?? config.earnVaults,
     earnVaultsBanner: override.earnVaultsBanner ?? config.earnVaultsBanner,
-    earnVaultAllocationLabelAllowlist:
-      override.earnVaultAllocationLabelAllowlist ??
-      config.earnVaultAllocationLabelAllowlist,
-    earnVaultAllocationHiddenIds:
-      override.earnVaultAllocationHiddenIds ??
-      config.earnVaultAllocationHiddenIds,
+    earnAllocation: {
+      ...config.earnAllocation,
+      ...override.earnAllocation,
+    },
     pages: { ...config.pages, ...override.pages },
     api: { ...config.api, ...override.api },
   };

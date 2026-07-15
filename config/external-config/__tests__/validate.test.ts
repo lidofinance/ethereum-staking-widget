@@ -90,27 +90,31 @@ describe('ManifestSchema', () => {
         enabled: false,
       });
       expect(config?.earnVaults).toEqual([]);
-      expect(config?.earnVaultAllocationLabelAllowlist).toEqual([]);
-      expect(config?.earnVaultAllocationHiddenIds).toEqual([]);
+      expect(config?.earnAllocation).toEqual({
+        labelAllowList: [],
+        hiddenIds: [],
+      });
       expect(config?.featureFlags).toEqual({});
       expect(config?.pages).toEqual({});
     });
   });
 
-  describe('baseConfig.earnVaultAllocationLabelAllowlist', () => {
+  describe('baseConfig.earnAllocation.labelAllowList', () => {
     it('normalizes words and removes duplicates', () => {
       const result = parseManifest({
         baseConfig: {
-          earnVaultAllocationLabelAllowlist: ['Aave', 'aave', 'wstETH'],
+          earnAllocation: {
+            labelAllowList: ['Aave', 'aave', 'wstETH'],
+          },
         },
         '1': validEntry,
       });
 
-      expect(result.baseConfig.earnVaultAllocationLabelAllowlist).toEqual([
+      expect(result.baseConfig.earnAllocation.labelAllowList).toEqual([
         'aave',
         'wsteth',
       ]);
-      expect(result['1']?.config.earnVaultAllocationLabelAllowlist).toEqual([
+      expect(result['1']?.config.earnAllocation.labelAllowList).toEqual([
         'aave',
         'wsteth',
       ]);
@@ -120,7 +124,7 @@ describe('ManifestSchema', () => {
       expect(() =>
         parseManifest({
           baseConfig: {
-            earnVaultAllocationLabelAllowlist: ['Aave levered'],
+            earnAllocation: { labelAllowList: ['Aave levered'] },
           },
           '1': validEntry,
         }),
@@ -129,7 +133,7 @@ describe('ManifestSchema', () => {
       expect(() =>
         parseManifest({
           baseConfig: {
-            earnVaultAllocationLabelAllowlist: ['wstETH/ETH'],
+            earnAllocation: { labelAllowList: ['wstETH/ETH'] },
           },
           '1': validEntry,
         }),
@@ -137,16 +141,18 @@ describe('ManifestSchema', () => {
     });
   });
 
-  describe('baseConfig.earnVaultAllocationHiddenIds', () => {
+  describe('baseConfig.earnAllocation.hiddenIds', () => {
     it('trims IDs and removes duplicates', () => {
       const result = parseManifest({
         baseConfig: {
-          earnVaultAllocationHiddenIds: [' vault-a ', 'vault-a', 'vault-b'],
+          earnAllocation: {
+            hiddenIds: [' vault-a ', 'vault-a', 'vault-b'],
+          },
         },
         '1': validEntry,
       });
 
-      expect(result['1']?.config.earnVaultAllocationHiddenIds).toEqual([
+      expect(result['1']?.config.earnAllocation.hiddenIds).toEqual([
         'vault-a',
         'vault-b',
       ]);
@@ -155,7 +161,7 @@ describe('ManifestSchema', () => {
     it('rejects empty IDs', () => {
       expect(() =>
         parseManifest({
-          baseConfig: { earnVaultAllocationHiddenIds: ['  '] },
+          baseConfig: { earnAllocation: { hiddenIds: ['  '] } },
           '1': validEntry,
         }),
       ).toThrow();
@@ -163,6 +169,30 @@ describe('ManifestSchema', () => {
   });
 
   describe('baseConfig overrides', () => {
+    it('recursively merges partial earnAllocation overrides', () => {
+      const result = parseManifest({
+        baseConfig: {
+          earnAllocation: {
+            labelAllowList: ['base-label'],
+            hiddenIds: ['base-id'],
+          },
+        },
+        '1': {
+          ...validEntry,
+          config: {
+            earnAllocation: {
+              hiddenIds: ['network-id'],
+            },
+          },
+        },
+      });
+
+      expect(result['1']?.config.earnAllocation).toEqual({
+        labelAllowList: ['base-label'],
+        hiddenIds: ['network-id'],
+      });
+    });
+
     it('recursively merges nested network config objects', () => {
       const result = parseManifest({
         baseConfig: {

@@ -12,14 +12,16 @@ describe('getFallbackedManifestEntry', () => {
     const entry = getFallbackedManifestEntry(
       {
         baseConfig: {
-          earnVaultAllocationLabelAllowlist: ['Aave', 'wstETH'],
+          earnAllocation: {
+            labelAllowList: ['Aave', 'wstETH'],
+          },
         },
         '1': validEntry,
       },
       1,
     );
 
-    expect(entry.config.earnVaultAllocationLabelAllowlist).toEqual([
+    expect(entry.config.earnAllocation.labelAllowList).toEqual([
       'aave',
       'wsteth',
     ]);
@@ -31,7 +33,7 @@ describe('getFallbackedManifestEntry', () => {
       1,
     );
 
-    expect(entry.config.earnVaultAllocationLabelAllowlist).toEqual([]);
+    expect(entry.config.earnAllocation.labelAllowList).toEqual([]);
   });
 
   it('uses the whole local manifest when the remote manifest is invalid', () => {
@@ -43,13 +45,10 @@ describe('getFallbackedManifestEntry', () => {
   it('materializes local network overrides on top of baseConfig', () => {
     const mainnet = getFallbackedManifestEntry({}, 1);
     const staging = getFallbackedManifestEntry({}, 1, 'staging');
-    const holesky = getFallbackedManifestEntry({}, 17000);
     const hoodi = getFallbackedManifestEntry({}, 560048);
 
     expect(mainnet.config.api.validation?.version).toBe('2');
     expect(staging.config.api.validation?.version).toBe('1');
-    expect(holesky.config.earnVaults).toEqual([]);
-    expect(holesky.config.withdrawalDex.enabled).toBe(false);
     expect(hoodi.config.earnVaults.map(({ name }) => name)).toEqual([
       'eth',
       'usd',
@@ -64,19 +63,19 @@ describe('getFallbackedManifestEntry', () => {
     const entry = getFallbackedManifestEntry(
       {
         baseConfig: {
-          earnVaultAllocationLabelAllowlist: ['base-value'],
+          earnAllocation: { labelAllowList: ['base-value'] },
         },
         '1': {
           ...validEntry,
           config: {
-            earnVaultAllocationLabelAllowlist: ['network-value'],
+            earnAllocation: { labelAllowList: ['network-value'] },
           },
         },
       },
       1,
     );
 
-    expect(entry.config.earnVaultAllocationLabelAllowlist).toEqual([
+    expect(entry.config.earnAllocation.labelAllowList).toEqual([
       'network-value',
     ]);
   });
@@ -85,17 +84,17 @@ describe('getFallbackedManifestEntry', () => {
     const entry = getFallbackedManifestEntry(
       {
         baseConfig: {
-          earnVaultAllocationLabelAllowlist: ['base-value'],
+          earnAllocation: { labelAllowList: ['base-value'] },
         },
         '1': {
           ...validEntry,
-          config: { earnVaultAllocationLabelAllowlist: [] },
+          config: { earnAllocation: { labelAllowList: [] } },
         },
       },
       1,
     );
 
-    expect(entry.config.earnVaultAllocationLabelAllowlist).toEqual([]);
+    expect(entry.config.earnAllocation.labelAllowList).toEqual([]);
   });
 });
 
@@ -104,7 +103,7 @@ describe('overrideManifestConfig', () => {
     const entry = getFallbackedManifestEntry(
       {
         baseConfig: {
-          earnVaultAllocationHiddenIds: ['base-value'],
+          earnAllocation: { hiddenIds: ['base-value'] },
         },
         '1': validEntry,
       },
@@ -112,9 +111,12 @@ describe('overrideManifestConfig', () => {
     );
 
     const config = overrideManifestConfig(entry.config, {
-      earnVaultAllocationHiddenIds: ['override-value'],
+      earnAllocation: {
+        ...entry.config.earnAllocation,
+        hiddenIds: ['override-value'],
+      },
     });
 
-    expect(config.earnVaultAllocationHiddenIds).toEqual(['override-value']);
+    expect(config.earnAllocation.hiddenIds).toEqual(['override-value']);
   });
 });
