@@ -1905,7 +1905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/cli@npm:^20.3.1":
+"@commitlint/cli@npm:20.3.1":
   version: 20.3.1
   resolution: "@commitlint/cli@npm:20.3.1"
   dependencies:
@@ -1922,7 +1922,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/config-conventional@npm:^20.3.1":
+"@commitlint/config-conventional@npm:20.3.1":
   version: 20.3.1
   resolution: "@commitlint/config-conventional@npm:20.3.1"
   dependencies:
@@ -2031,7 +2031,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/prompt@npm:^20.3.1":
+"@commitlint/prompt@npm:20.3.1":
   version: 20.3.1
   resolution: "@commitlint/prompt@npm:20.3.1"
   dependencies:
@@ -3848,7 +3848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/bundle-analyzer@npm:^13.2.4":
+"@next/bundle-analyzer@npm:13.5.6":
   version: 13.5.6
   resolution: "@next/bundle-analyzer@npm:13.5.6"
   dependencies:
@@ -4106,14 +4106,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.60.0":
-  version: 1.60.0
-  resolution: "@playwright/test@npm:1.60.0"
+"@playwright/test@npm:1.61.1":
+  version: 1.61.1
+  resolution: "@playwright/test@npm:1.61.1"
   dependencies:
-    playwright: "npm:1.60.0"
+    playwright: "npm:1.61.1"
   bin:
     playwright: cli.js
-  checksum: 10c0/86b06e6437933e741c7cd43f362024e857e7bc28a55fcbb0553ef55e01a2a403c64f4786868de8af86a6e303fe99e98a18a42ba19489f43ae122e457f9e2d189
+  checksum: 10c0/45004139eaa7c7ec8129e4ed77a9d734aa09ed40b69162b871e4123f1d70217b7b73651431a9343ed5090d5fed11c6df1bff2a56ff4b87dc7b0371b5da87cf9c
   languageName: node
   linkType: hard
 
@@ -4692,7 +4692,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rolldown/pluginutils@npm:^1.0.0":
+"@rolldown/pluginutils@npm:^1.0.0, @rolldown/pluginutils@npm:^1.0.1":
   version: 1.0.1
   resolution: "@rolldown/pluginutils@npm:1.0.1"
   checksum: 10c0/99d9b06d90196823e4d8c841f258db7a16e5dbba5824a2962b05d907b79f1ba929d56f22dd744fd530936e568c865ee56a719dc31e57e13bc0a8eb4764a8d8dd
@@ -5849,7 +5849,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/webpack@npm:^8.0.1":
+"@svgr/webpack@npm:8.1.0":
   version: 8.1.0
   resolution: "@svgr/webpack@npm:8.1.0"
   dependencies:
@@ -6474,11 +6474,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "@vitejs/plugin-react@npm:6.0.2"
+"@vitejs/plugin-react@npm:6.0.3":
+  version: 6.0.3
+  resolution: "@vitejs/plugin-react@npm:6.0.3"
   dependencies:
-    "@rolldown/pluginutils": "npm:^1.0.0"
+    "@rolldown/pluginutils": "npm:^1.0.1"
   peerDependencies:
     "@rolldown/plugin-babel": ^0.1.7 || ^0.2.0
     babel-plugin-react-compiler: ^1.0.0
@@ -6488,7 +6488,7 @@ __metadata:
       optional: true
     babel-plugin-react-compiler:
       optional: true
-  checksum: 10c0/6e2d90974e05f2a9aefafad1d137b75c3b3b4bf3f2affdbfe77c6b11b24832cff22dd8852430c6341e2fb5b00a4513fb00db306a6abdbec6f0f5841e93bbcfba
+  checksum: 10c0/592a93178c0eec420759d529a2c964a7103860808f549f72993b96a38c287c929a0d371cacbd932c37ee2118b830348db752cc01a31d688c71d19d74567251fa
   languageName: node
   linkType: hard
 
@@ -12043,9 +12043,9 @@ __metadata:
   resolution: "lido-staking-widget@workspace:."
   dependencies:
     "@coinbase/wallet-sdk": "npm:^4.3.6"
-    "@commitlint/cli": "npm:^20.3.1"
-    "@commitlint/config-conventional": "npm:^20.3.1"
-    "@commitlint/prompt": "npm:^20.3.1"
+    "@commitlint/cli": "npm:20.3.1"
+    "@commitlint/config-conventional": "npm:20.3.1"
+    "@commitlint/prompt": "npm:20.3.1"
     "@cowprotocol/widget-react": "npm:3.2.0"
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:9.39.5"
@@ -12062,12 +12062,12 @@ __metadata:
     "@lidofinance/rpc": "npm:^0.48.0"
     "@lidofinance/satanizer": "npm:^0.48.0"
     "@metamask/sdk": "npm:~0.33.1"
-    "@next/bundle-analyzer": "npm:^13.2.4"
+    "@next/bundle-analyzer": "npm:13.5.6"
     "@next/eslint-plugin-next": "npm:16.2.10"
-    "@playwright/test": "npm:^1.60.0"
+    "@playwright/test": "npm:1.61.1"
     "@safe-global/safe-apps-provider": "npm:~0.18.6"
     "@safe-global/safe-apps-sdk": "npm:^9.1.0"
-    "@svgr/webpack": "npm:^8.0.1"
+    "@svgr/webpack": "npm:8.1.0"
     "@tanstack/react-query": "npm:^5.85.6"
     "@types/js-cookie": "npm:^3.0.0"
     "@types/lodash": "npm:^4.14.186"
@@ -12081,7 +12081,7 @@ __metadata:
     "@types/styled-system": "npm:^5.1.17"
     "@types/uuid": "npm:^8.3.2"
     "@types/winston": "npm:^2.4.4"
-    "@vitejs/plugin-react": "npm:^6.0.2"
+    "@vitejs/plugin-react": "npm:6.0.3"
     "@vitest/coverage-v8": "npm:4.1.9"
     "@walletconnect/ethereum-provider": "npm:^2.23.8"
     copy-to-clipboard: "npm:^3.3.1"
@@ -12111,10 +12111,10 @@ __metadata:
     next-logger: "npm:^3.0.2"
     next-secure-headers: "npm:2.2.0"
     nprogress: "npm:^0.2.0"
-    playwright: "npm:^1.60.0"
+    playwright: "npm:1.61.1"
     prettier: "npm:3.9.5"
     prom-client: "npm:^14.0.1"
-    raw-loader: "npm:^4.0.2"
+    raw-loader: "npm:4.0.2"
     react: "npm:^18.2.0"
     react-device-detect: "npm:^1.17.0"
     react-dom: "npm:^18.2.0"
@@ -12122,16 +12122,16 @@ __metadata:
     react-hook-form: "npm:^7.45.2"
     react-is: "npm:^18.2.0"
     reef-knot: "npm:8.1.0"
-    string-replace-loader: "npm:^3.3.0"
+    string-replace-loader: "npm:3.3.0"
     styled-components: "npm:^5.3.5"
     tiny-invariant: "npm:^1.1.0"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.64.0"
-    url-loader: "npm:^4.1.1"
+    url-loader: "npm:4.1.1"
     viem: "npm:2.50.4"
     vitest: "npm:4.1.9"
     wagmi: "npm:3.4.4"
-    webpack-preprocessor-loader: "npm:^1.3.0"
+    webpack-preprocessor-loader: "npm:1.3.0"
     zod: "npm:^4.1.12"
   languageName: unknown
   linkType: soft
@@ -13726,27 +13726,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.60.0":
-  version: 1.60.0
-  resolution: "playwright-core@npm:1.60.0"
+"playwright-core@npm:1.61.1":
+  version: 1.61.1
+  resolution: "playwright-core@npm:1.61.1"
   bin:
     playwright-core: cli.js
-  checksum: 10c0/99ccd43923b6e9355e0723b7fe221e6326efd4687f8dafff951313662aea11db51f542a9c2122c704c445fb9baae1c9ec9fa6f895126bbddd9fe92313f6942c9
+  checksum: 10c0/c28896ba82a602182e240ed4f9c467fb0dd9cb57d510f8aba9f25183fe1cde3a0105725a29baffa4157fe885bbb11e228032a2aad0424111584fde45303f07bd
   languageName: node
   linkType: hard
 
-"playwright@npm:1.60.0, playwright@npm:^1.60.0":
-  version: 1.60.0
-  resolution: "playwright@npm:1.60.0"
+"playwright@npm:1.61.1":
+  version: 1.61.1
+  resolution: "playwright@npm:1.61.1"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.60.0"
+    playwright-core: "npm:1.61.1"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10c0/714ad76d85b4865d7e43c0012f9039800c1485373388973ed39d79339cee5ad467052d1e2f1eaeca107a1cb6e65342186a8578a4c3504853d84c3a691250d5db
+  checksum: 10c0/cea1bc4d2a64ec3ef683891606774029da7b8a8036ed98332565cec2f8e89549ca1fab9a89fbfba4e08e27e0d7e7d148031e965af66d5ff97bb3c34058cfcad0
   languageName: node
   linkType: hard
 
@@ -14019,7 +14019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"raw-loader@npm:^4.0.2":
+"raw-loader@npm:4.0.2":
   version: 4.0.2
   resolution: "raw-loader@npm:4.0.2"
   dependencies:
@@ -15180,7 +15180,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string-replace-loader@npm:^3.3.0":
+"string-replace-loader@npm:3.3.0":
   version: 3.3.0
   resolution: "string-replace-loader@npm:3.3.0"
   dependencies:
@@ -16277,7 +16277,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"url-loader@npm:^4.1.1":
+"url-loader@npm:4.1.1":
   version: 4.1.1
   resolution: "url-loader@npm:4.1.1"
   dependencies:
@@ -16677,7 +16677,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-preprocessor-loader@npm:^1.3.0":
+"webpack-preprocessor-loader@npm:1.3.0":
   version: 1.3.0
   resolution: "webpack-preprocessor-loader@npm:1.3.0"
   checksum: 10c0/071f6544ea8a1ff969097560f7cc8b7afc2a7e3785ae47190da03a3638927dfe3b7761d9711319a2c2ddc6c76875ee1d14018c9d71007c97e92e599776fb5cef
