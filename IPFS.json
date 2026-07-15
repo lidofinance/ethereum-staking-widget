@@ -57,32 +57,6 @@
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
     "leastSafeVersion": "0.76.1"
   },
-  "17000": {
-    "__warning__": "For testing purposes only",
-    "cid": "bafybeibbsoqlofslw273b4ih2pdxfaz2zbjmred2ijog725tcmfoewix7y",
-    "leastSafeVersion": "0.36.1",
-    "config": {
-      "withdrawalDex": {
-        "enabled": false
-      },
-      "multiChainBanner": [],
-      "earnVaultsBanner": {
-        "showOnStakeForm": false,
-        "showAfterStake": false
-      },
-      "earnVaults": [],
-      "featureFlags": {
-        "ledgerLiveL2": true,
-        "dgBannerEnabled": false,
-        "amountBannerEnabled": false
-      },
-      "pages": {
-        "/earn": {
-          "showNew": false
-        }
-      }
-    }
-  },
   "11155111": {
     "__warning__": "For testing purposes only",
     "cid": "",
