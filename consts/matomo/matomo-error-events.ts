@@ -3,6 +3,7 @@ import { MatomoEventType } from '@lidofinance/analytics-matomo';
 export const enum MATOMO_ERROR_EVENTS_TYPES {
   NOT_ENOUGH_ETHER = 'NOT_ENOUGH_ETHER',
   DENIED_SIG = 'DENIED_SIG',
+  DENIED_SIG_LEDGER_LIVE = 'DENIED_SIG_LEDGER_LIVE',
   TRANSACTION_REVERTED = 'TRANSACTION_REVERTED',
   ENABLE_BLIND_SIGNING = 'ENABLE_BLIND_SIGNING',
   LIMIT_REACHED = 'LIMIT_REACHED',
@@ -26,6 +27,11 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'User denied the transaction signature.',
     'eth_widget_errors_user_denied_sig',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.DENIED_SIG_LEDGER_LIVE]: [
+    'Ethereum_Staking_Widget_Errors',
+    'Signature request was declined in Ledger Live (cancel or blind signing disabled).',
+    'eth_widget_errors_denied_sig_ledger_live',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.TRANSACTION_REVERTED]: [
     'Ethereum_Staking_Widget_Errors',

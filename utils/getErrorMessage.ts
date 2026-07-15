@@ -137,9 +137,26 @@ export const extractCodeFromError = (
       normalizedMessage.includes('reject this request') ||
       normalizedMessage.includes('rejected methods') ||
       normalizedMessage.includes('transaction declined') ||
-      normalizedMessage.includes('signed declined')
+      normalizedMessage.includes('signed declined') ||
+      // Ledger cancel wrapped by viem/keyring as InternalRpcError (-32603),
+      // where `name`/`code` no longer signal a rejection but the message does
+      normalizedMessage.includes('user rejected action')
     )
       return 'ACTION_REJECTED';
+
+    // Wrapped ledger errors (e.g. by viem) lose `name` but keep the message
+    if (
+      normalizedMessage.includes('blind signing') ||
+      normalizedMessage.includes('enable contract data')
+    )
+      return 'ENABLE_BLIND_SIGNING';
+
+    // hw-app-eth remaps status 0x6a80 to a blind-signing error for
+    // transactions but not for EIP-712 — there the raw status reaches us
+    if (normalizedMessage.includes('invalid data received'))
+      return 'ENABLE_BLIND_SIGNING';
+
+    if (normalizedMessage.includes('locked device')) return 'DEVICE_LOCKED';
 
     if (normalizedMessage.includes('not enough ether for gas'))
       return 'INSUFFICIENT_FUNDS';
