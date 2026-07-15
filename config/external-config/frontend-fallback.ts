@@ -19,6 +19,9 @@ export const overrideManifestConfig = (
     earnVaultAllocationLabelAllowlist:
       override.earnVaultAllocationLabelAllowlist ??
       config.earnVaultAllocationLabelAllowlist,
+    earnVaultAllocationHiddenIds:
+      override.earnVaultAllocationHiddenIds ??
+      config.earnVaultAllocationHiddenIds,
     pages: { ...config.pages, ...override.pages },
     api: { ...config.api, ...override.api },
   };

@@ -1,4 +1,7 @@
-import { getFallbackedManifestEntry } from '../frontend-fallback';
+import {
+  getFallbackedManifestEntry,
+  overrideManifestConfig,
+} from '../frontend-fallback';
 
 const validEntry = {
   leastSafeVersion: '1.0.0',
@@ -93,5 +96,25 @@ describe('getFallbackedManifestEntry', () => {
     );
 
     expect(entry.config.earnVaultAllocationLabelAllowlist).toEqual([]);
+  });
+});
+
+describe('overrideManifestConfig', () => {
+  it('allows hidden allocation IDs to be overridden', () => {
+    const entry = getFallbackedManifestEntry(
+      {
+        baseConfig: {
+          earnVaultAllocationHiddenIds: ['base-value'],
+        },
+        '1': validEntry,
+      },
+      1,
+    );
+
+    const config = overrideManifestConfig(entry.config, {
+      earnVaultAllocationHiddenIds: ['override-value'],
+    });
+
+    expect(config.earnVaultAllocationHiddenIds).toEqual(['override-value']);
   });
 });
