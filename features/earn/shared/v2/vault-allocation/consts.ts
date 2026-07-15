@@ -52,7 +52,7 @@ export const getAllocationLabelAllowlist = (
   ...new Set([...BASE_ALLOCATION_LABEL_ALLOWLIST, ...configuredWords]),
 ];
 
-const SUBVAULTS_WITH_TIP = ['earnusdc', 'ggv', 'streth'];
+const SUBVAULTS_WITH_TIP = ['earnusdc', 'ggv', 'streth'] as const;
 const USDC_VAULT_TIP =
   'A strategy designed to amplify USD yield by combining low-risk and highly liquid stablecoin strategies with carefully selected DeFi strategies.';
 const GGV_VAULT_TIP =

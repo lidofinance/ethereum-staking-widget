@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 
+import { getOwnProperty } from 'utils/get-own-property';
 import { randomColor } from 'features/earn/shared/vault-allocation/utils';
 import { getAllocationProtocolIcon } from 'features/earn/shared/vault-allocation/protocol-icon/icon-library';
 import type { MetavaultsAllocationFetchedData } from '../apy-data/metavaults-allocation';
@@ -317,7 +318,7 @@ const parseNestedGroup = (
     allocation: alloc.sharePercent,
     tvlUSD,
     items: limitedItems,
-    info: SUBVAULTS_TIP_BY_ID[alloc.id],
+    info: getOwnProperty(SUBVAULTS_TIP_BY_ID, alloc.id),
   };
 };
 

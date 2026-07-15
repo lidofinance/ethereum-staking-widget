@@ -1,5 +1,7 @@
 import type { ComponentProps, FC } from 'react';
 
+import { getOwnProperty } from 'utils/get-own-property';
+
 import { ReactComponent as ArbitrumIcon } from 'assets/earn/allocation/chain/arbitrum.svg';
 import { ReactComponent as AvalancheIcon } from 'assets/earn/allocation/chain/avalanche.svg';
 import { ReactComponent as BaseIcon } from 'assets/earn/allocation/chain/base.svg';
@@ -35,8 +37,7 @@ export const ALLOCATION_CHAIN_ICONS = createIconLibrary({
 export const getAllocationChainIcon = (chain?: string): ChainIcon => {
   const key = chain?.trim().toLowerCase();
   return (
-    (key
-      ? ALLOCATION_CHAIN_ICONS[key as keyof typeof ALLOCATION_CHAIN_ICONS]
-      : undefined) ?? FallbackIcon
+    (key ? getOwnProperty(ALLOCATION_CHAIN_ICONS, key) : undefined) ??
+    FallbackIcon
   );
 };

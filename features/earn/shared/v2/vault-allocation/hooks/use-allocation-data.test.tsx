@@ -15,9 +15,18 @@ vi.mock(
 const consoleWarnSpy = vi
   .spyOn(console, 'warn')
   .mockImplementation(() => undefined);
+const consoleDebugSpy = vi
+  .spyOn(console, 'debug')
+  .mockImplementation(() => undefined);
 
-beforeEach(() => consoleWarnSpy.mockClear());
-afterAll(() => consoleWarnSpy.mockRestore());
+beforeEach(() => {
+  consoleWarnSpy.mockClear();
+  consoleDebugSpy.mockClear();
+});
+afterAll(() => {
+  consoleWarnSpy.mockRestore();
+  consoleDebugSpy.mockRestore();
+});
 
 type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
 type ApiNestedAllocation = ApiAllocation['allocations'][number];
@@ -96,13 +105,33 @@ const getAllocationData = (
 };
 
 describe('useAllocationData grouping and sorting', () => {
+  it('ignores inherited properties when resolving subvault tips', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: '__proto__',
+          label: 'Vault',
+          sharePercent: 100,
+          allocations: [
+            createNestedAllocation('visible', 100, {
+              label: 'Allocation',
+            }),
+          ],
+        }),
+      ]),
+    );
+
+    expect(result.groups[0]?.info).toBeUndefined();
+  });
+
   it('hides flat Others when its total is below the display threshold', () => {
     const result = getAllocationData(
       createData([createFlatAllocation({ id: 'hidden', sharePercent: 0.04 })]),
     );
 
     expect(result.flatItems).toBeUndefined();
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
         reason: 'below-min-display-percent',
@@ -268,7 +297,7 @@ describe('useAllocationData grouping and sorting', () => {
     );
     expect(items[20]?.label).toBe('Others');
     expect(items[20]?.allocation).toBe(3);
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
         reason: 'max-subvault-positions',
@@ -308,7 +337,7 @@ describe('useAllocationData grouping and sorting', () => {
       { label: 'Aave levered wstETH/ETH', allocation: 60 },
       { label: 'Others', allocation: 40 },
     ]);
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
         reason: 'label-not-allowlisted',
@@ -332,7 +361,7 @@ describe('useAllocationData grouping and sorting', () => {
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       '[Vault allocation] Label allowlist is empty; API labels will be moved to Others',
     );
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
         reason: 'label-not-allowlisted',
@@ -407,7 +436,7 @@ describe('useAllocationData grouping and sorting', () => {
     expect(result.flatItems).toEqual([
       expect.objectContaining({ name: 'Others', allocation: 20 }),
     ]);
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
         reason: 'hidden-by-config',
@@ -434,7 +463,7 @@ describe('useAllocationData grouping and sorting', () => {
     expect(result.flatItems).toEqual([
       expect.objectContaining({ name: 'Others', allocation: 30 }),
     ]);
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
         reason: 'hidden-by-config',
@@ -470,7 +499,7 @@ describe('useAllocationData grouping and sorting', () => {
       { label: 'Allocation', allocation: 60 },
       { label: 'Others', allocation: 40 },
     ]);
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
         reason: 'hidden-by-config',

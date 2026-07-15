@@ -1,5 +1,7 @@
 import type { ComponentProps, FC } from 'react';
 
+import { getOwnProperty } from 'utils/get-own-property';
+
 import { ReactComponent as AaveIcon } from 'assets/earn/allocation/token/aave.svg';
 import { ReactComponent as AusdIcon } from 'assets/earn/allocation/token/ausd.svg';
 import { ReactComponent as BtcIcon } from 'assets/earn/allocation/token/btc.svg';
@@ -87,8 +89,7 @@ export const ALLOCATION_TOKEN_ICONS = createIconLibrary({
 export const getAllocationTokenIcon = (token?: string): TokenIcon => {
   const key = token?.trim().toLowerCase();
   return (
-    (key
-      ? ALLOCATION_TOKEN_ICONS[key as keyof typeof ALLOCATION_TOKEN_ICONS]
-      : undefined) ?? FallbackIcon
+    (key ? getOwnProperty(ALLOCATION_TOKEN_ICONS, key) : undefined) ??
+    FallbackIcon
   );
 };

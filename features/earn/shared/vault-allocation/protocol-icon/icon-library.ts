@@ -1,5 +1,7 @@
 import type { ComponentProps, FC } from 'react';
 
+import { getOwnProperty } from 'utils/get-own-property';
+
 import { ReactComponent as AaveIcon } from 'assets/earn/allocation/protocol/aave.svg';
 import { ReactComponent as AuraIcon } from 'assets/earn/allocation/protocol/aura.svg';
 import { ReactComponent as AxisIcon } from 'assets/earn/allocation/protocol/axis.svg';
@@ -64,8 +66,7 @@ export const getAllocationProtocolIcon = (
 ): AllocationIcon => {
   const key = protocol?.trim().toLowerCase();
   return (
-    (key
-      ? ALLOCATION_PROTOCOL_ICONS[key as keyof typeof ALLOCATION_PROTOCOL_ICONS]
-      : undefined) ?? FallbackIcon
+    (key ? getOwnProperty(ALLOCATION_PROTOCOL_ICONS, key) : undefined) ??
+    FallbackIcon
   );
 };
