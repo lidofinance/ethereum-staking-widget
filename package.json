@@ -14,7 +14,7 @@
     "lint": "eslint .",
     "lint:fix": "yarn lint --fix",
     "types": "tsc --noEmit",
-    "postinstall": "husky install",
+    "postinstall": "husky",
     "test": "yarn test:unit && yarn test:e2e",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
@@ -103,9 +103,9 @@
     "eslint-plugin-sonarjs": "4.2.0",
     "eslint-plugin-unicorn": "65.0.1",
     "globals": "17.7.0",
-    "husky": "^7.0.1",
+    "husky": "9.1.7",
     "jsonschema": "^1.4.1",
-    "lint-staged": "^13.2.3",
+    "lint-staged": "17.0.8",
     "playwright": "^1.60.0",
     "prettier": "3.9.5",
     "raw-loader": "^4.0.2",
@@ -136,5 +136,5 @@
     "@babel/runtime": "^7.26.10",
     "eslint-plugin-sonarjs/typescript": "5.7.3"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  "packageManager": "yarn@4.17.1+sha512.ccbfabf7d7b6b32075088be9386fb9a2e00bb6887ef07fa56effabc890a56d53da1ccc4128d62db245fcbd3961b236d75335bdf7d5320ed6eafb7588b7ad4697"
 }
