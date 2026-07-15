@@ -3,6 +3,10 @@ interface Window {
   _paq: undefined | [string, ...unknown[]][];
 }
 
+// TS 6 type-checks side-effect imports (e.g. `import 'nprogress/nprogress.css'`
+// in _app.tsx), which previously were silently ignored
+declare module '*.css';
+
 declare module '*.svg' {
   /**
    * Use `any` to avoid conflicts with

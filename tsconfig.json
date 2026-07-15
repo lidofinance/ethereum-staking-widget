@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    // TS 6 deprecates moduleResolution=node and baseUrl (both removed in TS 7).
+    // Migrating them means moduleResolution=bundler + paths, which changes how
+    // Next resolves absolute imports — do that as its own task before TS 7.
+    "ignoreDeprecations": "6.0",
     "target": "esnext",
     "allowJs": true,
     "skipLibCheck": true,
@@ -14,8 +18,8 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "incremental": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "dom.iterable", "esnext"]
   },
   "include": ["**/*"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }
