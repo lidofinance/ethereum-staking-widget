@@ -61,16 +61,6 @@ type DiagnosticAllocationData = {
   sharePercent: number;
 };
 
-const warnAllocationMovedToOthers = (
-  reason: DiagnosticAllocationReason,
-  id: string,
-): void => {
-  console.warn('[Vault allocation] Allocation moved to Others', {
-    reason,
-    id,
-  });
-};
-
 // Entries that match these categories are accumulated into the
 // Available / Pending / Others rows shown in the allocation table.
 const ALLOCATION_SUMMARY_KEYS = ['available', 'pending', 'others'] as const;
@@ -115,7 +105,10 @@ const moveAllocationToOthers = (
   tvlUSD: number,
   reason: DiagnosticAllocationReason,
 ): void => {
-  warnAllocationMovedToOthers(reason, allocation.id);
+  console.debug('[Vault allocation] Allocation moved to Others', {
+    reason,
+    id: allocation.id,
+  });
 
   if (allocation.sharePercent <= 0) return;
 
