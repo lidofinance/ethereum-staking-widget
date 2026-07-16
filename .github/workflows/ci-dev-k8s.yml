@@ -14,10 +14,9 @@ on:
 permissions:
   contents: read
 
-
 jobs:
   build-and-push:
-    if: github.ref_name == 'develop'
+    # if: github.ref_name == 'develop'
     uses: lidofinance/actions/.github/workflows/k8s-build-push-harbor.yml@c7b5b6c5d8013046347d728d748fa741eb214e28
     with:
       tag: dev
