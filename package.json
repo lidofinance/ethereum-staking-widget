@@ -32,7 +32,7 @@
     "@lidofinance/lido-ethereum-sdk": "4.8.0",
     "@lidofinance/lido-ui": "^3.42.1",
     "@lidofinance/next-api-wrapper": "^0.48.0",
-    "@lidofinance/next-ip-rate-limit": "^0.48.0",
+    "@lidofinance/next-ip-rate-limit": "^0.60.0",
     "@lidofinance/next-pages": "^0.48.0",
     "@lidofinance/rpc": "^0.48.0",
     "@lidofinance/satanizer": "^0.48.0",
