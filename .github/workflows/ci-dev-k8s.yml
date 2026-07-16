@@ -27,4 +27,4 @@ jobs:
       environment: harbor_dev_release
       dockerfile: Dockerfile.k8s
     secrets:
-      registry_token: ${{ secrets.HARBOR_TOKEN }}
+      registry_token: ${{ secrets.HARBOR_DEV_TOKEN }}
