@@ -4,12 +4,12 @@ run-name: Build and push staking-widget:dev to dev
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - develop
-    paths-ignore:
-      - '.github/**'
-      - 'test/**'
+  # push:
+  #   branches:
+  #     - develop
+  #   paths-ignore:
+  #     - '.github/**'
+  #     - 'test/**'
 
 permissions:
   contents: read
