@@ -1,4 +1,6 @@
+import { promises as fs } from 'fs';
 import { Cache } from 'memory-cache';
+import getConfigNext from 'next/config';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -15,10 +17,64 @@ export type ExternalConfigResult = {
   ___prefetch_manifest___: Manifest;
 };
 
+const { serverRuntimeConfig } = getConfigNext();
+
+// manifest file mounted into the container (e.g. k8s configmap)
+const getIpfsManifestPath = (): string | undefined =>
+  process.env.IPFS_MANIFEST_PATH || serverRuntimeConfig.ipfsManifestPath;
+
 const cache = new Cache<
   typeof config.CACHE_EXTERNAL_CONFIG_KEY,
   ExternalConfigResult
 >();
+
+// served if the file degrades after boot (boot with a broken file is
+// prevented by scripts/startup-checks/ipfs-manifest.mjs)
+let lastGoodFileManifest: ExternalConfigResult | null = null;
+
+const readManifestFromFile = async (
+  manifestPath: string,
+): Promise<ExternalConfigResult> => {
+  try {
+    const raw = await fs.readFile(manifestPath, 'utf-8');
+    const parsing = ManifestSchema.safeParse(JSON.parse(raw));
+    if (!parsing.success) {
+      throw new Error(`invalid config received: ${parsing.error?.message}`);
+    }
+
+    const result = {
+      ___prefetch_manifest___: parsing.data,
+    };
+
+    lastGoodFileManifest = result;
+    cache.put(
+      config.CACHE_EXTERNAL_CONFIG_KEY,
+      result,
+      config.CACHE_EXTERNAL_CONFIG_FILE_TTL,
+    );
+
+    return result;
+  } catch (error) {
+    console.error(
+      `[fetchExternalManifest] failed to read manifest file at ${manifestPath}`,
+      error,
+    );
+
+    if (lastGoodFileManifest) {
+      console.error(
+        '[fetchExternalManifest] serving last known good file manifest',
+      );
+      return lastGoodFileManifest;
+    }
+
+    console.error(
+      '[fetchExternalManifest] no last known good manifest, falling back to the local manifest',
+    );
+    return {
+      ___prefetch_manifest___: getLocalFallbackManifest(),
+    };
+  }
+};
 
 export const fetchExternalManifest =
   async (): Promise<ExternalConfigResult> => {
@@ -31,6 +87,12 @@ export const fetchExternalManifest =
       return {
         ___prefetch_manifest___: getLocalFallbackManifest(),
       };
+    }
+
+    // with IPFS_MANIFEST_PATH the file is the source of truth, no remote fetch
+    const manifestPath = getIpfsManifestPath();
+    if (manifestPath) {
+      return readManifestFromFile(manifestPath);
     }
 
     let retries = 3;

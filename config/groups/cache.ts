@@ -22,6 +22,11 @@ export const CACHE_TOTAL_SUPPLY_TTL = ms('1m');
 
 export const CACHE_EXTERNAL_CONFIG_KEY = 'cache-external-config';
 export const CACHE_EXTERNAL_CONFIG_TTL = ms('10m');
+// short TTL for IPFS_MANIFEST_PATH: cheap re-read, fast configmap propagation
+export const CACHE_EXTERNAL_CONFIG_FILE_TTL = ms('1m');
+
+export const CACHE_EXTERNAL_MANIFEST_HEADERS =
+  'public, max-age=60, stale-if-error=1200, stale-while-revalidate=30';
 
 export const CACHE_TOTAL_SUPPLY_HEADERS =
   'public, max-age=60, stale-if-error=1200, stale-while-revalidate=30';

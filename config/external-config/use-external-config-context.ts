@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
+import { API_ROUTES } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useEarnRuntimeState } from 'features/earn/shared/hooks/use-earn-state';
 import { EARN_PATH } from 'consts/urls';
@@ -15,6 +16,20 @@ import {
 import { ManifestSchema } from './validate';
 import { getManifestKey } from './utils';
 import type { ExternalConfig, ManifestConfig, ManifestEntry } from './types';
+
+// IPFS builds (no backend) and the dev override fetch the manifest directly;
+// self-hosted builds use the own API route
+const getManifestUrl = (): string => {
+  if (
+    config.ipfsMode ||
+    process.env.NEXT_PUBLIC_DANGEROUS_DEV_ONLY_OVERRIDE_IPFS_CONFIG_PATH
+  ) {
+    return IPFS_MANIFEST_URL;
+  }
+  const BASE_URL = typeof window === 'undefined' ? '' : window.location.origin;
+
+  return `${BASE_URL}/${API_ROUTES.CONFIG_MANIFEST}`;
+};
 
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
@@ -28,18 +43,20 @@ export const useExternalConfigContext = (
     manifestOverride,
   );
 
+  const manifestUrl = getManifestUrl();
+
   const queryResult = useQuery<ManifestEntry>({
-    queryKey: ['external-config', { defaultChain, manifestOverride }],
+    queryKey: [
+      'external-config',
+      { defaultChain, manifestOverride, manifestUrl },
+    ],
     ...STRATEGY_LAZY,
     enabled: !!defaultChain,
     queryFn: async () => {
       try {
-        const result = await standardFetcher<Record<string, any>>(
-          IPFS_MANIFEST_URL,
-          {
-            headers: { Accept: 'application/json' },
-          },
-        );
+        const result = await standardFetcher<Record<string, any>>(manifestUrl, {
+          headers: { Accept: 'application/json' },
+        });
 
         const manifestKey = getManifestKey(defaultChain, manifestOverride);
 

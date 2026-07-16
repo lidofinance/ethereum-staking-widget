@@ -5,6 +5,7 @@ import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs
 import generateBuildId from './scripts/generate-build-id.mjs';
 import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 import { startupCheckValidationFile } from './scripts/startup-checks/validation-file.mjs';
+import { startupCheckManifestFile } from './scripts/startup-checks/ipfs-manifest.mjs';
 
 logEnvironmentVariables();
 buildDynamics();
@@ -12,6 +13,7 @@ buildDynamics();
 if (process.env.RUN_STARTUP_CHECKS === 'true') {
   void startupCheckRPCs();
   void startupCheckValidationFile();
+  void startupCheckManifestFile();
 }
 
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
@@ -271,6 +273,7 @@ export default withBundleAnalyzer({
     // ETH rpcs
     defaultChain: process.env.DEFAULT_CHAIN,
     manifestOverride: process.env.MANIFEST_OVERRIDE,
+    ipfsManifestPath: process.env.IPFS_MANIFEST_PATH,
     rpcUrls_1: process.env.EL_RPC_URLS_1,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     rpcUrls_11155111: process.env.EL_RPC_URLS_11155111,

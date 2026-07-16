@@ -46,6 +46,7 @@ declare module 'next/config' {
       rewardsBackendAPI: string | undefined;
       validationAPI: string | undefined;
       validationFilePath: string | undefined;
+      ipfsManifestPath: string | undefined;
     };
     publicRuntimeConfig: {
       basePath: string | undefined;
