@@ -1,0 +1,51 @@
+# build env
+FROM node:24-alpine AS build
+
+ARG BUILD_VERSION=dev
+ARG BUILD_BRANCH=develop
+ARG BUILD_COMMIT=unknown
+
+WORKDIR /app
+
+RUN apk add --no-cache git=~2
+COPY package.json yarn.lock ./
+# copy with validate_addresses JSON file
+# COPY package.json yarn.lock validate_addresses.example.json ./
+
+RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
+COPY . .
+
+# Populate build-info.json
+RUN sed -i "s|REPLACE_WITH_VERSION|$BUILD_VERSION|" build-info.json && \
+    sed -i "s|REPLACE_WITH_BRANCH|$BUILD_BRANCH|" build-info.json && \
+    sed -i "s|REPLACE_WITH_COMMIT|$BUILD_COMMIT|" build-info.json
+
+RUN NODE_NO_BUILD_DYNAMICS=true yarn build
+# public/runtime is used to inject runtime vars; it should exist and user node should have write access there for it
+RUN rm -rf /app/public/runtime && mkdir /app/public/runtime && chown node /app/public/runtime
+
+# final image
+FROM node:24-alpine AS base
+
+ARG BASE_PATH=""
+ARG SUPPORTED_CHAINS="1"
+ARG DEFAULT_CHAIN="1"
+
+ENV NEXT_TELEMETRY_DISABLED=1 \
+  BASE_PATH=$BASE_PATH \
+  SUPPORTED_CHAINS=$SUPPORTED_CHAINS \
+  DEFAULT_CHAIN=$DEFAULT_CHAIN
+
+WORKDIR /app
+RUN apk add --no-cache curl=~8 
+
+COPY --from=build /app /app
+RUN chown -R node:node /app/.next
+
+USER node
+EXPOSE 3000
+
+HEALTHCHECK --interval=10s --timeout=3s \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+CMD ["sh", "-c", "source /vault/secrets/app && exec yarn start"]
