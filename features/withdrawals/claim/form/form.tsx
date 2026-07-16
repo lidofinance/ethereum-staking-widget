@@ -1,9 +1,7 @@
-import { useRef } from 'react';
-
 import { BunkerInfo } from './bunker-info';
 
 import { RequestsList } from './requests-list/requests-list';
-import { ClaimFormBody } from './styles';
+import { ClaimListBody, ClaimScrollContainer } from './styles';
 import { ClaimFormFooterSticky } from './claim-form-footer-sticky';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { SubmitButton } from './submit-button';
@@ -13,7 +11,6 @@ import { TransactionInfo } from './transaction-info';
 import { FormController } from 'shared/hook-form/form-controller';
 
 export const ClaimForm = () => {
-  const refRequests = useRef<HTMLDivElement>(null);
   const { isBunker } = useWithdrawals();
   const { isLoading } = useFormState<ClaimFormInputType>();
   const { requestsCount } = useClaimFormData();
@@ -22,20 +19,16 @@ export const ClaimForm = () => {
 
   return (
     <FormController>
-      <ClaimFormBody data-testid="claimList">
-        {isBunker && <BunkerInfo />}
-        <div ref={refRequests}>
+      <ClaimScrollContainer style={{ '--claim-request-count': requestsCount }}>
+        <ClaimListBody data-testid="claimList">
+          {isBunker && <BunkerInfo />}
           <RequestsList />
-        </div>
-      </ClaimFormBody>
-      <ClaimFormFooterSticky
-        isEnabled={!isLoading && !isEmpty}
-        refRequests={refRequests}
-        positionDeps={[requestsCount]}
-      >
-        <SubmitButton />
-        <TransactionInfo />
-      </ClaimFormFooterSticky>
+        </ClaimListBody>
+        <ClaimFormFooterSticky isEnabled={!isLoading && !isEmpty}>
+          <SubmitButton />
+          <TransactionInfo />
+        </ClaimFormFooterSticky>
+      </ClaimScrollContainer>
     </FormController>
   );
 };

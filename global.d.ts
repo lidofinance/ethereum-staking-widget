@@ -1,6 +1,14 @@
+import 'react';
+
 interface Window {
   // see _document.js for definition
   _paq: undefined | [string, ...unknown[]][];
+}
+
+declare module 'react' {
+  interface CSSProperties {
+    [key: `--${string}`]: string | number | undefined;
+  }
 }
 
 declare module '*.svg' {

@@ -1,11 +1,32 @@
 import styled, { css } from 'styled-components';
 import { Block, Button } from '@lidofinance/lido-ui';
+import { devicesHeaderMedia } from 'styles/global';
+import { NAV_MOBILE_HEIGHT } from 'styles/constants';
+import {
+  REQUESTS_LIST_MIN_HEIGHT,
+  REQUESTS_LIST_ITEM_SIZE,
+} from './requests-list/styles';
 
 export const EditClaimButtonStyled = styled(Button)`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
 `;
 
-export const ClaimFormBody = styled(Block)`
+export const ClaimScrollContainer = styled.div`
+  --min-list-size: min(
+    ${REQUESTS_LIST_MIN_HEIGHT}px,
+    calc(
+      var(--claim-request-count) * ${REQUESTS_LIST_ITEM_SIZE}px +
+        ${({ theme }) => theme.spaceMap.lg}px + 1px +
+        ${({ theme }) => theme.spaceMap.md}px
+    )
+  );
+
+  position: relative;
+  padding-top: var(--min-list-size);
+`;
+
+export const ClaimListBody = styled(Block)`
+  margin-top: calc(-1 * var(--min-list-size));
   margin-bottom: 0;
   padding-bottom: 0;
   border-bottom-left-radius: 0;
@@ -84,13 +105,18 @@ export const ClaimFooterBodyEnder = styled.div`
 `;
 
 export const ClaimFormFooterWrapper = styled.div<{ isSticked: boolean }>`
-  position: ${({ isSticked }) => (isSticked ? 'sticky' : 'relative')};
-  bottom: 0;
+  position: relative;
+
   ${({ isSticked }) =>
     isSticked &&
     css`
+      position: sticky;
+      bottom: 0;
       background-color: var(--lido-color-background);
-    `}
+      @media ${devicesHeaderMedia.mobile} {
+        bottom: ${NAV_MOBILE_HEIGHT}px;
+      }
+    `};
 `;
 
 export const ClaimFormFooter = styled(Block)`
