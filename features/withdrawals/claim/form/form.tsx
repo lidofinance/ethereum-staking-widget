@@ -19,7 +19,11 @@ export const ClaimForm = () => {
 
   return (
     <FormController>
-      <ClaimScrollContainer style={{ '--claim-request-count': requestsCount }}>
+      <ClaimScrollContainer
+        style={
+          { '--claim-request-count': requestsCount } as React.CSSProperties
+        }
+      >
         <ClaimListBody data-testid="claimList">
           {isBunker && <BunkerInfo />}
           <RequestsList />
