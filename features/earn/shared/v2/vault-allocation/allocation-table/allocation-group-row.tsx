@@ -8,6 +8,7 @@ import { ProtocolIcon } from 'features/earn/shared/vault-allocation/protocol-ico
 import { ReactComponent as ChevronIcon } from 'assets/icons/chevron-gray-right.svg';
 
 import { AllocationGroup } from '../types';
+import { MIN_ALLOCATION_DISPLAY_PERCENT } from '../consts';
 import {
   ChevronWrapper,
   GroupTdStyled,
@@ -66,7 +67,10 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
               </ProtocolNameStyled>
             </TdWithIconStyled>
             <TdNarrowStyled align="right">
-              <FormatPercent value={item.allocation} decimals="percent" />
+              {(!item.isSummary ||
+                item.allocation >= MIN_ALLOCATION_DISPLAY_PERCENT) && (
+                <FormatPercent value={item.allocation} decimals="percent" />
+              )}
             </TdNarrowStyled>
             <TdNarrowStyled align="right">
               <FormatLargeAmount amount={item.tvlUSD} />

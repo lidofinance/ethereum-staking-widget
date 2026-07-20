@@ -7,6 +7,7 @@ import { VaultTip } from 'features/earn/shared/vault-tip';
 import { ProtocolIcon } from 'features/earn/shared/vault-allocation/protocol-icon';
 
 import { AllocationGroup, FlatAllocationItem } from '../types';
+import { MIN_ALLOCATION_DISPLAY_PERCENT } from '../consts';
 import { AllocationGroupRow } from './allocation-group-row';
 import {
   TableStyled,
@@ -57,9 +58,12 @@ export const AllocationTable: FC<AllocationTableV2Props> = ({
                 badge={item.chain ?? ''}
               />
               <ProtocolNameStyled>
-                <ProtocolNamePercent>
-                  <FormatPercent value={item.allocation} decimals="percent" />
-                </ProtocolNamePercent>
+                {(!item.isSummary ||
+                  item.allocation >= MIN_ALLOCATION_DISPLAY_PERCENT) && (
+                  <ProtocolNamePercent>
+                    <FormatPercent value={item.allocation} decimals="percent" />
+                  </ProtocolNamePercent>
+                )}
                 {item.name}
                 {item.info && <VaultTip>{item.info}</VaultTip>}
               </ProtocolNameStyled>

@@ -1,5 +1,7 @@
 export const METAVAULT_CHART_ORIGIN = 'https://api.mellow.finance';
 
+export const MIN_ALLOCATION_DISPLAY_PERCENT = 0.1;
+
 export const AVAILABLE_TIP =
   'The amount of tokens available for withdrawals, pending allocation to new strategies, and reserved for liquidity needs';
 export const OTHER_TIP =

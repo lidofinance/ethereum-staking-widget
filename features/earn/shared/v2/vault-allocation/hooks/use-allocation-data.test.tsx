@@ -125,12 +125,18 @@ describe('useAllocationData grouping and sorting', () => {
     expect(result.groups[0]?.info).toBeUndefined();
   });
 
-  it('hides flat Others when its total is below the display threshold', () => {
+  it('shows flat Others when its total is below the percent display threshold', () => {
     const result = getAllocationData(
       createData([createFlatAllocation({ id: 'hidden', sharePercent: 0.04 })]),
     );
 
-    expect(result.flatItems).toBeUndefined();
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Others',
+        isSummary: true,
+        allocation: 0.04,
+      }),
+    ]);
     expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
@@ -140,7 +146,44 @@ describe('useAllocationData grouping and sorting', () => {
     );
   });
 
-  it('hides nested Others when its total is below the display threshold', () => {
+  it('keeps all flat summary rows below the percent display threshold', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          id: 'available',
+          sharePercent: 0.02,
+          category: 'token',
+          protocol: undefined,
+        }),
+        createFlatAllocation({
+          id: 'pending',
+          sharePercent: 0.03,
+          category: 'pending-deposits',
+          protocol: undefined,
+        }),
+        createFlatAllocation({
+          id: 'other',
+          sharePercent: 0.04,
+          category: 'other',
+          protocol: undefined,
+        }),
+      ]),
+    );
+
+    expect(
+      result.flatItems?.map(({ name, allocation, isSummary }) => ({
+        name,
+        allocation,
+        isSummary,
+      })),
+    ).toEqual([
+      { name: 'Available', allocation: 0.02, isSummary: true },
+      { name: 'Pending', allocation: 0.03, isSummary: true },
+      { name: 'Others', allocation: 0.04, isSummary: true },
+    ]);
+  });
+
+  it('shows nested summary rows below the percent display threshold', () => {
     const result = getAllocationData(
       createData([
         createFlatAllocation({
@@ -169,10 +212,21 @@ describe('useAllocationData grouping and sorting', () => {
       ]),
     );
 
-    expect(result.groups[0]?.items).toEqual([]);
+    expect(result.groups[0]?.items).toEqual([
+      expect.objectContaining({
+        label: 'Available',
+        isSummary: true,
+        allocation: 0.02,
+      }),
+      expect.objectContaining({
+        label: 'Others',
+        isSummary: true,
+        allocation: 0.04,
+      }),
+    ]);
   });
 
-  it('hides top-level Others produced by an invisible nested group', () => {
+  it('shows top-level Others produced by an invisible nested group', () => {
     const result = getAllocationData(
       createData([
         createFlatAllocation({
@@ -185,10 +239,16 @@ describe('useAllocationData grouping and sorting', () => {
     );
 
     expect(result.groups).toEqual([]);
-    expect(result.flatItems).toBeUndefined();
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Others',
+        isSummary: true,
+        allocation: 0.04,
+      }),
+    ]);
   });
 
-  it('shows Others when accumulated invisible allocations reach the threshold', () => {
+  it('keeps a small Available allocation separate from Others', () => {
     const result = getAllocationData(
       createData([
         createFlatAllocation({ id: 'hidden-1', sharePercent: 0.04 }),
@@ -202,9 +262,12 @@ describe('useAllocationData grouping and sorting', () => {
       ]),
     );
 
-    expect(result.flatItems).toHaveLength(1);
-    expect(result.flatItems?.[0]?.name).toBe('Others');
-    expect(result.flatItems?.[0]?.allocation).toBeCloseTo(0.1);
+    expect(
+      result.flatItems?.map(({ name, allocation }) => ({ name, allocation })),
+    ).toEqual([
+      { name: 'Available', allocation: 0.02 },
+      { name: 'Others', allocation: 0.08 },
+    ]);
   });
 
   it('sorts subvaults and their protocol positions by allocation descending', () => {

@@ -7,6 +7,7 @@ export type { LineDataWithAllocation };
 export type AllocationSubItem = {
   id: string;
   label: string;
+  isSummary?: boolean;
   info?: ReactNode;
   chain: string;
   allocation: number;
@@ -25,6 +26,7 @@ export type AllocationGroup = {
 
 export type FlatAllocationItem = {
   name: string;
+  isSummary?: boolean;
   info?: ReactNode;
   chain?: string;
   icon?: React.FunctionComponent;

@@ -14,6 +14,7 @@ import type {
 } from '../types';
 import {
   AVAILABLE_TIP,
+  MIN_ALLOCATION_DISPLAY_PERCENT,
   OTHER_TIP,
   PENDING_TIP,
   SUBVAULTS_TIP_BY_ID,
@@ -21,12 +22,11 @@ import {
 
 type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
 
-const MIN_DISPLAY_PERCENT = 0.1;
 const MAX_SUBVAULT_POSITIONS = 20;
 const EMPTY_ALLOCATION_LABEL_ALLOWLIST: readonly string[] = [];
 const EMPTY_HIDDEN_ALLOCATION_IDS: readonly string[] = [];
 const isVisible = (allocation: number): boolean =>
-  allocation >= MIN_DISPLAY_PERCENT;
+  allocation >= MIN_ALLOCATION_DISPLAY_PERCENT;
 
 const sortByAllocationDescending = <T extends { allocation: number }>(
   left: T,
@@ -65,9 +65,6 @@ type DiagnosticAllocationData = {
 // Entries that match these categories are accumulated into the
 // Available / Pending / Others rows shown in the allocation table.
 const ALLOCATION_SUMMARY_KEYS = ['available', 'pending', 'others'] as const;
-const ALLOCATION_NON_OTHER_SUMMARY_KEYS = ALLOCATION_SUMMARY_KEYS.filter(
-  (key) => key !== 'others',
-);
 type AllocationSummaryKey = (typeof ALLOCATION_SUMMARY_KEYS)[number];
 type AllocationSummaryRows = Record<
   AllocationSummaryKey,
@@ -119,25 +116,6 @@ const moveAllocationToOthers = (
     allocation.sharePercent,
     tvlUSD,
   );
-};
-
-const moveInvisibleSummaryRowsToOthers = (
-  summaryRows: AllocationSummaryRows,
-): void => {
-  for (const key of ALLOCATION_NON_OTHER_SUMMARY_KEYS) {
-    const summary = summaryRows[key];
-
-    if (summary.allocation > 0 && !isVisible(summary.allocation)) {
-      addToAllocationSummaryRow(
-        summaryRows,
-        'others',
-        summary.allocation,
-        summary.tvlUSD,
-      );
-
-      summaryRows[key] = { allocation: 0, tvlUSD: 0 };
-    }
-  }
 };
 
 const limitNestedItems = (
@@ -233,12 +211,13 @@ const appendNestedSummaryRows = (
   for (const key of ALLOCATION_SUMMARY_KEYS) {
     const summary = summaryRows[key];
 
-    if (isVisible(summary.allocation)) {
+    if (summary.allocation > 0) {
       const meta = ALLOCATION_SUMMARY_META[key];
 
       items.push({
         label: meta.label,
         id: meta.id,
+        isSummary: true,
         icon: undefined,
         info: meta.info,
         chain: '',
@@ -256,11 +235,12 @@ const appendFlatSummaryRows = (
   for (const key of ALLOCATION_SUMMARY_KEYS) {
     const summary = summaryRows[key];
 
-    if (isVisible(summary.allocation)) {
+    if (summary.allocation > 0) {
       const meta = ALLOCATION_SUMMARY_META[key];
 
       items.push({
         name: meta.label,
+        isSummary: true,
         info: meta.info,
         allocation: summary.allocation,
         tvlUSD: summary.tvlUSD,
@@ -309,7 +289,6 @@ const parseNestedGroup = (
     }
   }
 
-  moveInvisibleSummaryRowsToOthers(summaryRows);
   const limitedItems = limitNestedItems(knownItems, summaryRows);
   appendNestedSummaryRows(limitedItems, summaryRows);
 
@@ -359,7 +338,6 @@ const parseFlatItems = (
   }
 
   items.sort(sortByAllocationDescending);
-  moveInvisibleSummaryRowsToOthers(summaryRows);
   appendFlatSummaryRows(items, summaryRows);
 
   return items;
