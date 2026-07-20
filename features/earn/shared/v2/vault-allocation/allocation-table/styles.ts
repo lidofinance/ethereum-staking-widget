@@ -82,8 +82,8 @@ export const ProtocolNamePercent = styled.span`
 `;
 
 // Group row styles
-export const GroupTdStyled = styled(TdStyled)`
-  cursor: pointer;
+export const GroupTdStyled = styled(TdStyled)<{ $expandable: boolean }>`
+  cursor: ${({ $expandable }) => ($expandable ? 'pointer' : 'default')};
 `;
 
 export const GroupNameStyled = styled.div`

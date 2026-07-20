@@ -25,15 +25,18 @@ type AllocationGroupRowProps = {
 
 export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
   const [open, setOpen] = useState(true);
+  const isExpandable = group.items.length > 0;
 
   return (
     <>
-      <Tr onClick={() => setOpen((v) => !v)}>
-        <GroupTdStyled>
+      <Tr onClick={isExpandable ? () => setOpen((v) => !v) : undefined}>
+        <GroupTdStyled $expandable={isExpandable}>
           <GroupNameStyled>
-            <ChevronWrapper $open={open}>
-              <ChevronIcon />
-            </ChevronWrapper>
+            {isExpandable && (
+              <ChevronWrapper $open={open}>
+                <ChevronIcon />
+              </ChevronWrapper>
+            )}
             <ProtocolNameStyled>
               <ProtocolNamePercent>
                 <FormatPercent value={group.allocation} decimals="percent" />
@@ -48,7 +51,8 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
           <FormatLargeAmount amount={group.tvlUSD} />
         </TdNarrowStyled>
       </Tr>
-      {open &&
+      {isExpandable &&
+        open &&
         group.items.map((item) => (
           <TrWithShiftStyled key={`${item.id}-${item.chain}`}>
             <TdWithIconStyled>
