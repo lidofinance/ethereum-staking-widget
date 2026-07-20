@@ -40,6 +40,7 @@ export const useWithdrawalRequest = ({
     refetchAllowance,
     processApproveTx,
     isForceAllowance,
+    setIsForceAllowance,
   } = useWithdrawalRequestTxApprove({ amount, token });
 
   const { closeModal } = useTransactionModal();
@@ -59,6 +60,13 @@ export const useWithdrawalRequest = ({
         'cannot submit empty requests',
       );
       invariant(amount, 'cannot submit empty amount');
+
+      const onTryAllowance = () => {
+        closeModal();
+        setIsForceAllowance(true);
+      };
+
+      let isSigningPermit = false;
 
       try {
         if (isBunker) {
@@ -99,9 +107,8 @@ export const useWithdrawalRequest = ({
             onReceipt: async ({ payload }) => {
               return txModalStages.pending(amount, token, payload);
             },
-            onFailure: ({ error }) => {
-              txModalStages.failed(error, onRetry);
-            },
+            // NOOP, handled in catch
+            onFailure: () => {},
             onSuccess: async ({ txHash }) => {
               void onConfirm?.();
               txModalStages.success(amount, token, txHash);
@@ -134,9 +141,11 @@ export const useWithdrawalRequest = ({
               });
             },
             onPermit: async () => {
+              isSigningPermit = true;
               txModalStages.signPermit();
             },
             onSign: async ({ payload }) => {
+              isSigningPermit = false;
               txModalStages.sign(amount, token);
               const fallback =
                 token === TOKENS_TO_WITHDRAWLS.stETH
@@ -164,9 +173,8 @@ export const useWithdrawalRequest = ({
                 }
               }
             },
-            onFailure: ({ error }) => {
-              txModalStages.failed(error, onRetry);
-            },
+            // NOOP, handled in catch
+            onFailure: () => {},
             onMultisigDone: () => {
               txModalStages.successMultisig();
             },
@@ -176,7 +184,8 @@ export const useWithdrawalRequest = ({
         return true;
       } catch (error) {
         console.error(error);
-        txModalStages.failed(error, onRetry);
+        txModalStages.failed(error, onRetry, isSigningPermit, onTryAllowance);
+        isSigningPermit = false;
         return false;
       }
     },
@@ -193,6 +202,7 @@ export const useWithdrawalRequest = ({
       onRetry,
       processApproveTx,
       refetchAllowance,
+      setIsForceAllowance,
       txFlow,
       txModalStages,
       withdraw.approval,

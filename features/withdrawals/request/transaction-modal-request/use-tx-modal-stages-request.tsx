@@ -1,4 +1,5 @@
 import type { Hash } from 'viem';
+import { Link, Text } from '@lidofinance/lido-ui';
 import {
   TransactionModalTransitStage,
   useTransactionModalStage,
@@ -7,6 +8,7 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 
 import {
   TxStageBunker,
+  TxStageFail,
   TxStagePermit,
 } from 'shared/transaction-modal/tx-stages-basic';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
@@ -14,6 +16,7 @@ import { TxRequestStageSuccess } from './tx-stage-request-success';
 
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import type { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
+import { getErrorMessage } from 'utils';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
@@ -94,6 +97,40 @@ const getTxModalStagesRequest = (
         txHash={txHash}
       />,
     ),
+
+  failed: (
+    error: unknown,
+    onRetry?: () => void,
+    suggestTryAllowance?: boolean,
+    onTryAllowance?: () => void,
+  ) => {
+    return transitStage(
+      <TxStageFail
+        footer={
+          suggestTryAllowance && (
+            <Text color="secondary" size="xxs">
+              Problem with signing Permit message?
+              <br />{' '}
+              <Link
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTryAllowance?.();
+                }}
+              >
+                Try Allowance
+              </Link>
+              .
+            </Text>
+          )
+        }
+        failedText={getErrorMessage(error)}
+        onRetry={onRetry}
+      />,
+      {
+        isClosableOnLedger: true,
+      },
+    );
+  },
 
   success: (amount: bigint, token: TOKENS_TO_WITHDRAWLS, txHash?: Hash) =>
     transitStage(
