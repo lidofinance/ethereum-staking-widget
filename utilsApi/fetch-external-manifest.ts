@@ -20,8 +20,8 @@ export type ExternalConfigResult = {
 const { serverRuntimeConfig } = getConfigNext();
 
 // manifest file mounted into the container (e.g. k8s configmap)
-const getIpfsManifestPath = (): string | undefined =>
-  process.env.IPFS_MANIFEST_PATH || serverRuntimeConfig.ipfsManifestPath;
+const getConfigManifestPath = (): string | undefined =>
+  process.env.CONFIG_MANIFEST_PATH || serverRuntimeConfig.configManifestPath;
 
 const cache = new Cache<
   typeof config.CACHE_EXTERNAL_CONFIG_KEY,
@@ -29,7 +29,7 @@ const cache = new Cache<
 >();
 
 // served if the file degrades after boot (boot with a broken file is
-// prevented by scripts/startup-checks/ipfs-manifest.mjs)
+// prevented by scripts/startup-checks/config-manifest.mjs)
 let lastGoodFileManifest: ExternalConfigResult | null = null;
 
 const readManifestFromFile = async (
@@ -89,8 +89,8 @@ export const fetchExternalManifest =
       };
     }
 
-    // with IPFS_MANIFEST_PATH the file is the source of truth, no remote fetch
-    const manifestPath = getIpfsManifestPath();
+    // with CONFIG_MANIFEST_PATH the file is the source of truth, no remote fetch
+    const manifestPath = getConfigManifestPath();
     if (manifestPath) {
       return readManifestFromFile(manifestPath);
     }

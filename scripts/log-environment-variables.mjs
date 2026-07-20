@@ -34,7 +34,7 @@ export const openKeys = [
   'WALLETCONNECT_PROJECT_ID',
   'REWARDS_BACKEND_BASE_PATH',
   'VALIDATION_FILE_PATH',
-  'IPFS_MANIFEST_PATH',
+  'CONFIG_MANIFEST_PATH',
 ];
 
 export const secretKeys = [

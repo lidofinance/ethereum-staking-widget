@@ -50,17 +50,17 @@ const importFreshModule = async () => {
   return await import('utilsApi/fetch-external-manifest');
 };
 
-describe('fetchExternalManifest with IPFS_MANIFEST_PATH', () => {
+describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.IPFS_MANIFEST_PATH = '/app/runtime-config/IPFS.json';
+    process.env.CONFIG_MANIFEST_PATH = '/app/runtime-config/IPFS.json';
     errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
-    delete process.env.IPFS_MANIFEST_PATH;
+    delete process.env.CONFIG_MANIFEST_PATH;
     errorSpy.mockRestore();
   });
 
@@ -151,8 +151,8 @@ describe('fetchExternalManifest with IPFS_MANIFEST_PATH', () => {
     expect(___prefetch_manifest___['1']?.leastSafeVersion).toBe('1.0.0');
   });
 
-  it('fetches the remote manifest when IPFS_MANIFEST_PATH is not set', async () => {
-    delete process.env.IPFS_MANIFEST_PATH;
+  it('fetches the remote manifest when CONFIG_MANIFEST_PATH is not set', async () => {
+    delete process.env.CONFIG_MANIFEST_PATH;
     standardFetcherMock.mockResolvedValue(VALID_MANIFEST);
     const { fetchExternalManifest } = await importFreshModule();
 
