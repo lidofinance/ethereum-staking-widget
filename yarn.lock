@@ -3496,7 +3496,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/next-api-wrapper@npm:^0.48.0, @lidofinance/next-api-wrapper@npm:~0.48.0":
+"@lidofinance/next-api-wrapper@npm:^0.48.0":
   version: 0.48.0
   resolution: "@lidofinance/next-api-wrapper@npm:0.48.0"
   peerDependencies:
@@ -3507,14 +3507,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/next-ip-rate-limit@npm:^0.48.0":
-  version: 0.48.0
-  resolution: "@lidofinance/next-ip-rate-limit@npm:0.48.0"
+"@lidofinance/next-api-wrapper@npm:~0.60.0":
+  version: 0.60.0
+  resolution: "@lidofinance/next-api-wrapper@npm:0.60.0"
+  peerDependencies:
+    "@lidofinance/api-metrics": ~0.60.0
+    next: ^12.2.0
+    prom-client: ^14.0.0
+  checksum: 10c0/2e9d435e1e9adbe460628bb898134fbef9b16b4140aaa6b6e6b3bb19ad9fe39ea9be1cf1c00eb1609a7a81337434b848507fd4ca5eebc03c895457e589c59077
+  languageName: node
+  linkType: hard
+
+"@lidofinance/next-ip-rate-limit@npm:^0.60.0":
+  version: 0.60.0
+  resolution: "@lidofinance/next-ip-rate-limit@npm:0.60.0"
   dependencies:
-    "@lidofinance/next-api-wrapper": "npm:~0.48.0"
+    "@lidofinance/next-api-wrapper": "npm:~0.60.0"
   peerDependencies:
     next: ^12.2.0
-  checksum: 10c0/b128af3fa5592a49991c0c3dc69e48ab94795a77424ad403bb786700646a43f3d6c896ec63997f0eac518ed687d492659a89ba9f69e0dfe3f8769a396fb074c4
+  checksum: 10c0/bc1fc619506760d99483e56f0a10be6b46244a6d0c1abb342ca717794f7401e0ddf71a238956f43b7977c6080d6bd2387d0fb69ea46ce177ee990e03ddf875a9
   languageName: node
   linkType: hard
 
@@ -12057,7 +12068,7 @@ __metadata:
     "@lidofinance/lido-ethereum-sdk": "npm:4.8.0"
     "@lidofinance/lido-ui": "npm:^3.42.1"
     "@lidofinance/next-api-wrapper": "npm:^0.48.0"
-    "@lidofinance/next-ip-rate-limit": "npm:^0.48.0"
+    "@lidofinance/next-ip-rate-limit": "npm:^0.60.0"
     "@lidofinance/next-pages": "npm:^0.48.0"
     "@lidofinance/rpc": "npm:^0.48.0"
     "@lidofinance/satanizer": "npm:^0.48.0"
