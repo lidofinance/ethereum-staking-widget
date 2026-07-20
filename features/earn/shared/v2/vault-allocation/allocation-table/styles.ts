@@ -7,6 +7,10 @@ export const TableStyled = styled(Table)`
   margin-top: 32px;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
 
+  & > tbody > tr {
+    height: 60px;
+  }
+
   ${({ theme }) => theme.mediaQueries.md} {
     width: calc(100% + ${({ theme }) => 2 * theme.spaceMap.lg}px);
     margin: 0 ${({ theme }) => -theme.spaceMap.lg}px;
@@ -44,17 +48,13 @@ export const ThWithTipStyled = styled(ThStyled)`
   }
 `;
 
-export const TrWithShiftStyled = styled(Tr)`
-  & > td:first-child {
-    padding-left: ${({ theme }) => theme.spaceMap.xxl}px;
-  }
-`;
+export const TrWithShiftStyled = styled(Tr)``;
 
 export const TdStyled = styled(Td)`
   font-weight: 400;
   line-height: 24px;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  padding: 14px;
+  padding: ${({ theme }) => theme.spaceMap.sm}px 0;
 `;
 
 export const TdNarrowStyled = styled(TdStyled)`
@@ -62,12 +62,11 @@ export const TdNarrowStyled = styled(TdStyled)`
 `;
 
 export const TdWithIconStyled = styled(TdStyled)`
-  padding-left: ${({ theme }) => theme.spaceMap.xxl}px;
-
   & > div:first-child {
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-left: ${({ theme }) => theme.spaceMap.xxl}px;
   }
 `;
 
