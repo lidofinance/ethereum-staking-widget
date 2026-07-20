@@ -20,17 +20,16 @@ export const ClaimScrollContainer = styled.div`
         ${({ theme }) => theme.spaceMap.md}px
     )
   );
-
+  background: var(--lido-color-foreground);
   position: relative;
   padding-top: var(--min-list-size);
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.xl}px;
 `;
 
 export const ClaimListBody = styled(Block)`
   margin-top: calc(-1 * var(--min-list-size));
   margin-bottom: 0;
   padding-bottom: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
 `;
 
 export const ClaimFooterBodyEnder = styled.div`
@@ -112,7 +111,7 @@ export const ClaimFormFooterWrapper = styled.div<{ isSticked: boolean }>`
     css`
       position: sticky;
       bottom: 0;
-      background-color: var(--lido-color-background);
+
       @media ${devicesHeaderMedia.mobile} {
         bottom: ${NAV_MOBILE_HEIGHT}px;
       }
