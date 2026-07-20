@@ -110,7 +110,6 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
             const calls: (AACall | false)[] = [];
 
             if (needsStethApprove) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const approveStethCall =
                 await (wrap.approveStethForWrapPopulateTx({
                   value: amount,

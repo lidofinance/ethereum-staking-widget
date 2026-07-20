@@ -1,5 +1,3 @@
-/* eslint-disable func-style */
-/* eslint-disable import/no-extraneous-dependencies */
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 vi.mock('../validate-tx-signing', () => ({
@@ -36,15 +34,14 @@ const makeRequest = (method: string, params: unknown[] = []) => ({
 });
 
 const MOCK_ORDER: OrderData = {
-  sellToken: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84' as `0x${string}`,
-  buyToken: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' as `0x${string}`,
+  sellToken: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
+  buyToken: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   sellAmount: 1000000000000000000n,
   buyAmount: 950000000000000000n,
   validTo: 9999999999,
   kind: 'sell',
   partiallyFillable: false,
-  appData:
-    '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`,
+  appData: '0x0000000000000000000000000000000000000000000000000000000000000000',
   receiver: SIGNER,
   feeAmount: 0n,
   sellTokenBalance: 'erc20',
@@ -54,11 +51,11 @@ const MOCK_ORDER: OrderData = {
 beforeEach(() => {
   vi.mocked(validateSignTypedData).mockResolvedValue({
     allowed: true,
-    result: undefined as any,
+    result: undefined,
   });
   vi.mocked(validateSendTransaction).mockResolvedValue({
     allowed: true,
-    result: undefined as any,
+    result: undefined,
   });
   vi.mocked(validateSendCalls).mockResolvedValue({
     allowed: true,
@@ -138,7 +135,7 @@ describe('validateTx', () => {
     it('returns order=undefined when allowed but no result', async () => {
       vi.mocked(validateSignTypedData).mockResolvedValue({
         allowed: true,
-        result: undefined as any,
+        result: undefined,
       });
       const { order } = await validateRpcRequest(
         makeRequest('eth_signTypedData_v4'),
@@ -323,7 +320,7 @@ describe('validateTx', () => {
     it('does not carry over order from a previous signing call', async () => {
       vi.mocked(validateSendTransaction).mockResolvedValue({
         allowed: true,
-        result: undefined as any,
+        result: undefined,
       });
       const { order } = await validateRpcRequest(
         makeRequest('eth_sendTransaction'),

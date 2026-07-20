@@ -121,7 +121,7 @@ describe('cspReportHandler', () => {
 
   it('handles non-object, non-string body gracefully (e.g. number)', async () => {
     const res = makeRes();
-    await cspReportHandler(makeReq(42 as unknown as object), res);
+    await cspReportHandler(makeReq(42), res);
 
     const logged = warnSpy.mock.calls[0][0];
     expect(logged.type).toBe('CSP Violation');

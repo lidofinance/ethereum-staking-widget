@@ -72,7 +72,7 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     isFetching,
     isLoading,
     // Fix 'Type 'TQueryFnData' is not assignable to type 'Backend''
-    data: dataOrLaggyData as Backend,
+    data: dataOrLaggyData,
     isLagging: !!address && isLagging,
   };
 };

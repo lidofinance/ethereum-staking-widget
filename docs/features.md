@@ -9,7 +9,6 @@
 | `/withdrawals` | `pages/withdrawals/` | Request/claim ETH withdrawal         |
 | `/wrap`        | `pages/wrap/`        | Wrap/Unwrap stETH ↔ wstETH          |
 | `/rewards`     | `pages/rewards.tsx`  | Staking rewards history by address   |
-| `/referral`    | `pages/referral.tsx` | Referral program                     |
 | `/settings`    | `pages/settings.tsx` | User settings                        |
 
 ## Features (features/)
