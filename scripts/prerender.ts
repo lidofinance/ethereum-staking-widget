@@ -1,4 +1,9 @@
-import { pageMeta, ROUTE_META, type MetaTag } from '../shared/seo';
+import {
+  faqSectionHtml,
+  pageMeta,
+  ROUTE_META,
+  type MetaTag,
+} from '../shared/seo';
 
 /**
  * Head-only prerender entry for `vite-prerender-plugin`.
@@ -65,14 +70,19 @@ const toHeadElements = (tags: MetaTag[]): Set<HeadElement> => {
 
 export const prerender = (data: PrerenderData): PrerenderResult => {
   const path = normalizePath(data.url);
-  const tags = pageMeta(path, ROUTE_META[path] ?? {});
+  const meta = ROUTE_META[path] ?? {};
+  const tags = pageMeta(path, meta);
   const titleTag = tags.find((tag): tag is { title: string } => 'title' in tag);
 
-  // Enqueue the full route set on every call (the plugin dedupes). The body
-  // is empty, so the plugin cannot crawl links out of it — we must drive
-  // the list explicitly.
+  // Body stays the empty SPA bootstrap EXCEPT routes that declare static
+  // FAQ content — that markup goes into #root for crawlers/no-JS readers
+  // and is replaced (not hydrated) when the client mounts via createRoot.
+  //
+  // Enqueue the full route set on every call (the plugin dedupes) — with a
+  // mostly-empty body the plugin cannot crawl links out of it, we must
+  // drive the list explicitly.
   return {
-    html: '',
+    html: meta.faq ? faqSectionHtml(meta.faq) : '',
     links: new Set(ROUTES),
     head: {
       lang: 'en',

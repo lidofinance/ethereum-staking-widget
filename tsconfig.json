@@ -39,26 +39,8 @@
       "@lidofinance/lido-ui": [
         "./node_modules/@lidofinance/lido-ui/dist/types/index.d.ts"
       ],
-      "@lidofinance/satanizer": [
-        "./node_modules/@lidofinance/satanizer/dist/index.d.ts"
-      ],
-      "@lidofinance/api-metrics": [
-        "./node_modules/@lidofinance/api-metrics/dist/index.d.ts"
-      ],
       "@lidofinance/analytics-matomo": [
         "./node_modules/@lidofinance/analytics-matomo/dist/index.d.ts"
-      ],
-      "@lidofinance/lido-ui": [
-        "./node_modules/@lidofinance/lido-ui/dist/types/index.d.ts"
-      ],
-      "@lidofinance/analytics-matomo": [
-        "./node_modules/@lidofinance/analytics-matomo/dist/index.d.ts"
-      ],
-      "@lidofinance/satanizer": [
-        "./node_modules/@lidofinance/satanizer/dist/index.d.ts"
-      ],
-      "@lidofinance/api-metrics": [
-        "./node_modules/@lidofinance/api-metrics/dist/index.d.ts"
       ],
       "next/router": ["./shims/next-router.tsx"],
       "next/link": ["./shims/next-link.tsx"],

@@ -52,6 +52,6 @@
       "build-info.json": ["../build-info.json"]
     }
   },
-  "include": ["src/**/*", "vitest.config.ts", "../global.d.ts"],
+  "include": ["src/**/*", "scripts/**/*", "vitest.config.ts", "../global.d.ts"],
   "exclude": ["dist", "node_modules"]
 }

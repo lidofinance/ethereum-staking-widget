@@ -7,9 +7,16 @@
  * (`scripts/prerender.ts` via vite-prerender-plugin) so each route's static
  * HTML carries its own head for crawlers that do not run JS.
  *
- * Imports nothing from the app on purpose: the prerender script stays a
- * pure data module, so wallet SDKs never load at build time.
+ * Imports nothing from the app on purpose (only pure-data siblings, via
+ * RELATIVE paths — this module also loads inside vite.config.ts, where
+ * tsconfig aliases are unavailable): the prerender stays a pure data
+ * pipeline, wallet SDKs never load at build time.
  */
+import {
+  CLAIM_FAQ,
+  REQUEST_FAQ,
+  type FaqEntry,
+} from '../features/withdrawals/withdrawals-faq/faq-data';
 
 export interface PageMetaInput {
   title?: string;
@@ -22,6 +29,15 @@ export interface PageMetaInput {
    * handles `og:image` substitutes it at response time.
    */
   jsonLd?: Record<string, unknown>;
+  /**
+   * FAQ entries rendered INTO THE PRERENDERED BODY (`#root`) as static
+   * semantic HTML + exposed as FAQPage JSON-LD. Safe by construction: the
+   * client mounts via `createRoot`, which REPLACES `#root` content on
+   * mount — nothing is hydrated, so the "no non-empty prerendered body"
+   * hydration invariant is not violated; worst case is a brief unstyled
+   * flash before React takes over.
+   */
+  faq?: FaqEntry[];
 }
 
 /** A single `<head>` tag in a transport-neutral shape. `title` is special-cased. */
@@ -75,6 +91,42 @@ export const pageMeta = (
     tags.push({ rel: 'canonical', href: `__PUBLIC_ORIGIN__${path}` });
   }
   return tags;
+};
+
+// ---- FAQ serializers ----
+
+const stripHtml = (html: string): string =>
+  html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+/** schema.org FAQPage from the entries (answers as plain text). */
+const faqPageJsonLd = (entries: FaqEntry[]): Record<string, unknown> => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: entries.map((entry) => ({
+      '@type': 'Question',
+      name: entry.question,
+      acceptedAnswer: { '@type': 'Answer', text: stripHtml(entry.answerHtml) },
+    })),
+  };
+};
+
+/**
+ * Static FAQ markup for the prerendered body. Plain semantic HTML — no
+ * classes/styles on purpose: it exists for crawlers and no-JS readers and
+ * is replaced wholesale when React mounts into `#root`.
+ */
+export const faqSectionHtml = (entries: FaqEntry[]): string => {
+  const items = entries
+    .map((entry) => {
+      const anchor = entry.id ? ` id="${entry.id}"` : '';
+      return `<h3${anchor}>${entry.question}</h3>\n${entry.answerHtml}`;
+    })
+    .join('\n');
+  return `<section aria-label="FAQ">\n<h2>FAQ</h2>\n${items}\n</section>`;
 };
 
 // ---- Route → meta map: the prerender route list + per-page head ----
@@ -131,10 +183,14 @@ export const ROUTE_META: Record<string, PageMetaInput> = {
     title: 'Withdrawals | Lido',
     description:
       'Request stETH or wstETH withdrawal to ETH from the Lido protocol.',
+    faq: REQUEST_FAQ,
+    jsonLd: faqPageJsonLd(REQUEST_FAQ),
   },
   '/withdrawals/claim': {
     title: 'Withdrawals | Lido',
     description: 'Claim ETH from completed Lido withdrawal requests.',
+    faq: CLAIM_FAQ,
+    jsonLd: faqPageJsonLd(CLAIM_FAQ),
   },
   '/rewards': {
     title: 'Track your Ethereum staking rewards | Lido',
