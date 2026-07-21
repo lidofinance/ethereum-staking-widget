@@ -46,6 +46,12 @@ export const BASE_ALLOCATION_LABEL_ALLOWLIST = [
   'usdt0',
   'weth',
   'wsteth',
+  'ggv',
+  'boring',
+  'queue',
+  'susde',
+  'withdrawal',
+  'requests',
 ] as const;
 
 export const getAllocationLabelAllowlist = (
