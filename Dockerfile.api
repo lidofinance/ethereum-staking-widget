@@ -1,5 +1,10 @@
 # API image: the Fastify server (server/ workspace). Secrets (RPC URLs)
 # arrive via Vault Agent / container env — nothing is baked at build time.
+#
+# Runtime layout (WORKDIR /app/server, `node dist/index.js`, port 3001)
+# deliberately matches the simple-staking-widget PoC image: both are
+# deployed by the SAME `staking-widget` helm release, so command/port
+# expectations in the chart values must keep working unchanged.
 
 FROM node:24-alpine AS builder
 WORKDIR /app
@@ -28,9 +33,11 @@ COPY server/package.json server/package.json
 RUN HUSKY=0 yarn workspaces focus api --production && yarn cache clean
 
 COPY --from=builder /app/server/dist server/dist
-# build-info.json is read by the metrics module at runtime.
+# build-info.json is read by the metrics module (also inlined into the
+# bundle at build; kept on disk for parity/debugging).
 COPY build-info.json ./
 
 USER node
-EXPOSE 8080
-CMD ["node", "server/dist/index.js"]
+WORKDIR /app/server
+EXPOSE 3001
+CMD ["node", "dist/index.js"]
