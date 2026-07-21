@@ -145,7 +145,7 @@ const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.entries(
         [CONTRACT_NAMES.L2stETH]: steth,
         [CONTRACT_NAMES.L2wstETH]: wsteth,
       },
-    } as NetworkConfig;
+    };
     return acc;
   },
   {} as Record<string, NetworkConfig>,

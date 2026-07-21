@@ -9,13 +9,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Enable corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Run lint
         run: yarn lint
@@ -25,13 +28,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Enable corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Check types
         run: yarn types
@@ -41,13 +47,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Enable corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Run unit tests
         run: yarn test:unit

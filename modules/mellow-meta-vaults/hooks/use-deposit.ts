@@ -64,10 +64,9 @@ export const useDeposit = <DepositQueueToken extends string>({
         // Both async and sync deposit queue ABIs expose an identical `deposit(assets, referral, merkleProof)`
         // signature. Casting to the sync variant gives accurate call-site types while avoiding the
         // uncallable union that TypeScript produces when `depositQueue` is `Async | Sync`.
-        const depositFn = depositQueue.write
-          .deposit as SyncDepositQueueWritableContract['write']['deposit'];
-        const estimateDepositGasFn = depositQueue.estimateGas
-          .deposit as SyncDepositQueueWritableContract['estimateGas']['deposit'];
+        const depositFn: SyncDepositQueueWritableContract['write']['deposit'] =
+          depositQueue.write.deposit;
+        const estimateDepositGasFn = depositQueue.estimateGas.deposit;
 
         const depositTokenContract = getContract({
           address: tokenAddress,

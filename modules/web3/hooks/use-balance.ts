@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';

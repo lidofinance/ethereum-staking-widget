@@ -63,6 +63,7 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
       chainId: core.chainId,
       core,
       l2: new LidoSDKL2({ core }),
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- rule false positive: number is not a valid index for the CHAINS-keyed map without the assertion
       isL2: !!LIDO_L2_CONTRACT_ADDRESSES[sdkChainId as CHAINS],
     };
   }, [publicClient, sdkChainId, walletClient]);

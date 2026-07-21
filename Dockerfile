@@ -1,14 +1,17 @@
 # build env
 FROM node:24-alpine AS build
 
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable
+
 WORKDIR /app
 
 RUN apk add --no-cache git=~2
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock .yarnrc.yml ./
 # copy with validate_addresses JSON file
-# COPY package.json yarn.lock validate_addresses.example.json ./
+# COPY package.json yarn.lock .yarnrc.yml validate_addresses.example.json ./
 
-RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
+RUN yarn install --immutable --mode=skip-build && yarn cache clean --all
 COPY . .
 RUN NODE_NO_BUILD_DYNAMICS=true yarn build
 # public/runtime is used to inject runtime vars; it should exist and user node should have write access there for it
@@ -22,17 +25,21 @@ ARG SUPPORTED_CHAINS="1"
 ARG DEFAULT_CHAIN="1"
 
 ENV NEXT_TELEMETRY_DISABLED=1 \
+  COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
   BASE_PATH=$BASE_PATH \
   SUPPORTED_CHAINS=$SUPPORTED_CHAINS \
   DEFAULT_CHAIN=$DEFAULT_CHAIN
 
 WORKDIR /app
-RUN apk add --no-cache curl=~8 
-    
+RUN apk add --no-cache curl=~8 && corepack enable
+
 COPY --from=build /app /app
 RUN chown -R node:node /app/.next
 
 USER node
+# pre-cache the yarn version pinned in packageManager so `yarn start` needs no network
+RUN yarn --version
+
 EXPOSE 3000
 
 HEALTHCHECK --interval=10s --timeout=3s \
