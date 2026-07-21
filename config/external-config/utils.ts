@@ -1,9 +1,6 @@
 import invariant from 'tiny-invariant';
-import { config } from 'config';
 
-import { ManifestSchema, ManifestConfigPages } from './validate';
-
-import type { Manifest, ManifestConfigPage } from './types';
+import { ManifestSchema } from './validate';
 
 import FallbackLocalManifest from 'IPFS.json';
 
@@ -23,17 +20,6 @@ export const getLocalFallbackManifest = () => {
   return fallbackParsing.data;
 };
 
-export const shouldRedirectToRoot = (
-  currentPath: string,
-  manifest: Manifest | null,
-): boolean => {
-  const { defaultChain } = config;
-  const chainSettings = manifest?.[`${defaultChain}`];
-  const pages = chainSettings?.config?.pages;
-  const isDisabled =
-    !!pages?.[currentPath as ManifestConfigPage]?.shouldDisable;
-  // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
-  const isBuild = process.env.npm_lifecycle_event === 'build';
-
-  return currentPath !== ManifestConfigPages.Stake && isDisabled && !isBuild;
-};
+// `shouldRedirectToRoot` was removed with getStaticProps: manifest-driven
+// page disabling is runtime-only now (Navigation + ExternalForbiddenRoute
+// providers read the same external config on the client).

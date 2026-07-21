@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'eslint/config';
 import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
-import nextPlugin from '@next/eslint-plugin-next';
 import prettierConfig from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
@@ -27,7 +26,7 @@ const ALL_FILES = ['**/*.{js,mjs,ts,tsx,mts,cts}'];
 export default defineConfig(
   includeIgnoreFile(gitignorePath),
   {
-    ignores: ['public/**', '**/*.cjs'],
+    ignores: ['public/**', '**/*.cjs', 'dist/**', 'server/dist/**'],
   },
   {
     files: ALL_FILES,
@@ -36,7 +35,6 @@ export default defineConfig(
       tseslint.configs.recommended,
       reactPlugin.configs.flat.recommended,
       jsxA11y.flatConfigs.recommended,
-      nextPlugin.configs.recommended,
     ],
     languageOptions: {
       globals: {
@@ -217,7 +215,6 @@ export default defineConfig(
       'react/display-name': 'off',
       'jsx-a11y/no-autofocus': 'off',
       'jsx-a11y/anchor-is-valid': 'off',
-      '@next/next/no-img-element': 'off',
       'no-console': ['warn', { allow: ['warn', 'error', 'info', 'debug'] }],
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -257,6 +254,15 @@ export default defineConfig(
           ],
         },
       ],
+    },
+  },
+  // The api workspace imports framework-neutral repo-root modules (ABIs,
+  // config/networks, earn fetchers) via tsconfig paths; the import resolver
+  // sees those as imports of the root package itself and misflags them.
+  {
+    files: ['server/**'],
+    rules: {
+      'import/no-extraneous-dependencies': 'off',
     },
   },
   // loosened rules for tests and stories (from @lidofinance/eslint-config)

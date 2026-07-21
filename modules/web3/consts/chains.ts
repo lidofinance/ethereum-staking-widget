@@ -1,9 +1,9 @@
 import * as wagmiChains from 'wagmi/chains';
 import { Chain } from 'wagmi/chains';
 
-import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
-import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
-import { ReactComponent as UnichainLogo } from 'assets/icons/chain-toggler/unichain.svg';
+import OptimismLogo from 'assets/icons/chain-toggler/optimism.svg?react';
+import EthereumMainnetLogo from 'assets/icons/chain-toggler/mainnet.svg?react';
+import UnichainLogo from 'assets/icons/chain-toggler/unichain.svg?react';
 
 import { CHAINS } from 'consts/chains';
 
@@ -61,7 +61,8 @@ export const CHAIN_MAP = new Map<number, DAPP_CHAIN_TYPE>([
 
 export const getChainTypeByChainId = (
   chainId?: number,
-): DAPP_CHAIN_TYPE | null => (chainId ? CHAIN_MAP.get(chainId) ?? null : null);
+): DAPP_CHAIN_TYPE | null =>
+  chainId ? (CHAIN_MAP.get(chainId) ?? null) : null;
 
 // Ethereum example:
 // - Ethereum

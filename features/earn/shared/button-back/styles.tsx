@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { LocalLink } from 'shared/components/local-link';
-import { ReactComponent as ChevronLeft } from 'assets/icons/chevron-left.svg';
+import ChevronLeft from 'assets/icons/chevron-left.svg?react';
 
 export const LocalLinkStyled = styled(LocalLink)`
   display: inline-flex;

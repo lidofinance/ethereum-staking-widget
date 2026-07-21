@@ -1,0 +1,36 @@
+# API image: the Fastify server (server/ workspace). Secrets (RPC URLs)
+# arrive via Vault Agent / container env — nothing is baked at build time.
+
+FROM node:24-alpine AS builder
+WORKDIR /app
+
+RUN corepack enable
+
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY server/package.json server/package.json
+RUN HUSKY=0 yarn install --immutable
+
+COPY . .
+# esbuild bundles server/src + the framework-neutral repo-root modules it
+# imports (ABIs, networks/*.json, earn fetchers) into a single ESM file;
+# node_modules stay external.
+RUN yarn workspace api build
+
+FROM node:24-alpine AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+
+RUN corepack enable
+
+# Production node_modules only (the esbuild bundle keeps packages external).
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY server/package.json server/package.json
+RUN HUSKY=0 yarn workspaces focus api --production && yarn cache clean
+
+COPY --from=builder /app/server/dist server/dist
+# build-info.json is read by the metrics module at runtime.
+COPY build-info.json ./
+
+USER node
+EXPOSE 8080
+CMD ["node", "server/dist/index.js"]

@@ -6,7 +6,7 @@ import {
   useCallback,
 } from 'react';
 
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { config } from 'config';
 import invariant from 'tiny-invariant';
 import {
@@ -14,6 +14,7 @@ import {
   validateAddressLocally,
 } from 'utils/address-validation';
 import { useApiAddressValidation } from 'shared/hooks/use-api-address-validation';
+import { standardFetcher } from 'utils/standardFetcher';
 import { Address } from 'viem';
 
 type AddressValidationContextType = {
@@ -146,7 +147,7 @@ export const useAddressValidation = () => {
 
 export const AddressValidationProvider = ({
   children,
-  validationFile,
+  validationFile: validationFileProp,
 }: {
   children: ReactNode;
   validationFile?: AddressValidationFile;
@@ -155,6 +156,25 @@ export const AddressValidationProvider = ({
   // Tracks UI state, can be reset
   const [isValidAddress, setIsValidAddress] = useState(true);
   const queryClient = useQueryClient();
+
+  // In the Next.js app the file was read from the pod FS in getStaticProps
+  // and injected as a page prop. The SPA has no build-time props, so when
+  // the prop is absent we fetch the same data from the api pod (which reads
+  // VALIDATION_FILE_PATH — see server/src/routes/validation-file.ts).
+  // `config.validationFilePath` in window-env signals a file is configured.
+  const { data: fetchedValidationFile } = useQuery<AddressValidationFile>({
+    queryKey: ['validation-file'],
+    enabled:
+      !validationFileProp && !config.ipfsMode && !!config.validationFilePath,
+    staleTime: Infinity,
+    retry: 1,
+    queryFn: () =>
+      standardFetcher<AddressValidationFile>('/api/validation-file', {
+        headers: { Accept: 'application/json' },
+      }),
+  });
+
+  const validationFile = validationFileProp ?? fetchedValidationFile;
 
   // File validation query (works independently of API settings)
   const validateAddressFile = useCallback(

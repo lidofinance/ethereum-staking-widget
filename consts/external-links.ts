@@ -9,16 +9,17 @@ export const OPEN_OCEAN_REFERRAL_ADDRESS =
 export const GITHUB_RAW_MAIN_PATH =
   'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main';
 
-// for dev and local testing you can set NEXT_PUBLIC_DANGEROUS_DEV_ONLY_OVERRIDE_IPFS_CONFIG_PATH to 'http://localhost:3000/runtime/IPFS.json' and have file at /public/runtime/IPFS.json
-// This is dangerous behavior so not usual env delivery is used and invariant is present
+// for dev and local testing you can set VITE_DANGEROUS_DEV_ONLY_OVERRIDE_IPFS_CONFIG_PATH
+// to 'http://localhost:3000/runtime/IPFS.json' and have file at /public/runtime/IPFS.json
+// This is dangerous behavior so not usual env delivery is used and invariant
+// is present. (Was NEXT_PUBLIC_* — Vite inlines import.meta.env at build.)
+const IPFS_MANIFEST_URL_OVERRIDE = import.meta.env
+  .VITE_DANGEROUS_DEV_ONLY_OVERRIDE_IPFS_CONFIG_PATH as string | undefined;
+
 export const IPFS_MANIFEST_URL =
-  process.env.NEXT_PUBLIC_DANGEROUS_DEV_ONLY_OVERRIDE_IPFS_CONFIG_PATH ||
-  GITHUB_RAW_MAIN_PATH + '/IPFS.json';
+  IPFS_MANIFEST_URL_OVERRIDE || GITHUB_RAW_MAIN_PATH + '/IPFS.json';
 
 invariant(
-  !(
-    !config.developmentMode &&
-    process.env.NEXT_PUBLIC_DANGEROUS_DEV_ONLY_OVERRIDE_IPFS_CONFIG_PATH
-  ),
+  !(!config.developmentMode && IPFS_MANIFEST_URL_OVERRIDE),
   'Overriding IPFS config path is only allowed in development mode',
 );

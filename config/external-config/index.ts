@@ -11,11 +11,7 @@ export type {
   ManifestConfigDexIntegration,
   ManifestConfigEarnVault,
 } from './types';
-export {
-  getManifestKey,
-  getLocalFallbackManifest,
-  shouldRedirectToRoot,
-} from './utils';
+export { getManifestKey, getLocalFallbackManifest } from './utils';
 export {
   ManifestSchema,
   ManifestConfigPages,
