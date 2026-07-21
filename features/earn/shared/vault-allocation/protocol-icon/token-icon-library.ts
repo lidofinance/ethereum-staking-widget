@@ -30,6 +30,7 @@ import { ReactComponent as StethIcon } from 'assets/earn/allocation/token/steth.
 import { ReactComponent as StrethIcon } from 'assets/earn/allocation/token/streth.svg';
 import { ReactComponent as SyrupUsdgIcon } from 'assets/earn/allocation/token/syrup-usdg.svg';
 import { ReactComponent as SyrupUsdtIcon } from 'assets/earn/allocation/token/syrup-usdt.svg';
+import { ReactComponent as SyrupUsdcIcon } from 'assets/earn/allocation/token/syrup-usdc.svg';
 import { ReactComponent as FallbackIcon } from 'assets/earn/allocation/token/fallback.svg';
 import { ReactComponent as TreeIcon } from 'assets/earn/allocation/token/tree.svg';
 import { ReactComponent as UsdcIcon } from 'assets/earn/allocation/token/usdc.svg';
@@ -40,6 +41,8 @@ import { ReactComponent as UsdtIcon } from 'assets/earn/allocation/token/usdt.sv
 import { ReactComponent as WethIcon } from 'assets/earn/allocation/token/weth.svg';
 import { ReactComponent as WstethIcon } from 'assets/earn/allocation/token/wsteth.svg';
 import { ReactComponent as YfiIcon } from 'assets/earn/allocation/token/yfi.svg';
+import { ReactComponent as PtSrusdeIcon } from 'assets/earn/allocation/token/pt-srusde.svg';
+import { ReactComponent as SrusdeIcon } from 'assets/earn/allocation/token/srusde.svg';
 
 type TokenIcon = FC<ComponentProps<'svg'>>;
 
@@ -75,6 +78,7 @@ export const ALLOCATION_TOKEN_ICONS = createIconLibrary({
   streth: StrethIcon,
   'syrup-usdg': SyrupUsdgIcon,
   'syrup-usdt': SyrupUsdtIcon,
+  'syrup-usdc': SyrupUsdcIcon,
   tree: TreeIcon,
   usdc: UsdcIcon,
   usde: UsdeIcon,
@@ -84,6 +88,8 @@ export const ALLOCATION_TOKEN_ICONS = createIconLibrary({
   weth: WethIcon,
   wsteth: WstethIcon,
   yfi: YfiIcon,
+  srusde: SrusdeIcon,
+  'pt-srusde': PtSrusdeIcon,
 });
 
 export const getAllocationTokenIcon = (token?: string): TokenIcon => {

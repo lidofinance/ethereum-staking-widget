@@ -2,6 +2,7 @@ import type { ComponentProps, FC } from 'react';
 
 import { getOwnProperty } from 'utils/get-own-property';
 
+import { ReactComponent as WstethIcon } from 'assets/earn/allocation/token/wsteth.svg';
 import { ReactComponent as AaveIcon } from 'assets/earn/allocation/protocol/aave.svg';
 import { ReactComponent as AuraIcon } from 'assets/earn/allocation/protocol/aura.svg';
 import { ReactComponent as AxisIcon } from 'assets/earn/allocation/protocol/axis.svg';
@@ -24,7 +25,7 @@ import { ReactComponent as TreehouseIcon } from 'assets/earn/allocation/protocol
 import { ReactComponent as TwyneIcon } from 'assets/earn/allocation/protocol/twyne.svg';
 import { ReactComponent as UniswapIcon } from 'assets/earn/allocation/protocol/uniswap.svg';
 import { ReactComponent as VedaIcon } from 'assets/earn/allocation/protocol/veda.svg';
-import { ReactComponent as WstethIcon } from 'assets/earn/allocation/token/wsteth.svg';
+import { ReactComponent as NethermindIcon } from 'assets/earn/allocation/protocol/nethermind.svg';
 
 export type AllocationIcon = FC<ComponentProps<'svg'>>;
 
@@ -59,6 +60,7 @@ export const ALLOCATION_PROTOCOL_ICONS = createIconLibrary({
   twyne: TwyneIcon,
   uniswap: UniswapIcon,
   veda: VedaIcon,
+  nethermind: NethermindIcon,
 });
 
 export const getAllocationProtocolIcon = (
