@@ -19,8 +19,12 @@ SELF_ORIGIN="${SELF_ORIGIN:-}"
 if [ -z "$SELF_ORIGIN" ]; then
   echo "entrypoint: WARNING: SELF_ORIGIN is empty — head/sitemap URLs will be relative" >&2
 fi
+# NB: the newline pattern must be a literal — `$(printf '\n')` strips the
+# trailing newline and degrades the pattern to `*""*`, matching EVERYTHING.
+NL='
+'
 case "$SELF_ORIGIN" in
-  *'|'* | *'&'* | *"$(printf '\n')"*)
+  *'|'* | *'&'* | *"$NL"*)
     echo "entrypoint: ERROR: SELF_ORIGIN contains forbidden characters (| & or newline)" >&2
     exit 1
     ;;
