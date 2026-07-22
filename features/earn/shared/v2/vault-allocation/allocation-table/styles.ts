@@ -49,7 +49,7 @@ export const ThWithTipStyled = styled(ThStyled)`
 `;
 
 export const TrWithShiftStyled = styled(Tr)<{ $isLast: boolean }>`
-  & > td:first-child {
+  & > td {
     position: relative;
     border-bottom-color: ${({ $isLast }) =>
       $isLast ? 'var(--lido-color-borderLight)' : 'transparent'};
@@ -60,9 +60,14 @@ export const TrWithShiftStyled = styled(Tr)<{ $isLast: boolean }>`
       position: absolute;
       right: 0;
       bottom: 0;
-      left: ${({ theme }) => theme.spaceMap.xxl}px;
-      border-bottom: 1px solid var(--lido-color-borderLight);
+      left: 0;
+      height: 1px;
+      background: var(--lido-color-borderLight);
     }
+  }
+
+  & > td:first-child::after {
+    left: ${({ theme }) => theme.spaceMap.xxl}px;
   }
 `;
 
