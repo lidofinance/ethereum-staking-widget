@@ -2,7 +2,7 @@ import type { ComponentProps, FC } from 'react';
 
 import { getOwnProperty } from 'utils/get-own-property';
 
-import { ReactComponent as WstethIcon } from 'assets/earn/allocation/token/wsteth.svg';
+import { ReactComponent as WstethIcon } from 'assets/earn/allocation/protocol/wsteth.svg';
 import { ReactComponent as AaveIcon } from 'assets/earn/allocation/protocol/aave.svg';
 import { ReactComponent as AuraIcon } from 'assets/earn/allocation/protocol/aura.svg';
 import { ReactComponent as AxisIcon } from 'assets/earn/allocation/protocol/axis.svg';
