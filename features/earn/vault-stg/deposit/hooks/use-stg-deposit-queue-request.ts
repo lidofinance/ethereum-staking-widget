@@ -6,8 +6,6 @@ import { useDappStatus } from 'modules/web3';
 import { getSTGDepositQueueContract } from '../../contracts';
 import type { STGDepositTokens } from '../form-context/types';
 
-type DepositRequest = [bigint, bigint]; // (timestamp, assets)
-
 // Retrieves deposit queue information for a specific token:
 // - The latest deposit request for the connected address, including:
 //   - Creation timestamp
@@ -30,9 +28,9 @@ export const useSTGDepositQueueRequest = (token: STGDepositTokens) => {
 
       const contract = getSTGDepositQueueContract({ publicClient, token });
       const [depositRequest, claimableShares] = await Promise.all([
-        (await contract.read.requestOf([address])) as DepositRequest,
-        await contract.read.claimableOf([address]),
-      ]);
+        contract.read.requestOf([address]),
+        contract.read.claimableOf([address]),
+      ] as const);
       return { depositRequest, claimableShares };
     },
     enabled: isEnabled,

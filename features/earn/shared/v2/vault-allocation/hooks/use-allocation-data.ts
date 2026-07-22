@@ -64,14 +64,13 @@ type DiagnosticAllocationData = {
 
 // Entries that match these categories are accumulated into the
 // Available / Pending / Others rows shown in the allocation table.
-const ALLOCATION_SUMMARY_KEYS = ['available', 'pending', 'others'] as const;
 const NESTED_ALLOCATION_SUMMARY_KEYS = ['pending', 'others'] as const;
 const FLAT_ALLOCATION_SUMMARY_KEYS = [
   'pending',
   'others',
   'available',
 ] as const;
-type AllocationSummaryKey = (typeof ALLOCATION_SUMMARY_KEYS)[number];
+type AllocationSummaryKey = (typeof FLAT_ALLOCATION_SUMMARY_KEYS)[number];
 type AllocationSummaryRows = Record<
   AllocationSummaryKey,
   { allocation: number; tvlUSD: number }

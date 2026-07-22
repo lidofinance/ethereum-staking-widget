@@ -16,5 +16,6 @@ export const CHAINS_COLORS: {
 export const CHAIN_COLOR_FALLBACK = '#7a8aa0';
 
 export const getChainColor = (chainId: number): string => {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- rule false positive: number is not a valid index for the CHAINS-keyed map without the assertion
   return CHAINS_COLORS[chainId as CHAINS] || CHAIN_COLOR_FALLBACK;
 };
