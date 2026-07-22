@@ -49,6 +49,7 @@ export const BASE_ALLOCATION_LABEL_ALLOWLIST = [
   'ggv',
   'boring',
   'queue',
+  'boringqueue',
   'susde',
   'withdrawal',
   'requests',
