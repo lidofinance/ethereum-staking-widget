@@ -48,7 +48,23 @@ export const ThWithTipStyled = styled(ThStyled)`
   }
 `;
 
-export const TrWithShiftStyled = styled(Tr)``;
+export const TrWithShiftStyled = styled(Tr)<{ $isLast: boolean }>`
+  & > td:first-child {
+    position: relative;
+    border-bottom-color: ${({ $isLast }) =>
+      $isLast ? 'var(--lido-color-borderLight)' : 'transparent'};
+
+    &::after {
+      content: '';
+      display: ${({ $isLast }) => ($isLast ? 'none' : 'block')};
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: ${({ theme }) => theme.spaceMap.xxl}px;
+      border-bottom: 1px solid var(--lido-color-borderLight);
+    }
+  }
+`;
 
 export const TdStyled = styled(Td)`
   font-weight: 400;

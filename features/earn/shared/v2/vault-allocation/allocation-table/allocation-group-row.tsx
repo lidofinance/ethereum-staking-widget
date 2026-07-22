@@ -54,8 +54,11 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
       </Tr>
       {isExpandable &&
         open &&
-        group.items.map((item) => (
-          <TrWithShiftStyled key={`${item.id}-${item.chain}`}>
+        group.items.map((item, index) => (
+          <TrWithShiftStyled
+            key={`${item.id}-${item.chain}`}
+            $isLast={index === group.items.length - 1}
+          >
             <TdWithIconStyled>
               <ProtocolIcon
                 mainIcon={item.icon ? <item.icon /> : null}
