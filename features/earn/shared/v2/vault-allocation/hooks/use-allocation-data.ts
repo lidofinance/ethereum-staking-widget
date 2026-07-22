@@ -65,6 +65,12 @@ type DiagnosticAllocationData = {
 // Entries that match these categories are accumulated into the
 // Available / Pending / Others rows shown in the allocation table.
 const ALLOCATION_SUMMARY_KEYS = ['available', 'pending', 'others'] as const;
+const NESTED_ALLOCATION_SUMMARY_KEYS = ['pending', 'others'] as const;
+const FLAT_ALLOCATION_SUMMARY_KEYS = [
+  'pending',
+  'others',
+  'available',
+] as const;
 type AllocationSummaryKey = (typeof ALLOCATION_SUMMARY_KEYS)[number];
 type AllocationSummaryRows = Record<
   AllocationSummaryKey,
@@ -208,7 +214,7 @@ const appendNestedSummaryRows = (
   items: AllocationSubItem[],
   summaryRows: AllocationSummaryRows,
 ): void => {
-  for (const key of ALLOCATION_SUMMARY_KEYS) {
+  for (const key of NESTED_ALLOCATION_SUMMARY_KEYS) {
     const summary = summaryRows[key];
 
     if (summary.allocation > 0) {
@@ -232,7 +238,7 @@ const appendFlatSummaryRows = (
   items: FlatAllocationItem[],
   summaryRows: AllocationSummaryRows,
 ): void => {
-  for (const key of ALLOCATION_SUMMARY_KEYS) {
+  for (const key of FLAT_ALLOCATION_SUMMARY_KEYS) {
     const summary = summaryRows[key];
 
     if (summary.allocation > 0) {
@@ -254,9 +260,12 @@ const parseNestedGroup = (
   tvlUSD: number,
   labelAllowlist: ReadonlySet<string>,
   hiddenAllocationIds: ReadonlySet<string>,
+  topLevelSummaryRows: AllocationSummaryRows,
 ): AllocationGroup => {
   const summaryRows = createAllocationSummaryRows();
   const knownItems: AllocationSubItem[] = [];
+  let availableAllocation = 0;
+  let availableTvlUSD = 0;
 
   for (const sub of alloc.allocations) {
     // Nested sub-allocations only carry a share, so derive their TVL from the
@@ -269,12 +278,27 @@ const parseNestedGroup = (
     );
 
     if (disposition.type === 'summary') {
-      addToAllocationSummaryRow(
-        summaryRows,
-        disposition.key,
-        sub.sharePercent,
-        subTvl,
-      );
+      if (disposition.key === 'available') {
+        // A nested share is relative to its parent subvault. Convert it to the
+        // whole-vault share before moving it to the flat Available row.
+        const topLevelShare = alloc.sharePercent * (sub.sharePercent / 100);
+
+        addToAllocationSummaryRow(
+          topLevelSummaryRows,
+          'available',
+          topLevelShare,
+          subTvl,
+        );
+        availableAllocation += topLevelShare;
+        availableTvlUSD += subTvl;
+      } else {
+        addToAllocationSummaryRow(
+          summaryRows,
+          disposition.key,
+          sub.sharePercent,
+          subTvl,
+        );
+      }
     } else if (disposition.type === 'others') {
       moveAllocationToOthers(summaryRows, sub, subTvl, disposition.reason);
     } else if (disposition.type === 'visible') {
@@ -294,8 +318,8 @@ const parseNestedGroup = (
 
   return {
     name: alloc.label,
-    allocation: alloc.sharePercent,
-    tvlUSD,
+    allocation: alloc.sharePercent - availableAllocation,
+    tvlUSD: tvlUSD - availableTvlUSD,
     items: limitedItems,
     info: getOwnProperty(SUBVAULTS_TIP_BY_ID, alloc.id),
   };
@@ -419,6 +443,7 @@ export const useAllocationData = (
           tvlUSD,
           labelAllowlist,
           hiddenIds,
+          topLevelSummaryRows,
         );
 
         if (isVisible(group.allocation)) {

@@ -177,13 +177,13 @@ describe('useAllocationData grouping and sorting', () => {
         isSummary,
       })),
     ).toEqual([
-      { name: 'Available', allocation: 0.02, isSummary: true },
       { name: 'Pending', allocation: 0.03, isSummary: true },
       { name: 'Others', allocation: 0.04, isSummary: true },
+      { name: 'Available', allocation: 0.02, isSummary: true },
     ]);
   });
 
-  it('shows nested summary rows below the percent display threshold', () => {
+  it('moves nested Available to the flat summary row', () => {
     const result = getAllocationData(
       createData([
         createFlatAllocation({
@@ -214,16 +214,69 @@ describe('useAllocationData grouping and sorting', () => {
 
     expect(result.groups[0]?.items).toEqual([
       expect.objectContaining({
-        label: 'Available',
-        isSummary: true,
-        allocation: 0.02,
-      }),
-      expect.objectContaining({
         label: 'Others',
         isSummary: true,
         allocation: 0.04,
       }),
     ]);
+    expect(result.groups[0]).toEqual(
+      expect.objectContaining({ allocation: 0.9998, tvlUSD: 99.98 }),
+    );
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Available',
+        isSummary: true,
+        allocation: 0.0002,
+        tvlUSD: 0.02,
+      }),
+    ]);
+  });
+
+  it('aggregates flat and nested Available allocations into one final row', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          id: 'flat-available',
+          sharePercent: 5,
+          category: 'token',
+          protocol: undefined,
+        }),
+        createFlatAllocation({
+          type: 'nested',
+          id: 'smaller-vault',
+          label: 'Smaller vault',
+          sharePercent: 20,
+          allocations: [
+            createNestedAllocation('nested-available-1', 10, {
+              category: 'token',
+              protocol: undefined,
+            }),
+          ],
+        }),
+        createFlatAllocation({
+          type: 'nested',
+          id: 'larger-vault',
+          label: 'Larger vault',
+          sharePercent: 30,
+          allocations: [
+            createNestedAllocation('nested-available-2', 20, {
+              category: 'token',
+              protocol: undefined,
+            }),
+          ],
+        }),
+      ]),
+    );
+
+    expect(result.groups.every((group) => group.items.length === 0)).toBe(true);
+    expect(result.flatItems).toHaveLength(1);
+    expect(result.flatItems?.at(-1)).toEqual(
+      expect.objectContaining({
+        name: 'Available',
+        allocation: 13,
+        tvlUSD: 130,
+      }),
+    );
   });
 
   it('shows top-level Others produced by an invisible nested group', () => {
@@ -265,8 +318,8 @@ describe('useAllocationData grouping and sorting', () => {
     expect(
       result.flatItems?.map(({ name, allocation }) => ({ name, allocation })),
     ).toEqual([
-      { name: 'Available', allocation: 0.02 },
       { name: 'Others', allocation: 0.08 },
+      { name: 'Available', allocation: 0.02 },
     ]);
   });
 
@@ -298,14 +351,23 @@ describe('useAllocationData grouping and sorting', () => {
     );
 
     expect(result.groups.map(({ name }) => name)).toEqual([
-      'Larger vault',
       'Smaller vault',
+      'Larger vault',
     ]);
-    expect(result.groups[0]?.items.map(({ label }) => label)).toEqual([
+    expect(result.groups[1]?.items.map(({ label }) => label)).toEqual([
       'large',
       'medium',
       'small',
-      'Available',
+    ]);
+    expect(result.groups[1]).toEqual(
+      expect.objectContaining({ allocation: 18, tvlUSD: 60 }),
+    );
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Available',
+        allocation: 12,
+        tvlUSD: 40,
+      }),
     ]);
   });
 
