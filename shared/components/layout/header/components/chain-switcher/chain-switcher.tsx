@@ -1,5 +1,5 @@
 import { FC, useState, useMemo, createElement, ComponentType } from 'react';
-import { Link } from '@lidofinance/lido-ui';
+import { Link, Loader } from '@lidofinance/lido-ui';
 import {
   CHAIN_ICONS_MAP,
   getPrettyChainName,
@@ -17,7 +17,6 @@ import {
   ChainSwitcherStyled,
   IconStyle,
   ArrowStyle,
-  LoaderStyled,
 } from './styles';
 
 type IconsMapType = Record<number, ChainOption>;
@@ -64,6 +63,7 @@ export const ChainSwitcher: FC = () => {
       <ChainSwitcherStyled
         data-testid={`currentChain=${chainId}`}
         $disabled={isLocked}
+        $loading={isSwitchChainPending}
         onClick={() => {
           if (!isLocked) {
             setOpened((prev) => !prev);
@@ -74,7 +74,7 @@ export const ChainSwitcher: FC = () => {
           {iconsMap[chainId].iconComponent}
         </IconStyle>
         {!isLocked && <ArrowStyle data-testid="canExpanded" $opened={opened} />}
-        {isSwitchChainPending && <LoaderStyled />}
+        {isSwitchChainPending && <Loader size="small" />}
       </ChainSwitcherStyled>
 
       {!isLocked && (
