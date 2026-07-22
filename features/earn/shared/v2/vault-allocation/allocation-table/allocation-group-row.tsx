@@ -13,9 +13,9 @@ import {
   ChevronWrapper,
   GroupTdStyled,
   GroupNameStyled,
+  NestedTdWithIconStyled,
   ProtocolNameStyled,
   TdNarrowStyled,
-  TdWithIconStyled,
   TrWithShiftStyled,
   ProtocolNamePercent,
 } from './styles';
@@ -59,7 +59,7 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
             key={`${item.id}-${item.chain}`}
             $isLast={index === group.items.length - 1}
           >
-            <TdWithIconStyled>
+            <NestedTdWithIconStyled>
               <ProtocolIcon
                 mainIcon={item.icon ? <item.icon /> : null}
                 badge={item.chain}
@@ -68,7 +68,7 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
                 {item.label}
                 {item.info && <VaultTip>{item.info}</VaultTip>}
               </ProtocolNameStyled>
-            </TdWithIconStyled>
+            </NestedTdWithIconStyled>
             <TdNarrowStyled align="right">
               {(!item.isSummary ||
                 item.allocation >= MIN_ALLOCATION_DISPLAY_PERCENT) && (

@@ -87,6 +87,11 @@ export const TdWithIconStyled = styled(TdStyled)`
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+`;
+
+export const NestedTdWithIconStyled = styled(TdWithIconStyled)`
+  & > div:first-child {
     margin-left: ${({ theme }) => theme.spaceMap.xxl}px;
   }
 `;
