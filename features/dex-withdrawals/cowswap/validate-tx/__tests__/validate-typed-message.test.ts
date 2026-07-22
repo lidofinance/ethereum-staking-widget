@@ -1,4 +1,3 @@
-/* eslint-disable func-style */
 /* eslint-disable import/no-extraneous-dependencies */
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
@@ -37,8 +36,6 @@ const SEPOLIA_STETH = sepoliaNetwork.contracts.lido.toLowerCase();
 const SEPOLIA_COW_SETTLEMENT =
   sepoliaNetwork.contracts.cowSettlement.toLowerCase();
 const SEPOLIA_WETH = sepoliaNetwork.contracts.weth.toLowerCase();
-
-sepoliaNetwork.contracts.cowVaultRelayer.toLowerCase();
 const SEPOLIA_FEE_RECIPIENT = sepoliaNetwork.contracts.daoAgent.toLowerCase();
 
 const ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
@@ -287,7 +284,7 @@ describe('validateSignTypedData', () => {
       const checksummed = '0xF39Fd6e51aad88F6f4ce6aB8827279cffFb92266';
       const result = await validateSignTypedData(
         buildTypedDataParams({ signer: checksummed }),
-        { chainId: CHAIN_MAINNET, signer: checksummed as `0x${string}` },
+        { chainId: CHAIN_MAINNET, signer: checksummed },
       );
       expect(result.allowed).toBe(true);
     });

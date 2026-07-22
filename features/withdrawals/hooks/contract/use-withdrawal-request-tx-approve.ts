@@ -1,5 +1,4 @@
 import { useMemo, useCallback } from 'react';
-import { Address } from 'viem';
 import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
@@ -45,7 +44,7 @@ export const useWithdrawalRequestTxApprove = ({
     needsApprove,
     isLoading: isUseApproveLoading,
     refetch: refetchAllowance,
-  } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
+  } = useWithdrawalApprove(amount ? amount : 0n, token, address);
   const hasEnoughAllowance = !!(allowance && !needsApprove);
 
   // “use the classic approve-then-withdraw flow” rather than “use an ERC-2612 permit”

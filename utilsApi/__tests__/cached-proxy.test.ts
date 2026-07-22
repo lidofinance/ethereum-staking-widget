@@ -17,11 +17,7 @@ describe('buildParams', () => {
   });
 
   it('filters out non-string values (eg. arrays)', () => {
-    const out = buildParams(
-      { a: '1', b: ['x', 'y'] as unknown as string },
-      false,
-      undefined,
-    );
+    const out = buildParams({ a: '1', b: ['x', 'y'] }, false, undefined);
     expect(out).not.toBeNull();
     expect(out?.get('a')).toBe('1');
     expect(out?.has('b')).toBe(false);

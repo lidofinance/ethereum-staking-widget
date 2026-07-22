@@ -79,7 +79,7 @@ export const useGGVCancelWithdraw = () => {
               throwOnError: false,
             });
             return txModalStages.success(
-              newBalance.data?.sharesBalance as bigint,
+              newBalance.data?.sharesBalance,
               txHash,
             );
           },

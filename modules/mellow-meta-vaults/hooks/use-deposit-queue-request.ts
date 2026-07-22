@@ -5,8 +5,6 @@ import { useDappStatus } from 'modules/web3';
 import { AsyncDepositQueueContract } from '../types/contracts';
 import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 
-type DepositRequest = [bigint, bigint]; // (timestamp, assets)
-
 // Retrieves deposit queue information for a specific token:
 // - The latest deposit request for the connected address, including:
 //   - Creation timestamp
@@ -38,9 +36,9 @@ export const useDepositQueueRequest = <DepositToken extends string>({
       invariant(address, 'No address provided');
 
       const [depositRequest, claimableShares] = await Promise.all([
-        (await depositQueue.read.requestOf([address])) as DepositRequest,
-        await depositQueue.read.claimableOf([address]),
-      ]);
+        depositQueue.read.requestOf([address]),
+        depositQueue.read.claimableOf([address]),
+      ] as const);
       return { depositRequest, claimableShares };
     },
     enabled: isEnabled,

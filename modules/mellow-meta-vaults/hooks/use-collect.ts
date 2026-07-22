@@ -73,11 +73,11 @@ export const useCollect = ({
     queryFn: async () => {
       invariant(publicClientMainnet, 'Public client is not available');
 
-      const response: CollectResponse = (await collector.read.collect([
+      const response: CollectResponse = await collector.read.collect([
         address, // account
         vault.address, // vault
         COLLECTOR_CONFIG, // config
-      ])) as CollectResponse;
+      ]);
 
       return {
         deposits: response.deposits,

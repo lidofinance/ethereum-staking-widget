@@ -9,7 +9,6 @@ import {
   WITHDRAWALS_PATH,
   WITHDRAWALS_REQUEST_PATH,
   WRAP_PATH,
-  REFERRAL_PATH,
 } from 'consts/urls';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
@@ -17,7 +16,6 @@ import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
 import { StakePage } from 'features/stake';
 import WrapPage from 'pages/wrap/[[...mode]]';
 import WithdrawalsPage from 'pages/withdrawals/[mode]';
-import ReferralPage from 'pages/referral';
 import RewardsPage from 'pages/rewards';
 import SettingsPage from 'pages/settings';
 
@@ -33,7 +31,6 @@ const IPFS_ROUTABLE_PAGES = [
   getPathWithoutFirstSlash(WRAP_PATH),
   getPathWithoutFirstSlash(WITHDRAWALS_PATH),
   getPathWithoutFirstSlash(REWARDS_PATH),
-  getPathWithoutFirstSlash(REFERRAL_PATH),
   getPathWithoutFirstSlash(SETTINGS_PATH),
 ];
 
@@ -93,11 +90,6 @@ export const HomePageIpfs: FC = () => {
 
     case getPathWithoutFirstSlash(REWARDS_PATH): {
       spaPage = <RewardsPage />;
-      break;
-    }
-
-    case getPathWithoutFirstSlash(REFERRAL_PATH): {
-      spaPage = <ReferralPage />;
       break;
     }
 

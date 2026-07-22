@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import type { Address } from 'viem';
 import { ButtonProps, useBreakpoint } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
@@ -48,7 +47,7 @@ export const Button: FC<ButtonProps> = (props) => {
             )
           )}
         </WalledButtonBalanceStyle>
-        <AddressBadge address={address as Address} />
+        <AddressBadge address={address} />
       </WalledButtonWrapperStyle>
     </WalledButtonStyle>
   );

@@ -156,7 +156,9 @@ export const useWeb3Transport = (
         };
       },
       {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- rule false positive: without the assertion the reduce accumulator infers as {} and indexing breaks
         transportMap: {} as Record<number, Transport>,
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- rule false positive: without the assertion the reduce accumulator infers as {} and indexing breaks
         setTransportMap: {} as Record<number, (t: Transport | null) => void>,
       },
     );

@@ -76,7 +76,7 @@ export const OTHER_TIP =
 export const PENDING_TIP =
   'The amount of tokens in the process of being deposited to the vault';
 
-const SUBVAULTS_WITH_TIP = ['earnusdc', 'ggv', 'streth'];
+export type SUBVAULTS_WITH_TIP = 'earnusdc' | 'ggv' | 'streth';
 const USDC_VAULT_TIP =
   'A strategy designed to amplify USD yield by combining low-risk and highly liquid stablecoin strategies with carefully selected DeFi strategies.';
 const GGV_VAULT_TIP =
@@ -85,7 +85,7 @@ const STRATEGY_VAULT_TIP =
   'A professionally curated strategy by Mellow, built around battle-tested DeFi protocols designed to perform steadily across all market conditions.';
 
 export const SUBVAULTS_TIP_BY_ID: {
-  [key in (typeof SUBVAULTS_WITH_TIP)[number]]: string;
+  [key in SUBVAULTS_WITH_TIP]: string;
 } = {
   earnusdc: USDC_VAULT_TIP,
   ggv: GGV_VAULT_TIP,

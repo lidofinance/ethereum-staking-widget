@@ -14,11 +14,7 @@ import {
   loadValidationFile,
 } from './load-validation-file';
 
-import type {
-  Manifest,
-  ManifestConfigPage,
-  ManifestEntry,
-} from 'config/external-config';
+import type { ManifestConfigPage, ManifestEntry } from 'config/external-config';
 
 type PreviewData = { manifest: ManifestEntry };
 
@@ -57,12 +53,7 @@ export const getDefaultStaticProps = <
       }
     >;
 
-    if (
-      shouldRedirectToRoot(
-        currentPath,
-        ___prefetch_manifest___ as Manifest | null,
-      )
-    ) {
+    if (shouldRedirectToRoot(currentPath, ___prefetch_manifest___)) {
       result = {
         ...base,
         redirect: { destination: '/', permanent: false } as Redirect,
