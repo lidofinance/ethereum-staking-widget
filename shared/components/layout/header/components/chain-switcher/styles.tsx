@@ -1,3 +1,4 @@
+import { Loader } from '@lidofinance/lido-ui';
 import styled, { css } from 'styled-components';
 
 export const ChainSwitcherWrapperStyled = styled.div`
@@ -47,12 +48,25 @@ export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
   }
 `;
 
-export const IconStyle = styled.span`
+export const LoaderStyled = styled(Loader).attrs({ size: 'small' })`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+export const IconStyle = styled.span<{ $loading?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: stretch;
   justify-self: stretch;
+
+  ${({ $loading }) =>
+    $loading &&
+    css`
+      opacity: 0.5;
+    `}
 `;
 
 export const ArrowStyle = styled.div<{ $opened: boolean }>`

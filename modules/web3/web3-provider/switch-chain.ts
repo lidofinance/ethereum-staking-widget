@@ -4,6 +4,7 @@ import { useSwitchChain as useWagmiSwitchChain } from 'wagmi';
 import { CHAIN_SWITCH_TIMEOUT } from '../consts';
 import { UserRejectedRequestError } from 'viem';
 import { ToastError } from '@lidofinance/lido-ui';
+import { useIsSafeWallet } from '../hooks';
 
 export class SwitchChainTimeoutError extends Error {
   constructor() {
@@ -12,7 +13,11 @@ export class SwitchChainTimeoutError extends Error {
 }
 
 export const useSwitchChain = () => {
-  const { mutateAsync, reset, ...rest } = useWagmiSwitchChain();
+  const isSafeWallet = useIsSafeWallet();
+  const { mutateAsync, reset, ...rest } = useWagmiSwitchChain({
+    mutation: { retry: false },
+  });
+  const canSwitchChain = !isSafeWallet;
 
   const trySwitchChain = useCallback(
     async (chainId: number) => {
@@ -52,5 +57,5 @@ export const useSwitchChain = () => {
     },
     [mutateAsync, reset],
   );
-  return { ...rest, trySwitchChain };
+  return { ...rest, trySwitchChain, canSwitchChain };
 };

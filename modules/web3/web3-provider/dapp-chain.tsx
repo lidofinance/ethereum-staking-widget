@@ -36,6 +36,7 @@ type DappChainContextValue = {
   setChainId: React.Dispatch<React.SetStateAction<number>>;
   requestChangeChain: (newChainId: number) => void;
   isSwitchChainPending: boolean;
+  canSwitchChain: boolean;
   chainType: DAPP_CHAIN_TYPE;
 
   wagmiChain: Chain;
@@ -111,17 +112,25 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const { chainId: walletChainId, isConnected } = useConnection();
-  const { trySwitchChain, isPending: isSwitchChainPending } = useSwitchChain();
+  const {
+    trySwitchChain,
+    isPending: isSwitchChainPending,
+    canSwitchChain,
+  } = useSwitchChain();
   const [chainId, setChainId] = useState<number>(config.defaultChain);
   const requestChangeChain = useCallback(
     async (newChainId: number) => {
+      if (!canSwitchChain) {
+        return setChainId(newChainId);
+      }
+
       const { success } = await trySwitchChain(newChainId);
       // if the chain switch was unsuccessful, we still set the chainId to the newChainId
       if (!success) {
         return setChainId(newChainId);
       }
     },
-    [trySwitchChain],
+    [trySwitchChain, canSwitchChain],
   );
 
   useEffect(() => {
@@ -150,6 +159,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           chainType: getChainTypeByChainId(chainId) ?? DAPP_CHAIN_TYPE.Ethereum,
           requestChangeChain,
           isSwitchChainPending,
+          canSwitchChain,
           wagmiChain: wagmiChainMap[chainId],
           wagmiDefaultChain: wagmiChainMap[config.defaultChain],
           wagmiWalletChain: walletChainId
@@ -159,7 +169,13 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
           supportedChainIds: config.supportedChains.filter(isSDKSupportedChain),
         }),
-        [chainId, isSwitchChainPending, requestChangeChain, walletChainId],
+        [
+          canSwitchChain,
+          chainId,
+          isSwitchChainPending,
+          requestChangeChain,
+          walletChainId,
+        ],
       )}
     >
       <LidoSDKL2Provider>
@@ -178,17 +194,25 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const { chainId: walletChainId, isConnected } = useConnection();
-  const { trySwitchChain, isPending: isSwitchChainPending } = useSwitchChain();
+  const {
+    trySwitchChain,
+    isPending: isSwitchChainPending,
+    canSwitchChain,
+  } = useSwitchChain();
   const [chainId, setChainId] = useState<number>(config.defaultChain);
   const requestChangeChain = useCallback(
     async (newChainId: number) => {
+      if (!canSwitchChain) {
+        return setChainId(newChainId);
+      }
+
       const { success } = await trySwitchChain(newChainId);
       // if the chain switch was unsuccessful, we still set the chainId to the newChainId
       if (!success) {
         return setChainId(newChainId);
       }
     },
-    [trySwitchChain],
+    [trySwitchChain, canSwitchChain],
   );
 
   useEffect(() => {
@@ -217,6 +241,8 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
           chainType: DAPP_CHAIN_TYPE.Ethereum,
           requestChangeChain,
           isSwitchChainPending,
+          canSwitchChain,
+
           wagmiChain: wagmiChainMap[chainId],
           wagmiDefaultChain: wagmiChainMap[config.defaultChain],
           wagmiWalletChain: walletChainId
@@ -230,7 +256,13 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
               isSDKSupportedChain(chain) && !isSDKSupportedL2Chain(chain),
           ),
         }),
-        [chainId, isSwitchChainPending, requestChangeChain, walletChainId],
+        [
+          canSwitchChain,
+          chainId,
+          isSwitchChainPending,
+          requestChangeChain,
+          walletChainId,
+        ],
       )}
     >
       <LidoSDKProvider>

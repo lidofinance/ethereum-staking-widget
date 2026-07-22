@@ -1,6 +1,11 @@
 import { FC, useState, useMemo, createElement, ComponentType } from 'react';
 import { Link } from '@lidofinance/lido-ui';
-import { CHAIN_ICONS_MAP, useDappStatus, wagmiChainMap } from 'modules/web3';
+import {
+  CHAIN_ICONS_MAP,
+  getPrettyChainName,
+  useDappStatus,
+  wagmiChainMap,
+} from 'modules/web3';
 
 import {
   ChainSwitcherOptions,
@@ -12,6 +17,7 @@ import {
   ChainSwitcherStyled,
   IconStyle,
   ArrowStyle,
+  LoaderStyled,
 } from './styles';
 
 type IconsMapType = Record<number, ChainOption>;
@@ -25,6 +31,7 @@ export const ChainSwitcher: FC = () => {
   const {
     isDappActive,
     chainId,
+    canSwitchChain,
     isSwitchChainPending,
     supportedChainIds,
     requestChangeChain,
@@ -63,8 +70,11 @@ export const ChainSwitcher: FC = () => {
           }
         }}
       >
-        <IconStyle>{iconsMap[chainId].iconComponent}</IconStyle>
+        <IconStyle $loading={isSwitchChainPending}>
+          {iconsMap[chainId].iconComponent}
+        </IconStyle>
         {!isLocked && <ArrowStyle data-testid="canExpanded" $opened={opened} />}
+        {isSwitchChainPending && <LoaderStyled />}
       </ChainSwitcherStyled>
 
       {!isLocked && (
@@ -82,17 +92,21 @@ export const ChainSwitcher: FC = () => {
           {!isDappActive && (
             <SelectIconTooltip showArrow>
               This network doesn’t match your wallet’s network.{' '}
-              <Link
-                href="#"
-                aria-disabled={isSwitchChainPending}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (!isSwitchChainPending) requestChangeChain(chainId);
-                }}
-              >
-                Switch
-              </Link>
-              .
+              {canSwitchChain && (
+                <>
+                  <br />
+                  <Link
+                    href="#"
+                    aria-disabled={isSwitchChainPending}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!isSwitchChainPending) requestChangeChain(chainId);
+                    }}
+                  >
+                    Switch to {getPrettyChainName(chainId)}.
+                  </Link>
+                </>
+              )}
             </SelectIconTooltip>
           )}
         </>
