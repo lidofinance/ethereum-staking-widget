@@ -37,6 +37,7 @@ import { walletMetricProps } from 'consts/matomo';
 import { SupportL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './use-web3-transport';
 import { wagmiChainMap } from '../consts';
+import { useExternalConfigContext } from 'config/external-config';
 
 type ChainsList = [Chain, ...Chain[]];
 
@@ -81,6 +82,8 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
   } = useUserConfig();
+  const { wallets } = useExternalConfigContext();
+
   const { themeName } = useThemeToggle();
 
   const { supportedChains, defaultChain } = useMemo(() => {
@@ -149,6 +152,13 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   });
 
   const { wagmiConfig, reefKnotConfig, walletsModalConfig } = useMemo(() => {
+    const walletsPinned = WALLETS_PINNED.filter(
+      (walletId) => !wallets.disabled.includes(walletId),
+    );
+    const walletsShown = WALLETS_SHOWN.filter(
+      (walletId) => !wallets.disabled.includes(walletId),
+    );
+
     return getDefaultConfig({
       // Reef-Knot config args
       rpc: backendRPC,
@@ -169,8 +179,8 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       // Wallets config args
       ...getDefaultWalletsModalConfig(),
       ...walletMetricProps,
-      walletsPinned: WALLETS_PINNED,
-      walletsShown: WALLETS_SHOWN,
+      walletsPinned: walletsPinned,
+      walletsShown: walletsShown,
     });
   }, [
     backendRPC,
@@ -179,6 +189,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
     transportMap,
+    wallets.disabled,
   ]);
 
   const [activeConnection] = useConnections({ config: wagmiConfig });
