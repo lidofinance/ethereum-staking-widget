@@ -1,0 +1,26 @@
+<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="16" cy="16" r="16" fill="url(#paint0_radial_13767_12975)" />
+  <path opacity="0.6"
+    d="M22.0965 14.5481L22.2629 14.8034C24.1396 17.6823 23.7205 21.4526 21.2552 23.8681C19.8049 25.2892 17.9041 25.9998 16.0033 26C16.0033 26 16.0033 26 22.0965 14.5481Z"
+    fill="white" />
+  <path opacity="0.2"
+    d="M16.0024 18.0286L22.0957 14.5481C16.0025 26 16.0024 26 16.0024 26C16.0024 23.5058 16.0024 20.6479 16.0024 18.0286Z"
+    fill="white" />
+  <path
+    d="M9.90297 14.5481L9.73657 14.8034C7.85986 17.6823 8.279 21.4526 10.7443 23.8681C12.1946 25.2892 14.0954 25.9998 15.9962 26C15.9962 26 15.9962 26 9.90297 14.5481Z"
+    fill="white" />
+  <path opacity="0.6"
+    d="M15.9946 18.0286L9.90137 14.5481C15.9946 26 15.9946 26 15.9946 26C15.9946 23.5058 15.9946 20.6479 15.9946 18.0286Z"
+    fill="white" />
+  <path opacity="0.2" d="M16.0044 10.2533V16.2562L21.2531 13.2567L16.0044 10.2533Z" fill="white" />
+  <path opacity="0.6" d="M16.003 10.2533L10.7505 13.2566L16.003 16.2562V10.2533Z" fill="white" />
+  <path d="M16.003 5.2047L10.7505 13.2584L16.003 10.2466V5.2047Z" fill="white" />
+  <path opacity="0.6" d="M16.0044 10.2458L21.2571 13.2577L16.0044 5.19998V10.2458Z" fill="white" />
+  <defs>
+    <radialGradient id="paint0_radial_13767_12975" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse" gradientTransform="translate(16 16) rotate(90) scale(26.8)">
+      <stop stop-color="#3186E2" />
+      <stop offset="1" stop-color="#133A64" />
+    </radialGradient>
+  </defs>
+</svg>
