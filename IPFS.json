@@ -1,9 +1,53 @@
 {
+  "baseConfig": {
+    "withdrawalDex": {
+      "integration": "cowswap",
+      "enabled": true
+    },
+    "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
+    "earnVaultsBanner": {
+      "showOnStakeForm": true,
+      "showAfterStake": true
+    },
+    "earnVaults": [
+      { "name": "eth" },
+      { "name": "usd" },
+      { "name": "strategy", "deprecated": true },
+      {
+        "name": "ggv",
+        "apy": { "type": "weekly_moving_average" },
+        "deprecated": true
+      },
+      { "name": "dvv", "deprecated": true }
+    ],
+    "featureFlags": {
+      "disableSendCalls": false,
+      "dgBannerEnabled": true,
+      "rewardsMaintenance": false,
+      "holidayDecorEnabled": false,
+      "forceAllowance": false,
+      "amountBannerEnabled": true
+    },
+    "earnAllocation": {
+      "labelAllowList": [],
+      "hiddenIds": []
+    },
+    "pages": {
+      "/earn": {
+        "showNew": true,
+        "shouldDisable": false
+      }
+    },
+    "api": {
+      "validation": {
+        "version": "1"
+      }
+    }
+  },
   "1": {
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
     "leastSafeVersion": "0.76.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
       "withdrawalDex": {
         "integration": "cowswap",
         "enabled": true
@@ -31,6 +75,10 @@
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true
+      },
+      "earnAllocation": {
+        "labelAllowList": [],
+        "hiddenIds": []
       },
       "pages": {
         "/earn": {
@@ -49,7 +97,6 @@
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
     "leastSafeVersion": "0.76.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
       "withdrawalDex": {
         "integration": "cowswap",
         "enabled": true
@@ -78,6 +125,10 @@
         "forceAllowance": false,
         "amountBannerEnabled": true
       },
+      "earnAllocation": {
+        "labelAllowList": [],
+        "hiddenIds": []
+      },
       "pages": {
         "/earn": {
           "showNew": true,
@@ -91,35 +142,25 @@
       }
     }
   },
-  "17000": {
-    "__warning__": "For testing purposes only",
-    "cid": "bafybeibbsoqlofslw273b4ih2pdxfaz2zbjmred2ijog725tcmfoewix7y",
-    "leastSafeVersion": "0.36.1",
-    "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
-      "multiChainBanner": [],
-      "featureFlags": {
-        "ledgerLiveL2": true
-      },
-      "earnVaults": [],
-      "api": {
-        "validation": {
-          "version": "1"
-        }
-      }
-    }
-  },
   "11155111": {
     "__warning__": "For testing purposes only",
     "cid": "",
     "leastSafeVersion": "0.36.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
+      "withdrawalDex": {
+        "enabled": false
+      },
       "multiChainBanner": [],
-      "featureFlags": {
-        "ledgerLiveL2": true
+      "earnVaultsBanner": {
+        "showOnStakeForm": false,
+        "showAfterStake": false
       },
       "earnVaults": [],
+      "featureFlags": {
+        "ledgerLiveL2": true,
+        "dgBannerEnabled": false,
+        "amountBannerEnabled": false
+      },
       "pages": {
         "/withdrawals": {
           "shouldDisable": true
@@ -128,12 +169,8 @@
           "shouldDisable": true
         },
         "/earn": {
+          "showNew": false,
           "shouldDisable": true
-        }
-      },
-      "api": {
-        "validation": {
-          "version": "1"
         }
       }
     }
@@ -143,42 +180,14 @@
     "cid": "",
     "leastSafeVersion": "0.36.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
+      "withdrawalDex": {
+        "enabled": false
+      },
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true,
-        "disableSendCalls": false,
         "dgBannerEnabled": false,
-        "dgWarningState": false,
-        "rewardsMaintenance": false,
-        "holidayDecorEnabled": false,
-        "forceAllowance": false,
-        "amountBannerEnabled": true
-      },
-      "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
-      },
-      "earnVaults": [
-        { "name": "eth" },
-        { "name": "usd" },
-        { "name": "strategy", "deprecated": true },
-        {
-          "name": "ggv",
-          "apy": { "type": "weekly_moving_average" },
-          "deprecated": true
-        },
-        { "name": "dvv", "deprecated": true }
-      ],
-      "pages": {
-        "/earn": {
-          "showNew": true
-        }
-      },
-      "api": {
-        "validation": {
-          "version": "1"
-        }
+        "dgWarningState": false
       }
     }
   }
