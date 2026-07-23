@@ -1,6 +1,7 @@
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { z } from 'zod';
 import type {
+  ManifestKey,
   ManifestSchema,
   ManifestConfigPages,
   ManifestConfigWithdrawalDexIntegrations,
@@ -8,7 +9,7 @@ import type {
 
 export type Manifest = z.infer<typeof ManifestSchema>;
 
-export type ManifestEntry = NonNullable<Manifest[keyof Manifest]>;
+export type ManifestEntry = NonNullable<Manifest[ManifestKey]>;
 
 export type ManifestConfig = ManifestEntry['config'];
 
