@@ -40,7 +40,7 @@
     },
     "api": {
       "validation": {
-        "version": "2"
+        "version": "1"
       }
     }
   },
@@ -137,7 +137,7 @@
       },
       "api": {
         "validation": {
-          "version": "2"
+          "version": "1"
         }
       }
     }
