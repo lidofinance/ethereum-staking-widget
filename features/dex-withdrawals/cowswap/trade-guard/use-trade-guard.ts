@@ -23,6 +23,8 @@ import {
   type TradeGuardModalState,
 } from './trade-guard-modal';
 import invariant from 'tiny-invariant';
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 // ---------------------------------------------------------------------------
 // Oracle result → level/messages
@@ -239,6 +241,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
 
   const openTransactionGuardModal = useCallback(
     async (reason: string) => {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteError);
       await showModal(
         'blocked',
         [`Safety of the transaction could not be verified.`, reason],
