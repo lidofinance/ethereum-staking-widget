@@ -19,8 +19,7 @@ export const CardWrapper = styled(Block)<{
   overflow: hidden;
   color: var(--lido-color-text);
   transition: box-shadow 0.1s ease;
-  border: 1px solid
-    ${({ theme }) => (theme.name === 'dark' ? '#34343D' : '#fff')};
+  border: 1px solid var(--lido-color-border);
 
   &:hover {
     box-shadow: 0px 4px 64px 0px

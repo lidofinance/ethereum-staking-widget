@@ -6,9 +6,9 @@ import { getLocalFallbackManifest, getManifestKey } from './utils';
 import type { ManifestConfig, ManifestEntry } from './types';
 
 export const overrideManifestConfig = (
-  config: ManifestEntry['config'],
+  config: ManifestConfig,
   override: Partial<ManifestConfig> = {},
-): ManifestEntry['config'] => {
+): ManifestConfig => {
   return {
     ...config,
     withdrawalDex: { ...config.withdrawalDex, ...override.withdrawalDex },
@@ -16,6 +16,10 @@ export const overrideManifestConfig = (
     multiChainBanner: override.multiChainBanner ?? config.multiChainBanner,
     earnVaults: override.earnVaults ?? config.earnVaults,
     earnVaultsBanner: override.earnVaultsBanner ?? config.earnVaultsBanner,
+    earnAllocation: {
+      ...config.earnAllocation,
+      ...override.earnAllocation,
+    },
     pages: { ...config.pages, ...override.pages },
     api: { ...config.api, ...override.api },
   };
@@ -27,19 +31,18 @@ export const getFallbackedManifestEntry = (
   manifestOverride?: string,
 ): ManifestEntry => {
   const key = getManifestKey(defaultChain, manifestOverride);
-  const parsing = ManifestSchema.safeParse(prefetchedManifest);
+  const parseResult = ManifestSchema.safeParse(prefetchedManifest);
+  const fallbackManifest = getLocalFallbackManifest();
 
-  if (parsing.success && parsing.data[key]) {
-    return parsing.data[key];
+  if (parseResult.success) {
+    const entry = parseResult.data[key];
+    if (entry) return entry;
   }
 
-  const fallbackManifest = getLocalFallbackManifest();
-  invariant(
-    fallbackManifest[key],
-    `Fallback manifest entry not found for key ${key}`,
-  );
+  const fallbackEntry = fallbackManifest[key];
+  invariant(fallbackEntry, `Fallback manifest entry not found for key ${key}`);
 
-  return fallbackManifest[key];
+  return fallbackEntry;
 };
 
 export const useFallbackManifestEntry = (

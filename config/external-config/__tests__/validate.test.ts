@@ -4,10 +4,17 @@ const validEntry = {
   leastSafeVersion: '1.0.0',
 };
 
+const parseManifest = (manifest: unknown) =>
+  ManifestSchema.parse(
+    typeof manifest === 'object' && manifest !== null
+      ? { baseConfig: {}, ...manifest }
+      : manifest,
+  );
+
 describe('ManifestSchema', () => {
   describe('top-level key filtering', () => {
     it('accepts valid chain id keys', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': validEntry,
         '137': validEntry,
       });
@@ -16,12 +23,12 @@ describe('ManifestSchema', () => {
     });
 
     it('accepts chain id with suffix', () => {
-      const result = ManifestSchema.parse({ '1-staging': validEntry });
+      const result = parseManifest({ '1-staging': validEntry });
       expect(result).toHaveProperty('1-staging');
     });
 
     it('filters out keys starting with 0', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '0': validEntry,
         '01': validEntry,
         '1': validEntry,
@@ -32,42 +39,42 @@ describe('ManifestSchema', () => {
     });
 
     it('filters out non-numeric keys (forward compatibility)', () => {
-      const result = ManifestSchema.parse({ foo: validEntry, '1': validEntry });
+      const result = parseManifest({ foo: validEntry, '1': validEntry });
       expect(result).not.toHaveProperty('foo');
       expect(result).toHaveProperty('1');
     });
 
     it('ignores unknown top-level keys instead of throwing', () => {
       expect(() =>
-        ManifestSchema.parse({ unknownKey: validEntry, '1': validEntry }),
+        parseManifest({ unknownKey: validEntry, '1': validEntry }),
       ).not.toThrow();
     });
 
-    it('returns empty object for empty input', () => {
-      expect(ManifestSchema.parse({})).toEqual({});
+    it('requires baseConfig', () => {
+      expect(() => ManifestSchema.parse({ '1': validEntry })).toThrow();
     });
 
     it('throws for non-object input', () => {
-      expect(() => ManifestSchema.parse('not-an-object')).toThrow();
-      expect(() => ManifestSchema.parse(42)).toThrow();
-      expect(() => ManifestSchema.parse(null)).toThrow();
+      expect(() => parseManifest('not-an-object')).toThrow();
+      expect(() => parseManifest(42)).toThrow();
+      expect(() => parseManifest(null)).toThrow();
     });
   });
 
   describe('ManifestEntry', () => {
     it('requires leastSafeVersion', () => {
-      expect(() => ManifestSchema.parse({ '1': {} })).toThrow();
+      expect(() => parseManifest({ '1': {} })).toThrow();
     });
 
     it('accepts entry with only leastSafeVersion', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { leastSafeVersion: '1.0.0' },
       });
       expect(result['1']?.leastSafeVersion).toBe('1.0.0');
     });
 
     it('accepts optional cid and ens fields', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { leastSafeVersion: '1.0.0', cid: 'Qm123', ens: 'lido.eth' },
       });
       expect(result['1']?.cid).toBe('Qm123');
@@ -75,7 +82,7 @@ describe('ManifestSchema', () => {
     });
 
     it('defaults config to empty defaults when omitted', () => {
-      const result = ManifestSchema.parse({ '1': validEntry });
+      const result = parseManifest({ '1': validEntry });
       const config = result['1']?.config;
       expect(config).toBeDefined();
       expect(config?.withdrawalDex).toEqual({
@@ -83,14 +90,190 @@ describe('ManifestSchema', () => {
         enabled: false,
       });
       expect(config?.earnVaults).toEqual([]);
+      expect(config?.earnAllocation).toEqual({
+        labelAllowList: [],
+        hiddenIds: [],
+      });
       expect(config?.featureFlags).toEqual({});
       expect(config?.pages).toEqual({});
     });
   });
 
+  describe('baseConfig.earnAllocation.labelAllowList', () => {
+    it('normalizes words and removes duplicates', () => {
+      const result = parseManifest({
+        baseConfig: {
+          earnAllocation: {
+            labelAllowList: ['Aave', 'aave', 'wstETH'],
+          },
+        },
+        '1': validEntry,
+      });
+
+      expect(result.baseConfig.earnAllocation.labelAllowList).toEqual([
+        'aave',
+        'wsteth',
+      ]);
+      expect(result['1']?.config.earnAllocation.labelAllowList).toEqual([
+        'aave',
+        'wsteth',
+      ]);
+    });
+
+    it('rejects entries containing multiple words or slash separators', () => {
+      expect(() =>
+        parseManifest({
+          baseConfig: {
+            earnAllocation: { labelAllowList: ['Aave levered'] },
+          },
+          '1': validEntry,
+        }),
+      ).toThrow();
+
+      expect(() =>
+        parseManifest({
+          baseConfig: {
+            earnAllocation: { labelAllowList: ['wstETH/ETH'] },
+          },
+          '1': validEntry,
+        }),
+      ).toThrow();
+    });
+  });
+
+  describe('baseConfig.earnAllocation.hiddenIds', () => {
+    it('trims IDs and removes duplicates', () => {
+      const result = parseManifest({
+        baseConfig: {
+          earnAllocation: {
+            hiddenIds: [' vault-a ', 'vault-a', 'vault-b'],
+          },
+        },
+        '1': validEntry,
+      });
+
+      expect(result['1']?.config.earnAllocation.hiddenIds).toEqual([
+        'vault-a',
+        'vault-b',
+      ]);
+    });
+
+    it('rejects empty IDs', () => {
+      expect(() =>
+        parseManifest({
+          baseConfig: { earnAllocation: { hiddenIds: ['  '] } },
+          '1': validEntry,
+        }),
+      ).toThrow();
+    });
+  });
+
+  describe('baseConfig overrides', () => {
+    it('recursively merges partial earnAllocation overrides', () => {
+      const result = parseManifest({
+        baseConfig: {
+          earnAllocation: {
+            labelAllowList: ['base-label'],
+            hiddenIds: ['base-id'],
+          },
+        },
+        '1': {
+          ...validEntry,
+          config: {
+            earnAllocation: {
+              hiddenIds: ['network-id'],
+            },
+          },
+        },
+      });
+
+      expect(result['1']?.config.earnAllocation).toEqual({
+        labelAllowList: ['base-label'],
+        hiddenIds: ['network-id'],
+      });
+    });
+
+    it('recursively merges nested network config objects', () => {
+      const result = parseManifest({
+        baseConfig: {
+          featureFlags: {
+            disableSendCalls: false,
+            dgBannerEnabled: true,
+          },
+          pages: {
+            '/earn': {
+              showNew: true,
+              shouldDisable: false,
+            },
+          },
+        },
+        '1': {
+          ...validEntry,
+          config: {
+            featureFlags: { dgBannerEnabled: false },
+            pages: { '/earn': { shouldDisable: true } },
+          },
+        },
+      });
+
+      expect(result['1']?.config.featureFlags).toEqual({
+        disableSendCalls: false,
+        dgBannerEnabled: false,
+      });
+      expect(result['1']?.config.pages['/earn']).toEqual({
+        showNew: true,
+        shouldDisable: true,
+        sections: [],
+      });
+    });
+
+    it('replaces base arrays with network arrays', () => {
+      const result = parseManifest({
+        baseConfig: {
+          multiChainBanner: [1, 10],
+          earnVaults: [{ name: 'eth' }, { name: 'usd' }],
+        },
+        '1': {
+          ...validEntry,
+          config: {
+            multiChainBanner: [],
+            earnVaults: [{ name: 'usd' }],
+          },
+        },
+      });
+
+      expect(result['1']?.config.multiChainBanner).toEqual([]);
+      expect(result['1']?.config.earnVaults.map(({ name }) => name)).toEqual([
+        'usd',
+      ]);
+    });
+
+    it('inherits baseConfig when a network config is omitted', () => {
+      const result = parseManifest({
+        baseConfig: {
+          featureFlags: { disableSendCalls: true },
+        },
+        '1': validEntry,
+      });
+
+      expect(result['1']?.config.featureFlags.disableSendCalls).toBe(true);
+    });
+
+    it('does not allow special object keys to mutate prototypes', () => {
+      const manifest = JSON.parse(`{
+        "baseConfig": { "__proto__": { "polluted": true } },
+        "1": { "leastSafeVersion": "1.0.0", "config": {} }
+      }`);
+
+      parseManifest(manifest);
+
+      expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    });
+  });
+
   describe('config.withdrawalDex', () => {
     it('defaults to disabled cowswap when omitted', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { ...validEntry, config: {} },
       });
       expect(result['1']?.config?.withdrawalDex).toEqual({
@@ -100,7 +283,7 @@ describe('ManifestSchema', () => {
     });
 
     it('accepts valid cowswap integration', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: { withdrawalDex: { integration: 'cowswap', enabled: true } },
@@ -113,7 +296,7 @@ describe('ManifestSchema', () => {
     });
 
     it('defaults enabled to false when not specified', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: { withdrawalDex: { integration: 'cowswap' } },
@@ -123,7 +306,7 @@ describe('ManifestSchema', () => {
     });
 
     it('ignores unrecognized integration key and returns default (forward compatibility)', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: {
@@ -142,7 +325,7 @@ describe('ManifestSchema', () => {
     const validVault = { name: 'eth' };
 
     it('accepts valid vault entries', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { ...validEntry, config: { earnVaults: [validVault] } },
       });
       expect(result['1']?.config?.earnVaults).toHaveLength(1);
@@ -150,7 +333,7 @@ describe('ManifestSchema', () => {
     });
 
     it('filters out entries with unknown vault names (forward compatibility)', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: { earnVaults: [validVault, { name: 'future-vault-type' }] },
@@ -161,7 +344,7 @@ describe('ManifestSchema', () => {
 
     it('throws on duplicate vault names', () => {
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': {
             ...validEntry,
             config: { earnVaults: [validVault, validVault] },
@@ -171,7 +354,7 @@ describe('ManifestSchema', () => {
     });
 
     it('applies defaults for optional vault fields', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { ...validEntry, config: { earnVaults: [{ name: 'eth' }] } },
       });
       const vault = result['1']?.config?.earnVaults[0];
@@ -185,7 +368,7 @@ describe('ManifestSchema', () => {
 
     it('accepts all valid vault names', () => {
       const names = ['ggv', 'dvv', 'strategy', 'eth', 'usd'] as const;
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: { earnVaults: names.map((name) => ({ name })) },
@@ -195,7 +378,7 @@ describe('ManifestSchema', () => {
     });
 
     it('accepts valid apy types', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: { earnVaults: [{ name: 'eth', apy: { type: 'daily' } }] },
@@ -207,7 +390,7 @@ describe('ManifestSchema', () => {
     it('filters out vault when apy object has invalid type', () => {
       // EarnVaultConfigApyEntrySchema preprocesses invalid apy to undefined,
       // then EarnVaultConfigApySchema fails on undefined — so the whole entry is dropped
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: {
@@ -221,7 +404,7 @@ describe('ManifestSchema', () => {
     it('filters out vault when text field exceeds max length', () => {
       // EarnVaultListSchema preprocess drops entries failing EarnVaultConfigEntrySchema
       const longText = 'a'.repeat(251);
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: {
@@ -235,7 +418,7 @@ describe('ManifestSchema', () => {
     it('accepts text fields at max length boundary', () => {
       const maxText = 'a'.repeat(250);
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': {
             ...validEntry,
             config: {
@@ -247,7 +430,7 @@ describe('ManifestSchema', () => {
     });
 
     it('filters vault with invalid schema fields rather than failing whole list', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: {
@@ -265,7 +448,7 @@ describe('ManifestSchema', () => {
 
   describe('config.earnVaultsBanner', () => {
     it('defaults showOnStakeForm and showAfterStake to false', () => {
-      const result = ManifestSchema.parse({ '1': validEntry });
+      const result = parseManifest({ '1': validEntry });
       expect(result['1']?.config?.earnVaultsBanner?.showOnStakeForm).toBe(
         false,
       );
@@ -273,7 +456,7 @@ describe('ManifestSchema', () => {
     });
 
     it('accepts explicit boolean values', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: {
@@ -288,7 +471,7 @@ describe('ManifestSchema', () => {
 
   describe('config.featureFlags', () => {
     it('accepts known feature flags', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: {
@@ -306,7 +489,7 @@ describe('ManifestSchema', () => {
 
     it('throws when a known flag has a non-boolean value', () => {
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': {
             ...validEntry,
             config: { featureFlags: { ledgerLiveL2: 'yes' } },
@@ -316,7 +499,7 @@ describe('ManifestSchema', () => {
     });
 
     it('defaults to empty object when omitted', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { ...validEntry, config: {} },
       });
       expect(result['1']?.config?.featureFlags).toEqual({});
@@ -325,7 +508,7 @@ describe('ManifestSchema', () => {
 
   describe('config.pages', () => {
     it('accepts valid page entries', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: { pages: { '/wrap': { shouldDisable: true } } },
@@ -335,7 +518,7 @@ describe('ManifestSchema', () => {
     });
 
     it('applies page field defaults', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { ...validEntry, config: { pages: { '/wrap': {} } } },
       });
       const page = result['1']?.config?.pages['/wrap'];
@@ -345,7 +528,7 @@ describe('ManifestSchema', () => {
     });
 
     it('filters out unknown page paths (forward compatibility)', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: {
@@ -363,7 +546,7 @@ describe('ManifestSchema', () => {
     });
 
     it('filters out page entries with invalid schema', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: {
@@ -377,7 +560,7 @@ describe('ManifestSchema', () => {
 
     it('throws when stake page (/) is disabled', () => {
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': {
             ...validEntry,
             config: { pages: { '/': { shouldDisable: true } } },
@@ -388,7 +571,7 @@ describe('ManifestSchema', () => {
 
     it('allows stake page when shouldDisable is false', () => {
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': {
             ...validEntry,
             config: { pages: { '/': { shouldDisable: false } } },
@@ -400,7 +583,7 @@ describe('ManifestSchema', () => {
 
   describe('config.multiChainBanner', () => {
     it('accepts valid chain id list', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { ...validEntry, config: { multiChainBanner: [1, 137, 10] } },
       });
       expect(result['1']?.config?.multiChainBanner).toEqual([1, 137, 10]);
@@ -408,7 +591,7 @@ describe('ManifestSchema', () => {
 
     it('throws on duplicate chain ids', () => {
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': { ...validEntry, config: { multiChainBanner: [1, 1] } },
         }),
       ).toThrow();
@@ -416,14 +599,14 @@ describe('ManifestSchema', () => {
 
     it('throws on chain id less than 1', () => {
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': { ...validEntry, config: { multiChainBanner: [0] } },
         }),
       ).toThrow();
     });
 
     it('defaults to empty array when omitted', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': { ...validEntry, config: {} },
       });
       expect(result['1']?.config?.multiChainBanner).toEqual([]);
@@ -432,7 +615,7 @@ describe('ManifestSchema', () => {
 
   describe('config.api', () => {
     it('accepts api.validation.version', () => {
-      const result = ManifestSchema.parse({
+      const result = parseManifest({
         '1': {
           ...validEntry,
           config: { api: { validation: { version: '2.0' } } },
@@ -442,7 +625,7 @@ describe('ManifestSchema', () => {
     });
 
     it('defaults to empty object when omitted', () => {
-      const result = ManifestSchema.parse({ '1': validEntry });
+      const result = parseManifest({ '1': validEntry });
       expect(result['1']?.config?.api).toEqual({});
     });
   });
@@ -450,7 +633,7 @@ describe('ManifestSchema', () => {
   describe('forward compatibility', () => {
     it('ignores unknown keys on config object without throwing', () => {
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': {
             ...validEntry,
             config: {
@@ -464,7 +647,7 @@ describe('ManifestSchema', () => {
 
     it('ignores unknown keys on manifest entry without throwing', () => {
       expect(() =>
-        ManifestSchema.parse({
+        parseManifest({
           '1': { ...validEntry, unknownEntryField: 'value' },
         }),
       ).not.toThrow();

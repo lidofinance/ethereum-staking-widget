@@ -1,73 +1,6 @@
-import { FC } from 'react';
-import {
-  SparkIcon,
-  AaveV3Icon,
-  FluidIcon,
-  UsdcIcon,
-  SusdeIcon,
-  UsdtIcon,
-  MapleIcon,
-  MorphoIcon,
-  EarnUsdIcon,
-} from 'assets/earn';
-
 export const METAVAULT_CHART_ORIGIN = 'https://api.mellow.finance';
 
-export type AllocationProtocolId =
-  (typeof ALLOCATION_PROTOCOL_IDS_KNOWN)[number];
-
-export const ALLOCATION_PROTOCOL_IDS_KNOWN = [
-  'aave-wsteth-weth',
-  'aave-wsteth-usd',
-  'aave-rseth-weth',
-  'aave-ethena',
-  'aave-mantle-ethena',
-  'aave-plasma-ethena',
-  'aave-plasma-syrup-usdt-usdt0',
-  'spark-wsteth-weth',
-  'spark-wsteth-usd',
-  'fluid-resolv-usdt',
-  'usdc',
-  'usdt',
-  'susde',
-  'ethereum-aave-usdt',
-  'ethereum-spark-usdc',
-  'ethereum-maple-syrupusdc',
-  'ethereum-maple-syrupusdt',
-  'ethereum-metamorpho-senpyusdmain',
-  'ethereum-morpho-pt-reusd-usdc',
-  'earnusd',
-] as const;
-
-export const ALLOCATION_ICONS_BY_ID: {
-  [key in AllocationProtocolId]: FC;
-} = {
-  'aave-wsteth-weth': AaveV3Icon,
-  'aave-wsteth-usd': AaveV3Icon,
-  'aave-rseth-weth': AaveV3Icon,
-  'aave-ethena': AaveV3Icon,
-  'aave-mantle-ethena': AaveV3Icon,
-  'aave-plasma-ethena': AaveV3Icon,
-  'spark-wsteth-weth': SparkIcon,
-  'spark-wsteth-usd': SparkIcon,
-  'fluid-resolv-usdt': FluidIcon,
-  'aave-plasma-syrup-usdt-usdt0': AaveV3Icon,
-  usdc: UsdcIcon,
-  usdt: UsdtIcon,
-  susde: SusdeIcon,
-  'ethereum-aave-usdt': AaveV3Icon,
-  'ethereum-spark-usdc': SparkIcon,
-  'ethereum-maple-syrupusdc': MapleIcon,
-  'ethereum-maple-syrupusdt': MapleIcon,
-  'ethereum-metamorpho-senpyusdmain': MorphoIcon,
-  'ethereum-morpho-pt-reusd-usdc': MorphoIcon,
-  earnusd: EarnUsdIcon,
-};
-
-export const ALLOCATION_PENDING_ID = 'pending-deposits';
-
-// Assets which are not allocated yet
-export const ALLOCATION_TOKEN_IDS_AVAILABLE = ['eth', 'weth', 'wsteth'];
+export const MIN_ALLOCATION_DISPLAY_PERCENT = 0.1;
 
 export const AVAILABLE_TIP =
   'The amount of tokens available for withdrawals, pending allocation to new strategies, and reserved for liquidity needs';
@@ -76,7 +9,59 @@ export const OTHER_TIP =
 export const PENDING_TIP =
   'The amount of tokens in the process of being deposited to the vault';
 
-export type SUBVAULTS_WITH_TIP = 'earnusdc' | 'ggv' | 'streth';
+export const BASE_ALLOCATION_LABEL_ALLOWLIST = [
+  'aave',
+  'aura',
+  'earnusd',
+  'earnusdc',
+  'earnusde',
+  'eth',
+  'ethena',
+  'gho',
+  'levered',
+  'lido',
+  'main',
+  'mantle',
+  'maple',
+  'metamorpho',
+  'morpho',
+  'plasma',
+  'pt',
+  'pt_srusde',
+  'pyusd',
+  'reusd',
+  'rseth',
+  'sentora',
+  'spark',
+  'sparklend',
+  'strategy',
+  'susde',
+  'syrup',
+  'syrupusdt',
+  'twyne',
+  'usd',
+  'usdc',
+  'usde',
+  'usdt',
+  'usdt0',
+  'weth',
+  'wsteth',
+  'ggv',
+  'boring',
+  'queue',
+  'boringqueue',
+  'susde',
+  'withdrawal',
+  'requests',
+] as const;
+
+export const getAllocationLabelAllowlist = (
+  configuredWords: readonly string[],
+): string[] => [
+  ...new Set([...BASE_ALLOCATION_LABEL_ALLOWLIST, ...configuredWords]),
+];
+
+type SubvaultWithTip = 'earnusdc' | 'ggv' | 'streth';
 const USDC_VAULT_TIP =
   'A strategy designed to amplify USD yield by combining low-risk and highly liquid stablecoin strategies with carefully selected DeFi strategies.';
 const GGV_VAULT_TIP =
@@ -85,7 +70,7 @@ const STRATEGY_VAULT_TIP =
   'A professionally curated strategy by Mellow, built around battle-tested DeFi protocols designed to perform steadily across all market conditions.';
 
 export const SUBVAULTS_TIP_BY_ID: {
-  [key in SUBVAULTS_WITH_TIP]: string;
+  [key in SubvaultWithTip]: string;
 } = {
   earnusdc: USDC_VAULT_TIP,
   ggv: GGV_VAULT_TIP,

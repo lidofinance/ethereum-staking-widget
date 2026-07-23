@@ -48,7 +48,7 @@ const DEFAULT_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 const LocalManifest = getLocalFallbackManifest();
 const vaultsFromLocalManifest =
-  LocalManifest[CHAINS.Mainnet]?.config.earnVaults || [];
+  LocalManifest[`${CHAINS.Mainnet}`]?.config.earnVaults || [];
 
 const caches: Record<string, CacheClass<string, any>> = {};
 const cacheKeys: Record<string, string> = {};
