@@ -237,6 +237,19 @@ const MultiChainBannerSchema = z
   });
 
 //
+// Wallets
+//
+
+const WalletsConfigSchema = z
+  .object({
+    disabled: z.array(z.string()).optional().default([]),
+  })
+  .optional()
+  .default({
+    disabled: [],
+  });
+
+//
 // Manifest Config
 //
 
@@ -248,6 +261,7 @@ const ManifestConfigSchema = z.object({
   earnVaultsBanner: EarnVaultsBannerSchema,
   earnAllocation: EarnAllocationSchema,
   pages: PagesEntrySchema.optional().default({}),
+  wallets: WalletsConfigSchema,
   api: ApiSchema.optional().default({}),
 });
 
