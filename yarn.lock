@@ -3313,10 +3313,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/analytics-matomo@npm:^0.58.0":
-  version: 0.58.0
-  resolution: "@lidofinance/analytics-matomo@npm:0.58.0"
-  checksum: 10c0/f13efba82032ed2a6a7a4ce9d61e4a1e4780b506c111f2c43425aa73c9683435dc2416c8fef7d0579de34632dd0c256f864bfa350dde65f9e77bea1cf8de519e
+"@lidofinance/analytics-matomo@npm:^0.61.0":
+  version: 0.61.0
+  resolution: "@lidofinance/analytics-matomo@npm:0.61.0"
+  checksum: 10c0/b59545e4e4b271208f6ca2fc91348987a1d98ff6495d48236d04abfc81575979f12151d1543bc6227d3db6b5cd51c151d4756798a908b1e9244897efa085ce56
   languageName: node
   linkType: hard
 
@@ -11985,7 +11985,7 @@ __metadata:
     "@cowprotocol/widget-react": "npm:3.2.0"
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:9.39.5"
-    "@lidofinance/analytics-matomo": "npm:^0.58.0"
+    "@lidofinance/analytics-matomo": "npm:^0.61.0"
     "@lidofinance/api-metrics": "npm:^0.48.0"
     "@lidofinance/api-rpc": "npm:^0.48.0"
     "@lidofinance/eth-api-providers": "npm:^0.48.0"
