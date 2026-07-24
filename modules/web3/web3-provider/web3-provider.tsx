@@ -159,7 +159,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       (walletId) => !wallets.disabled.includes(walletId),
     );
 
-    const defaultConfig = getDefaultConfig({
+    const filteredConfigs = getDefaultConfig({
       // Reef-Knot config args
       rpc: backendRPC,
       defaultChain: defaultChain,
@@ -179,15 +179,19 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       // Wallets config args
       ...getDefaultWalletsModalConfig(),
       ...walletMetricProps,
-      walletsPinned: walletsPinned,
-      walletsShown: walletsShown,
+      walletsPinned,
+      walletsShown,
     });
 
-    defaultConfig.walletsDataList = defaultConfig.walletsDataList.filter(
+    const filteredWalletsDataList = filteredConfigs.walletsDataList.filter(
       (wallet) => !wallets.disabled.includes(wallet.walletId),
     );
+    filteredConfigs.walletsDataList = filteredWalletsDataList;
+    filteredConfigs.reefKnotConfig.walletDataList = [
+      ...filteredWalletsDataList,
+    ];
 
-    return defaultConfig;
+    return filteredConfigs;
   }, [
     backendRPC,
     supportedChains,
