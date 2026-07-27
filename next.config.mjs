@@ -28,7 +28,6 @@ export const WIDGET_PAGES = [
   '/wrap',
   '/wrap/unwrap',
   '/rewards',
-  '/referral',
   '/withdrawals/request',
   '/withdrawals/claim',
   '/earn',

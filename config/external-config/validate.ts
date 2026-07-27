@@ -84,6 +84,32 @@ const EarnVaultsBannerSchema = z
   });
 
 //
+// Earn allocation
+//
+
+const EarnAllocationLabelAllowListSchema = z
+  .array(
+    z
+      .string()
+      .trim()
+      .min(1)
+      .regex(/^[^\s/]+$/u, 'Must contain a single label word'),
+  )
+  .transform((words) => [...new Set(words.map((word) => word.toLowerCase()))]);
+
+const EarnAllocationHiddenIdsSchema = z
+  .array(z.string().trim().min(1))
+  .transform((ids) => [...new Set(ids)]);
+
+const EarnAllocationSchema = z
+  .object({
+    labelAllowList: EarnAllocationLabelAllowListSchema.optional().default([]),
+    hiddenIds: EarnAllocationHiddenIdsSchema.optional().default([]),
+  })
+  .optional()
+  .default({ labelAllowList: [], hiddenIds: [] });
+
+//
 // Feature flags
 //
 
@@ -151,7 +177,6 @@ export const ManifestConfigPages = {
   Withdrawals: '/withdrawals',
   Rewards: '/rewards',
   Settings: '/settings',
-  Referral: '/referral',
   Earn: '/earn',
 } as const;
 
@@ -212,6 +237,19 @@ const MultiChainBannerSchema = z
   });
 
 //
+// Wallets
+//
+
+const WalletsConfigSchema = z
+  .object({
+    disabled: z.array(z.string()).optional().default([]),
+  })
+  .optional()
+  .default({
+    disabled: [],
+  });
+
+//
 // Manifest Config
 //
 
@@ -221,7 +259,9 @@ const ManifestConfigSchema = z.object({
   featureFlags: FeatureFlagsSchema.optional().default({}),
   earnVaults: EarnVaultListSchema.optional().default([]),
   earnVaultsBanner: EarnVaultsBannerSchema,
+  earnAllocation: EarnAllocationSchema,
   pages: PagesEntrySchema.optional().default({}),
+  wallets: WalletsConfigSchema,
   api: ApiSchema.optional().default({}),
 });
 
@@ -249,21 +289,76 @@ const ManifestKeySchema = z
     "Must be a chain id or chain id with suffix (e.g. '1', '1-staging')",
   );
 
-// Filter out keys that do not match key schema
-// this allows us to be forward-compatible with possible new values in manifest
+type UnknownRecord = Record<string, unknown>;
+
+const isUnknownRecord = (value: unknown): value is UnknownRecord =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+// Objects are merged recursively, while arrays and primitive values from the
+// network config replace their baseConfig counterparts. Object.fromEntries is
+// used instead of property assignment so special keys cannot mutate a
+// prototype while processing an untrusted remote manifest.
+const mergeConfigValues = (base: unknown, override: unknown): unknown => {
+  if (!isUnknownRecord(base) || !isUnknownRecord(override)) return override;
+
+  const keys = new Set([...Object.keys(base), ...Object.keys(override)]);
+
+  return Object.fromEntries(
+    [...keys].map((key) => {
+      if (!Object.hasOwn(override, key)) return [key, base[key]];
+      if (!Object.hasOwn(base, key)) return [key, override[key]];
+
+      return [key, mergeConfigValues(base[key], override[key])];
+    }),
+  );
+};
+
+// A manifest contains one base config and any number of network entries whose
+// config objects override it. ManifestKey mirrors the runtime key convention.
+export type ManifestKey = `${number}` | `${number}-${string}`;
+export type ManifestShape = Partial<
+  Record<ManifestKey, z.infer<typeof ManifestEntrySchema>>
+> & {
+  baseConfig: z.infer<typeof ManifestConfigSchema>;
+};
+
+// Validation happens in two stages:
+// 1. Keep baseConfig and valid chain keys, then merge baseConfig into every
+//    chain config. Unknown top-level keys are ignored so older app versions can still parse
+//    manifests extended with new top-level fields.
+// 2. Validate baseConfig and each final chain config after merging.
+//    Chain overrides may specify only changed fields, but the merged result
+//    must still satisfy the complete config schema.
 export const ManifestSchema = z.preprocess(
   (obj) => {
-    if (typeof obj === 'object' && obj !== null) {
+    if (isUnknownRecord(obj)) {
+      const baseConfig = obj.baseConfig;
+
       return Object.fromEntries(
-        Object.entries(obj).filter(
-          ([key]) => ManifestKeySchema.safeParse(key).success,
-        ),
-      ) as Record<
-        z.infer<typeof ManifestKeySchema>,
-        z.infer<typeof ManifestEntrySchema>
-      >;
+        Object.entries(obj)
+          .filter(
+            ([key]) =>
+              key === 'baseConfig' || ManifestKeySchema.safeParse(key).success,
+          )
+          .map(([key, value]) => {
+            if (key === 'baseConfig' || !isUnknownRecord(value)) {
+              return [key, value];
+            }
+
+            return [
+              key,
+              {
+                ...value,
+                config: mergeConfigValues(
+                  baseConfig,
+                  Object.hasOwn(value, 'config') ? value.config : {},
+                ),
+              },
+            ];
+          }),
+      );
     }
     return obj;
   },
-  z.partialRecord(ManifestKeySchema, ManifestEntrySchema),
-);
+  z.object({ baseConfig: ManifestConfigSchema }).catchall(ManifestEntrySchema),
+) as z.ZodType<ManifestShape>;

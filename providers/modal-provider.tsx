@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import type { ModalProps as LidoModalProps } from '@lidofinance/lido-ui';
+import { uniqueId } from 'lodash';
 
 /**
  * Utility types
@@ -77,7 +78,7 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
 
   const openModal: ModalContextValue['openModal'] = useCallback(
     (modal, props) => {
-      const modalSession = window.crypto.randomUUID();
+      const modalSession = uniqueId('modal-session-');
       modalSessionRef.current = modalSession;
       setModalState({ modal, props });
 

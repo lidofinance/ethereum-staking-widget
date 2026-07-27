@@ -8,7 +8,7 @@ export type TransactionModalTransitStage = (
   modalProps?: Omit<React.ComponentProps<typeof TransactionModal>, 'children'>,
 ) => void;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export const useTransactionModalStage = <S extends Record<string, Function>>(
   getStages: (transitStage: TransactionModalTransitStage) => S,
 ) => {

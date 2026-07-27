@@ -58,14 +58,19 @@ export const useExternalConfigContext = (
 
         const manifestKey = getManifestKey(defaultChain, manifestOverride);
 
-        const parsing = ManifestSchema.safeParse(result);
+        const parseResult = ManifestSchema.safeParse(result);
 
-        if (parsing.success && parsing.data[manifestKey]) {
-          return parsing.data[manifestKey];
+        if (parseResult.success) {
+          const entry = parseResult.data[manifestKey];
+          if (entry) return entry;
         }
 
         throw new Error(
-          `[useExternalConfig] received invalid manifest ${parsing.error?.message}`,
+          `[useExternalConfig] received invalid manifest ${
+            parseResult.success
+              ? `entry ${manifestKey} is missing`
+              : parseResult.error.message
+          }`,
           result,
         );
       } catch (err) {

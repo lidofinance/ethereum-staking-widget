@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { useEffect, useMemo, useRef } from 'react';
 
 type Resolver<T> = {

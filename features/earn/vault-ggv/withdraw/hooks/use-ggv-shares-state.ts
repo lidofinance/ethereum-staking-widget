@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';

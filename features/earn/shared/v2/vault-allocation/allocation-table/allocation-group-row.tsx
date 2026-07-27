@@ -8,13 +8,14 @@ import { ProtocolIcon } from 'features/earn/shared/vault-allocation/protocol-ico
 import { ReactComponent as ChevronIcon } from 'assets/icons/chevron-gray-right.svg';
 
 import { AllocationGroup } from '../types';
+import { MIN_ALLOCATION_DISPLAY_PERCENT } from '../consts';
 import {
   ChevronWrapper,
   GroupTdStyled,
   GroupNameStyled,
+  NestedTdWithIconStyled,
   ProtocolNameStyled,
   TdNarrowStyled,
-  TdWithIconStyled,
   TrWithShiftStyled,
   ProtocolNamePercent,
 } from './styles';
@@ -25,15 +26,18 @@ type AllocationGroupRowProps = {
 
 export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
   const [open, setOpen] = useState(true);
+  const isExpandable = group.items.length > 0;
 
   return (
     <>
-      <Tr onClick={() => setOpen((v) => !v)}>
-        <GroupTdStyled>
+      <Tr onClick={isExpandable ? () => setOpen((v) => !v) : undefined}>
+        <GroupTdStyled $expandable={isExpandable}>
           <GroupNameStyled>
-            <ChevronWrapper $open={open}>
-              <ChevronIcon />
-            </ChevronWrapper>
+            {isExpandable && (
+              <ChevronWrapper $open={open}>
+                <ChevronIcon />
+              </ChevronWrapper>
+            )}
             <ProtocolNameStyled>
               <ProtocolNamePercent>
                 <FormatPercent value={group.allocation} decimals="percent" />
@@ -48,10 +52,14 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
           <FormatLargeAmount amount={group.tvlUSD} />
         </TdNarrowStyled>
       </Tr>
-      {open &&
-        group.items.map((item) => (
-          <TrWithShiftStyled key={`${item.id}-${item.chain}`}>
-            <TdWithIconStyled>
+      {isExpandable &&
+        open &&
+        group.items.map((item, index) => (
+          <TrWithShiftStyled
+            key={`${item.id}-${item.chain}`}
+            $isLast={index === group.items.length - 1}
+          >
+            <NestedTdWithIconStyled>
               <ProtocolIcon
                 mainIcon={item.icon ? <item.icon /> : null}
                 badge={item.chain}
@@ -60,9 +68,12 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
                 {item.label}
                 {item.info && <VaultTip>{item.info}</VaultTip>}
               </ProtocolNameStyled>
-            </TdWithIconStyled>
+            </NestedTdWithIconStyled>
             <TdNarrowStyled align="right">
-              <FormatPercent value={item.allocation} decimals="percent" />
+              {(!item.isSummary ||
+                item.allocation >= MIN_ALLOCATION_DISPLAY_PERCENT) && (
+                <FormatPercent value={item.allocation} decimals="percent" />
+              )}
             </TdNarrowStyled>
             <TdNarrowStyled align="right">
               <FormatLargeAmount amount={item.tvlUSD} />

@@ -6,7 +6,6 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import {
   METRIC_CONTRACT_ADDRESSES,
   getMetricContractAbi,
-  MetricContractName,
 } from './contractAddressesMetricsMap';
 import { getFunctionNameFromAbi } from './get-function-name-from-abi';
 
@@ -52,7 +51,7 @@ export const collectRequestAddressMetric = async ({
       if (!methodEncoded || methodEncoded.length !== 10) {
         console.warn(`Invalid methodEncoded: ${methodEncoded}`);
       } else if (contractName) {
-        const abi = getMetricContractAbi(contractName as MetricContractName);
+        const abi = getMetricContractAbi(contractName);
         if (!abi) {
           console.warn(`ABI not found for contract: ${contractName}`);
         } else {
