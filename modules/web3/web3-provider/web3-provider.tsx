@@ -151,12 +151,19 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     config: mainnetConfig,
   });
 
+  // stabilize for useMemo deps, prevents disconnect when config object is recreated w/o updates
+  const stableWalletsDisabled = wallets.disabled.join(',');
+
   const { wagmiConfig, reefKnotConfig, walletsModalConfig } = useMemo(() => {
+    const disabledSet = new Set(
+      stableWalletsDisabled.split(',').filter(Boolean),
+    );
+
     const walletsPinned = WALLETS_PINNED.filter(
-      (walletId) => !wallets.disabled.includes(walletId),
+      (walletId) => !disabledSet.has(walletId),
     );
     const walletsShown = WALLETS_SHOWN.filter(
-      (walletId) => !wallets.disabled.includes(walletId),
+      (walletId) => !disabledSet.has(walletId),
     );
 
     const filteredConfigs = getDefaultConfig({
@@ -184,7 +191,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     });
 
     const filteredWalletsDataList = filteredConfigs.walletsDataList.filter(
-      (wallet) => !wallets.disabled.includes(wallet.walletId),
+      (wallet) => !disabledSet.has(wallet.walletId),
     );
     filteredConfigs.walletsDataList = filteredWalletsDataList;
     filteredConfigs.reefKnotConfig.walletDataList = [
@@ -199,7 +206,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
     transportMap,
-    wallets.disabled,
+    stableWalletsDisabled,
   ]);
 
   const [activeConnection] = useConnections({ config: wagmiConfig });
