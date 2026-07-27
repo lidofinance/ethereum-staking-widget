@@ -42,6 +42,12 @@ const readManifestFromFile = async (
   if (!parsing.success)
     throw new Error(`invalid config received: ${parsing.error?.message}`);
 
+  console.info(
+    `[fetchExternalManifest] loaded manifest file ${manifestPath} with ${
+      Object.keys(parsing.data).length
+    } entries`,
+  );
+
   return parsing.data;
 };
 

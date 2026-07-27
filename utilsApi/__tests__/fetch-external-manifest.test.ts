@@ -38,6 +38,7 @@ vi.mock('utilsApi/fetchApiWrapper', () => ({
 }));
 
 const VALID_MANIFEST = {
+  baseConfig: {},
   '1': { leastSafeVersion: '1.0.0' },
 };
 
@@ -52,16 +53,19 @@ const importFreshModule = async () => {
 
 describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;
+  let infoSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.CONFIG_MANIFEST_PATH = '/app/runtime-config/IPFS.json';
     errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    infoSpy = vi.spyOn(console, 'info').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
     delete process.env.CONFIG_MANIFEST_PATH;
     errorSpy.mockRestore();
+    infoSpy.mockRestore();
   });
 
   it('reads and parses the manifest from file, without remote fetch', async () => {
@@ -161,6 +165,32 @@ describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
     expect(readFileMock).not.toHaveBeenCalled();
     expect(standardFetcherMock).toHaveBeenCalledTimes(1);
     expect(___prefetch_manifest___).toHaveProperty('1');
+  });
+
+  it('logs every successful file load', async () => {
+    readFileMock.mockResolvedValue(JSON.stringify(VALID_MANIFEST));
+    const { fetchExternalManifest } = await importFreshModule();
+
+    await fetchExternalManifest(); // file read -> log
+    await fetchExternalManifest(); // cache hit -> no read, no log
+    // let the memory cache expire so the file is re-read
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    await fetchExternalManifest(); // file read -> log
+
+    expect(infoSpy).toHaveBeenCalledTimes(2);
+    expect(infoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('/app/runtime-config/IPFS.json'),
+    );
+  });
+
+  it('does not log a successful load when the file is broken', async () => {
+    readFileMock.mockRejectedValue(new Error('ENOENT'));
+    const { fetchExternalManifest } = await importFreshModule();
+
+    await fetchExternalManifest();
+
+    expect(infoSpy).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalled();
   });
 
   it('serves last known good manifest when the remote degrades after a successful fetch', async () => {
