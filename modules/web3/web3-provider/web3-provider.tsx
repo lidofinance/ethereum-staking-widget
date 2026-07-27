@@ -37,6 +37,7 @@ import { walletMetricProps } from 'consts/matomo';
 import { SupportL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './use-web3-transport';
 import { wagmiChainMap } from '../consts';
+import { useExternalConfigContext } from 'config/external-config';
 
 type ChainsList = [Chain, ...Chain[]];
 
@@ -81,6 +82,8 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
   } = useUserConfig();
+  const { wallets } = useExternalConfigContext();
+
   const { themeName } = useThemeToggle();
 
   const { supportedChains, defaultChain } = useMemo(() => {
@@ -148,8 +151,22 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     config: mainnetConfig,
   });
 
+  // stabilize for useMemo deps, prevents disconnect when config object is recreated w/o updates
+  const stableWalletsDisabled = wallets.disabled.join(',');
+
   const { wagmiConfig, reefKnotConfig, walletsModalConfig } = useMemo(() => {
-    return getDefaultConfig({
+    const disabledSet = new Set(
+      stableWalletsDisabled.split(',').filter(Boolean),
+    );
+
+    const walletsPinned = WALLETS_PINNED.filter(
+      (walletId) => !disabledSet.has(walletId),
+    );
+    const walletsShown = WALLETS_SHOWN.filter(
+      (walletId) => !disabledSet.has(walletId),
+    );
+
+    const filteredConfigs = getDefaultConfig({
       // Reef-Knot config args
       rpc: backendRPC,
       defaultChain: defaultChain,
@@ -169,9 +186,19 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       // Wallets config args
       ...getDefaultWalletsModalConfig(),
       ...walletMetricProps,
-      walletsPinned: WALLETS_PINNED,
-      walletsShown: WALLETS_SHOWN,
+      walletsPinned,
+      walletsShown,
     });
+
+    const filteredWalletsDataList = filteredConfigs.walletsDataList.filter(
+      (wallet) => !disabledSet.has(wallet.walletId),
+    );
+    filteredConfigs.walletsDataList = filteredWalletsDataList;
+    filteredConfigs.reefKnotConfig.walletDataList = [
+      ...filteredWalletsDataList,
+    ];
+
+    return filteredConfigs;
   }, [
     backendRPC,
     supportedChains,
@@ -179,6 +206,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
     transportMap,
+    stableWalletsDisabled,
   ]);
 
   const [activeConnection] = useConnections({ config: wagmiConfig });
