@@ -92,7 +92,6 @@ export const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 /** @type string */
 export const wqAPIBasePath = process.env.WQ_API_BASE_PATH;
-/** @type string */
 
 /** @type string */
 export const rewardsBackendBasePath = process.env.REWARDS_BACKEND_BASE_PATH;
@@ -106,3 +105,7 @@ export const addressApiValidationEnabled =
 
 /** @type string */
 export const validationFilePath = process.env.VALIDATION_FILE_PATH;
+
+/** @type boolean */
+// CONFIG_MANIFEST_PATH is a file path, so presence check, not toBoolean
+export const useConfigManifestFile = Boolean(process.env.CONFIG_MANIFEST_PATH);

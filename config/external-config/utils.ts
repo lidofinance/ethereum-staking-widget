@@ -5,7 +5,7 @@ import { ManifestSchema, ManifestConfigPages } from './validate';
 
 import type { Manifest, ManifestConfigPage } from './types';
 
-import FallbackLocalManifest from 'IPFS.json';
+import FallbackLocalManifest from 'REMOTE_CONFIG_MANIFEST.json';
 
 export const getManifestKey = (
   defaultChain: number,

@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { Cache } from 'memory-cache';
 import getConfigNext from 'next/config';
-import { IPFS_MANIFEST_URL } from 'consts/external-links';
+import { REMOTE_CONFIG_MANIFEST_URL } from 'consts/external-links';
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -28,112 +28,90 @@ const cache = new Cache<
   ExternalConfigResult
 >();
 
-// served if the file degrades after boot (boot with a broken file is
+// served if the source degrades after boot (boot with a broken file is
 // prevented by scripts/startup-checks/config-manifest.mjs)
-let lastGoodFileManifest: ExternalConfigResult | null = null;
+let lastGoodManifest: ExternalConfigResult | null = null;
 
+// pure loader: read + parse or throw
 const readManifestFromFile = async (
   manifestPath: string,
-): Promise<ExternalConfigResult> => {
-  try {
-    const raw = await fs.readFile(manifestPath, 'utf-8');
-    const parsing = ManifestSchema.safeParse(JSON.parse(raw));
-    if (!parsing.success) {
-      throw new Error(`invalid config received: ${parsing.error?.message}`);
+): Promise<Manifest> => {
+  const raw = await fs.readFile(manifestPath, 'utf-8');
+  const parsing = ManifestSchema.safeParse(JSON.parse(raw));
+
+  if (!parsing.success)
+    throw new Error(`invalid config received: ${parsing.error?.message}`);
+
+  return parsing.data;
+};
+
+// pure loader: fetch with retries + parse or throw
+const fetchManifestFromRemote = async (): Promise<Manifest> => {
+  let lastError: unknown;
+  for (let retries = 3; retries > 0; retries -= 1) {
+    try {
+      const data = await responseTimeExternalMetricWrapper({
+        payload: REMOTE_CONFIG_MANIFEST_URL,
+        request: () =>
+          standardFetcher<unknown>(REMOTE_CONFIG_MANIFEST_URL, {
+            headers: { Accept: 'application/json' },
+          }),
+      });
+      const parsing = ManifestSchema.safeParse(data);
+      if (!parsing.success) {
+        throw new Error(`invalid config received: ${parsing.error?.message}`);
+      }
+
+      return parsing.data;
+    } catch (error) {
+      console.error('[fetchExternalManifest] fetch attempt failed', error);
+
+      lastError = error;
     }
-
-    const result = {
-      ___prefetch_manifest___: parsing.data,
-    };
-
-    lastGoodFileManifest = result;
-    cache.put(
-      config.CACHE_EXTERNAL_CONFIG_KEY,
-      result,
-      config.CACHE_EXTERNAL_CONFIG_FILE_TTL,
-    );
-
-    return result;
-  } catch (error) {
-    console.error(
-      `[fetchExternalManifest] failed to read manifest file at ${manifestPath}`,
-      error,
-    );
-
-    if (lastGoodFileManifest) {
-      console.error(
-        '[fetchExternalManifest] serving last known good file manifest',
-      );
-      return lastGoodFileManifest;
-    }
-
-    console.error(
-      '[fetchExternalManifest] no last known good manifest, falling back to the local manifest',
-    );
-    return {
-      ___prefetch_manifest___: getLocalFallbackManifest(),
-    };
   }
+
+  throw lastError;
 };
 
 export const fetchExternalManifest =
   async (): Promise<ExternalConfigResult> => {
-    const cachedConfig = cache.get(config.CACHE_EXTERNAL_CONFIG_KEY);
-    if (cachedConfig) return cachedConfig;
-
     // for IPFS build we use local manifest
     // this allows local CID verification
     if (config.ipfsMode) {
-      return {
-        ___prefetch_manifest___: getLocalFallbackManifest(),
-      };
+      return { ___prefetch_manifest___: getLocalFallbackManifest() };
     }
+
+    const cached = cache.get(config.CACHE_EXTERNAL_CONFIG_KEY);
+    if (cached) return cached;
 
     // with CONFIG_MANIFEST_PATH the file is the source of truth, no remote fetch
     const manifestPath = getConfigManifestPath();
-    if (manifestPath) {
-      return readManifestFromFile(manifestPath);
-    }
+    try {
+      const manifest = manifestPath
+        ? await readManifestFromFile(manifestPath)
+        : await fetchManifestFromRemote();
 
-    let retries = 3;
-    while (retries > 0) {
-      try {
-        const data = await responseTimeExternalMetricWrapper({
-          payload: IPFS_MANIFEST_URL,
-          request: () =>
-            standardFetcher<unknown>(IPFS_MANIFEST_URL, {
-              headers: { Accept: 'application/json' },
-            }),
-        });
-        const parsing = ManifestSchema.safeParse(data);
-        if (!parsing.success) {
-          throw new Error(`invalid config received: ${parsing.error?.message}`);
-        }
+      const result = { ___prefetch_manifest___: manifest };
+      lastGoodManifest = result;
+      cache.put(
+        config.CACHE_EXTERNAL_CONFIG_KEY,
+        result,
+        manifestPath
+          ? config.CACHE_EXTERNAL_CONFIG_FILE_TTL
+          : config.CACHE_EXTERNAL_CONFIG_TTL,
+      );
+      return result;
+    } catch (error) {
+      console.error('[fetchExternalManifest] failed to load manifest', error);
 
-        const result = {
-          ___prefetch_manifest___: parsing.data,
-        };
-
-        cache.put(
-          config.CACHE_EXTERNAL_CONFIG_KEY,
-          result,
-          config.CACHE_EXTERNAL_CONFIG_TTL,
-        );
-
-        return result;
-      } catch (error) {
+      if (lastGoodManifest) {
         console.error(
-          `[fetchExternalManifest] failed to fetch external manifest`,
-          error,
+          '[fetchExternalManifest] serving last known good manifest',
         );
-        retries -= 1;
-      }
-    }
-    console.error(
-      `[fetchExternalManifest] failed to fetch external manifest after retries`,
-    );
 
-    return {
-      ___prefetch_manifest___: getLocalFallbackManifest(),
-    };
+        return lastGoodManifest;
+      }
+
+      return { ___prefetch_manifest___: getLocalFallbackManifest() };
+    }
   };

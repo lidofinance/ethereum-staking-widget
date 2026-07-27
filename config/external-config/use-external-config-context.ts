@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { IPFS_MANIFEST_URL } from 'consts/external-links';
+import { REMOTE_CONFIG_MANIFEST_URL } from 'consts/external-links';
 import { API_ROUTES } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useEarnRuntimeState } from 'features/earn/shared/hooks/use-earn-state';
@@ -17,15 +17,13 @@ import { ManifestSchema } from './validate';
 import { getManifestKey } from './utils';
 import type { ExternalConfig, ManifestConfig, ManifestEntry } from './types';
 
-// IPFS builds (no backend) and the dev override fetch the manifest directly;
-// self-hosted builds use the own API route
+// IPFS builds (no backend) and legacy builds (no CONFIG_MANIFEST_PATH) fetch
+// the manifest from github; file mode serves it from the own API route
 const getManifestUrl = (): string => {
-  if (
-    config.ipfsMode ||
-    process.env.NEXT_PUBLIC_DANGEROUS_DEV_ONLY_OVERRIDE_IPFS_CONFIG_PATH
-  ) {
-    return IPFS_MANIFEST_URL;
+  if (config.ipfsMode || !config.useConfigManifestFile) {
+    return REMOTE_CONFIG_MANIFEST_URL;
   }
+
   const BASE_URL = typeof window === 'undefined' ? '' : window.location.origin;
 
   return `${BASE_URL}/${API_ROUTES.CONFIG_MANIFEST}`;

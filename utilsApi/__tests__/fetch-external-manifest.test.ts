@@ -13,8 +13,8 @@ vi.mock('config', () => ({
     ipfsMode: false,
     developmentMode: false,
     CACHE_EXTERNAL_CONFIG_KEY: 'cache-external-config',
-    CACHE_EXTERNAL_CONFIG_TTL: 600_000,
-    // short TTL so tests can await real cache expiry
+    // short TTLs so tests can await real cache expiry
+    CACHE_EXTERNAL_CONFIG_TTL: 50,
     CACHE_EXTERNAL_CONFIG_FILE_TTL: 50,
   },
 }));
@@ -95,7 +95,7 @@ describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
 
     const { ___prefetch_manifest___ } = await fetchExternalManifest();
 
-    // local fallback is the bundled IPFS.json
+    // local fallback is the bundled REMOTE_CONFIG_MANIFEST.json
     expect(___prefetch_manifest___).toHaveProperty('1');
     expect(standardFetcherMock).not.toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalled();
@@ -161,5 +161,23 @@ describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
     expect(readFileMock).not.toHaveBeenCalled();
     expect(standardFetcherMock).toHaveBeenCalledTimes(1);
     expect(___prefetch_manifest___).toHaveProperty('1');
+  });
+
+  it('serves last known good manifest when the remote degrades after a successful fetch', async () => {
+    delete process.env.CONFIG_MANIFEST_PATH;
+    standardFetcherMock.mockResolvedValueOnce(VALID_MANIFEST);
+    standardFetcherMock.mockRejectedValue(new Error('502'));
+    const { fetchExternalManifest } = await importFreshModule();
+
+    await fetchExternalManifest();
+    // let the memory cache expire so the remote is re-fetched
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    const { ___prefetch_manifest___ } = await fetchExternalManifest();
+
+    // 1 successful fetch + 3 failed retries
+    expect(standardFetcherMock).toHaveBeenCalledTimes(4);
+    // last good remote config, not the bundled local fallback
+    expect(___prefetch_manifest___['1']?.leastSafeVersion).toBe('1.0.0');
+    expect(errorSpy).toHaveBeenCalled();
   });
 });
