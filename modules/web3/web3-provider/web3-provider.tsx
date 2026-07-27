@@ -151,15 +151,22 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     config: mainnetConfig,
   });
 
+  // stabilize for useMemo deps, prevents disconnect when config object is recreated w/o updates
+  const stableWalletsDisabled = wallets.disabled.join(',');
+
   const { wagmiConfig, reefKnotConfig, walletsModalConfig } = useMemo(() => {
-    const walletsPinned = WALLETS_PINNED.filter(
-      (walletId) => !wallets.disabled.includes(walletId),
-    );
-    const walletsShown = WALLETS_SHOWN.filter(
-      (walletId) => !wallets.disabled.includes(walletId),
+    const disabledSet = new Set(
+      stableWalletsDisabled.split(',').filter(Boolean),
     );
 
-    return getDefaultConfig({
+    const walletsPinned = WALLETS_PINNED.filter(
+      (walletId) => !disabledSet.has(walletId),
+    );
+    const walletsShown = WALLETS_SHOWN.filter(
+      (walletId) => !disabledSet.has(walletId),
+    );
+
+    const filteredConfigs = getDefaultConfig({
       // Reef-Knot config args
       rpc: backendRPC,
       defaultChain: defaultChain,
@@ -179,9 +186,19 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       // Wallets config args
       ...getDefaultWalletsModalConfig(),
       ...walletMetricProps,
-      walletsPinned: walletsPinned,
-      walletsShown: walletsShown,
+      walletsPinned,
+      walletsShown,
     });
+
+    const filteredWalletsDataList = filteredConfigs.walletsDataList.filter(
+      (wallet) => !disabledSet.has(wallet.walletId),
+    );
+    filteredConfigs.walletsDataList = filteredWalletsDataList;
+    filteredConfigs.reefKnotConfig.walletDataList = [
+      ...filteredWalletsDataList,
+    ];
+
+    return filteredConfigs;
   }, [
     backendRPC,
     supportedChains,
@@ -189,7 +206,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
     transportMap,
-    wallets.disabled,
+    stableWalletsDisabled,
   ]);
 
   const [activeConnection] = useConnections({ config: wagmiConfig });
