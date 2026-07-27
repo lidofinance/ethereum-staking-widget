@@ -208,6 +208,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
   const validateApproval = useCallback(async (): Promise<boolean> => {
     const payload = lastTradeParamsRef.current;
     if (!payload) {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteError);
       await showModal('blocked', [TRADE_BUILD_ERROR(1003)], false);
       return false;
     }
@@ -216,6 +217,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
     const { level, messages } = analyzeParams(payload, tradeThresholds);
 
     if (level !== 'safe') {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteError);
       await showModal(level, messages, false);
       return false;
     }
