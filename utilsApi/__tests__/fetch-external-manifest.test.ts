@@ -37,6 +37,17 @@ vi.mock('utilsApi/fetchApiWrapper', () => ({
   }) => request(),
 }));
 
+const { metricsLabelsMock } = vi.hoisted(() => ({
+  metricsLabelsMock: vi.fn(() => ({ inc: vi.fn() })),
+}));
+vi.mock('utilsApi/metrics', () => ({
+  default: {
+    request: {
+      configManifestLoadError: { labels: metricsLabelsMock },
+    },
+  },
+}));
+
 const VALID_MANIFEST = {
   baseConfig: {},
   '1': { leastSafeVersion: '1.0.0' },
@@ -191,6 +202,42 @@ describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
 
     expect(infoSpy).not.toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalled();
+  });
+
+  it('treats a whitespace-only CONFIG_MANIFEST_PATH as unset', async () => {
+    process.env.CONFIG_MANIFEST_PATH = '   ';
+    standardFetcherMock.mockResolvedValue(VALID_MANIFEST);
+    const { fetchExternalManifest } = await importFreshModule();
+
+    const { ___prefetch_manifest___ } = await fetchExternalManifest();
+
+    expect(readFileMock).not.toHaveBeenCalled();
+    expect(standardFetcherMock).toHaveBeenCalledTimes(1);
+    expect(___prefetch_manifest___).toHaveProperty('1');
+  });
+
+  it('reports a load-error metric with the file source when the file is broken', async () => {
+    readFileMock.mockRejectedValue(new Error('ENOENT'));
+    const { fetchExternalManifest } = await importFreshModule();
+
+    await fetchExternalManifest();
+
+    expect(metricsLabelsMock).toHaveBeenCalledWith({ source: 'file' });
+  });
+
+  it('tracks the served manifest source for the X-Manifest-Source header', async () => {
+    readFileMock.mockResolvedValueOnce(JSON.stringify(VALID_MANIFEST));
+    readFileMock.mockRejectedValue(new Error('EACCES'));
+    const { fetchExternalManifest, getLastManifestSource } =
+      await importFreshModule();
+
+    await fetchExternalManifest();
+    expect(getLastManifestSource()).toBe('file');
+
+    // let the memory cache expire so the file is re-read
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    await fetchExternalManifest();
+    expect(getLastManifestSource()).toBe('last-known-good');
   });
 
   it('serves last known good manifest when the remote degrades after a successful fetch', async () => {

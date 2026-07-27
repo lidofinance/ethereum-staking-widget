@@ -8,14 +8,34 @@ const globalStartupManifestFileChecks = globalThis.__startupManifestFileChecks |
 };
 globalThis.__startupManifestFileChecks = globalStartupManifestFileChecks;
 
-// structural check only; full zod validation happens in fetch-external-manifest
-const isValidManifest = (data) => {
-  return (
-    typeof data === 'object' &&
-    data !== null &&
-    !Array.isArray(data) &&
-    Object.keys(data).length > 0
+// core invariants of ManifestSchema (config/external-config/validate.ts);
+// full zod validation happens in fetch-external-manifest
+const MANIFEST_KEY_REGEX = /^[1-9]\d*(?:-.+)?$/;
+
+const isPlainObject = (value) =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+// returns an error message or null
+export const validateManifest = (data) => {
+  if (!isPlainObject(data)) {
+    return 'manifest must be a non-array object';
+  }
+  if (!isPlainObject(data.baseConfig)) {
+    return 'a baseConfig object is required';
+  }
+  const chainKeys = Object.keys(data).filter((key) =>
+    MANIFEST_KEY_REGEX.test(key),
   );
+  if (chainKeys.length === 0) {
+    return 'at least one chain-keyed entry is required';
+  }
+  for (const key of chainKeys) {
+    const entry = data[key];
+    if (!isPlainObject(entry) || typeof entry.leastSafeVersion !== 'string') {
+      return `entry "${key}" must be an object with a string leastSafeVersion`;
+    }
+  }
+  return null;
 };
 
 const checkManifestFile = async (filePath) => {
@@ -29,7 +49,7 @@ const checkManifestFile = async (filePath) => {
     }
 
     // Read file content
-    const raw = await fs.readFile(filePath, 'utf8');
+    const raw = await fs.readFile(filePath, 'utf-8');
 
     // Parse JSON
     let parsed;
@@ -40,10 +60,9 @@ const checkManifestFile = async (filePath) => {
     }
 
     // Validate structure
-    if (!isValidManifest(parsed)) {
-      throw new Error(
-        'Invalid manifest format. Expected a non-empty object keyed by chain id',
-      );
+    const validationError = validateManifest(parsed);
+    if (validationError) {
+      throw new Error(`Invalid manifest format: ${validationError}`);
     }
 
     console.info(

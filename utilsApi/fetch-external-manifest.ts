@@ -3,6 +3,7 @@ import { Cache } from 'memory-cache';
 import getConfigNext from 'next/config';
 import { REMOTE_CONFIG_MANIFEST_URL } from 'consts/external-links';
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
+import Metrics from 'utilsApi/metrics';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import { config } from 'config';
@@ -17,11 +18,23 @@ export type ExternalConfigResult = {
   ___prefetch_manifest___: Manifest;
 };
 
+export type ManifestSource =
+  'file' | 'remote' | 'last-known-good' | 'local-fallback';
+
+// what the last fetchExternalManifest call actually served,
+// exposed as the X-Manifest-Source header by api/config-manifest
+let lastManifestSource: ManifestSource = 'local-fallback';
+
+export const getLastManifestSource = (): ManifestSource => lastManifestSource;
+
 const { serverRuntimeConfig } = getConfigNext();
 
-// manifest file mounted into the container (e.g. k8s configmap)
+// manifest file mounted into the container (e.g. k8s configmap);
+// trim so a whitespace-only env behaves like an unset one, same as the startup check
 const getConfigManifestPath = (): string | undefined =>
-  process.env.CONFIG_MANIFEST_PATH || serverRuntimeConfig.configManifestPath;
+  (
+    process.env.CONFIG_MANIFEST_PATH || serverRuntimeConfig.configManifestPath
+  )?.trim() || undefined;
 
 const cache = new Cache<
   typeof config.CACHE_EXTERNAL_CONFIG_KEY,
@@ -99,6 +112,7 @@ export const fetchExternalManifest =
 
       const result = { ___prefetch_manifest___: manifest };
       lastGoodManifest = result;
+      lastManifestSource = manifestPath ? 'file' : 'remote';
       cache.put(
         config.CACHE_EXTERNAL_CONFIG_KEY,
         result,
@@ -109,14 +123,20 @@ export const fetchExternalManifest =
       return result;
     } catch (error) {
       console.error('[fetchExternalManifest] failed to load manifest', error);
+      Metrics.request.configManifestLoadError
+        .labels({ source: manifestPath ? 'file' : 'remote' })
+        .inc(1);
 
       if (lastGoodManifest) {
         console.error(
           '[fetchExternalManifest] serving last known good manifest',
         );
+        lastManifestSource = 'last-known-good';
 
         return lastGoodManifest;
       }
+
+      lastManifestSource = 'local-fallback';
 
       return { ___prefetch_manifest___: getLocalFallbackManifest() };
     }

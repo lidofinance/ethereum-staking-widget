@@ -14,12 +14,17 @@ import {
   cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { fetchExternalManifest } from 'utilsApi/fetch-external-manifest';
+import {
+  fetchExternalManifest,
+  getLastManifestSource,
+} from 'utilsApi/fetch-external-manifest';
 
 // serves the manifest from the same source as the SSR prefetch:
 // CONFIG_MANIFEST_PATH file or the cached remote manifest
 const configManifest: API = async (req, res) => {
   const { ___prefetch_manifest___ } = await fetchExternalManifest();
+  // lets probes distinguish a degraded manifest from a healthy one
+  res.setHeader('X-Manifest-Source', getLastManifestSource());
   res.status(200).json(___prefetch_manifest___);
 };
 

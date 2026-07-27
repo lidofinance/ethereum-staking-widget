@@ -26,7 +26,7 @@ const getManifestUrl = (): string => {
 
   const BASE_URL = typeof window === 'undefined' ? '' : window.location.origin;
 
-  return `${BASE_URL}/${API_ROUTES.CONFIG_MANIFEST}`;
+  return `${BASE_URL}${config.basePath ?? ''}/${API_ROUTES.CONFIG_MANIFEST}`;
 };
 
 export const useExternalConfigContext = (
