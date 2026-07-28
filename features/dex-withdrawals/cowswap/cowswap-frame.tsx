@@ -8,12 +8,13 @@ import {
 import { useCallback, useMemo } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
-
-import { LOCALE } from 'config/groups/locale';
+import { debounce } from 'lodash';
 import { useTheme } from 'styled-components';
-import { useAddressValidation } from 'providers/address-validation-provider';
 import { themeDark, themeLight } from '@lidofinance/lido-ui';
+
 import { useDappStatus } from 'modules/web3';
+import { LOCALE } from 'config/groups/locale';
+import { useAddressValidation } from 'providers/address-validation-provider';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 
@@ -26,8 +27,8 @@ import {
   LIDO_APP_CODE,
   COWSWAP_BASE_URL,
   MAX_ORDER_AGE_MINUTES,
+  TRADE_REPORT_EVENT_DEBOUNCE_MS,
 } from './consts';
-import { LoaderStyled, DexWrapper } from './styles';
 import {
   useCowSwapEthereumProvider,
   useCspBlocked,
@@ -36,8 +37,12 @@ import {
   useLoadingStates,
   useRefetchBalances,
 } from './hooks';
-
 import { useTradeGuard, TradeGuardModal } from './trade-guard';
+import { LoaderStyled, DexWrapper } from './styles';
+
+const debouncedTrackQuoteViewed = debounce(() => {
+  trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteViewed);
+}, TRADE_REPORT_EVENT_DEBOUNCE_MS);
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
   baseTheme: 'dark',
@@ -256,7 +261,7 @@ export const CowswapFrame = () => {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
         handler: (payload: OnTradeParamsPayload) => {
           const sellTokenSymbol = payload.sellToken?.symbol?.toLowerCase();
-
+          debouncedTrackQuoteViewed();
           // Force widget refresh to reset invalid token selection
           if (
             sellTokenSymbol &&
