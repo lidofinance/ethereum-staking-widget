@@ -1,9 +1,6 @@
 # build env
 FROM node:24-alpine AS build
 
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-RUN corepack enable
-
 ARG BUILD_VERSION=dev
 ARG BUILD_BRANCH=develop
 ARG BUILD_COMMIT=unknown
@@ -11,7 +8,10 @@ ARG BUILD_COMMIT=unknown
 WORKDIR /app
 
 RUN apk add --no-cache git=~2
+# .yarn/releases is the committed yarn pinned by yarnPath in .yarnrc.yml;
+# the stock Yarn 1 from the node image delegates to it — no corepack needed
 COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/releases .yarn/releases
 # copy with validate_addresses JSON file
 # COPY package.json yarn.lock .yarnrc.yml validate_addresses.example.json ./
 
@@ -30,9 +30,6 @@ RUN rm -rf /app/public/runtime && mkdir /app/public/runtime && chown node /app/p
 # final image
 FROM node:24-alpine AS base
 
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-RUN corepack enable
-
 ARG BASE_PATH=""
 ARG SUPPORTED_CHAINS="1"
 ARG DEFAULT_CHAIN="1"
@@ -47,9 +44,6 @@ RUN apk add --no-cache curl=~8
 
 COPY --from=build /app /app
 RUN chown -R node:node /app/.next
-
-# pre-cache the yarn version pinned in packageManager so `yarn start` needs no network
-RUN yarn --version
 
 USER node
 EXPOSE 3000
