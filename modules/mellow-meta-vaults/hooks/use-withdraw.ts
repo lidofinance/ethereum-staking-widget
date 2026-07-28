@@ -12,6 +12,7 @@ import {
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { ErrorMessage, getError } from 'utils';
+import { overrideWithQAMockBigInt } from 'utils/qa';
 import {
   CollectorContract,
   AsyncRedeemQueueWritableContract,
@@ -20,6 +21,10 @@ import {
 import { TxModalStages } from '../types/tx-modal-stages';
 import { COLLECTOR_CONFIG } from '../consts';
 import { meetsSyncRedeemRequirements } from '../utils/sync-redeem-requirements';
+
+const QA_REMAINING_DAILY_LIMIT_KEY =
+  'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit';
+const QA_LIQUID_ASSETS_KEY = 'mock-qa-helpers-mellow-sync-redeem-liquid-assets';
 
 type SyncWithdrawAvailability =
   | { status: 'available' }
@@ -53,13 +58,17 @@ export const useWithdraw = ({
       invariant(address, 'needs address');
 
       const checkSyncWithdrawAvailability = async () => {
-        const [, remainingDailyLimit] =
+        const [, actualRemainingDailyLimit] =
           await syncRedeemQueue.read.remainingDailyLimit();
+        const remainingDailyLimit = overrideWithQAMockBigInt(
+          actualRemainingDailyLimit,
+          QA_REMAINING_DAILY_LIMIT_KEY,
+        );
 
         // Eager return to save rpc calls, duplicates predicate from meetsSyncRedeemRequirements
         if (amount > remainingDailyLimit) return false;
 
-        const [{ assets }, liquidAssets] = await Promise.all([
+        const [{ assets }, actualLiquidAssets] = await Promise.all([
           collector.read.getWithdrawalParams([
             amount,
             syncRedeemQueue.address,
@@ -67,6 +76,10 @@ export const useWithdraw = ({
           ]) as Promise<{ assets: bigint }>,
           syncRedeemQueue.read.getLiquidAssets(),
         ]);
+        const liquidAssets = overrideWithQAMockBigInt(
+          actualLiquidAssets,
+          QA_LIQUID_ASSETS_KEY,
+        );
 
         return meetsSyncRedeemRequirements({
           requestedShares: amount,
