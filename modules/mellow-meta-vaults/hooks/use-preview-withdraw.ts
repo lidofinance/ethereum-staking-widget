@@ -5,7 +5,10 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
-import { CollectorContract, RedeemQueueContract } from '../types/contracts';
+import {
+  CollectorContract,
+  AsyncRedeemQueueContract,
+} from '../types/contracts';
 import { TOKENS, type Token } from 'consts/tokens';
 
 export type WithdrawParams = {
@@ -18,7 +21,7 @@ export const usePreviewWithdraw = ({
   collector,
   shares,
 }: {
-  redeemQueue: RedeemQueueContract;
+  redeemQueue: AsyncRedeemQueueContract;
   redeemQueueToken: Token;
   collector: CollectorContract;
   shares: bigint | null | undefined;

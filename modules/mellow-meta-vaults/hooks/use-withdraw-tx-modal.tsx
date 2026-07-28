@@ -8,6 +8,7 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { FormatToken } from 'shared/formatters';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
+import { TxStageInstantWithdrawalUnavailable } from '../components/tx-stage-instant-withdrawal-unavailable';
 import { type TokenSymbol } from 'consts/tokens';
 import { getTokenDecimals } from 'utils/token-decimals';
 
@@ -43,6 +44,11 @@ const getTxModalStagesRequest = (
         txHash={txHash}
       />,
     ),
+
+  instantWithdrawalUnavailable: () =>
+    transitStage(<TxStageInstantWithdrawalUnavailable />, {
+      isClosableOnLedger: true,
+    }),
 
   success: (amount: bigint, txHash?: Hash) =>
     transitStage(

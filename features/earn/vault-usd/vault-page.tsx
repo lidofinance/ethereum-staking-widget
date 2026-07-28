@@ -6,8 +6,12 @@ import { PartnerNethermindIconCircle, VaultUsdIcon } from 'assets/earn-v2';
 import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
+import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
 
 import { VaultAllocation } from '../shared/v2/vault-allocation/vault-allocation';
+import { Disclaimers } from '../shared/v2/disclaimers';
+import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
 
 import { UsdVaultPositionManager } from './position-manager/position-manager';
 import { EarnUsdFaq } from './faq/faq';
@@ -15,15 +19,12 @@ import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultPosition } from './hooks/use-position';
-import { Disclaimers } from '../shared/v2/disclaimers';
 import { UsdVaultApyHint } from './components/apy-hint';
-import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
 import {
   USD_VAULT_DESCRIPTION,
   USD_VAULT_TITLE,
   USD_VAULT_TOKEN_SYMBOL,
 } from './consts';
-import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { ProtectedTooltip } from './protected-tooltip';
 
 const FEES = [
@@ -64,8 +65,7 @@ const GENERAL_INFO_RIGHT: Array<{
   {
     label: 'Withdrawal wait time',
     value: 'up to 72 hours',
-    tooltip:
-      'Withdrawals take up to 72 hours to process. Once ready, your funds can be claimed in the Lido UI',
+    tooltip: WITHDRAWAL_WAITING_TIME_TOOLTIP,
   },
   {
     label: (

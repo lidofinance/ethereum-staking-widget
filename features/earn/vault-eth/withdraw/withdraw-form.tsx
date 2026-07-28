@@ -8,6 +8,7 @@ import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
 import { VaultWithdrawWarning } from 'features/earn/shared/v2/vault-warning/vault-withdraw-warning';
+import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
 
 import { EthVaultWithdrawFormProvider } from './form-context';
 import { EthVaultWithdrawInput } from './withdraw-input';
@@ -45,12 +46,7 @@ const EthVaultWithdrawFormContent: FC = () => {
             <VaultTxInfoRow
               title="Waiting time"
               data-testid="waiting-time"
-              help={
-                <>
-                  Withdrawals take up to 72 hours to process. Once ready, your
-                  funds can be claimed in the Lido UI
-                </>
-              }
+              help={WITHDRAWAL_WAITING_TIME_TOOLTIP}
             >
               {'up to 72 hours'}
             </VaultTxInfoRow>
