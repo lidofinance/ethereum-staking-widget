@@ -70,6 +70,10 @@ RATE_LIMIT_TIME_FRAME=60      # Time window in seconds
 BASE_PATH=...                 # Next.js basePath
 NODE_ENV=development|production
 PORT=3000                     # Server port
+CONFIG_MANIFEST_PATH=...      # Path to a mounted config manifest file (e.g. k8s configmap);
+                              # when set, it replaces the remote GitHub manifest for SSR and
+                              # is served to the browser via /api/config-manifest.
+                              # The file is public: never put deployment-private data in it.
 ```
 
 ## ipfs.json

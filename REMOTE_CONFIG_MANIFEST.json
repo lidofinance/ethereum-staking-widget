@@ -1,0 +1,194 @@
+{
+  "baseConfig": {
+    "withdrawalDex": {
+      "integration": "cowswap",
+      "enabled": true
+    },
+    "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
+    "earnVaultsBanner": {
+      "showOnStakeForm": true,
+      "showAfterStake": true
+    },
+    "earnVaults": [
+      { "name": "eth" },
+      { "name": "usd" },
+      { "name": "strategy", "deprecated": true },
+      {
+        "name": "ggv",
+        "apy": { "type": "weekly_moving_average" },
+        "deprecated": true
+      },
+      { "name": "dvv", "deprecated": true }
+    ],
+    "featureFlags": {
+      "disableSendCalls": false,
+      "dgBannerEnabled": true,
+      "rewardsMaintenance": false,
+      "holidayDecorEnabled": false,
+      "forceAllowance": false,
+      "amountBannerEnabled": true
+    },
+    "earnAllocation": {
+      "labelAllowList": [],
+      "hiddenIds": []
+    },
+    "pages": {
+      "/earn": {
+        "showNew": true,
+        "shouldDisable": false
+      }
+    },
+    "api": {
+      "validation": {
+        "version": "1"
+      }
+    }
+  },
+  "1": {
+    "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
+    "leastSafeVersion": "0.76.1",
+    "config": {
+      "withdrawalDex": {
+        "integration": "cowswap",
+        "enabled": true
+      },
+      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
+      "earnVaultsBanner": {
+        "showOnStakeForm": true,
+        "showAfterStake": true
+      },
+      "earnVaults": [
+        { "name": "eth" },
+        { "name": "usd" },
+        { "name": "strategy", "deprecated": true },
+        {
+          "name": "ggv",
+          "apy": { "type": "weekly_moving_average" },
+          "deprecated": true
+        },
+        { "name": "dvv", "deprecated": true }
+      ],
+      "featureFlags": {
+        "disableSendCalls": false,
+        "dgBannerEnabled": true,
+        "rewardsMaintenance": false,
+        "holidayDecorEnabled": false,
+        "forceAllowance": false,
+        "amountBannerEnabled": true
+      },
+      "earnAllocation": {
+        "labelAllowList": [],
+        "hiddenIds": []
+      },
+      "pages": {
+        "/earn": {
+          "showNew": true,
+          "shouldDisable": false
+        }
+      },
+      "api": {
+        "validation": {
+          "version": "2"
+        }
+      }
+    }
+  },
+  "1-staging": {
+    "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
+    "leastSafeVersion": "0.76.1",
+    "config": {
+      "withdrawalDex": {
+        "integration": "cowswap",
+        "enabled": true
+      },
+      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
+      "earnVaultsBanner": {
+        "showOnStakeForm": true,
+        "showAfterStake": true
+      },
+      "earnVaults": [
+        { "name": "eth" },
+        { "name": "usd" },
+        { "name": "strategy", "deprecated": true },
+        {
+          "name": "ggv",
+          "apy": { "type": "weekly_moving_average" },
+          "deprecated": true
+        },
+        { "name": "dvv", "deprecated": true }
+      ],
+      "featureFlags": {
+        "disableSendCalls": false,
+        "dgBannerEnabled": true,
+        "rewardsMaintenance": false,
+        "holidayDecorEnabled": false,
+        "forceAllowance": false,
+        "amountBannerEnabled": true
+      },
+      "earnAllocation": {
+        "labelAllowList": [],
+        "hiddenIds": []
+      },
+      "pages": {
+        "/earn": {
+          "showNew": true,
+          "shouldDisable": false
+        }
+      },
+      "api": {
+        "validation": {
+          "version": "1"
+        }
+      }
+    }
+  },
+  "11155111": {
+    "__warning__": "For testing purposes only",
+    "cid": "",
+    "leastSafeVersion": "0.36.1",
+    "config": {
+      "withdrawalDex": {
+        "enabled": false
+      },
+      "multiChainBanner": [],
+      "earnVaultsBanner": {
+        "showOnStakeForm": false,
+        "showAfterStake": false
+      },
+      "earnVaults": [],
+      "featureFlags": {
+        "ledgerLiveL2": true,
+        "dgBannerEnabled": false,
+        "amountBannerEnabled": false
+      },
+      "pages": {
+        "/withdrawals": {
+          "shouldDisable": true
+        },
+        "/rewards": {
+          "shouldDisable": true
+        },
+        "/earn": {
+          "showNew": false,
+          "shouldDisable": true
+        }
+      }
+    }
+  },
+  "560048": {
+    "__warning__": "For testing purposes only",
+    "cid": "",
+    "leastSafeVersion": "0.36.1",
+    "config": {
+      "withdrawalDex": {
+        "enabled": false
+      },
+      "multiChainBanner": [],
+      "featureFlags": {
+        "ledgerLiveL2": true,
+        "dgBannerEnabled": false,
+        "dgWarningState": false
+      }
+    }
+  }
+}
