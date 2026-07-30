@@ -179,7 +179,7 @@ export const useWithdraw = ({
             return txModalStages.pending(amount, txHashOrCallId, isAA);
           },
           onSuccess: async ({ txHash }) => {
-            txModalStages.success(amount, txHash);
+            txModalStages.success(amount, txHash, isSyncWithdrawRoute);
             if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
           },
           onMultisigDone: () => {

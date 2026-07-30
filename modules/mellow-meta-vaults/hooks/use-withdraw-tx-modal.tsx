@@ -50,22 +50,37 @@ const getTxModalStagesRequest = (
       isClosableOnLedger: true,
     }),
 
-  success: (amount: bigint, txHash?: Hash) =>
+  success: (amount: bigint, txHash?: Hash, isInstant?: boolean) =>
     transitStage(
       <TxStageSuccess
         txHash={txHash}
-        title={'Withdrawal request has been sent'}
+        title={
+          isInstant
+            ? 'Withdrawal completed'
+            : 'Withdrawal request has been sent'
+        }
         showEtherscan
         description={
-          <>
-            Request to withdraw{' '}
-            <FormatToken
-              amount={amount}
-              symbol={stageOperationArgs.token}
-              decimals={getTokenDecimals(stageOperationArgs.token)}
-            />{' '}
-            has been sent.
-          </>
+          isInstant ? (
+            <>
+              <FormatToken
+                amount={amount}
+                symbol={stageOperationArgs.token}
+                decimals={getTokenDecimals(stageOperationArgs.token)}
+              />{' '}
+              has been withdrawn instantly.
+            </>
+          ) : (
+            <>
+              Request to withdraw{' '}
+              <FormatToken
+                amount={amount}
+                symbol={stageOperationArgs.token}
+                decimals={getTokenDecimals(stageOperationArgs.token)}
+              />{' '}
+              has been sent.
+            </>
+          )
         }
       />,
       {
