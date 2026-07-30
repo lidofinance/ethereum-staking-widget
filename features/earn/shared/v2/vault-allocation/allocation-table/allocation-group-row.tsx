@@ -43,7 +43,9 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
                 <FormatPercent value={group.allocation} decimals="percent" />
               </ProtocolNamePercent>
               {group.name}
-              {group.info && <VaultTip>{group.info}</VaultTip>}
+              {group.info && (
+                <VaultTip placement="right">{group.info}</VaultTip>
+              )}
             </ProtocolNameStyled>
           </GroupNameStyled>
         </GroupTdStyled>
@@ -66,7 +68,9 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
               />
               <ProtocolNameStyled>
                 {item.label}
-                {item.info && <VaultTip>{item.info}</VaultTip>}
+                {item.info && (
+                  <VaultTip placement="right">{item.info}</VaultTip>
+                )}
               </ProtocolNameStyled>
             </NestedTdWithIconStyled>
             <TdNarrowStyled align="right">
