@@ -1,3 +1,6 @@
+import type { TransactionReceipt } from 'viem';
+
+import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
 import {
   getErrorMessage,
   ErrorMessage,
@@ -35,6 +38,16 @@ describe('getErrorMessage', () => {
   it('should return SOMETHING_WRONG error message when error is undefined', () => {
     const error = undefined;
     expect(getErrorMessage(error)).toBe(ErrorMessage.SOMETHING_WRONG);
+  });
+
+  // Guards the wiring between the tx-flow reverted-receipt check and the
+  // user-facing copy: TransactionRevertedError must not degrade to
+  // "Something went wrong."
+  it('should return TRANSACTION_REVERTED error message for TransactionRevertedError', () => {
+    const error = new TransactionRevertedError({
+      status: 'reverted',
+    } as TransactionReceipt);
+    expect(getErrorMessage(error)).toBe(ErrorMessage.TRANSACTION_REVERTED);
   });
 });
 
