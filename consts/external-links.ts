@@ -8,7 +8,6 @@ export const OPEN_OCEAN_REFERRAL_ADDRESS =
 export const GITHUB_RAW_MAIN_PATH =
   'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main';
 
-// TODO: switch to REMOTE_CONFIG_MANIFEST.json once this branch reaches main;
-// until then the new file does not exist on main and the fetch would 404
+// NB: pinned IPFS builds read IPFS.json from main indefinitely — keep both files in sync
 export const REMOTE_CONFIG_MANIFEST_URL =
   GITHUB_RAW_MAIN_PATH + '/REMOTE_CONFIG_MANIFEST.json';
