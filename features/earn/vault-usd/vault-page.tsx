@@ -64,7 +64,7 @@ const GENERAL_INFO_RIGHT: Array<{
 }> = [
   {
     label: 'Withdrawal wait time',
-    value: 'up to 72 hours',
+    value: 'Instant or up to 72 hours',
     tooltip: WITHDRAWAL_WAITING_TIME_TOOLTIP,
   },
   {

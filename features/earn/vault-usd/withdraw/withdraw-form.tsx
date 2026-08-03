@@ -40,7 +40,7 @@ const UsdVaultWithdrawFormContent: FC = () => {
           data-testid="waiting-time"
           help={WITHDRAWAL_WAITING_TIME_TOOLTIP}
         >
-          {'up to 72 hours'}
+          {'Instant or up to 72 hours'}
         </VaultTxInfoRow>
       </VaultTxInfo>
       <UsdVaultWithdrawSubmitButton />
