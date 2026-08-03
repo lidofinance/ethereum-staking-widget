@@ -1,6 +1,9 @@
 import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
+import { getRPCChecks } from './scripts/startup-checks/rpc.mjs';
+import { getValidationFileChecks } from './scripts/startup-checks/validation-file.mjs';
+import { getManifestFileChecks } from './scripts/startup-checks/config-manifest.mjs';
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
 const port = Number(process.env.PORT) || 3000;
@@ -30,7 +33,17 @@ const overrideSetHeader = (res) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-app.prepare().then(() => {
+app.prepare().then(async () => {
+  // checks are kicked off in next.config.mjs; a broken config must exit here,
+  // before listen, so the pod never passes readiness
+  if (process.env.RUN_STARTUP_CHECKS === 'true') {
+    await Promise.all([
+      getRPCChecks(),
+      getValidationFileChecks(),
+      getManifestFileChecks(),
+    ]);
+  }
+
   const server = createServer(async (req, res) => {
     // Be sure to pass `true` as the second argument to `url.parse`.
     // This tells it to parse the query portion of the URL.
