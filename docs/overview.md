@@ -22,7 +22,7 @@ Project based on Next.js 12. Deployed as a web application and/or on IPFS.
 - `networks/*.json` — contract addresses per network (mainnet, sepolia, holesky)
 - `abi/` — smart contract ABIs
 - `utilsApi/` — server-side utilities for API routes
-- `ipfs.json` — IPFS deployment config (feature flags per chain, vault configs, CIDs)
+- `REMOTE_CONFIG_MANIFEST.json` — REMOTE_CONFIG_MANIFEST deployment config (feature flags per chain, vault configs, CIDs)
 
 ## Detailed docs
 

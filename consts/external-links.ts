@@ -10,4 +10,5 @@ export const GITHUB_RAW_MAIN_PATH =
 
 // TODO: switch to REMOTE_CONFIG_MANIFEST.json once this branch reaches main;
 // until then the new file does not exist on main and the fetch would 404
-export const REMOTE_CONFIG_MANIFEST_URL = GITHUB_RAW_MAIN_PATH + '/IPFS.json';
+export const REMOTE_CONFIG_MANIFEST_URL =
+  GITHUB_RAW_MAIN_PATH + '/REMOTE_CONFIG_MANIFEST.json';
