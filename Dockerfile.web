@@ -4,10 +4,10 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
 
-# corepack pins the repo's Yarn 4 from packageManager.
-RUN corepack enable
-
+# .yarn/releases is the committed yarn pinned by yarnPath in .yarnrc.yml;
+# the stock Yarn 1 from the node image delegates to it — no corepack needed
 COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/releases .yarn/releases
 COPY server/package.json server/package.json
 # --immutable: fail on lockfile drift. HUSKY=0 skips the postinstall hook
 # (no .git in the image).
