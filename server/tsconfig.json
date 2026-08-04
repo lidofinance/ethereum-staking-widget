@@ -1,0 +1,58 @@
+{
+  // Extends the root config: the server type-checks a slice of frontend
+  // modules reached through `import type` chains (vault contracts/utils →
+  // hook/form types), so it needs the same ambient env the root program
+  // has. Runtime purity is enforced separately — the esbuild bundle
+  // (yarn workspace api build) embeds nothing from wagmi/styled-components.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node", "vitest/globals"],
+    "incremental": false,
+    // Full override of the root `paths` (extends replaces the map wholesale;
+    // entries here resolve relative to server/). Deliberately DIFFERENT from
+    // the root map: tsx (dev runtime) also resolves `paths`, so packages the
+    // server imports at RUNTIME (@lidofinance/satanizer, api-metrics) must
+    // NOT be mapped to their .d.ts here — tsx would try to execute the
+    // declaration file. Their types come from src/types/lidofinance-server.d.ts.
+    // lido-ui/analytics-matomo stay mapped: they appear only in the TYPE
+    // graph (frontend files), never in the server's runtime imports.
+    "paths": {
+      "abi/*": ["../abi/*"],
+      "assets/*": ["../assets/*"],
+      "config": ["../config/index.ts"],
+      "config/*": ["../config/*"],
+      "consts/*": ["../consts/*"],
+      "features/*": ["../features/*"],
+      "modules/*": ["../modules/*"],
+      "networks/*": ["../networks/*"],
+      "providers": ["../providers/index.tsx"],
+      "providers/*": ["../providers/*"],
+      "shared/*": ["../shared/*"],
+      "styles": ["../styles/index.ts"],
+      "styles/*": ["../styles/*"],
+      "types": ["../types/index.ts"],
+      "types/*": ["../types/*"],
+      "utils": ["../utils/index.ts"],
+      "utils/*": ["../utils/*"],
+      "@lidofinance/lido-ui": [
+        "../node_modules/@lidofinance/lido-ui/dist/types/index.d.ts"
+      ],
+      "@lidofinance/analytics-matomo": [
+        "../node_modules/@lidofinance/analytics-matomo/dist/index.d.ts"
+      ],
+      "next/router": ["../shims/next-router.tsx"],
+      "next/link": ["../shims/next-link.tsx"],
+      "next/head": ["../shims/next-head.tsx"],
+      "next/config": ["../shims/next-config.tsx"],
+      "next/dynamic": ["../shims/next-dynamic.tsx"],
+      "next/app": ["../shims/next-app.ts"],
+      "next": ["../shims/next-types.ts"],
+      "env-dynamics.mjs": ["../env-dynamics.mjs"],
+      "IPFS.json": ["../IPFS.json"],
+      "REMOTE_CONFIG_MANIFEST.json": ["../REMOTE_CONFIG_MANIFEST.json"],
+      "build-info.json": ["../build-info.json"]
+    }
+  },
+  "include": ["src/**/*", "scripts/**/*", "vitest.config.ts", "../global.d.ts"],
+  "exclude": ["dist", "node_modules"]
+}

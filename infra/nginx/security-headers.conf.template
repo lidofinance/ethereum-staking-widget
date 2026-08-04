@@ -1,0 +1,21 @@
+# Security headers shared by EVERY location block.
+#
+# WHY AN INCLUDE: nginx `add_header` directives are inherited from the
+# server level ONLY when a location defines no `add_header` of its own.
+# Every location here sets its own cache-control, which would silently drop
+# server-level security headers (this exact bug shipped in the PoC repo).
+# Including this file in each location keeps them always present.
+#
+# Values mirror the legacy next.config.mjs `headers()` block.
+add_header strict-transport-security "max-age=31536000; includeSubDomains; preload" always;
+add_header referrer-policy "same-origin" always;
+add_header x-content-type-options "nosniff" always;
+add_header x-xss-protection "1; mode=block" always;
+add_header x-dns-prefetch-control "on" always;
+add_header x-download-options "noopen" always;
+add_header x-permitted-cross-domain-policies "none" always;
+add_header cross-origin-opener-policy "same-origin-allow-popups" always;
+add_header permissions-policy "camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=(), encrypted-media=(), serial=(), xr-spatial-tracking=(), browsing-topics=(), usb=(self), bluetooth=(self), hid=(self), autoplay=(self), fullscreen=(self), picture-in-picture=(self)" always;
+# CSP: header name (report-only or enforcing) and value are rendered by
+# entrypoint.sh from CSP_* env vars — see default.conf.template.
+add_header ${CSP_HEADER_NAME} "${CSP_HEADER_VALUE}" always;

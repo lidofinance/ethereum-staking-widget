@@ -1,25 +1,60 @@
 {
   "compilerOptions": {
-    // TS 6 deprecates moduleResolution=node and baseUrl (both removed in TS 7).
-    // Migrating them means moduleResolution=bundler + paths, which changes how
-    // Next resolves absolute imports — do that as its own task before TS 7.
-    "ignoreDeprecations": "6.0",
     "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    // The TS-6-deprecated `moduleResolution: node` + `baseUrl` pair is gone:
+    // Vite is the bundler, so `bundler` resolution + explicit `paths` is both
+    // the correct model and the TS 7 migration the old config deferred.
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "baseUrl": ".",
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "incremental": true,
-    "lib": ["dom", "dom.iterable", "esnext"]
+    "types": ["vite/client", "node"],
+    "paths": {
+      "abi/*": ["./abi/*"],
+      "assets/*": ["./assets/*"],
+      "config": ["./config/index.ts"],
+      "config/*": ["./config/*"],
+      "consts/*": ["./consts/*"],
+      "features/*": ["./features/*"],
+      "modules/*": ["./modules/*"],
+      "networks/*": ["./networks/*"],
+      "providers": ["./providers/index.tsx"],
+      "providers/*": ["./providers/*"],
+      "shared/*": ["./shared/*"],
+      "styles": ["./styles/index.ts"],
+      "styles/*": ["./styles/*"],
+      "types": ["./types/index.ts"],
+      "types/*": ["./types/*"],
+      "utils": ["./utils/index.ts"],
+      "utils/*": ["./utils/*"],
+      "@lidofinance/lido-ui": [
+        "./node_modules/@lidofinance/lido-ui/dist/types/index.d.ts"
+      ],
+      "@lidofinance/analytics-matomo": [
+        "./node_modules/@lidofinance/analytics-matomo/dist/index.d.ts"
+      ],
+      "next/router": ["./shims/next-router.tsx"],
+      "next/link": ["./shims/next-link.tsx"],
+      "next/head": ["./shims/next-head.tsx"],
+      "next/config": ["./shims/next-config.tsx"],
+      "next/dynamic": ["./shims/next-dynamic.tsx"],
+      "next/app": ["./shims/next-app.ts"],
+      "next": ["./shims/next-types.ts"],
+      "env-dynamics.mjs": ["./env-dynamics.mjs"],
+      "IPFS.json": ["./IPFS.json"],
+      "REMOTE_CONFIG_MANIFEST.json": ["./REMOTE_CONFIG_MANIFEST.json"],
+      "build-info.json": ["./build-info.json"]
+    }
   },
   "include": ["**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist", "server", "coverage", "playwright-report"]
 }

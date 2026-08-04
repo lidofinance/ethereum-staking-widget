@@ -13,24 +13,41 @@ const projectAliases = [
   'features',
   'modules',
   'networks',
-  'pages',
   'providers',
   'scripts',
   'shared',
   'styles',
   'types',
   'utils',
-  'utilsApi',
 ].map((dirName) => ({
   find: dirName,
   replacement: resolve(projectRoot, dirName),
 }));
+
+// Same shims the Vite build uses (vite.config.ts) — tests exercising
+// `config/*` reach `next/config` etc. through them, so the old
+// vitest.setup.ts mock is gone.
+const nextShims = ['router', 'link', 'head', 'config', 'dynamic', 'app'].map(
+  (mod) => ({
+    find: new RegExp(`^next/${mod}(\\.js)?$`),
+    replacement: resolve(
+      projectRoot,
+      'shims',
+      `next-${mod}.${mod === 'app' ? 'ts' : 'tsx'}`,
+    ),
+  }),
+);
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: [
       ...projectAliases,
+      ...nextShims,
+      {
+        find: /^next$/,
+        replacement: resolve(projectRoot, 'shims', 'next-types.ts'),
+      },
       {
         find: 'assets',
         replacement: resolve(projectRoot, 'assets'),
@@ -49,12 +66,14 @@ export default defineConfig({
       },
     ],
   },
+  define: {
+    __IPFS_MODE__: JSON.stringify(false),
+  },
   test: {
     environment: 'node',
-    exclude: ['test/**', 'node_modules/**', '.next/**'],
+    exclude: ['test/**', 'node_modules/**', 'dist/**', 'server/**'],
     globals: true,
     include: ['**/*.{test,tests,spec}.{ts,tsx,js,jsx}'],
-    setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       reportsDirectory: './coverage',

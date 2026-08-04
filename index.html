@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-1080x1080.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <!--
+      Title is a fallback only. The head-only prerender replaces it per
+      route and injects description/og/twitter tags at build time; the IPFS
+      build injects the defaults statically (see vite.config.ts). Runtime
+      values (currentChain meta, theme CSS vars, fonts) mount from
+      app/router-layout.tsx.
+    -->
+    <title>Stake with Lido | Lido</title>
+
+    <!--
+      Runtime env script — the "one image, many envs" contract. In k8s the
+      nginx entrypoint rewrites this file from container env at start; in
+      local dev `scripts/build-dynamics.mjs` generates it. Read by
+      config/dynamics.ts via window.__env__; if absent, dynamics falls back
+      to the env-dynamics.mjs build-time defaults.
+
+      Must NOT have defer/async — modules read window.__env__ at module
+      init time, so it has to execute before the main bundle.
+    -->
+    <script src="/runtime/window-env.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/app/main.tsx"></script>
+  </body>
+</html>

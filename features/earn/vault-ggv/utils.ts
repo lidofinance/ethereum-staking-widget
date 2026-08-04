@@ -1,8 +1,16 @@
 import { type Address } from 'viem';
 import { bnAmountToNumber } from 'utils/bn';
-import { GGV_INCENTIVES, GGV_START_DATE, GGV_STATS_ORIGIN } from './consts';
+// `./consts-data` (not `./consts`): this module is imported by the api
+// server — the .tsx consts file drags icons/styled-components with it.
+import {
+  GGV_INCENTIVES,
+  GGV_START_DATE,
+  GGV_STATS_ORIGIN,
+} from './consts-data';
 import { standardFetcher } from 'utils/standardFetcher';
-import { ManifestConfigVaultApyType } from 'config/external-config';
+// `import type` + concrete module (not the barrel, which exports React
+// hooks) — keeps the api server bundle free of browser code.
+import type { ManifestConfigVaultApyType } from 'config/external-config/types';
 
 export type SevenSeasAPIDailyResponseItem = {
   block_number: number;

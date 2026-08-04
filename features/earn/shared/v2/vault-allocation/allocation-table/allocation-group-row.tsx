@@ -5,7 +5,7 @@ import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { VaultTip } from 'features/earn/shared/vault-tip';
 import { ProtocolIcon } from 'features/earn/shared/vault-allocation/protocol-icon';
-import { ReactComponent as ChevronIcon } from 'assets/icons/chevron-gray-right.svg';
+import ChevronIcon from 'assets/icons/chevron-gray-right.svg?react';
 
 import { AllocationGroup } from '../types';
 import { MIN_ALLOCATION_DISPLAY_PERCENT } from '../consts';

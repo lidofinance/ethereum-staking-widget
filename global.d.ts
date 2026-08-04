@@ -1,65 +1,27 @@
-interface Window {
-  // see _document.js for definition
-  _paq: undefined | [string, ...unknown[]][];
-}
+// Window._paq / Window.__env__ are declared by @lidofinance/analytics-matomo
+// (its d.ts ships a `declare global` block) — do not redeclare them here,
+// TS requires merged declarations to match exactly.
 
-// TS 6 type-checks side-effect imports (e.g. `import 'nprogress/nprogress.css'`
-// in _app.tsx), which previously were silently ignored
+// TS 6 type-checks side-effect imports (e.g. `import 'nprogress/nprogress.css'`),
+// which previously were silently ignored
 declare module '*.css';
 
+// `import url from 'foo.svg'` → URL string (Vite default asset handling).
 declare module '*.svg' {
-  /**
-   * Use `any` to avoid conflicts with
-   * `@svgr/webpack` plugin or
-   * `babel-plugin-inline-react-svg` plugin.
-   */
-  const content: any;
-  export const ReactComponent: React.FunctionComponent<
-    React.ComponentProps<'svg'>
-  >;
-  export default content;
+  const url: string;
+  export default url;
 }
 
-declare module 'next/config' {
-  type ConfigTypes = () => {
-    // some properties may be confusing, but that's okay - "serverRuntimeConfig" accepts "process.env" without modification and/or validation.
-    // see: config/get-secret-config.ts
-    serverRuntimeConfig: {
-      basePath: string | undefined;
-      developmentMode: boolean;
-      devnetOverrides: string;
+// `import Component from 'foo.svg?react'` → React component (vite-plugin-svgr).
+declare module '*.svg?react' {
+  import type { FunctionComponent, SVGProps } from 'react';
+  const Component: FunctionComponent<SVGProps<SVGSVGElement>>;
+  export default Component;
+}
 
-      defaultChain: string;
-      rpcUrls_1: string | undefined;
-      rpcUrls_17000: string | undefined;
-      rpcUrls_560048: string | undefined;
-      rpcUrls_11155111: string | undefined;
-      rpcUrls_10: string | undefined;
-      rpcUrls_11155420: string | undefined;
-      rpcUrls_130: string | undefined;
-      rpcUrls_1301: string | undefined;
-
-      cspTrustedHosts: string | undefined;
-      cspReportUri: string | undefined;
-      cspReportOnly: string | undefined;
-
-      rateLimit: string;
-      rateLimitTimeFrame: string;
-
-      ethAPIBasePath: string;
-      rewardsBackendAPI: string | undefined;
-      validationAPI: string | undefined;
-      validationFilePath: string | undefined;
-      configManifestPath: string | undefined;
-    };
-    publicRuntimeConfig: {
-      basePath: string | undefined;
-      developmentMode: boolean;
-      collectMetrics: boolean;
-    };
-  };
-
-  declare const getConfig: ConfigTypes;
-
-  export default getConfig;
+// `.md` imports are raw strings (rawMarkdown plugin in vite.config.ts,
+// replaces webpack's raw-loader).
+declare module '*.md' {
+  const content: string;
+  export default content;
 }

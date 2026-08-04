@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { standardFetcher } from 'utils/standardFetcher';
-import { VaultsAprResponse } from 'pages/api/earn/vaults-apr';
+import type { VaultsAprResponse } from 'types/earn-api';
 import { API_ROUTES } from 'consts/api';
 
 export const useEarnVaultsApr = () => {

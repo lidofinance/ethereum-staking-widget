@@ -1,13 +1,17 @@
 import type { Address } from 'viem';
 import invariant from 'tiny-invariant';
-import getConfigNext from 'next/config';
-
-const { serverRuntimeConfig } = getConfigNext();
 
 import {
   CHAINS,
   LIDO_L2_CONTRACT_ADDRESSES,
 } from '@lidofinance/lido-ethereum-sdk/common';
+
+// Framework-neutral env source (browser: window.__env__; Node: process.env
+// via env-dynamics.mjs). This module is imported BOTH by the frontend and
+// by the api server (RPC allowlists + earn contracts share this single
+// source of contract addresses) — it must not touch `next/config`,
+// `config/get-preconfig`, or anything else browser- or Next-coupled.
+import dynamics from 'config/dynamics';
 
 // Main deployments
 import mainnetSet from 'networks/mainnet.json';
@@ -18,7 +22,6 @@ import holeskySet from 'networks/holesky.json';
 // Devnet deployments
 import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json';
 import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json';
-import { getPreConfig } from 'config/get-preconfig';
 
 // For future overrides of APIs in devnets
 export const API_NAMES = {};
@@ -121,19 +124,20 @@ export type NetworkConfig = {
   };
 };
 
-const DEVNET_OVERRIDES: Record<number, string> = // Merge client&server values
-  (serverRuntimeConfig.devnetOverrides || getPreConfig().devnetOverrides || '')
-    .split(',')
-    .reduce(
-      (acc, override) => {
-        const [chainId, setName] = override.split(':');
-        if (!isNaN(Number(chainId)) && setName) {
-          acc[Number(chainId)] = setName;
-        }
-        return acc;
-      },
-      {} as Record<number, string>,
-    );
+const DEVNET_OVERRIDES: Record<number, string> = (
+  dynamics.devnetOverrides || ''
+)
+  .split(',')
+  .reduce(
+    (acc, override) => {
+      const [chainId, setName] = override.split(':');
+      if (!isNaN(Number(chainId)) && setName) {
+        acc[Number(chainId)] = setName;
+      }
+      return acc;
+    },
+    {} as Record<number, string>,
+  );
 
 // For now stub L2 deployments,
 // as we don't need L2 devnets and it's easier to add more L2s

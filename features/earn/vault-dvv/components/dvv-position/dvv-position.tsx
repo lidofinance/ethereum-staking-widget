@@ -18,7 +18,7 @@ import {
   TokenObolIcon,
   TokenSsvIcon,
 } from 'assets/earn';
-import { ReactComponent as ExternalLinkIcon } from 'assets/icons/external-link-icon.svg';
+import ExternalLinkIcon from 'assets/icons/external-link-icon.svg?react';
 
 import { useDVVPoints } from '../../hooks/use-dvv-points';
 import { ClaimButton } from './styles';

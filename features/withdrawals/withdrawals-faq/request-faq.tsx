@@ -1,79 +1,27 @@
 import { useMatomoEventHandle } from 'shared/hooks';
 
-// import { Button } from '@lidofinance/lido-ui';
 import { Section } from 'shared/components';
-// import { ButtonLinkWrap } from './styles';
 
-import { WhatAreWithdrawals } from './list/what-are-withdrawals';
-import { HowDoesWithdrawalsWork } from './list/how-does-withdrawals-work';
-import { HowToWithdraw } from './list/how-to-withdraw';
-import { ConvertSTETHtoETH } from './list/convert-steth-to-eth';
-import { ConvertWSTETHtoETH } from './list/convert-wsteth-to-eth';
-import { WhySTETH } from './list/why-steth';
-import { HowLongToWithdraw } from './list/how-long-to-withdraw';
-import { WithdrawalPeriodCircumstances } from './list/withdrawal-period-circumstances';
-import { WithdrawalFee } from './list/withdrawal-fee';
-import { ClaimableAmountDifference } from './list/claimable-amount-difference';
-import { TurboMode } from './list/turbo-mode';
-import { BunkerMode } from './list/bunker-mode';
-import { BunkerModeReasons } from './list/bunker-mode-reasons';
-import { WhatIsSlashing } from './list/what-is-slashing';
-import { RewardsAfterWithdraw } from './list/rewards-after-withdraw';
-import { BunkerWhileRequestOngoing } from './list/bunker-while-request-ongoing';
+import { FaqList } from './faq-list';
+import { REQUEST_FAQ, REQUEST_FAQ_DYNAMIC_AFTER } from './faq-data';
 import { UnstakeAmountBoundaries } from './list/unstake-amount-boundaries';
-import { LidoNFT } from './list/lido-nft';
-import { HowToAddNFT } from './list/add-nft';
-import { NFTNotChange } from './list/nft-not-change';
-import { WhyWaitingTimeChanged } from './list/why-waiting-time-changed';
-import { RisksOfEngagingWithLido } from './list/risks-of-engaging-with-lido';
-import { WhatAreMyOptions } from './list/what-are-my-options';
-import { WhatIsTheDifference } from './list/what-is-the-difference';
-import { WhichAssets } from './list/which-assets';
-import { HowDoISwap } from './list/how-do-i-swap';
 
-// TODO: Replace this link when it will be finalized
-// const LEARN_MORE_LINK =
-//   'https://hackmd.io/@lido/SyaJQsZoj#Lido-on-Ethereum-Withdrawals-Landscape';
+// Content lives in faq-data.ts (single source with the SEO prerender).
+// The min/max-amounts entry stays a React component — its numbers come
+// from a live contract read — and slots in at its historical position.
+const dynamicAt =
+  REQUEST_FAQ.findIndex(
+    (entry) => entry.question === REQUEST_FAQ_DYNAMIC_AFTER,
+  ) + 1;
 
 export const RequestFaq: React.FC = () => {
   const onClickHandler = useMatomoEventHandle();
 
   return (
     <Section title="FAQ" onClick={onClickHandler}>
-      <RisksOfEngagingWithLido />
-      <WhatAreWithdrawals />
-      <WhatAreMyOptions />
-      <WhatIsTheDifference />
-      <WhichAssets />
-      <HowDoesWithdrawalsWork />
-      <HowToWithdraw />
-      <HowDoISwap />
-      <ConvertSTETHtoETH />
-      <ConvertWSTETHtoETH />
-      <WhySTETH />
-      <HowLongToWithdraw />
-      <WithdrawalPeriodCircumstances />
-      <RewardsAfterWithdraw />
-      <WithdrawalFee />
-      <WhyWaitingTimeChanged />
-      <ClaimableAmountDifference title="Why is the claimable amount may differ from my requested amount via Lido?" />
-      <TurboMode />
-      <BunkerMode />
-      <BunkerModeReasons />
-      <WhatIsSlashing />
-      <BunkerWhileRequestOngoing />
+      <FaqList entries={REQUEST_FAQ.slice(0, dynamicAt)} />
       <UnstakeAmountBoundaries />
-      <LidoNFT />
-      <HowToAddNFT />
-      <NFTNotChange />
-
-      {/* <ButtonLinkWrap
-        target="_blank"
-        rel="noopener noreferrer"
-        href={LEARN_MORE_LINK}
-      >
-        <Button>Learn more</Button>
-      </ButtonLinkWrap> */}
+      <FaqList entries={REQUEST_FAQ.slice(dynamicAt)} />
     </Section>
   );
 };

@@ -1,26 +1,26 @@
 import styled, { css } from 'styled-components';
 
-import { ReactComponent as VaultEthIcon } from './vault-eth.svg';
-import { ReactComponent as VaultUsdIcon } from './vault-usd.svg';
-import { ReactComponent as VaultDvvIcon } from './vault-dvv.svg';
-import { ReactComponent as VaultGgvIcon } from './vault-ggv.svg';
-import { ReactComponent as VaultStgIcon } from './vault-stg.svg';
-import { ReactComponent as UpgradeIllustrationIcon } from './upgrade.svg';
-import { ReactComponent as TokenEarnEthIcon } from './token-earneth.svg';
-import { ReactComponent as TokenEarnUsdIcon } from './token-earnusd.svg';
-import { ReactComponent as TokenUsdcIcon } from './token-usdc.svg';
-import { ReactComponent as TokenUsdtIcon } from './token-usdt.svg';
-import { ReactComponent as TokenUsdeIcon } from './token-usde.svg';
-import { ReactComponent as TokenGGIcon } from './token-gg.svg';
-import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
-import { ReactComponent as TokenStrethIcon } from './token-streth.svg';
-import { ReactComponent as IconChartColumnIncreasingRaw } from './icon-chart-column-increasing.svg';
-import { ReactComponent as IconChartPieRaw } from './icon-chart-pie.svg';
-import { ReactComponent as IconRotateCwRaw } from './icon-rotate-cw.svg';
-import { ReactComponent as PartnerNethermindIconCircle } from './partner-nethermind-icon-circle.svg';
-import { ReactComponent as PartnerUltrafieldsIconCircle } from './partner-ultra-fields-icon-circle.svg';
-import { ReactComponent as PartnerVedaIconCircle } from './partner-veda-icon-circle.svg';
-import { ReactComponent as TokenEthIcon } from './token-eth.svg';
+import VaultEthIcon from './vault-eth.svg?react';
+import VaultUsdIcon from './vault-usd.svg?react';
+import VaultDvvIcon from './vault-dvv.svg?react';
+import VaultGgvIcon from './vault-ggv.svg?react';
+import VaultStgIcon from './vault-stg.svg?react';
+import UpgradeIllustrationIcon from './upgrade.svg?react';
+import TokenEarnEthIcon from './token-earneth.svg?react';
+import TokenEarnUsdIcon from './token-earnusd.svg?react';
+import TokenUsdcIcon from './token-usdc.svg?react';
+import TokenUsdtIcon from './token-usdt.svg?react';
+import TokenUsdeIcon from './token-usde.svg?react';
+import TokenGGIcon from './token-gg.svg?react';
+import TokenDvstethIcon from './token-dvsteth.svg?react';
+import TokenStrethIcon from './token-streth.svg?react';
+import IconChartColumnIncreasingRaw from './icon-chart-column-increasing.svg?react';
+import IconChartPieRaw from './icon-chart-pie.svg?react';
+import IconRotateCwRaw from './icon-rotate-cw.svg?react';
+import PartnerNethermindIconCircle from './partner-nethermind-icon-circle.svg?react';
+import PartnerUltrafieldsIconCircle from './partner-ultra-fields-icon-circle.svg?react';
+import PartnerVedaIconCircle from './partner-veda-icon-circle.svg?react';
+import TokenEthIcon from './token-eth.svg?react';
 
 const themedFill = css`
   path,
