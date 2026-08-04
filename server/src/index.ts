@@ -5,6 +5,8 @@ import './load-env.js';
 
 import Fastify from 'fastify';
 
+import { startupCheckManifestFile } from '../../scripts/startup-checks/config-manifest.mjs';
+
 import { config, rpcProviders } from './config.js';
 import { loggerOptions } from './logger.js';
 import { requestMetricsPlugin } from './plugins/request-metrics.js';
@@ -20,6 +22,7 @@ import { validationFileRoute } from './routes/validation-file.js';
 import { rpcRoute } from './routes/rpc.js';
 import { earnVaultsAprRoute } from './routes/earn-vaults-apr.js';
 import { earnVaultsTvlRoute } from './routes/earn-vaults-tvl.js';
+import { configManifestRoute } from './routes/config-manifest.js';
 
 const fastify = Fastify({
   logger: loggerOptions,
@@ -37,6 +40,13 @@ const start = async (): Promise<void> => {
     Object.entries(rpcProviders).map(([id, urls]) => [id, urls.length]),
   );
   fastify.log.info({ rpcSummary }, 'startup: RPC providers per chain');
+
+  // Fail fast on a broken CONFIG_MANIFEST_PATH file (the check process.exits
+  // on an invalid manifest; skipped when the env is unset). RPC startup
+  // checks run separately inside metrics collection.
+  if (process.env.RUN_STARTUP_CHECKS === 'true') {
+    void startupCheckManifestFile();
+  }
 
   // Plugins (order matters: metrics first so requests are tracked,
   // then security headers, then rate limit). NO global CORS: rewards /
@@ -61,6 +71,7 @@ const start = async (): Promise<void> => {
   await fastify.register(rpcRoute);
   await fastify.register(earnVaultsAprRoute);
   await fastify.register(earnVaultsTvlRoute);
+  await fastify.register(configManifestRoute);
 
   await fastify.listen({ host: config.HOST, port: config.PORT });
 };

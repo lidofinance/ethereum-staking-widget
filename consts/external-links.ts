@@ -16,7 +16,9 @@ export const GITHUB_RAW_MAIN_PATH =
 const IPFS_MANIFEST_URL_OVERRIDE = import.meta.env
   .VITE_DANGEROUS_DEV_ONLY_OVERRIDE_IPFS_CONFIG_PATH as string | undefined;
 
-export const IPFS_MANIFEST_URL =
+// TODO: switch to REMOTE_CONFIG_MANIFEST.json once this branch reaches main;
+// until then the new file does not exist on main and the fetch would 404
+export const REMOTE_CONFIG_MANIFEST_URL =
   IPFS_MANIFEST_URL_OVERRIDE || GITHUB_RAW_MAIN_PATH + '/IPFS.json';
 
 invariant(

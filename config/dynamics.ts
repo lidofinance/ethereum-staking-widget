@@ -109,6 +109,7 @@ const normalize = (src: Record<string, unknown>): typeof dynamics => {
     validationFilePath:
       toOptionalString(get('validationFilePath')) ??
       dynamics.validationFilePath,
+    useConfigManifestFile: toBoolean(get('useConfigManifestFile')),
   } as typeof dynamics;
 };
 

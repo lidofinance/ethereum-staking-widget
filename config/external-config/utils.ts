@@ -1,15 +1,17 @@
 import invariant from 'tiny-invariant';
 
-import { ManifestSchema } from './validate';
+import { ManifestSchema, type ManifestKey } from './validate';
 
-import FallbackLocalManifest from 'IPFS.json';
+import FallbackLocalManifest from 'REMOTE_CONFIG_MANIFEST.json';
 
 export const getManifestKey = (
   defaultChain: number,
   manifestOverride?: string,
-) =>
-  `${defaultChain}` +
-  (typeof manifestOverride === 'string' ? `-${manifestOverride}` : '');
+): ManifestKey =>
+  (`${defaultChain}` +
+    (typeof manifestOverride === 'string'
+      ? `-${manifestOverride}`
+      : '')) as ManifestKey;
 
 export const getLocalFallbackManifest = () => {
   const fallbackParsing = ManifestSchema.safeParse(FallbackLocalManifest);

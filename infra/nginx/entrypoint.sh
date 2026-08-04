@@ -42,6 +42,16 @@ else
   ADDRESS_API_VALIDATION="false"
 fi
 
+# useConfigManifestFile mirrors env-dynamics.mjs:
+# `Boolean(process.env.CONFIG_MANIFEST_PATH)`. On the web pod the path value
+# itself is unused (the file lives on the api pod) — presence toggles the SPA
+# to fetch the manifest from /api/config-manifest instead of github raw.
+if [ -n "${CONFIG_MANIFEST_PATH:-}" ]; then
+  USE_CONFIG_MANIFEST_FILE="true"
+else
+  USE_CONFIG_MANIFEST_FILE="false"
+fi
+
 cat > "$OUT_DIR/window-env.js" <<EOF
 window.__env__ = {
   ipfsMode: "false",
@@ -70,7 +80,8 @@ window.__env__ = {
   rewardsBackendBasePath: "${REWARDS_BACKEND_BASE_PATH:-}",
   devnetOverrides: "${DEVNET_OVERRIDES:-}",
   addressApiValidationEnabled: "${ADDRESS_API_VALIDATION}",
-  validationFilePath: "${VALIDATION_FILE_PATH:-}"
+  validationFilePath: "${VALIDATION_FILE_PATH:-}",
+  useConfigManifestFile: "${USE_CONFIG_MANIFEST_FILE}"
 };
 EOF
 

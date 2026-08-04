@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, isAbsolute, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /**
@@ -56,4 +56,16 @@ for (const envPath of CANDIDATES) {
       console.warn(`load-env: failed to read ${envPath}:`, err);
     }
   }
+}
+
+// A relative CONFIG_MANIFEST_PATH means "relative to the repo root" (parity
+// with develop, where the Next server ran from the repo root) — NOT to the
+// api process cwd (server/ in dev, /app/server in the image). Normalize once
+// here, before any consumer reads it (config.ts Zod parse, the startup-check
+// module, external-manifest). `../..` from this file is the repo root in
+// both layouts: server/src → repo root, /app/server/dist → /app. Absolute
+// paths (the k8s configmap mount case) pass through untouched.
+const manifestPath = process.env.CONFIG_MANIFEST_PATH?.trim();
+if (manifestPath && !isAbsolute(manifestPath)) {
+  process.env.CONFIG_MANIFEST_PATH = resolve(__dirname, '../..', manifestPath);
 }

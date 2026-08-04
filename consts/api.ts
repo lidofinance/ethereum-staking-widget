@@ -5,6 +5,7 @@ export const enum API_ROUTES {
   METRICS = 'api/metrics',
   REWARDS = 'api/rewards',
   VALIDATION = 'api/validation',
+  CONFIG_MANIFEST = 'api/config-manifest',
   EARN_VAULTS_APR = 'api/earn/vaults-apr',
   EARN_VAULTS_TVL = 'api/earn/vaults-tvl',
 }
@@ -29,11 +30,7 @@ export const enum ETH_API_ROUTES {
 export const getEthApiPath = (
   endpoint: ETH_API_ROUTES,
   params?:
-    | string
-    | string[][]
-    | Record<string, string>
-    | URLSearchParams
-    | undefined,
+    string | string[][] | Record<string, string> | URLSearchParams | undefined,
 ): string | undefined => {
   if (!config.ethAPIBasePath) {
     return undefined;

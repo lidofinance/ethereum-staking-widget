@@ -99,6 +99,7 @@ export const CONTRACT_NAMES = {
   ethSyncDepositQueueDVSTETH: 'ethSyncDepositQueueDVSTETH',
   ethShareManagerEARNETH: 'ethShareManagerEARNETH',
   ethRedeemQueueWSTETH: 'ethRedeemQueueWSTETH',
+  ethSyncRedeemQueueWSTETH: 'ethSyncRedeemQueueWSTETH',
   ethCollector: 'ethCollector',
   // Lido USD
   usdVault: 'usdVault',
@@ -109,6 +110,7 @@ export const CONTRACT_NAMES = {
   usdSyncDepositQueueUSDT: 'usdSyncDepositQueueUSDT',
   usdShareManagerEARNUSD: 'usdShareManagerEARNUSD',
   usdRedeemQueueUSDC: 'usdRedeemQueueUSDC',
+  usdSyncRedeemQueueUSDC: 'usdSyncRedeemQueueUSDC',
   usdCollector: 'usdCollector',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;

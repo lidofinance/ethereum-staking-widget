@@ -9,6 +9,11 @@ import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 import { Disclaimers } from 'features/earn/shared/v2/disclaimers';
 import { VaultAllocation } from 'features/earn/shared/v2/vault-allocation/vault-allocation';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
+import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
+
+import { DrawerRight } from '../shared/drawer-right';
+import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
 import { EarnEthFaq } from './faq/faq';
@@ -17,15 +22,12 @@ import { useEthVaultApy } from './hooks/use-vault-apy';
 import { useEthVaultPosition } from './hooks/use-position';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { EthVaultApyHint } from './components/apy-hint';
-import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
 import {
   ETH_VAULT_DESCRIPTION,
   ETH_VAULT_TITLE,
   ETH_VAULT_TOKEN_SYMBOL,
 } from './consts';
-import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { ProtectedTooltip } from './protected-tooltip';
-import { DrawerRight } from '../shared/drawer-right';
 import { EthVaultDrawerProvider, useEthVaultDrawer } from './drawer-context';
 
 const FEES = [
@@ -65,9 +67,8 @@ const GENERAL_INFO_RIGHT: Array<{
 }> = [
   {
     label: 'Withdrawal wait time',
-    value: 'up to 72 hours',
-    tooltip:
-      'Withdrawals take up to 72 hours to process. Once ready, your funds can be claimed in the Lido UI',
+    value: 'Instant or up to 72 hours',
+    tooltip: WITHDRAWAL_WAITING_TIME_TOOLTIP,
   },
   {
     label: (

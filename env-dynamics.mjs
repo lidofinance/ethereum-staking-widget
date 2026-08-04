@@ -111,3 +111,7 @@ export const addressApiValidationEnabled = !!env.VALIDATION_SERVICE_BASE_PATH;
 
 /** @type string */
 export const validationFilePath = env.VALIDATION_FILE_PATH;
+
+/** @type boolean */
+// CONFIG_MANIFEST_PATH is a file path, so presence check, not toBoolean
+export const useConfigManifestFile = Boolean(env.CONFIG_MANIFEST_PATH);

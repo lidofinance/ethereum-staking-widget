@@ -44,6 +44,13 @@ const envSchema = z.object({
   REWARDS_BACKEND: z.string().optional(),
   VALIDATION_SERVICE_BASE_PATH: z.string().optional(),
   VALIDATION_FILE_PATH: z.string().optional(),
+  // Manifest file mounted into the container (e.g. k8s configmap); presence
+  // makes it the manifest source of truth (no remote fetch). Trimmed so a
+  // whitespace-only env behaves like an unset one, same as the startup check.
+  CONFIG_MANIFEST_PATH: z
+    .string()
+    .optional()
+    .transform((v) => v?.trim() || undefined),
 
   // CSP
   CSP_TRUSTED_HOSTS: z.string().optional(),

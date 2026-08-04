@@ -35,6 +35,7 @@ const enum METRIC_NAMES {
   API_RESPONSE = 'api_response',
   ETH_CALL_ADDRESS_TO = 'eth_call_address_to',
   VALIDATION_FILE_LOAD_ERROR = 'validation_file_load_error',
+  CONFIG_MANIFEST_LOAD_ERROR = 'config_manifest_load_error',
 }
 
 export class RequestMetrics {
@@ -45,6 +46,7 @@ export class RequestMetrics {
     'address' | 'contractName' | 'methodEncoded' | 'methodDecoded'
   >;
   validationFileLoadError: Counter<'error'>;
+  configManifestLoadError: Counter<'source'>;
 
   constructor(public registry: Registry) {
     this.apiTimings = this.apiTimingsInit('internal');
@@ -68,6 +70,13 @@ export class RequestMetrics {
       name: METRICS_PREFIX + METRIC_NAMES.VALIDATION_FILE_LOAD_ERROR,
       help: 'Counts of validation file load errors',
       labelNames: ['error'],
+      registers: [registry],
+    });
+
+    this.configManifestLoadError = new Counter({
+      name: METRICS_PREFIX + METRIC_NAMES.CONFIG_MANIFEST_LOAD_ERROR,
+      help: 'Counts of config manifest load errors by source (file | remote)',
+      labelNames: ['source'],
       registers: [registry],
     });
   }

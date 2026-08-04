@@ -236,6 +236,10 @@ export default defineConfig({
       },
       { find: /^IPFS\.json$/, replacement: resolve(root, 'IPFS.json') },
       {
+        find: /^REMOTE_CONFIG_MANIFEST\.json$/,
+        replacement: resolve(root, 'REMOTE_CONFIG_MANIFEST.json'),
+      },
+      {
         find: /^build-info\.json$/,
         replacement: resolve(root, 'build-info.json'),
       },
