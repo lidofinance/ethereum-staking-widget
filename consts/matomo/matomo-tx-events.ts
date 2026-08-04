@@ -26,6 +26,8 @@ export const enum MATOMO_TX_EVENTS_TYPES {
   withdrawalDexSwapPosted = 'withdrawalDexSwapPosted',
   withdrawalDexSwapFinish = 'withdrawalDexSwapFinish',
   withdrawalDexSwapCancel = 'withdrawalDexSwapCancel',
+  withdrawalDexQuoteViewed = 'withdrawalDexQuoteViewed',
+  withdrawalDexQuoteError = 'withdrawalDexQuoteError',
 }
 
 export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
@@ -126,5 +128,15 @@ export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
       'Ethereum_Staking_Widget',
       'Swap order rejected',
       'eth_widget_withdrawal_swap_rejected',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteViewed]: [
+      'Ethereum_Staking_Widget',
+      'Dex quote viewed',
+      'eth_widget_withdrawal_dex_quote_viewed',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteError]: [
+      'Ethereum_Staking_Widget',
+      'Dex quote error',
+      'eth_widget_withdrawal_dex_quote_error',
     ],
   };

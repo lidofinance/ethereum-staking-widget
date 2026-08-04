@@ -10,6 +10,7 @@ export class RequestMetrics {
   >;
   ssrCounter: Counter<'revalidate'>;
   validationFileLoadError: Counter<'error'>;
+  configManifestLoadError: Counter<'source'>;
 
   constructor(public registry: Registry) {
     this.apiTimings = this.apiTimingsInit('internal');
@@ -18,6 +19,7 @@ export class RequestMetrics {
     this.ethCallToAddress = this.ethCallToAddressInit();
     this.ssrCounter = this.ssrCounterInit();
     this.validationFileLoadError = this.validationFileLoadErrorInit();
+    this.configManifestLoadError = this.configManifestLoadErrorInit();
   }
 
   apiTimingsInit(postfix: string) {
@@ -68,6 +70,15 @@ export class RequestMetrics {
       name: METRICS_PREFIX + METRIC_NAMES.VALIDATION_FILE_LOAD_ERROR,
       help: 'Counts of validation file load errors',
       labelNames: ['error'],
+      registers: [this.registry],
+    });
+  }
+
+  configManifestLoadErrorInit() {
+    return new Counter({
+      name: METRICS_PREFIX + METRIC_NAMES.CONFIG_MANIFEST_LOAD_ERROR,
+      help: 'Counts of config manifest load errors by source (file | remote)',
+      labelNames: ['source'],
       registers: [this.registry],
     });
   }

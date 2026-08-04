@@ -36,8 +36,7 @@ export type VaultsAprResponse = {
   data: {
     maxValue: number;
     [key: string]:
-      | { apr: number | undefined; timestamp: number | undefined }
-      | number;
+      { apr: number | undefined; timestamp: number | undefined } | number;
   };
   meta: {
     resTimestamp: number;

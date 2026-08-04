@@ -36,8 +36,8 @@ export default defineConfig({
         replacement: resolve(projectRoot, 'assets'),
       },
       {
-        find: 'IPFS.json',
-        replacement: resolve(projectRoot, 'IPFS.json'),
+        find: 'REMOTE_CONFIG_MANIFEST.json',
+        replacement: resolve(projectRoot, 'REMOTE_CONFIG_MANIFEST.json'),
       },
       {
         find: 'build-info.json',
