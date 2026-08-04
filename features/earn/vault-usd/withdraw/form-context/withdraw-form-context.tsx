@@ -10,6 +10,7 @@ import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-for
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useUsdVaultWithdraw } from '../hooks/use-withdraw';
 import { useUsdVaultWithdrawFormData } from '../hooks/use-withdraw-form-data';
+import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { USD_VAULT_TOKEN_SYMBOL } from '../../consts';
 import { UsdVaultWithdrawFormValidationResolver } from './validation';
 import type {
@@ -34,6 +35,7 @@ export const UsdVaultWithdrawFormProvider: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
   const { isDappActive, isWalletConnected } = useDappStatus();
+  const { isUsdVaultAvailable, isWithdrawEnabled } = useUsdVaultAvailable();
 
   const {
     validationContext,
@@ -47,7 +49,9 @@ export const UsdVaultWithdrawFormProvider: React.FC<{
 
   const formObject = useForm({
     defaultValues: { amount: null },
-    disabled: isWalletConnected && !isDappActive,
+    disabled:
+      (isWalletConnected && !isDappActive) ||
+      (isUsdVaultAvailable && !isWithdrawEnabled),
     criteriaMode: 'firstError',
     mode: 'onChange',
     context: validationContext,

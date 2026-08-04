@@ -7,8 +7,9 @@ import {
   COLLECTOR_ABI,
   DEPOSIT_QUEUE_ABI,
   SYNC_DEPOSIT_QUEUE_ABI,
-  REDEEM_QUEUE_ABI,
+  ASYNC_REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
+  SYNC_REDEEM_QUEUE_ABI,
 } from 'modules/mellow-meta-vaults/abi';
 import type { EthDepositToken } from '../types';
 import { TOKENS } from 'consts/tokens';
@@ -80,7 +81,7 @@ export const getRedeemQueueWritableContractWSTETH = <
   );
 
   return getContract({
-    abi: REDEEM_QUEUE_ABI,
+    abi: ASYNC_REDEEM_QUEUE_ABI,
     address,
     client: {
       public: publicClient,
@@ -104,7 +105,56 @@ export const getRedeemQueueContractWSTETH = <
   );
 
   return getContract({
-    abi: REDEEM_QUEUE_ABI,
+    abi: ASYNC_REDEEM_QUEUE_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getSyncRedeemQueueWritableContractWSTETH = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>(
+  publicClient: TPublicClient,
+  walletClient: TWalletClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'ethSyncRedeemQueueWSTETH',
+  );
+  invariant(
+    address,
+    `no ETH Sync Redeem Queue WSTETH contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: SYNC_REDEEM_QUEUE_ABI,
+    address,
+    client: {
+      public: publicClient,
+      wallet: walletClient,
+    },
+  });
+};
+
+export const getSyncRedeemQueueContractWSTETH = <
+  TPublicClient extends PublicClient,
+>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'ethSyncRedeemQueueWSTETH',
+  );
+  invariant(
+    address,
+    `no ETH Sync Redeem Queue WSTETH contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: SYNC_REDEEM_QUEUE_ABI,
     address,
     client: {
       public: publicClient,

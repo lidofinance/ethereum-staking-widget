@@ -10,6 +10,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import {
   getCollectorContract,
   getRedeemQueueWritableContractUSDC,
+  getSyncRedeemQueueWritableContractUSDC,
 } from '../../contracts';
 
 export const useUsdVaultWithdraw = (onRetry: () => void) => {
@@ -28,18 +29,25 @@ export const useUsdVaultWithdraw = (onRetry: () => void) => {
     () => getCollectorContract(publicClientMainnet),
     [publicClientMainnet],
   );
-  const redeemQueue = useMemo(
-    () =>
-      getRedeemQueueWritableContractUSDC(
-        publicClientMainnet,
-        core.web3Provider as WalletClient,
-      ),
-    [publicClientMainnet, core.web3Provider],
-  );
+
+  const asyncRedeemQueue = useMemo(() => {
+    return getRedeemQueueWritableContractUSDC(
+      publicClientMainnet,
+      core.walletClient as WalletClient,
+    );
+  }, [publicClientMainnet, core.walletClient]);
+
+  const syncRedeemQueue = useMemo(() => {
+    return getSyncRedeemQueueWritableContractUSDC(
+      publicClientMainnet,
+      core.walletClient as WalletClient,
+    );
+  }, [publicClientMainnet, core.walletClient]);
 
   return useWithdraw({
     collector,
-    redeemQueue,
+    asyncRedeemQueue,
+    syncRedeemQueue,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalStart,

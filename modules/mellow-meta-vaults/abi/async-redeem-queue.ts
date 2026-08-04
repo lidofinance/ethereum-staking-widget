@@ -1,4 +1,4 @@
-export const REDEEM_QUEUE_ABI = [
+export const ASYNC_REDEEM_QUEUE_ABI = [
   {
     inputs: [
       { internalType: 'string', name: 'name_', type: 'string' },
