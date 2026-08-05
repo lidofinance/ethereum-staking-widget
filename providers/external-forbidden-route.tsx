@@ -31,17 +31,10 @@ export const ExternalForbiddenRouteProvider = ({
         pages[forbiddenPath]?.shouldDisable
       ) {
         setShowContent(false);
-        // Extract dynamic path segment names (e.g. [vault], [action]) to exclude them from query
-        const dynamicParams = new Set(
-          router.pathname.match(/\[(\w+)\]/g)?.map((p) => p.slice(1, -1)) ?? [],
-        );
-        const query = Object.fromEntries(
-          Object.entries(router.query).filter(
-            ([key]) => !dynamicParams.has(key),
-          ),
-        );
+        // searchQuery excludes route params — they must not leak into the
+        // redirect query string (`/?vault=usd&action=deposit`)
         void router
-          .push({ pathname: HOME_PATH, query })
+          .push({ pathname: HOME_PATH, query: router.searchQuery })
           .finally(() => setShowContent(true));
       }
     }

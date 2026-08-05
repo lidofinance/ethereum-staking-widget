@@ -28,7 +28,9 @@ export interface NextLikeConfig {
 const config: NextLikeConfig = {
   serverRuntimeConfig: {},
   publicRuntimeConfig: {
-    basePath: import.meta.env.VITE_BASE_PATH || undefined,
+    // BASE_URL is Vite's resolved `base` (from BASE_PATH in vite.config.ts);
+    // '/' → '' matches Next's empty-basePath convention.
+    basePath: import.meta.env.BASE_URL.replace(/\/+$/, '') || undefined,
     developmentMode: import.meta.env.DEV,
     // Metrics are collected by the Fastify api pod, never by the static web
     // bundle (the Next server used to host /api/metrics itself).

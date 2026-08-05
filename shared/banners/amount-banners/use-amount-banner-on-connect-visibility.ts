@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useConfig } from 'config';
 import { useDappStatus, useStethBalance } from 'modules/web3';
 import { useLocalStorage } from 'shared/hooks/use-local-storage';
+import { useEarnVaultPageMatch } from 'shared/hooks/use-earn-vault-page-match';
 
 import { AMOUNT_BANNER_DISMISSED_STORAGE_KEY } from './consts';
 import { useAmountBanner } from './use-amount-banner';
@@ -24,14 +25,14 @@ type UseAmountBannerOnConnectVisibility = ({
 export const useAmountBannerOnConnectVisibility: UseAmountBannerOnConnectVisibility =
   ({ initialBalance, isDismissible }) => {
     const { address } = useDappStatus();
-    const { query, pathname } = useRouter();
+    const { query } = useRouter();
     const { featureFlags } = useConfig().externalConfig;
     const { data: stethBalance } = useStethBalance();
     const bannerConfig = useAmountBanner(stethBalance, initialBalance);
 
     const isReferralUser = Boolean(query.ref);
     // Prevent showing banner on earn vault pages
-    const isVaultPage = pathname === '/earn/[vault]/[action]';
+    const isVaultPage = !!useEarnVaultPageMatch();
 
     const [isDismissed, setDismissed] = useLocalStorage(
       AMOUNT_BANNER_DISMISSED_STORAGE_KEY,

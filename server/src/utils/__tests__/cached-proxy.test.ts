@@ -46,3 +46,34 @@ describe('buildParams', () => {
     expect(out).toBeNull();
   });
 });
+
+describe('createCachedProxy upstream failure', () => {
+  it('surfaces the undici cause code in the 502 body, without the URL', async () => {
+    const { createCachedProxy } = await import('../cached-proxy.js');
+    const Fastify = (await import('fastify')).default;
+
+    const fetchMock = vi.fn().mockRejectedValue(
+      Object.assign(new TypeError('fetch failed'), {
+        cause: { code: 'ENOTFOUND' },
+      }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const app = Fastify({ logger: false });
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://dead-upstream.test/SECRET',
+      cacheTTL: 1_000,
+    });
+    app.get('/p', async (req, reply) => proxy(req, reply));
+
+    const res = await app.inject({ method: 'GET', url: '/p' });
+
+    expect(res.statusCode).toBe(502);
+    expect(res.json()).toEqual({
+      error: 'upstream unreachable',
+      code: 'ENOTFOUND',
+    });
+    expect(res.body).not.toContain('SECRET');
+    await app.close();
+  });
+});

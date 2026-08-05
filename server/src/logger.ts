@@ -10,9 +10,9 @@ import { config } from './config.js';
  * masked. Comma-split so each URL becomes its own pattern; otherwise
  * satanizer only matches the full concatenation.
  *
- * Wired as a pino `logMethod` hook via Fastify's logger options, so EVERY
- * log line in the process goes through the mask — same coverage the
- * `next-logger` integration had.
+ * Wired as a pino `logMethod` hook via Fastify's logger options. NB: the
+ * hook does NOT cover `console.*` — those sites must mask explicitly via
+ * `utils/masked-error.ts`.
  */
 const RPC_URL_VALUES = [
   config.EL_RPC_URLS_1,

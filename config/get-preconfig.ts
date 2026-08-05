@@ -1,7 +1,7 @@
 import getConfigNext from 'next/config';
 import { default as dynamics } from './dynamics';
 
-const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
+const { publicRuntimeConfig } = getConfigNext();
 
 export type PreConfigType = {
   BASE_PATH_ASSET: string;
@@ -13,8 +13,7 @@ export type PreConfigType = {
 export const getPreConfig = (): PreConfigType => {
   const BASE_PATH_ASSET = dynamics.ipfsMode
     ? '.'
-    : (serverRuntimeConfig.basePath ?? '') ||
-      (publicRuntimeConfig.basePath ?? '');
+    : (publicRuntimeConfig.basePath ?? '');
 
   return {
     BASE_PATH_ASSET,

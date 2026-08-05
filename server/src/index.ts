@@ -9,6 +9,7 @@ import { startupCheckManifestFile } from '../../scripts/startup-checks/config-ma
 
 import { config, rpcProviders } from './config.js';
 import { loggerOptions } from './logger.js';
+import { maskedError } from './utils/masked-error.js';
 import { requestMetricsPlugin } from './plugins/request-metrics.js';
 import { rateLimitPlugin } from './plugins/rate-limit.js';
 import { securityHeadersPlugin } from './plugins/security-headers.js';
@@ -18,7 +19,6 @@ import { metricsRoute } from './routes/metrics.js';
 import { cspReportRoute } from './routes/csp-report.js';
 import { rewardsRoute } from './routes/rewards.js';
 import { validationRoute } from './routes/validation.js';
-import { validationFileRoute } from './routes/validation-file.js';
 import { rpcRoute } from './routes/rpc.js';
 import { earnVaultsAprRoute } from './routes/earn-vaults-apr.js';
 import { earnVaultsTvlRoute } from './routes/earn-vaults-tvl.js';
@@ -67,7 +67,6 @@ const start = async (): Promise<void> => {
   await fastify.register(cspReportRoute);
   await fastify.register(rewardsRoute);
   await fastify.register(validationRoute);
-  await fastify.register(validationFileRoute);
   await fastify.register(rpcRoute);
   await fastify.register(earnVaultsAprRoute);
   await fastify.register(earnVaultsTvlRoute);
@@ -91,6 +90,6 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
 start().catch((err) => {
-  console.error('Fatal startup error:', err);
+  console.error('Fatal startup error:', maskedError(err));
   process.exit(1);
 });

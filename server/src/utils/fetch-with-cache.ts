@@ -1,3 +1,5 @@
+import { maskedError } from './masked-error.js';
+
 /**
  * Port of `utilsApi/fetch-with-cache.ts` with a Map-based TTL cache instead
  * of the `memory-cache` package (one less dependency; identical semantics:
@@ -62,7 +64,10 @@ export const fetchWithCache = async <T>({
     cache.put(cacheKey, data, cacheTTL);
     return data;
   } catch (error) {
-    console.error(`Error in fetchWithCache for key: ${cacheKey}`, error);
+    console.error(
+      `Error in fetchWithCache for key: ${cacheKey}`,
+      maskedError(error),
+    );
     if (failureTTL > 0) {
       cache.put(failureKey, true, failureTTL);
     }

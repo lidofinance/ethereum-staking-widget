@@ -36,6 +36,8 @@ export const rewardsRoute: FastifyPluginAsync = async (fastify) => {
     fastify.get('/api/rewards', async (_req, reply) => {
       reply.code(404).send();
     });
+    // wrong-method contract (405 + Allow) holds even when disabled
+    methodNotAllowed(fastify, '/api/rewards', ['GET']);
     return;
   }
 

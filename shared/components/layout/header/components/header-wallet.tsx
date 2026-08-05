@@ -9,7 +9,6 @@ import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { AmountBanner } from 'shared/banners/amount-banners';
 import { useDappStatus } from 'modules/web3';
 import { Button, Connect } from 'shared/wallet';
-import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { getChainColor } from 'utils/get-chain-color';
 
 import {
@@ -38,7 +37,7 @@ const HeaderWallet: FC = () => {
   );
 
   return (
-    <NoSSRWrapper>
+    <>
       {showNet && (
         <>
           <DotStyle />
@@ -65,7 +64,7 @@ const HeaderWallet: FC = () => {
       <AmountBannerOnlyDesktopWrapper>
         <AmountBanner isDismissible placement="connect_wallet" />
       </AmountBannerOnlyDesktopWrapper>
-    </NoSSRWrapper>
+    </>
   );
 };
 

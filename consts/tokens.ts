@@ -26,13 +26,8 @@ export const TOKENS = {
 
 export type Token = keyof typeof TOKENS;
 
-// `satisfies` keyword is not supported by Next.js SWC compiler, so we use a helper function
-// to validate the type while preserving literal type inference from `as const`
-const asTokenSymbols = <T extends Record<Token, string>>(symbols: T): T =>
-  symbols;
-
 // Token symbol defines the display name for the token, which will be used in the UI
-export const TOKEN_SYMBOLS = asTokenSymbols({
+export const TOKEN_SYMBOLS = {
   eth: LIDO_TOKENS.eth,
   steth: LIDO_TOKENS.steth,
   wsteth: LIDO_TOKENS.wsteth,
@@ -46,7 +41,7 @@ export const TOKEN_SYMBOLS = asTokenSymbols({
   usdc: 'USDC',
   usdt: 'USDT',
   usde: 'USDe',
-} as const);
+} as const satisfies Record<Token, string>;
 
 export type TokenSymbols = typeof TOKEN_SYMBOLS;
 export type TokenSymbol = (typeof TOKEN_SYMBOLS)[Token];

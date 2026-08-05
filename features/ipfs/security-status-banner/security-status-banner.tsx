@@ -1,7 +1,6 @@
 import { Button, Modal } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
-import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 import {
   WarningIcon,
@@ -124,7 +123,7 @@ export const SecurityStatusBanner = () => {
     (!!content && !(canClose && areConditionsAccepted)) || !isValidAddress;
 
   return (
-    <NoSsrWrapper>
+    <>
       <Modal
         open={showModal}
         onClose={!isValidAddress ? () => setIsValidAddress(true) : undefined}
@@ -176,6 +175,6 @@ export const SecurityStatusBanner = () => {
           )}
         </Wrapper>
       </Modal>
-    </NoSsrWrapper>
+    </>
   );
 };

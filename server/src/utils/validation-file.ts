@@ -1,27 +1,22 @@
 import { promises as fs } from 'node:fs';
-import type { FastifyPluginAsync } from 'fastify';
 
 import { config } from '../config.js';
 import metrics from '../metrics/index.js';
-import { methodNotAllowed } from '../utils/method-guard.js';
+import { maskedError } from './masked-error.js';
 
 /**
- * Serves the address-validation blocklist file to the SPA.
+ * Address-validation blocklist file loader (VALIDATION_FILE_PATH, e.g. a
+ * k8s configmap). Consumed by /api/validation as the fallback source when
+ * the external validation service is unreachable — or as the only source
+ * when no service is configured.
  *
- * In the Next.js app this file was read from the pod FS in
- * `getStaticProps` (`utilsApi/load-validation-file.ts`) and injected as a
- * page prop. The SPA has no build-time props, so the frontend
- * (`providers/address-validation-provider.tsx`) fetches it from here at
- * runtime instead.
- *
- * Semantics preserved from `loadValidationFile`:
+ * Semantics preserved from the legacy `loadValidationFile`:
  * - no path configured → `{ addresses: [] }`
  * - empty file → `{ addresses: [] }`
  * - unreadable / invalid format → `{ addresses: [], isBroken: true }`
- *   (+ `validation_file_load_error` metric) — the client treats a broken
- *   file as "reject all" (fail-closed).
+ *   (+ `validation_file_load_error` metric) — a broken file means
+ *   "reject all" (fail-closed).
  *
- * Always 200: availability of the endpoint must not depend on file health.
  * Content re-read at most once a minute (the file only changes on
  * redeploy/config-map update).
  */
@@ -69,25 +64,25 @@ const loadValidationFile = async (): Promise<AddressValidationFile> => {
     }
     return parsed;
   } catch (error) {
-    console.error('[validation-file] Failed to load:', error);
+    console.error('[validation-file] Failed to load:', maskedError(error));
+    // bounded label: errno code, not the raw message (label cardinality)
     metrics.request.validationFileLoadError
-      .labels({ error: String(error) })
+      .labels({
+        error:
+          (error as NodeJS.ErrnoException | null)?.code ??
+          (error instanceof SyntaxError ? 'invalid_json' : 'read_failed'),
+      })
       .inc(1);
     return { addresses: [], isBroken: true };
   }
 };
 
-export const validationFileRoute: FastifyPluginAsync = async (fastify) => {
-  let cached: { value: AddressValidationFile; at: number } | null = null;
+let cached: { value: AddressValidationFile; at: number } | null = null;
 
-  fastify.get('/api/validation-file', async (_req, reply) => {
-    const now = Date.now();
-    if (!cached || now - cached.at >= CACHE_TTL_MS) {
-      cached = { value: await loadValidationFile(), at: now };
-    }
-    reply.header('cache-control', 'public, max-age=60');
-    return cached.value;
-  });
-
-  methodNotAllowed(fastify, '/api/validation-file', ['GET']);
+export const getValidationFile = async (): Promise<AddressValidationFile> => {
+  const now = Date.now();
+  if (!cached || now - cached.at >= CACHE_TTL_MS) {
+    cached = { value: await loadValidationFile(), at: now };
+  }
+  return cached.value;
 };

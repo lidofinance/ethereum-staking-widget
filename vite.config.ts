@@ -212,7 +212,6 @@ export default defineConfig({
       { find: /^next\/head(\.js)?$/, replacement: shim('next-head.tsx') },
       { find: /^next\/config(\.js)?$/, replacement: shim('next-config.tsx') },
       { find: /^next\/dynamic(\.js)?$/, replacement: shim('next-dynamic.tsx') },
-      { find: /^next\/app(\.js)?$/, replacement: shim('next-app.ts') },
       { find: /^next$/, replacement: shim('next-types.ts') },
       // Optional wallet connectors the legacy webpack config stubbed via
       // `resolve.fallback: false` — keep them out of the bundle.

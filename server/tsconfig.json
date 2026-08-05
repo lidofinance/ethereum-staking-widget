@@ -45,7 +45,6 @@
       "next/head": ["../shims/next-head.tsx"],
       "next/config": ["../shims/next-config.tsx"],
       "next/dynamic": ["../shims/next-dynamic.tsx"],
-      "next/app": ["../shims/next-app.ts"],
       "next": ["../shims/next-types.ts"],
       "env-dynamics.mjs": ["../env-dynamics.mjs"],
       "IPFS.json": ["../IPFS.json"],

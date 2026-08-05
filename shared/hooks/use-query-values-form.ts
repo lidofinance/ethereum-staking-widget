@@ -42,12 +42,14 @@ type UseQueryParamsAmountFormArgs<T extends { amount: bigint | null }> = {
 export const useQueryParamsAmountForm = <T extends { amount: bigint | null }>({
   setValue,
 }: UseQueryParamsAmountFormArgs<T>) => {
-  const { isReady, query, pathname, replace } = useRouter();
+  const { isReady, searchQuery, pathname, replace } = useRouter();
 
   useEffect(() => {
     if (!isReady) return;
     try {
-      const { amount, ...rest } = query;
+      // searchQuery, not query: route params must not survive the strip
+      // (`/earn/dvv/deposit?amount=1` would become `?vault=dvv&action=deposit`)
+      const { amount, ...rest } = searchQuery;
 
       if (typeof amount === 'string') {
         void replace({ pathname, query: rest });
@@ -57,5 +59,5 @@ export const useQueryParamsAmountForm = <T extends { amount: bigint | null }>({
     } catch (error) {
       console.warn('Error setting amount value from query params', error);
     }
-  }, [isReady, pathname, query, replace, setValue]);
+  }, [isReady, pathname, searchQuery, replace, setValue]);
 };

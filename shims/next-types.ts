@@ -46,21 +46,3 @@ export type GetStaticProps<
 export type NextPage<P = Record<string, unknown>, IP = P> = React.FC<P> & {
   getInitialProps?: (ctx: unknown) => Promise<IP>;
 };
-
-export type NextApiRequest = {
-  body: unknown;
-  query: Record<string, string | string[] | undefined>;
-  method?: string;
-  headers: Record<string, string | string[] | undefined>;
-  cookies: Record<string, string>;
-};
-
-export interface NextApiResponse<T = unknown> {
-  status: (code: number) => NextApiResponse<T>;
-  json: (body: T) => void;
-  send: (body: T) => void;
-  end: () => void;
-  setHeader: (name: string, value: string | string[]) => void;
-}
-
-export type { AppProps } from './next-app';

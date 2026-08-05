@@ -109,8 +109,10 @@ export const devnetOverrides = env.DEVNET_OVERRIDES;
 /** @type boolean */
 export const addressApiValidationEnabled = !!env.VALIDATION_SERVICE_BASE_PATH;
 
-/** @type string */
-export const validationFilePath = env.VALIDATION_FILE_PATH;
+/** @type boolean */
+// presence flag only — the path itself is the api pod's filesystem detail
+// and must not ship to the browser
+export const useValidationFile = Boolean(env.VALIDATION_FILE_PATH);
 
 /** @type boolean */
 // CONFIG_MANIFEST_PATH is a file path, so presence check, not toBoolean

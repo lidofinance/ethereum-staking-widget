@@ -3,6 +3,13 @@
 # result to /var/cache/nginx/conf.d/default.conf (the default
 # /etc/nginx/conf.d is read-only in the pod).
 
+# Pooled connections to the api Service: without an upstream block nginx
+# sends `Connection: close` and opens a fresh TCP connection per request.
+upstream staking_widget_api {
+  server staking-widget-api:8080;
+  keepalive 16;
+}
+
 server {
   listen 8080 default_server;
   server_name _;
@@ -45,13 +52,26 @@ server {
     try_files $uri =404;
   }
 
+  # Address blocklist for the SPA's last-resort validation fallback — served
+  # from THIS pod so the check survives an api-pod outage (same configmap
+  # the api mounts; alias, not the /runtime emptyDir, so configmap updates
+  # propagate live). In dev the same URL is written to public/runtime by
+  # scripts/write-window-env.mjs. Missing mount → 404 → the SPA fails open.
+  location = /runtime/validation.json {
+    include /var/cache/nginx/security-headers.conf;
+    add_header cache-control "public, max-age=60" always;
+    alias /usr/share/nginx/html/runtime-validation/validation.json;
+  }
+
   # Proxy /api/* to the Fastify api Service inside the cluster.
   # Cluster policy (Kyverno deny-duplicate-ingress-host) forbids two
   # Ingress objects for the same hostname, so the api pod is fronted by
   # this nginx instead of its own Ingress.
   location /api/ {
-    proxy_pass http://staking-widget-api:8080;
+    proxy_pass http://staking_widget_api;
     proxy_http_version 1.1;
+    # empty Connection header enables upstream keepalive reuse
+    proxy_set_header Connection "";
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -72,8 +92,8 @@ server {
   location / {
     include /var/cache/nginx/security-headers.conf;
     # `s-maxage` (NOT `s-max-age` — the PoC shipped that typo and shared
-    # caches ignored it).
-    add_header cache-control "public, max-age=15, s-maxage=30, stale-if-error=604800" always;
+    # caches ignored it). Values match legacy next.config.mjs CACHE_CONTROL_VALUE.
+    add_header cache-control "public, max-age=15, s-maxage=30, stale-if-error=604800, stale-while-revalidate=172800" always;
     # Replace the build-time `__PUBLIC_ORIGIN__` placeholder in the
     # prerendered head (og:*, twitter:*, canonical, JSON-LD), sitemap.xml
     # and robots.txt with the per-env origin. Substituted at response time
@@ -88,7 +108,8 @@ server {
     try_files $uri $uri.html $uri/index.html /index.html;
   }
 
-  # Health probe.
+  # Health probe. No security-headers include on purpose: plaintext probe
+  # response, not indexed, not attacker-influenced.
   location = /health {
     access_log off;
     default_type text/plain;

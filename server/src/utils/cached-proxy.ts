@@ -16,6 +16,12 @@ export interface CachedProxyOptions {
   transformData?: (data: unknown) => unknown;
   /** Hard cap on cache entries. Default 200. Bounds memory. */
   cacheMaxEntries?: number;
+  /**
+   * Called instead of the error response on ANY upstream failure (4xx, 5xx,
+   * network) — lets a route serve a local fallback (e.g. /api/validation →
+   * blocklist file). The hook owns the reply.
+   */
+  fallback?: (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
 }
 
 /**
@@ -30,6 +36,11 @@ export interface CachedProxyOptions {
  * - Fastify req/reply instead of NextApiRequest/Response.
  * - Global fetch (Node 20+) instead of `standardFetcher`.
  * - 4xx upstream errors are forwarded with the same status; 5xx → 502.
+ *
+ * Error bodies use the `error` key, NEVER `message`: the SPA's
+ * extractErrorMessage() only surfaces `.message` into user-facing text, so
+ * proxy internals ("upstream unreachable") stay out of the UI while the
+ * status-based branches (422/429/503 in rewards error blocks) keep working.
  */
 export const createCachedProxy = (opts: CachedProxyOptions) => {
   const cache = new LRUCache<string, object>({
@@ -77,12 +88,14 @@ export const createCachedProxy = (opts: CachedProxyOptions) => {
             { upstreamUrl: fullUrl, status: res.status },
             'cached-proxy: forwarding 4xx',
           );
+          if (opts.fallback) return opts.fallback(req, reply);
           return reply.code(res.status).send({ error: res.statusText });
         }
         req.log.error(
           { upstreamUrl: fullUrl, status: res.status },
           'cached-proxy: upstream 5xx',
         );
+        if (opts.fallback) return opts.fallback(req, reply);
         return reply.code(502).send({ error: 'upstream error' });
       }
 
@@ -93,8 +106,23 @@ export const createCachedProxy = (opts: CachedProxyOptions) => {
       }
       return reply.send(transformed);
     } catch (err) {
-      req.log.error({ err, upstreamUrl: fullUrl }, 'cached-proxy: failed');
-      return reply.code(502).send({ error: 'upstream unreachable' });
+      // undici wraps the real reason into a generic "fetch failed"; the
+      // errno code (ENOTFOUND, ECONNREFUSED, …) hides in `cause`. Surface
+      // it — bounded and secret-free — in the log AND the reply body.
+      const cause = (err as { cause?: NodeJS.ErrnoException })?.cause;
+      const code =
+        cause?.code ??
+        (err instanceof Error && err.name === 'TimeoutError'
+          ? 'UPSTREAM_TIMEOUT'
+          : undefined);
+      req.log.error(
+        { err, cause, code, upstreamUrl: fullUrl },
+        'cached-proxy: failed',
+      );
+      if (opts.fallback) return opts.fallback(req, reply);
+      return reply
+        .code(502)
+        .send({ error: 'upstream unreachable', ...(code ? { code } : {}) });
     }
   };
 };

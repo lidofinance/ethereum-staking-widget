@@ -1,15 +1,8 @@
+import type { ComponentType } from 'react';
 import { createBrowserRouter, createHashRouter, redirect } from 'react-router';
 
 import RouterLayout from './router-layout';
 import HomePage from './routes/home';
-import WrapPage from './routes/wrap';
-import WithdrawalsPage from './routes/withdrawals';
-import RewardsPage from './routes/rewards';
-import EarnPage from './routes/earn';
-import EarnVaultRedirect from './routes/earn-vault-redirect';
-import EarnVaultActionPage from './routes/earn-vault-action';
-import SettingsPage from './routes/settings';
-import NotFoundPage from './routes/not-found';
 
 /**
  * Route table — mirrors the Next.js Pages Router surface as of the
@@ -39,24 +32,42 @@ import NotFoundPage from './routes/not-found';
 // the legacy hand-rolled `#`-prefix machinery (`utils/get-ipfs-base-path`).
 const createRouter = __IPFS_MODE__ ? createHashRouter : createBrowserRouter;
 
+// Route-level code splitting (Next's Pages Router gave this for free): only
+// HomePage is in the entry chunk — it's the default landing route. While a
+// lazy chunk loads, useNavigation() reports 'loading' and the nProgress bar
+// runs (see NavigationProgress in router-layout.tsx).
+const lazyRoute =
+  (load: () => Promise<{ default: ComponentType }>) => async () => ({
+    Component: (await load()).default,
+  });
+
 export const router = createRouter([
   {
     Component: RouterLayout,
     children: [
       { index: true, Component: HomePage },
-      { path: 'wrap', Component: WrapPage },
-      { path: 'wrap/:mode', Component: WrapPage },
+      { path: 'wrap', lazy: lazyRoute(() => import('./routes/wrap')) },
+      { path: 'wrap/:mode', lazy: lazyRoute(() => import('./routes/wrap')) },
       {
         path: 'withdrawals',
         loader: () => redirect('/withdrawals/request'),
       },
-      { path: 'withdrawals/:mode', Component: WithdrawalsPage },
-      { path: 'rewards', Component: RewardsPage },
-      { path: 'earn', Component: EarnPage },
-      { path: 'earn/:vault', Component: EarnVaultRedirect },
-      { path: 'earn/:vault/:action', Component: EarnVaultActionPage },
-      { path: 'settings', Component: SettingsPage },
-      { path: '*', Component: NotFoundPage },
+      {
+        path: 'withdrawals/:mode',
+        lazy: lazyRoute(() => import('./routes/withdrawals')),
+      },
+      { path: 'rewards', lazy: lazyRoute(() => import('./routes/rewards')) },
+      { path: 'earn', lazy: lazyRoute(() => import('./routes/earn')) },
+      {
+        path: 'earn/:vault',
+        lazy: lazyRoute(() => import('./routes/earn-vault-redirect')),
+      },
+      {
+        path: 'earn/:vault/:action',
+        lazy: lazyRoute(() => import('./routes/earn-vault-action')),
+      },
+      { path: 'settings', lazy: lazyRoute(() => import('./routes/settings')) },
+      { path: '*', lazy: lazyRoute(() => import('./routes/not-found')) },
     ],
   },
 ]);

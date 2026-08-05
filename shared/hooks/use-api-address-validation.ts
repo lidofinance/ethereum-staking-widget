@@ -25,7 +25,11 @@ export const useApiAddressValidation = () => {
 
   const validateAddressAPI = useCallback(
     async (addressToValidate: Address) => {
-      if (!config.addressApiValidationEnabled || config.ipfsMode) {
+      // /api/validation answers from the external service OR the blocklist
+      // file (server-side fallback) — call it when either is configured
+      const validationConfigured =
+        config.addressApiValidationEnabled || config.useValidationFile;
+      if (!validationConfigured || config.ipfsMode) {
         return { isValid: true };
       }
 

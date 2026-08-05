@@ -58,14 +58,17 @@ for (const envPath of CANDIDATES) {
   }
 }
 
-// A relative CONFIG_MANIFEST_PATH means "relative to the repo root" (parity
-// with develop, where the Next server ran from the repo root) — NOT to the
-// api process cwd (server/ in dev, /app/server in the image). Normalize once
-// here, before any consumer reads it (config.ts Zod parse, the startup-check
-// module, external-manifest). `../..` from this file is the repo root in
-// both layouts: server/src → repo root, /app/server/dist → /app. Absolute
-// paths (the k8s configmap mount case) pass through untouched.
-const manifestPath = process.env.CONFIG_MANIFEST_PATH?.trim();
-if (manifestPath && !isAbsolute(manifestPath)) {
-  process.env.CONFIG_MANIFEST_PATH = resolve(__dirname, '../..', manifestPath);
+// Relative file paths in env mean "relative to the repo root" (parity with
+// develop, where the Next server ran from the repo root) — NOT to the api
+// process cwd (server/ in dev, /app/server in the image). Normalize once
+// here, before any consumer reads them (config.ts Zod parse, the startup
+// checks, external-manifest, validation-file). `../..` from this file is
+// the repo root in both layouts: server/src → repo root,
+// /app/server/dist → /app. Absolute paths (the k8s configmap mount case)
+// pass through untouched.
+for (const key of ['CONFIG_MANIFEST_PATH', 'VALIDATION_FILE_PATH']) {
+  const value = process.env[key]?.trim();
+  if (value && !isAbsolute(value)) {
+    process.env[key] = resolve(__dirname, '../..', value);
+  }
 }

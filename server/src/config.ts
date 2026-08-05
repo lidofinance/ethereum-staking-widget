@@ -23,11 +23,11 @@ const envSchema = z.object({
   RATE_LIMIT: z.coerce.number().int().min(1).default(100),
   RATE_LIMIT_TIME_FRAME: z.coerce.number().int().min(1).default(60),
 
-  // Chain selection
+  // Chain selection. Fallbacks match env-dynamics.mjs (Hoodi only) — a
+  // missing SUPPORTED_CHAINS must behave the same on both sides, otherwise
+  // the RPC allowlist covers 8 chains while the metric maps cover 1.
   DEFAULT_CHAIN: z.coerce.number().int().default(560048),
-  SUPPORTED_CHAINS: z
-    .string()
-    .default('1,17000,11155111,560048,10,11155420,130,1301'),
+  SUPPORTED_CHAINS: z.string().default('560048'),
 
   // ETH RPCs (per chain)
   EL_RPC_URLS_1: z.string().optional(),

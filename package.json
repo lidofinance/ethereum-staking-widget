@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "concurrently -n web,api -c blue,green \"yarn dev:web\" \"yarn workspace api dev\"",
     "dev:web": "node --env-file-if-exists=.env.local scripts/write-window-env.mjs && vite dev",
-    "dev:ipfs": "VITE_IPFS_MODE=true vite dev",
+    "dev:ipfs": "VITE_IPFS_MODE=true IPFS_MODE=true node scripts/write-window-env.mjs && VITE_IPFS_MODE=true vite dev",
     "build": "yarn build:web && yarn workspace api build",
     "build:web": "node --env-file-if-exists=.env.local scripts/write-window-env.mjs && vite build",
     "build:ipfs": "VITE_IPFS_MODE=true IPFS_MODE=true node scripts/write-window-env.mjs && VITE_IPFS_MODE=true vite build",

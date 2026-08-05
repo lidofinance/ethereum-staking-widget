@@ -52,6 +52,14 @@ const buildUrl = (url: Url): string => {
 
 export interface RouterShim {
   query: Record<string, string | string[] | undefined>;
+  /**
+   * Shim extension (not in NextRouter): search params only, WITHOUT route
+   * params. `query` merges both (Next semantics), but here `pathname` is the
+   * RESOLVED path — round-tripping `query` into push/replace would duplicate
+   * route params into the query string (`/earn/dvv/deposit?vault=dvv&…`).
+   * Use this for building navigation targets.
+   */
+  searchQuery: Record<string, string | string[] | undefined>;
   pathname: string;
   asPath: string;
   isReady: boolean;
@@ -67,18 +75,24 @@ export const useRouter = (): RouterShim => {
   const params = useParams();
   const [searchParams] = useSearchParams();
 
-  const query = useMemo<Record<string, string | string[] | undefined>>(() => {
-    const merged: Record<string, string | string[] | undefined> = {};
-    for (const [k, v] of Object.entries(params)) merged[k] = v;
+  const searchQuery = useMemo<
+    Record<string, string | string[] | undefined>
+  >(() => {
+    const out: Record<string, string | string[] | undefined> = {};
     // Multi-value keys are returned as arrays (Next semantics).
     for (const [k, v] of searchParams) {
-      const existing = merged[k];
-      if (existing == null) merged[k] = v;
+      const existing = out[k];
+      if (existing == null) out[k] = v;
       else if (Array.isArray(existing)) existing.push(v);
-      else merged[k] = [existing, v];
+      else out[k] = [existing, v];
     }
-    return merged;
-  }, [params, searchParams]);
+    return out;
+  }, [searchParams]);
+
+  const query = useMemo<Record<string, string | string[] | undefined>>(
+    () => ({ ...Object.fromEntries(Object.entries(params)), ...searchQuery }),
+    [params, searchQuery],
+  );
 
   const push = useCallback(
     async (url: Url) => {
@@ -101,6 +115,7 @@ export const useRouter = (): RouterShim => {
 
   return {
     query,
+    searchQuery,
     pathname: location.pathname,
     asPath: `${location.pathname}${location.search}`,
     isReady: true,

@@ -1,5 +1,7 @@
-import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
-import { isAddress } from 'viem';
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
+import { isAddress, type Address } from 'viem';
+
+import { validateAddressLocally } from 'utils/address-validation';
 
 import { config } from '../config.js';
 import {
@@ -8,11 +10,23 @@ import {
 } from '../utils/cache-control.js';
 import { createCachedProxy } from '../utils/cached-proxy.js';
 import { getExternalManifestConfig } from '../utils/external-manifest.js';
+import { getValidationFile } from '../utils/validation-file.js';
 import { allowAnyOrigin } from '../utils/cors.js';
 import { methodNotAllowed } from '../utils/method-guard.js';
 
 /**
- * Address-validation proxy — ported from `pages/api/validation.ts`.
+ * Address validation — ported from `pages/api/validation.ts`, with the
+ * file fallback moved server-side (it used to live in the SPA's
+ * AddressValidationProvider, a Next-era artifact of getStaticProps props).
+ *
+ * Source order:
+ * 1. External service (VALIDATION_SERVICE_BASE_PATH) via cached proxy.
+ * 2. On ANY upstream failure — or with no service configured — the
+ *    blocklist file (VALIDATION_FILE_PATH): broken file → `isValid: false`
+ *    (fail-closed), healthy file → local list check.
+ * 3. Neither configured → route 404s (legacy "disabled" behavior).
+ * 4. Upstream failed and no file → 502 (the SPA defaults to valid).
+ * The served source is exposed as `X-Validation-Source: upstream | file`.
  *
  * Defenses preserved:
  * - Address is viem-`isAddress`-validated BEFORE interpolation into the
@@ -23,38 +37,58 @@ import { methodNotAllowed } from '../utils/method-guard.js';
  * - GET only (405 otherwise), 10s upstream timeout, 1s LRU cache.
  * - `ignoreParams: true` — the address travels in the path; nothing else is
  *   forwarded upstream.
- *
- * If VALIDATION_SERVICE_BASE_PATH is not set the route 404s.
  */
 export const validationRoute: FastifyPluginAsync = async (fastify) => {
-  if (!config.VALIDATION_SERVICE_BASE_PATH) {
+  const upstream = config.VALIDATION_SERVICE_BASE_PATH;
+  const fileConfigured = Boolean(config.VALIDATION_FILE_PATH);
+
+  if (!upstream && !fileConfigured) {
     fastify.log.info(
-      'validation: VALIDATION_SERVICE_BASE_PATH not set — route returns 404',
+      'validation: no VALIDATION_SERVICE_BASE_PATH and no VALIDATION_FILE_PATH — route returns 404',
     );
     fastify.get('/api/validation', async (_req, reply) => {
       reply.code(404).send();
     });
+    // wrong-method contract (405 + Allow) holds even when disabled
+    methodNotAllowed(fastify, '/api/validation', ['GET']);
     return;
   }
 
-  const upstream = config.VALIDATION_SERVICE_BASE_PATH;
+  const validateByFile = async (req: FastifyRequest, reply: FastifyReply) => {
+    if (!fileConfigured) {
+      // upstream failed and there is nothing to fall back to;
+      // the SPA treats a failed validation request as "valid" by default
+      return reply.code(502).send({ error: 'upstream unreachable' });
+    }
+    const address = (req.query as { address: string }).address as Address;
+    const file = await getValidationFile();
+    // broken file → reject all (fail-closed)
+    const result = file.isBroken
+      ? { isValid: false }
+      : validateAddressLocally(address, file);
+    reply.header('x-validation-source', 'file');
+    return reply.send(result);
+  };
 
-  const proxy = createCachedProxy({
-    proxyUrl: async (req: FastifyRequest) => {
-      const manifestConfig = await getExternalManifestConfig();
-      const version = manifestConfig?.api?.validation?.version ?? '1';
-      const q = req.query as { address?: string };
-      const addr = q.address;
-      if (!addr || !isAddress(addr)) {
-        // Should be caught earlier in the handler; defensive guard here.
-        throw new Error('invalid address');
-      }
-      return `${upstream}/v${version}/check/${addr.toLowerCase()}`;
-    },
-    cacheTTL: 1_000,
-    ignoreParams: true,
-    timeout: 10_000,
-  });
+  const proxy = upstream
+    ? createCachedProxy({
+        proxyUrl: async (req: FastifyRequest) => {
+          const manifestConfig = await getExternalManifestConfig();
+          const version = manifestConfig?.api?.validation?.version ?? '1';
+          const q = req.query as { address?: string };
+          const addr = q.address;
+          if (!addr || !isAddress(addr)) {
+            // Should be caught earlier in the handler; defensive guard here.
+            throw new Error('invalid address');
+          }
+          return `${upstream}/v${version}/check/${addr.toLowerCase()}`;
+        },
+        cacheTTL: 1_000,
+        ignoreParams: true,
+        timeout: 10_000,
+        fallback: validateByFile,
+      })
+    : null;
 
   fastify.get('/api/validation', async (req, reply) => {
     allowAnyOrigin(reply);
@@ -66,6 +100,11 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
       });
     }
     applyCacheControl(reply, CACHE_VALIDATION_HEADERS);
+    if (!proxy) {
+      // file-only mode (no external service configured)
+      return validateByFile(req, reply);
+    }
+    reply.header('x-validation-source', 'upstream');
     return proxy(req, reply);
   });
 

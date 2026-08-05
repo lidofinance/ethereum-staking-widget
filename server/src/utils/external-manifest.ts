@@ -4,6 +4,7 @@ import FallbackLocalManifest from 'REMOTE_CONFIG_MANIFEST.json';
 
 import metrics from '../metrics/index.js';
 import { config } from '../config.js';
+import { maskedError } from './masked-error.js';
 
 /**
  * Server-side read of the external config manifest — port of
@@ -128,7 +129,7 @@ const fetchManifestFromRemote = async (): Promise<Manifest> => {
     } catch (err) {
       console.error(
         `[fetchExternalManifest] attempt ${attempt + 1}/${RETRIES} failed:`,
-        err,
+        maskedError(err),
       );
       lastError = err;
     } finally {
@@ -158,7 +159,10 @@ export const fetchExternalManifest = async (): Promise<Manifest> => {
     };
     return manifest;
   } catch (error) {
-    console.error('[fetchExternalManifest] failed to load manifest', error);
+    console.error(
+      '[fetchExternalManifest] failed to load manifest',
+      maskedError(error),
+    );
     metrics.request.configManifestLoadError
       .labels({ source: manifestPath ? 'file' : 'remote' })
       .inc(1);

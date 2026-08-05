@@ -6,7 +6,6 @@ import { GlobalStyle } from 'styles';
 import { ConfigProvider } from 'config';
 
 import { Web3Provider } from 'modules/web3';
-import { AddressValidationFile } from 'utils/address-validation';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { bigIntHashKey } from 'utils/bn-int-hash-key';
 
@@ -19,7 +18,6 @@ import { AddressValidationProvider } from './address-validation-provider';
 
 type ProvidersProps = {
   prefetchedManifest?: unknown;
-  validationFile?: AddressValidationFile;
 };
 
 const queryClient = new QueryClient({
@@ -34,7 +32,6 @@ const queryClient = new QueryClient({
 export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
   children,
   prefetchedManifest,
-  validationFile,
 }) => (
   <QueryClientProvider client={queryClient}>
     <AppFlagProvider>
@@ -46,7 +43,7 @@ export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
               <InpageNavigationProvider>
                 <ModalProvider>
                   <ExternalForbiddenRouteProvider>
-                    <AddressValidationProvider validationFile={validationFile}>
+                    <AddressValidationProvider>
                       {children}
                     </AddressValidationProvider>
                   </ExternalForbiddenRouteProvider>

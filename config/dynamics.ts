@@ -106,9 +106,7 @@ const normalize = (src: Record<string, unknown>): typeof dynamics => {
       dynamics.rewardsBackendBasePath,
     devnetOverrides: toOptionalString(get('devnetOverrides')),
     addressApiValidationEnabled: toBoolean(get('addressApiValidationEnabled')),
-    validationFilePath:
-      toOptionalString(get('validationFilePath')) ??
-      dynamics.validationFilePath,
+    useValidationFile: toBoolean(get('useValidationFile')),
     useConfigManifestFile: toBoolean(get('useConfigManifestFile')),
   } as typeof dynamics;
 };

@@ -34,6 +34,14 @@ esac
 OUT_DIR="/usr/share/nginx/html/runtime"
 mkdir -p "$OUT_DIR"
 
+# JSON-string escaping for values interpolated into window-env.js — the
+# build-time twin (scripts/build-dynamics.mjs) uses JSON.stringify; a raw `"`
+# here would break the file for every visitor, a crafted value injects JS.
+# Newlines/CRs are never legit in these values — drop them.
+je() {
+  printf '%s' "$1" | tr -d '\r\n' | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+}
+
 # addressApiValidationEnabled mirrors env-dynamics.mjs:
 # `!!process.env.VALIDATION_SERVICE_BASE_PATH`.
 if [ -n "${VALIDATION_SERVICE_BASE_PATH:-}" ]; then
@@ -52,35 +60,43 @@ else
   USE_CONFIG_MANIFEST_FILE="false"
 fi
 
+# same pattern: presence of VALIDATION_FILE_PATH enables the SPA's
+# /api/validation-file fetch; the path never ships to the browser
+if [ -n "${VALIDATION_FILE_PATH:-}" ]; then
+  USE_VALIDATION_FILE="true"
+else
+  USE_VALIDATION_FILE="false"
+fi
+
 cat > "$OUT_DIR/window-env.js" <<EOF
 window.__env__ = {
   ipfsMode: "false",
-  selfOrigin: "${SELF_ORIGIN}",
-  rootOrigin: "${ROOT_ORIGIN:-}",
-  docsOrigin: "${DOCS_ORIGIN:-}",
-  helpOrigin: "${HELP_ORIGIN:-}",
-  researchOrigin: "${RESEARCH_ORIGIN:-}",
-  blogOrigin: "${BLOG_ORIGIN:-}",
-  defaultChain: "${DEFAULT_CHAIN:-}",
-  supportedChains: "${SUPPORTED_CHAINS:-}",
-  manifestOverride: "${MANIFEST_OVERRIDE:-}",
-  prefillUnsafeElRpcUrls1: "${PREFILL_UNSAFE_EL_RPC_URLS_1:-}",
-  prefillUnsafeElRpcUrls17000: "${PREFILL_UNSAFE_EL_RPC_URLS_17000:-}",
-  prefillUnsafeElRpcUrls560048: "${PREFILL_UNSAFE_EL_RPC_URLS_560048:-}",
-  prefillUnsafeElRpcUrls11155111: "${PREFILL_UNSAFE_EL_RPC_URLS_11155111:-}",
-  prefillUnsafeElRpcUrls10: "${PREFILL_UNSAFE_EL_RPC_URLS_10:-}",
-  prefillUnsafeElRpcUrls11155420: "${PREFILL_UNSAFE_EL_RPC_URLS_11155420:-}",
-  prefillUnsafeElRpcUrls130: "${PREFILL_UNSAFE_EL_RPC_URLS_130:-}",
-  prefillUnsafeElRpcUrls1301: "${PREFILL_UNSAFE_EL_RPC_URLS_1301:-}",
-  enableQaHelpers: "${ENABLE_QA_HELPERS:-}",
-  walletconnectProjectId: "${WALLETCONNECT_PROJECT_ID:-}",
-  matomoHost: "${MATOMO_URL:-}",
-  ethAPIBasePath: "${ETH_API_BASE_PATH:-}",
-  wqAPIBasePath: "${WQ_API_BASE_PATH:-}",
-  rewardsBackendBasePath: "${REWARDS_BACKEND_BASE_PATH:-}",
-  devnetOverrides: "${DEVNET_OVERRIDES:-}",
+  selfOrigin: "$(je "${SELF_ORIGIN}")",
+  rootOrigin: "$(je "${ROOT_ORIGIN:-}")",
+  docsOrigin: "$(je "${DOCS_ORIGIN:-}")",
+  helpOrigin: "$(je "${HELP_ORIGIN:-}")",
+  researchOrigin: "$(je "${RESEARCH_ORIGIN:-}")",
+  blogOrigin: "$(je "${BLOG_ORIGIN:-}")",
+  defaultChain: "$(je "${DEFAULT_CHAIN:-}")",
+  supportedChains: "$(je "${SUPPORTED_CHAINS:-}")",
+  manifestOverride: "$(je "${MANIFEST_OVERRIDE:-}")",
+  prefillUnsafeElRpcUrls1: "$(je "${PREFILL_UNSAFE_EL_RPC_URLS_1:-}")",
+  prefillUnsafeElRpcUrls17000: "$(je "${PREFILL_UNSAFE_EL_RPC_URLS_17000:-}")",
+  prefillUnsafeElRpcUrls560048: "$(je "${PREFILL_UNSAFE_EL_RPC_URLS_560048:-}")",
+  prefillUnsafeElRpcUrls11155111: "$(je "${PREFILL_UNSAFE_EL_RPC_URLS_11155111:-}")",
+  prefillUnsafeElRpcUrls10: "$(je "${PREFILL_UNSAFE_EL_RPC_URLS_10:-}")",
+  prefillUnsafeElRpcUrls11155420: "$(je "${PREFILL_UNSAFE_EL_RPC_URLS_11155420:-}")",
+  prefillUnsafeElRpcUrls130: "$(je "${PREFILL_UNSAFE_EL_RPC_URLS_130:-}")",
+  prefillUnsafeElRpcUrls1301: "$(je "${PREFILL_UNSAFE_EL_RPC_URLS_1301:-}")",
+  enableQaHelpers: "$(je "${ENABLE_QA_HELPERS:-}")",
+  walletconnectProjectId: "$(je "${WALLETCONNECT_PROJECT_ID:-}")",
+  matomoHost: "$(je "${MATOMO_URL:-}")",
+  ethAPIBasePath: "$(je "${ETH_API_BASE_PATH:-}")",
+  wqAPIBasePath: "$(je "${WQ_API_BASE_PATH:-}")",
+  rewardsBackendBasePath: "$(je "${REWARDS_BACKEND_BASE_PATH:-}")",
+  devnetOverrides: "$(je "${DEVNET_OVERRIDES:-}")",
   addressApiValidationEnabled: "${ADDRESS_API_VALIDATION}",
-  validationFilePath: "${VALIDATION_FILE_PATH:-}",
+  useValidationFile: "${USE_VALIDATION_FILE}",
   useConfigManifestFile: "${USE_CONFIG_MANIFEST_FILE}"
 };
 EOF
@@ -91,7 +107,10 @@ EOF
 # script; frame-ancestors * keeps wallet embeds (Ledger Live, Safe) working.
 CSP_TRUSTED="$(printf '%s' "${CSP_TRUSTED_HOSTS:-}" | tr ',' ' ')"
 
-CSP_VALUE="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.reown.com; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' 'sha256-wTvVT3oJ2rMAqNUILvSYccTn53N47S3NIZbPE0ql0No=' ${CSP_TRUSTED}; connect-src 'self' https: wss:; frame-ancestors *; frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; child-src 'self' https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; object-src 'none'; media-src 'self'; manifest-src 'self'; form-action 'self'; script-src-attr 'none'; base-uri 'none'"
+# CoW origin must track features/dex-withdrawals/cowswap/consts.ts
+# COWSWAP_BASE_URL — flipping IS_COWSWAP_STAGING there requires updating
+# frame-src/child-src here too.
+CSP_VALUE="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.reown.com; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' 'sha256-wTvVT3oJ2rMAqNUILvSYccTn53N47S3NIZbPE0ql0No=' ${CSP_TRUSTED}; connect-src 'self' https: wss:; frame-ancestors *; frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; child-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; object-src 'none'; media-src 'none'; manifest-src 'self'; form-action 'self'; script-src-attr 'none'; base-uri 'none'"
 
 if [ -n "${CSP_REPORT_URI:-}" ]; then
   CSP_VALUE="${CSP_VALUE}; report-uri ${CSP_REPORT_URI}"
@@ -110,11 +129,19 @@ fi
 CONF_DIR="/var/cache/nginx/conf.d"
 mkdir -p "$CONF_DIR"
 
+# sed-replacement escaping: \ & and the | delimiter would otherwise corrupt
+# the rendered config (a `|` in CSP_TRUSTED_HOSTS/CSP_REPORT_URI crashed the
+# pod at boot, `&` — plausible in a report-uri query — inserted the matched
+# pattern). CSP_HEADER_NAME is internal ("true"/"false" switch), not escaped.
+se() {
+  printf '%s' "$1" | tr -d '\r\n' | sed -e 's/[\\&|]/\\&/g'
+}
+
 render() {
   sed \
-    -e "s|\${SELF_ORIGIN}|${SELF_ORIGIN}|g" \
+    -e "s|\${SELF_ORIGIN}|$(se "${SELF_ORIGIN}")|g" \
     -e "s|\${CSP_HEADER_NAME}|${CSP_HEADER_NAME}|g" \
-    -e "s|\${CSP_HEADER_VALUE}|${CSP_VALUE}|g" \
+    -e "s|\${CSP_HEADER_VALUE}|$(se "${CSP_VALUE}")|g" \
     "$1" > "$2"
 }
 

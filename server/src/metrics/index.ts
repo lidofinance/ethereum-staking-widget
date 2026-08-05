@@ -15,6 +15,7 @@ import {
 } from '../../../scripts/startup-checks/rpc.mjs';
 
 import { config, supportedChainIds } from '../config.js';
+import { maskedError } from '../utils/masked-error.js';
 
 /**
  * Prometheus metrics — port of `utilsApi/metrics/*`.
@@ -108,12 +109,14 @@ class StartupChecksRPCMetrics {
 const collectStartupChecksRPCMetrics = async (
   registry: Registry,
 ): Promise<void> => {
+  // checks disabled (local dev): no gauge and no error noise — getRPCChecks
+  // can only resolve null here, which used to log a boot Error every start
+  if (process.env.RUN_STARTUP_CHECKS !== 'true') return;
+
   const rpcMetrics = new StartupChecksRPCMetrics(registry);
 
   try {
-    if (process.env.RUN_STARTUP_CHECKS === 'true') {
-      await startupCheckRPCs();
-    }
+    await startupCheckRPCs();
     const rpcChecksResults = await getRPCChecks();
     if (!rpcChecksResults) {
       throw new Error(
@@ -130,7 +133,8 @@ const collectStartupChecksRPCMetrics = async (
     );
   } catch (error) {
     console.error(
-      `[collectStartupChecksRPCMetrics] Error collecting RPC metrics: ${error}`,
+      '[collectStartupChecksRPCMetrics] Error collecting RPC metrics:',
+      maskedError(error),
     );
     rpcMetrics.requestStatusGauge.labels({ rpc_domain: 'BROKEN_URL' }).inc(1);
   }

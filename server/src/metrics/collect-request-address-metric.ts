@@ -75,9 +75,13 @@ export const collectRequestAddressMetric = ({
         .labels({
           address: contractName ? address : UNKNOWN_LABEL,
           contractName: contractName || UNKNOWN_LABEL,
-          methodEncoded: contractName
-            ? methodEncoded || UNKNOWN_LABEL
-            : UNKNOWN_LABEL,
+          // raw selector only when it decodes to a known ABI function —
+          // otherwise attacker-varied selectors on an allowlisted contract
+          // grow the label set without bound
+          methodEncoded:
+            methodDecoded !== UNKNOWN_LABEL && methodEncoded
+              ? methodEncoded
+              : UNKNOWN_LABEL,
           methodDecoded: methodDecoded || UNKNOWN_LABEL,
         })
         .inc(1);

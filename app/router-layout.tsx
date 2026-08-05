@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet, useNavigation } from 'react-router';
+import { Outlet, ScrollRestoration, useNavigation } from 'react-router';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Helmet } from 'react-helmet-async';
 import nProgress from 'nprogress';
@@ -64,6 +64,8 @@ export default function RouterLayout() {
       </ErrorBoundary>
       <SecurityStatusBanner />
       <NavigationProgress />
+      {/* Next scrolled to top on navigation by default; RR7 needs this */}
+      <ScrollRestoration />
     </Providers>
   );
 }
