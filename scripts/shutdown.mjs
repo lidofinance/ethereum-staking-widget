@@ -53,12 +53,18 @@ const closeServerAndExit = ({ server, reason, forceExitMs, exit }) => {
  * default path = no injector (local dev) → no-op; SECRETS_FILE set but
  * unreadable = broken deployment → throw. Returns a stop function (tests).
  */
+/**
+ * @param {{ close: (callback: (error?: Error) => void) => void }} server
+ * @param {SecretsRotationOptions} [options]
+ */
 export const registerSecretsRotationRestart = (
   server,
   {
     intervalMs = POLL_INTERVAL_MS,
     forceExitMs = FORCE_EXIT_TIMEOUT_MS,
-    exit = (code) => process.exit(code),
+    exit = (code) => {
+      process.exit(code);
+    },
   } = {},
 ) => {
   const path = process.env.SECRETS_FILE ?? DEFAULT_SECRETS_FILE;
@@ -111,11 +117,17 @@ export const registerSecretsRotationRestart = (
 
 // SIGTERM and SIGINT are normal process shutdown signals from the
 // orchestrator or terminal. Close the HTTP server before exiting.
+/**
+ * @param {{ close: (callback: (error?: Error) => void) => void }} server
+ * @param {ShutdownOptions} [options]
+ */
 export const registerShutdownSignals = (
   server,
   {
     forceExitMs = FORCE_EXIT_TIMEOUT_MS,
-    exit = (code) => process.exit(code),
+    exit = (code) => {
+      process.exit(code);
+    },
   } = {},
 ) => {
   let shuttingDown = false;
