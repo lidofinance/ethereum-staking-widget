@@ -4,6 +4,11 @@ import next from 'next';
 import { getRPCChecks } from './scripts/startup-checks/rpc.mjs';
 import { getValidationFileChecks } from './scripts/startup-checks/validation-file.mjs';
 import { getManifestFileChecks } from './scripts/startup-checks/config-manifest.mjs';
+import {
+  registerSecretsRotationRestart,
+  registerShutdownSignals,
+} from './scripts/shutdown.mjs';
+
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
 const port = Number(process.env.PORT) || 3000;
@@ -64,4 +69,8 @@ app.prepare().then(async () => {
   server.headersTimeout = 10_000;
   server.requestTimeout = 30_000;
   server.maxHeadersCount = 50;
+
+  // OpenBao secret-rotation
+  registerShutdownSignals(server);
+  registerSecretsRotationRestart(server);
 });
