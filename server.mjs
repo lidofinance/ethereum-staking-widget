@@ -4,6 +4,7 @@ import next from 'next';
 import { getRPCChecks } from './scripts/startup-checks/rpc.mjs';
 import { getValidationFileChecks } from './scripts/startup-checks/validation-file.mjs';
 import { getManifestFileChecks } from './scripts/startup-checks/config-manifest.mjs';
+
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
 const port = Number(process.env.PORT) || 3000;
