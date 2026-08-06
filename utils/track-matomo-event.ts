@@ -1,12 +1,10 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_EVENTS, MATOMO_EVENT_TYPE } from 'consts/matomo';
+import { QA_KEYS } from 'consts/qa-keys';
 import { overrideWithQAMockBoolean } from './qa';
 
 export const trackMatomoEvent = (eventType: MATOMO_EVENT_TYPE) => {
-  const enableLogging = overrideWithQAMockBoolean(
-    false,
-    'mock-qa-helpers-matomo-logging',
-  );
+  const enableLogging = overrideWithQAMockBoolean(false, QA_KEYS.matomoLogging);
   if (enableLogging) {
     console.info(
       '%cTracking Matomo event:',

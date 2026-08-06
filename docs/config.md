@@ -51,7 +51,7 @@ CSP_REPORT_URI=...            # CSP violation reporting endpoint
 ### Feature flags
 
 ```
-ENABLE_QA_HELPERS=true        # Debug helpers in the browser console
+ENABLE_QA_HELPERS=true        # QA debug drawer + localStorage mocks (see testing.md)
 IPFS_MODE=true                # IPFS distribution mode
 COLLECT_METRICS=true          # Enable Prometheus metrics
 RUN_STARTUP_CHECKS=true       # Health checks on startup

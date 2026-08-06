@@ -7,6 +7,7 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { config } from 'config';
+import { QA_KEYS } from 'consts/qa-keys';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 import {
   applyRoundUpTxParameter,
@@ -126,7 +127,8 @@ export const useWrapFormProcessor = ({
             } else {
               if (
                 config.enableQaHelpers &&
-                window.localStorage.getItem('mockLimitReached') === 'true'
+                window.localStorage.getItem(QA_KEYS.stakeLimitReached) ===
+                  'true'
               ) {
                 throw new MockLimitReachedError('Stake limit reached');
               }

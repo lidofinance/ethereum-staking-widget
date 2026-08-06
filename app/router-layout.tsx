@@ -8,6 +8,7 @@ import { Fonts, LidoUIHead, ToastContainer } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { SecurityStatusBanner } from 'features/ipfs';
+import { QaDebugGate } from 'features/qa-debug';
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient';
 import { ErrorBoundaryFallback } from 'shared/components/error-boundary';
@@ -63,6 +64,7 @@ export default function RouterLayout() {
         <Outlet />
       </ErrorBoundary>
       <SecurityStatusBanner />
+      <QaDebugGate />
       <NavigationProgress />
       {/* Next scrolled to top on navigation by default; RR7 needs this */}
       <ScrollRestoration />

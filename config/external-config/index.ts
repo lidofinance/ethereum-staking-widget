@@ -14,6 +14,7 @@ export type {
 export { getManifestKey, getLocalFallbackManifest } from './utils';
 export {
   ManifestSchema,
+  ManifestEntrySchema,
   ManifestConfigPages,
   ManifestConfigWithdrawalDexIntegrations,
 } from './validate';

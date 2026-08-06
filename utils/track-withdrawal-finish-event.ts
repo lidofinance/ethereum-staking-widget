@@ -1,14 +1,12 @@
 import { callMatomo } from '@lidofinance/analytics-matomo';
 import { MATOMO_TX_EVENTS, MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { QA_KEYS } from 'consts/qa-keys';
 
 import { overrideWithQAMockBoolean } from './qa';
 import { weiToEth } from './weiToEth';
 
 export const trackWithdrawalFinishEvent = (amount: bigint): void => {
-  const enableLogging = overrideWithQAMockBoolean(
-    false,
-    'mock-qa-helpers-matomo-logging',
-  );
+  const enableLogging = overrideWithQAMockBoolean(false, QA_KEYS.matomoLogging);
   const [category, action, name] =
     MATOMO_TX_EVENTS[MATOMO_TX_EVENTS_TYPES.withdrawalRequestFinish];
 

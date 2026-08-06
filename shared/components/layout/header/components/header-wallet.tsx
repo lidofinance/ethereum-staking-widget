@@ -4,6 +4,10 @@ import { useRouter } from 'next/router';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { config } from 'config';
+import {
+  RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
+  useFeatureFlag,
+} from 'config/feature-flags';
 import { useUserConfig } from 'config/user-config';
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { AmountBanner } from 'shared/banners/amount-banners';
@@ -24,6 +28,9 @@ import { ThemeTogglerStyled } from './styles';
 
 const HeaderWallet: FC = () => {
   const router = useRouter();
+  const { rpcSettingsPageOnInfraIsEnabled } = useFeatureFlag(
+    RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
+  );
   const { defaultChain: defaultChainId } = useUserConfig();
   const { isDappActive, address, walletChainId, isTestnet } = useDappStatus();
 
@@ -54,7 +61,9 @@ const HeaderWallet: FC = () => {
       ) : (
         <Connect size="sm" />
       )}
-      {config.ipfsMode && <HeaderSettingsButton />}
+      {(config.ipfsMode || rpcSettingsPageOnInfraIsEnabled) && (
+        <HeaderSettingsButton />
+      )}
       {!queryTheme && <ThemeTogglerStyled data-testid="themeToggler" />}
       {config.ipfsMode && (
         <IPFSInfoBoxOnlyDesktopWrapper>
