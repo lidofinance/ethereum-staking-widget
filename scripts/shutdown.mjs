@@ -40,6 +40,15 @@ const closeServerAndExit = ({ server, reason, forceExitMs, exit }) => {
 };
 
 /**
+ * Options for secrets rotation restart.
+ *
+ * @typedef {Object} SecretsRotationOptions
+ * @property {number} [intervalMs] File polling interval in milliseconds.
+ * @property {number} [forceExitMs] Maximum time allowed for graceful shutdown.
+ * @property {(code: number) => void} [exit] Process exit function. Injected in tests.
+ */
+
+/**
  * OpenBao rotation restart. Secrets arrive as an env-export file that the
  * chart's container command sources before exec; the agent sidecar keeps it
  * fresh via atomic rename but has no signal path into this container (no
