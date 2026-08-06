@@ -5,6 +5,8 @@ const FORCE_EXIT_TIMEOUT_MS = 10_000;
 const DEFAULT_SECRETS_FILE = '/vault/secrets/app';
 const POLL_INTERVAL_MS = 10_000;
 
+const noop = () => undefined;
+
 const closeServerAndExit = ({ server, reason, forceExitMs, exit }) => {
   let exited = false;
 
@@ -83,7 +85,7 @@ export const registerSecretsRotationRestart = (
     lastContent = readFileSync(path, 'utf8');
   } catch (error) {
     if (process.env.SECRETS_FILE) throw error;
-    return () => undefined;
+    return noop;
   }
 
   console.info(`Watching secrets file ${path} for rotation`);
