@@ -3,8 +3,7 @@ import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
 import { useConnection, useWalletClient } from 'wagmi';
 import { InvalidRequestRpcError, toHex, UserRejectedRequestError } from 'viem';
 
-import { useDappStatus } from 'modules/web3';
-import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
+import { useDappStatus, useIsLedgerLive } from 'modules/web3';
 import { ErrorMessage, extractCodeFromError } from 'utils/getErrorMessage';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_ERROR_EVENTS_TYPES } from 'consts/matomo';
