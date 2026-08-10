@@ -126,7 +126,7 @@ const RISK_DISCLOSURE = (
       Privacy Notice
     </Link>
     ,{' '}
-    <Link href={`${config.rootOrigin}/privacy-notice`}>
+    <Link href={`${config.rootOrigin}/terms-of-use`}>
       Lido&apos;s Terms of Use
     </Link>{' '}
     and the{' '}
