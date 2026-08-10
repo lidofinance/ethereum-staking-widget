@@ -38,3 +38,5 @@ export const CACHE_REWARDS_HEADERS =
 export const CACHE_VALIDATION_HEADERS =
   'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
 export const CACHE_DEFAULT_ERROR_HEADERS = 'no-store, must-revalidate';
+// per-visitor answer: must never be shared between users by any cache layer
+export const CACHE_GEO_DEBUG_HEADERS = 'no-store, must-revalidate';
