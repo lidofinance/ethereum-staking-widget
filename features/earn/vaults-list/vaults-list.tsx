@@ -13,6 +13,8 @@ import { useEarnState } from '../shared/hooks/use-earn-state';
 import { DrawerRight } from '../shared/drawer-right';
 import { UpgradeCardVaultsList } from '../shared/upgrade-card-vaults-list';
 
+import { useGeoDebug } from 'shared/hooks/use-geo-debug';
+
 import { VaultCardGGV } from '../vault-ggv/vault-card-ggv-v2';
 import { VaultCardDVV } from '../vault-dvv/vault-card-dvv-v2';
 import { VaultCardSTG } from '../vault-stg/vault-card-stg-v2';
@@ -40,6 +42,8 @@ export const EarnVaultsList: FC = () => {
   const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
   const [isAccordionAnimating, setIsAccordionAnimating] = useState(false);
 
+  const { data: geoDebugData, isLoading } = useGeoDebug();
+
   const actualVaults = [] as typeof earnVaultsEnabled;
   const deprecatedVaults = [] as typeof earnVaultsEnabled;
 
@@ -52,6 +56,26 @@ export const EarnVaultsList: FC = () => {
   });
 
   const hasDeprecatedVaults = deprecatedVaults.length > 0;
+
+  if (geoDebugData && !isLoading) {
+    return (
+      <div>
+        <div>Your Country: {geoDebugData.country}</div>
+        <div>Is via Cloudflare: {geoDebugData.viaCloudflare}</div>
+
+        <div>CF:</div>
+        <div>Your CF Country: {geoDebugData.values['cf-ipcountry']}</div>
+        <div>Your CF Continent: {geoDebugData.values['cf-ipcontinent']}</div>
+        <div>Your CF Region Code: {geoDebugData.values['cf-region-code']}</div>
+        <div>Your CF Timezone: {geoDebugData.values['cf-timezone']}</div>
+        <div>
+          Your CF Accept Language: {geoDebugData.values['accept-language']}
+        </div>
+
+        <div>Your geo debug data: {JSON.stringify(geoDebugData)}</div>
+      </div>
+    );
+  }
 
   return (
     <>
