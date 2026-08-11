@@ -304,7 +304,7 @@ const parseNestedGroup = (
       knownItems.push({
         label: sub.label,
         id: sub.id,
-        icon: getAllocationProtocolIcon(sub.protocol),
+        icon: getAllocationProtocolIcon(sub.protocol, sub.id),
         chain: sub.chain,
         allocation: sub.sharePercent,
         tvlUSD: subTvl,
@@ -353,7 +353,7 @@ const parseFlatItems = (
       items.push({
         name: alloc.label,
         chain: alloc.chain,
-        icon: getAllocationProtocolIcon(alloc.protocol),
+        icon: getAllocationProtocolIcon(alloc.protocol, alloc.id),
         allocation: alloc.sharePercent,
         tvlUSD,
       });

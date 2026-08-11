@@ -65,7 +65,9 @@ export const AllocationTable: FC<AllocationTableV2Props> = ({
                   </ProtocolNamePercent>
                 )}
                 {item.name}
-                {item.info && <VaultTip>{item.info}</VaultTip>}
+                {item.info && (
+                  <VaultTip placement="right">{item.info}</VaultTip>
+                )}
               </ProtocolNameStyled>
             </TdWithIconStyled>
             <TdNarrowStyled align="right"></TdNarrowStyled>

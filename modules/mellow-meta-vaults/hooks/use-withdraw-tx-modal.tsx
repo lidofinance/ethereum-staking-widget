@@ -8,6 +8,7 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { FormatToken } from 'shared/formatters';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
+import { TxStageInstantWithdrawalUnavailable } from '../components/tx-stage-instant-withdrawal-unavailable';
 import { type TokenSymbol } from 'consts/tokens';
 import { getTokenDecimals } from 'utils/token-decimals';
 
@@ -44,22 +45,42 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (amount: bigint, txHash?: Hash) =>
+  instantWithdrawalUnavailable: () =>
+    transitStage(<TxStageInstantWithdrawalUnavailable />, {
+      isClosableOnLedger: true,
+    }),
+
+  success: (amount: bigint, txHash?: Hash, isInstant?: boolean) =>
     transitStage(
       <TxStageSuccess
         txHash={txHash}
-        title={'Withdrawal request has been sent'}
+        title={
+          isInstant
+            ? 'Withdrawal completed'
+            : 'Withdrawal request has been sent'
+        }
         showEtherscan
         description={
-          <>
-            Request to withdraw{' '}
-            <FormatToken
-              amount={amount}
-              symbol={stageOperationArgs.token}
-              decimals={getTokenDecimals(stageOperationArgs.token)}
-            />{' '}
-            has been sent.
-          </>
+          isInstant ? (
+            <>
+              <FormatToken
+                amount={amount}
+                symbol={stageOperationArgs.token}
+                decimals={getTokenDecimals(stageOperationArgs.token)}
+              />{' '}
+              has been withdrawn instantly.
+            </>
+          ) : (
+            <>
+              Request to withdraw{' '}
+              <FormatToken
+                amount={amount}
+                symbol={stageOperationArgs.token}
+                decimals={getTokenDecimals(stageOperationArgs.token)}
+              />{' '}
+              has been sent.
+            </>
+          )
         }
       />,
       {

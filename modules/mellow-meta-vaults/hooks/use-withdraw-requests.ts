@@ -3,13 +3,13 @@ import invariant from 'tiny-invariant';
 
 import { useDappStatus } from 'modules/web3';
 import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
-import { RedeemQueueContract } from '../types/contracts';
+import { AsyncRedeemQueueContract } from '../types/contracts';
 import { WithdrawRequestData } from '../types/withdraw-request-data';
 
 export const useWithdrawRequests = ({
   redeemQueue,
 }: {
-  redeemQueue: RedeemQueueContract;
+  redeemQueue: AsyncRedeemQueueContract;
 }) => {
   const { address, isDappActive } = useDappStatus();
 

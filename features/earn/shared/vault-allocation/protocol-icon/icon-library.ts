@@ -67,8 +67,15 @@ export const ALLOCATION_PROTOCOL_ICONS = createIconLibrary({
 
 export const getAllocationProtocolIcon = (
   protocol?: string,
+  id?: string,
 ): AllocationIcon => {
   const key = protocol?.trim().toLowerCase();
+  const normalizedId = id?.trim().toLowerCase();
+
+  if (key === 'mellow-core-vault' && normalizedId === 'earnusd') {
+    return EarnusdIcon;
+  }
+
   return (
     (key ? getOwnProperty(ALLOCATION_PROTOCOL_ICONS, key) : undefined) ??
     FallbackIcon

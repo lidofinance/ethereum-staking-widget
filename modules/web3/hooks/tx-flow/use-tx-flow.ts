@@ -6,6 +6,7 @@ import { useDappStatus } from 'modules/web3';
 
 import { useAA } from '../use-aa';
 import { useSendAACalls } from './use-send-aa-calls';
+import { TransactionRevertedError } from '../../utils/transaction-reverted-error';
 import { TxCallbackProps, TxFlowArgs } from './types';
 
 export type TxStagesCallback = (args: TxCallbackProps) => Promise<void>;
@@ -84,6 +85,12 @@ export const useTxFlow = () => {
             await onGasLimit?.(args);
             break;
           case TransactionCallbackStage.CONFIRMATION:
+            // The SDK reports CONFIRMATION and then DONE regardless of the
+            // receipt status, so a reverted transaction would be presented as a
+            // success. Throwing here skips DONE and surfaces it as a failure.
+            if (args.payload?.status === 'reverted') {
+              throw new TransactionRevertedError(args.payload);
+            }
             await onConfirmation?.(args);
             break;
           default:
