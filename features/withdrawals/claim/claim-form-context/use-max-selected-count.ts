@@ -1,4 +1,4 @@
-import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
+import { useIsLedgerLive } from 'modules/web3';
 
 import {
   DEFAULT_CLAIM_REQUEST_SELECTED,

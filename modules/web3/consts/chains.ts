@@ -15,6 +15,8 @@ export const wagmiChainMap = Object.values(wagmiChains).reduce(
   {} as Record<number, Chain>,
 );
 
+export const CHAIN_SWITCH_TIMEOUT = 10_000; // 10 seconds
+
 export enum DAPP_CHAIN_TYPE {
   Ethereum = 'Ethereum',
   Optimism = 'Optimism',

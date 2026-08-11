@@ -30,11 +30,7 @@ export const enum ETH_API_ROUTES {
 export const getEthApiPath = (
   endpoint: ETH_API_ROUTES,
   params?:
-    | string
-    | string[][]
-    | Record<string, string>
-    | URLSearchParams
-    | undefined,
+    string | string[][] | Record<string, string> | URLSearchParams | undefined,
 ): string | undefined => {
   if (!config.ethAPIBasePath) {
     return undefined;
