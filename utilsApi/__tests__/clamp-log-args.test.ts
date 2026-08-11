@@ -5,9 +5,12 @@ import { commonPatterns, satanizer } from '@lidofinance/satanizer';
 // `createRequire` because the module is `.cjs` (next-logger preloads the logger
 // config without a build step) and the project is `"type": "module"`.
 const requireCjs = createRequire(import.meta.url);
-const { clampArgs, MAX_TOTAL_CHARS } = requireCjs('../clamp-log-args.cjs') as {
+const { clampArgs, MAX_TOTAL_CHARS, MAX_STRING_LENGTH } = requireCjs(
+  '../clamp-log-args.cjs',
+) as {
   clampArgs: (args: unknown[]) => unknown[];
   MAX_TOTAL_CHARS: number;
+  MAX_STRING_LENGTH: number;
 };
 
 const countChars = (value: unknown): number => {
@@ -23,9 +26,28 @@ const countChars = (value: unknown): number => {
   return 0;
 };
 
+const longestString = (value: unknown): number => {
+  if (typeof value === 'string') return value.length;
+  if (Array.isArray(value))
+    return value.reduce<number>((n, v) => Math.max(n, longestString(v)), 0);
+  if (value && typeof value === 'object') {
+    return Object.entries(value).reduce(
+      (n, [key, v]) => Math.max(n, key.length, longestString(v)),
+      0,
+    );
+  }
+  return 0;
+};
+
 // Slack over the budget: each clamped string may add a "[truncated N chars]"
 // suffix, and keys are counted too.
 const BUDGET_CEILING = MAX_TOTAL_CHARS * 2;
+
+// Absolute ceilings, deliberately NOT derived from the module's own constants:
+// masking cost grows quickly with string length, so raising a limit must fail
+// this test and force a conscious decision rather than silently widening it.
+const ABSOLUTE_STRING_CEILING = 4 * 1024;
+const ABSOLUTE_TOTAL_CEILING = 32 * 1024;
 
 const makeWideObject = (keys: number) =>
   Object.fromEntries(Array.from({ length: keys }, (_, i) => [`k${i}`, 'v']));
@@ -95,11 +117,14 @@ describe('clampArgs', () => {
       wide: makeWideObject(20_000),
     };
 
-    const startedAt = Date.now();
-    mask(clampArgs([oversized]));
-    const elapsed = Date.now() - startedAt;
+    const clamped = clampArgs([oversized]);
 
-    // Generous ceiling: this guards the order of magnitude, not a target.
-    expect(elapsed).toBeLessThan(1000);
+    // Masking cost is driven by the longest single string and by the total
+    // payload size, so assert both directly instead of wall-clock time.
+    expect(MAX_STRING_LENGTH).toBeLessThanOrEqual(ABSOLUTE_STRING_CEILING);
+    expect(MAX_TOTAL_CHARS).toBeLessThanOrEqual(ABSOLUTE_TOTAL_CEILING);
+    expect(longestString(clamped)).toBeLessThanOrEqual(ABSOLUTE_STRING_CEILING);
+    expect(countChars(clamped)).toBeLessThanOrEqual(ABSOLUTE_TOTAL_CEILING);
+    expect(() => mask(clamped)).not.toThrow();
   });
 });
