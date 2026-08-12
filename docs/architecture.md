@@ -61,7 +61,7 @@ Account Abstraction (safe-global, ERC-4337) supported via reef-knot.
 
 - `config/feature-flags/` — flag definitions
 - External config loaded from IPFS/CDN at runtime
-- `ipfs.json` — static per-chain overrides
+- `REMOTE_CONFIG_MANIFEST.json` — static per-chain overrides
 - Flags can disable entire pages
 
 ### IPFS mode

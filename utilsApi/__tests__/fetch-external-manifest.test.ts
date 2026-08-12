@@ -68,7 +68,8 @@ describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.CONFIG_MANIFEST_PATH = '/app/runtime-config/IPFS.json';
+    process.env.CONFIG_MANIFEST_PATH =
+      '/app/runtime-config/REMOTE_CONFIG_MANIFEST.json';
     errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     infoSpy = vi.spyOn(console, 'info').mockImplementation(() => undefined);
   });
@@ -86,7 +87,7 @@ describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
     const { ___prefetch_manifest___ } = await fetchExternalManifest();
 
     expect(readFileMock).toHaveBeenCalledWith(
-      '/app/runtime-config/IPFS.json',
+      '/app/runtime-config/REMOTE_CONFIG_MANIFEST.json',
       'utf-8',
     );
     expect(standardFetcherMock).not.toHaveBeenCalled();
@@ -190,7 +191,9 @@ describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
 
     expect(infoSpy).toHaveBeenCalledTimes(2);
     expect(infoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('/app/runtime-config/IPFS.json'),
+      expect.stringContaining(
+        '/app/runtime-config/REMOTE_CONFIG_MANIFEST.json',
+      ),
     );
   });
 
