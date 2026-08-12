@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
-import { PROVIDER_MAX_BATCH, rpcProviders } from '../config.js';
+import { PROVIDER_MAX_BATCH, rpcProvidersUrls } from '../config.js';
 import {
   isAllowedCallAddress,
   isAllowedLogsAddress,
@@ -244,7 +244,7 @@ export const rpcRoute: FastifyPluginAsync = async (fastify) => {
       });
     }
     const chainId = q.data.chainId;
-    const urls = rpcProviders[chainId];
+    const urls = rpcProvidersUrls[chainId];
     if (!urls || urls.length === 0) {
       return reply.code(400).send({
         error: `chain ${chainId} not configured`,

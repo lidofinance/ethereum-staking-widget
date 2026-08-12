@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 
-import { CHAINS } from 'consts/chains';
+import type { CHAIN_ID } from 'consts/chains';
 import { useLocalStorage } from 'shared/hooks/use-local-storage';
 
 import { getUserConfigDefault } from './utils';
@@ -9,7 +9,7 @@ import { UserConfigDefaultType } from './types';
 const STORAGE_USER_CONFIG = 'lido-user-config';
 
 type SavedUserConfig = {
-  rpcUrls: Partial<Record<CHAINS, string>>;
+  rpcUrls: Partial<Record<CHAIN_ID, string>>;
 };
 
 export type UserConfigContextType = UserConfigDefaultType & {

@@ -1,5 +1,5 @@
+import { KNOWN_CHAIN_IDS } from './chains';
 import { getPreConfig, PreConfigType } from './get-preconfig';
-import { KNOWN_CHAIN_IDS } from './known-chain-ids';
 import * as cache from './groups/cache';
 import * as ipfs from './groups/ipfs';
 import * as locale from './groups/locale';

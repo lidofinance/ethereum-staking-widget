@@ -41,8 +41,7 @@ export const helpOrigin = env.HELP_ORIGIN || 'https://help.lido.fi';
 // Fix in the build time (build time don't have env vars)
 
 /** @type string */
-export const researchOrigin =
-  env.RESEARCH_ORIGIN || 'https://research.lido.fi';
+export const researchOrigin = env.RESEARCH_ORIGIN || 'https://research.lido.fi';
 // Fix in the build time (build time don't have env vars)
 
 /** @type string */
@@ -60,30 +59,16 @@ export const supportedChains = env?.SUPPORTED_CHAINS?.split(',').map(
 /** @type string | undefined */
 export const manifestOverride = env.MANIFEST_OVERRIDE;
 
-/** @type string[] */
-export const prefillUnsafeElRpcUrls1 =
-  env.PREFILL_UNSAFE_EL_RPC_URLS_1?.split(',') ?? [];
-/** @type string[] */
-export const prefillUnsafeElRpcUrls17000 =
-  env.PREFILL_UNSAFE_EL_RPC_URLS_17000?.split(',') ?? [];
-/** @type string[] */
-export const prefillUnsafeElRpcUrls560048 =
-  env.PREFILL_UNSAFE_EL_RPC_URLS_560048?.split(',') ?? [];
-/** @type string[] */
-export const prefillUnsafeElRpcUrls11155111 =
-  env.PREFILL_UNSAFE_EL_RPC_URLS_11155111?.split(',') ?? [];
-/** @type string[] */
-export const prefillUnsafeElRpcUrls10 =
-  env.PREFILL_UNSAFE_EL_RPC_URLS_10?.split(',') ?? [];
-/** @type string[] */
-export const prefillUnsafeElRpcUrls11155420 =
-  env.PREFILL_UNSAFE_EL_RPC_URLS_11155420?.split(',') ?? [];
-/** @type string[] */
-export const prefillUnsafeElRpcUrls130 =
-  env.PREFILL_UNSAFE_EL_RPC_URLS_130?.split(',') ?? [];
-/** @type string[] */
-export const prefillUnsafeElRpcUrls1301 =
-  env.PREFILL_UNSAFE_EL_RPC_URLS_1301?.split(',') ?? [];
+/** @type {Record<number, string[]>} */
+export const prefillUnsafeElRpcUrls = [1, ...supportedChains].reduce(
+  (acc, chainId) => {
+    const envVarName = `PREFILL_UNSAFE_EL_RPC_URLS_${chainId}`;
+    const envVarValue = env[envVarName];
+    acc[chainId] = envVarValue?.split(',') ?? [];
+    return acc;
+  },
+  {},
+);
 
 /** @type boolean */
 export const enableQaHelpers = toBoolean(env.ENABLE_QA_HELPERS);
@@ -103,7 +88,7 @@ export const wqAPIBasePath = env.WQ_API_BASE_PATH;
 /** @type string */
 export const rewardsBackendBasePath = env.REWARDS_BACKEND_BASE_PATH;
 
-/** @type string */
+/** @type string | undefined */
 export const devnetOverrides = env.DEVNET_OVERRIDES;
 
 /** @type boolean */

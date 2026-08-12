@@ -1,4 +1,22 @@
 import { z } from 'zod';
+import { CHAINS, CHAIN_ID } from 'consts/chains';
+
+const EL_RPC_SCHEMA = Object.values(CHAINS).reduce(
+  (acc, c: CHAIN_ID) => {
+    acc[`EL_RPC_URLS_${c}` as const] = z
+      .string()
+      .optional()
+      .transform(
+        (v): string[] =>
+          v
+            ?.split(',')
+            .map((s) => s.trim())
+            .filter(Boolean) || [],
+      );
+    return acc;
+  },
+  {} as { [key in `EL_RPC_URLS_${CHAIN_ID}`]: z.ZodType<string[]> },
+);
 
 /**
  * Server-side config: secrets and RPC URLs that must never reach the client.
@@ -27,17 +45,17 @@ const envSchema = z.object({
   // missing SUPPORTED_CHAINS must behave the same on both sides, otherwise
   // the RPC allowlist covers 8 chains while the metric maps cover 1.
   DEFAULT_CHAIN: z.coerce.number().int().default(560048),
-  SUPPORTED_CHAINS: z.string().default('560048'),
+  SUPPORTED_CHAINS: z
+    .string()
+    .default('560048')
+    .transform((v) =>
+      v
+        .split(',')
+        .map((s) => parseInt(s.trim(), 10))
+        .filter((n) => Number.isFinite(n)),
+    ),
 
-  // ETH RPCs (per chain)
-  EL_RPC_URLS_1: z.string().optional(),
-  EL_RPC_URLS_17000: z.string().optional(),
-  EL_RPC_URLS_11155111: z.string().optional(),
-  EL_RPC_URLS_560048: z.string().optional(),
-  EL_RPC_URLS_10: z.string().optional(),
-  EL_RPC_URLS_11155420: z.string().optional(),
-  EL_RPC_URLS_130: z.string().optional(),
-  EL_RPC_URLS_1301: z.string().optional(),
+  ...EL_RPC_SCHEMA,
 
   // External services
   ETH_API_BASE_PATH: z.string().optional(),
@@ -73,15 +91,6 @@ export type ServerConfig = z.infer<typeof envSchema>;
  */
 export const PROVIDER_MAX_BATCH = 20;
 
-const parseRpcUrls = (value: string | undefined): string[] => {
-  return value
-    ? value
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-    : [];
-};
-
 const load = (): ServerConfig => {
   const parsed = envSchema.safeParse(process.env);
   if (!parsed.success) {
@@ -95,17 +104,12 @@ const load = (): ServerConfig => {
 
 export const config = load();
 
-export const rpcProviders: Record<number, string[]> = {
-  1: parseRpcUrls(config.EL_RPC_URLS_1),
-  17000: parseRpcUrls(config.EL_RPC_URLS_17000),
-  11155111: parseRpcUrls(config.EL_RPC_URLS_11155111),
-  560048: parseRpcUrls(config.EL_RPC_URLS_560048),
-  10: parseRpcUrls(config.EL_RPC_URLS_10),
-  11155420: parseRpcUrls(config.EL_RPC_URLS_11155420),
-  130: parseRpcUrls(config.EL_RPC_URLS_130),
-  1301: parseRpcUrls(config.EL_RPC_URLS_1301),
-};
-
-export const supportedChainIds = config.SUPPORTED_CHAINS.split(',')
-  .map((s) => parseInt(s.trim(), 10))
-  .filter((n) => Number.isFinite(n));
+export const rpcProvidersUrls: Record<number, string[]> = Object.values(
+  CHAINS,
+).reduce(
+  (acc, chainId: CHAIN_ID) => {
+    acc[chainId] = config[`EL_RPC_URLS_${chainId}` as const];
+    return acc;
+  },
+  {} as Record<number, string[]>,
+);

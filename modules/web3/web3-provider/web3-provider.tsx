@@ -29,7 +29,7 @@ import { WalletIdsEthereum, WalletsListEthereum } from 'reef-knot/wallets';
 import { useThemeToggle } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
-import { CHAINS } from 'consts/chains';
+import { CHAIN_ID, CHAINS } from 'consts/chains';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { walletMetricProps } from 'consts/matomo';
@@ -104,7 +104,10 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const backendRPC: Record<number, string> = useMemo(
     () =>
       supportedChainIds.reduce(
-        (res, curr) => ({ ...res, [curr]: getRpcUrlByChainId(curr) }),
+        (res, curr) => ({
+          ...res,
+          [curr]: getRpcUrlByChainId(curr as CHAIN_ID),
+        }),
         {},
       ),
     [supportedChainIds, getRpcUrlByChainId],

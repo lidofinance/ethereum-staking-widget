@@ -7,7 +7,7 @@ import Fastify from 'fastify';
 
 import { startupCheckManifestFile } from '../../scripts/startup-checks/config-manifest.mjs';
 
-import { config, rpcProviders } from './config.js';
+import { config, rpcProvidersUrls } from './config.js';
 import { loggerOptions } from './logger.js';
 import { maskedError } from './utils/masked-error.js';
 import { requestMetricsPlugin } from './plugins/request-metrics.js';
@@ -37,7 +37,7 @@ const start = async (): Promise<void> => {
   // Diagnostic: log which chains have RPC URLs configured (counts only,
   // no URL values — those are secrets).
   const rpcSummary = Object.fromEntries(
-    Object.entries(rpcProviders).map(([id, urls]) => [id, urls.length]),
+    Object.entries(rpcProvidersUrls).map(([id, urls]) => [id, urls.length]),
   );
   fastify.log.info({ rpcSummary }, 'startup: RPC providers per chain');
 

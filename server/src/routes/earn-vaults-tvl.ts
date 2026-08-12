@@ -17,7 +17,7 @@ import {
 import { STG_COLLECTOR_CONFIG } from 'features/earn/vault-stg/consts-data';
 import { getDVVVaultContract } from 'features/earn/vault-dvv/contracts';
 
-import { rpcProviders } from '../config.js';
+import { rpcProvidersUrls } from '../config.js';
 import {
   getExternalManifestConfig,
   getLocalManifestEarnVaults,
@@ -50,7 +50,7 @@ type TvlResult = { tvlEthWei: string };
 type STGCollectResponse = { totalBase: bigint };
 
 const mainnetClient = (): PublicClient => {
-  const urls = rpcProviders[mainnet.id] ?? [];
+  const urls = rpcProvidersUrls[mainnet.id] ?? [];
   if (urls.length === 0) {
     throw new Error(
       `EL_RPC_URLS_1 is not configured — cannot compute on-chain TVL`,
