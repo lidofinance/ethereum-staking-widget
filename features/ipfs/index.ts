@@ -4,7 +4,3 @@ export {
   SecurityStatusBanner,
   useRemoteVersion,
 } from './security-status-banner';
-export {
-  InsertIpfsBaseScript,
-  IPFS_BASE_SCRIPT_HASH,
-} from './ipfs-base-script';
