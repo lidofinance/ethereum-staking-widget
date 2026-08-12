@@ -108,11 +108,17 @@ export const CowswapFrame = () => {
     return isValid;
   }, [validateAddress, address]);
 
-  const provider = useCowSwapEthereumProvider(
+  const { provider, onWidgetReady } = useCowSwapEthereumProvider(
     verifySignedOrder,
     openTransactionGuardModal,
     openSigningErrorModal,
   );
+
+  const onReady = useCallback(() => {
+    // release deferred provider 'connect' events before hiding the loader
+    onWidgetReady();
+    onLoaded();
+  }, [onWidgetReady, onLoaded]);
 
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
@@ -290,7 +296,7 @@ export const CowswapFrame = () => {
           onLoadingError={() =>
             onError(new Error('Failed to load CoW Swap widget'))
           }
-          onReady={onLoaded}
+          onReady={onReady}
         />
         <LoaderStyled $isVisible={isLoading} />
       </DexWrapper>

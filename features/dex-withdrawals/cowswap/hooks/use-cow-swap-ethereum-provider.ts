@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
 import { useConnection, useWalletClient } from 'wagmi';
 import { InvalidRequestRpcError, toHex, UserRejectedRequestError } from 'viem';
@@ -18,23 +18,6 @@ import type { SigningHelpTip } from '../trade-guard/trade-guard-modal';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
-const CLEANUP_SET = new Set<() => void>();
-
-const addCleanup = (fn: () => void) => {
-  CLEANUP_SET.add(fn);
-};
-
-const cleanup = () => {
-  for (const fn of CLEANUP_SET) {
-    try {
-      fn();
-    } catch (error) {
-      console.error('[useCowSwapEthereumProvider] Cleanup error:', error);
-    }
-  }
-  CLEANUP_SET.clear();
-};
-
 export const useCowSwapEthereumProvider = (
   verifySignedOrder: VerifyOrder,
   openTransactionGuardModal: (reason: string) => Promise<void>,
@@ -42,20 +25,49 @@ export const useCowSwapEthereumProvider = (
     reason: string,
     helpTip?: SigningHelpTip,
   ) => Promise<void>,
-): EthereumProvider | undefined => {
+): {
+  provider: EthereumProvider | undefined;
+  onWidgetReady: () => void;
+} => {
   const { chainId } = useDappStatus();
   const { data: walletClient } = useWalletClient();
   const { connector } = useConnection();
   const isLedgerLive = useIsLedgerLive();
 
-  // clean up on unmount
-  useEffect(() => {
-    return () => {
-      cleanup();
-    };
+  // Per-instance registries: on rapid unmount/remount two hook instances
+  // coexist briefly, and a shared registry would let the old instance detach
+  // handlers belonging to the new instance's live bridge
+  const cleanupSetRef = useRef(new Set<() => void>());
+  // 'connect' emissions deferred until the widget iframe reports READY —
+  // posted earlier they are lost (app not booted) or dropped by wagmi
+  // while its status is 'connecting'/'reconnecting'
+  const pendingConnectRef = useRef(new Set<() => void>());
+  const isWidgetReadyRef = useRef(false);
+
+  const cleanup = useCallback(() => {
+    for (const fn of cleanupSetRef.current) {
+      try {
+        fn();
+      } catch (error) {
+        console.error('[useCowSwapEthereumProvider] Cleanup error:', error);
+      }
+    }
+    cleanupSetRef.current.clear();
+    pendingConnectRef.current.clear();
   }, []);
 
-  return useMemo(() => {
+  const onWidgetReady = useCallback(() => {
+    isWidgetReadyRef.current = true;
+    for (const emitConnect of pendingConnectRef.current) {
+      emitConnect();
+    }
+    pendingConnectRef.current.clear();
+  }, []);
+
+  // clean up on unmount
+  useEffect(() => cleanup, [cleanup]);
+
+  const provider = useMemo<EthereumProvider | undefined>(() => {
     if (
       !walletClient ||
       !connector ||
@@ -65,6 +77,9 @@ export const useCowSwapEthereumProvider = (
       return undefined;
     }
     cleanup();
+    // widget-react recreates the iframe for every new provider identity,
+    // so a new READY signal must arrive before 'connect' can be delivered
+    isWidgetReadyRef.current = false;
     return {
       request: async <T>(payload: JsonRpcRequest): Promise<T> => {
         // transaction request block
@@ -169,7 +184,7 @@ export const useCowSwapEthereumProvider = (
               }
             };
             connector.emitter.on('change', connectorHandler);
-            addCleanup(() => {
+            cleanupSetRef.current.add(() => {
               connector?.emitter?.off?.('change', connectorHandler);
             });
             break;
@@ -180,24 +195,30 @@ export const useCowSwapEthereumProvider = (
               }
             };
             connector.emitter.on('change', connectorHandler);
-            addCleanup(() => {
+            cleanupSetRef.current.add(() => {
               connector?.emitter?.off?.('change', connectorHandler);
             });
             break;
-          case 'connect':
-            // connect event has side effects in wagmi connectors, but if we are here, connector is ready so we can emit event in next tick
+          case 'connect': {
+            // connect event has side effects in wagmi connectors, but if we are here, connector is ready
             // https://github.com/wevm/wagmi/blob/81b621114a75d5ee94e9bb7d52c94c7d9b8ca1a8/packages/core/src/connectors/injected.ts#L462
-            setTimeout(() => {
+            const emitConnect = () => {
               handlerFn({ chainId: toHex(chainId) });
-            }, 0);
+            };
+            if (isWidgetReadyRef.current) {
+              emitConnect();
+            } else {
+              pendingConnectRef.current.add(emitConnect);
+            }
             break;
+          }
           case 'disconnect':
           case 'close':
             connectorHandler = (error: any) => {
               handlerFn(error);
             };
             connector.emitter.on('disconnect', connectorHandler);
-            addCleanup(() => {
+            cleanupSetRef.current.add(() => {
               connector?.emitter?.off?.('disconnect', connectorHandler);
             });
             break;
@@ -213,8 +234,11 @@ export const useCowSwapEthereumProvider = (
     connector,
     chainId,
     isLedgerLive,
+    cleanup,
     verifySignedOrder,
     openTransactionGuardModal,
     openSigningErrorModal,
   ]);
+
+  return { provider, onWidgetReady };
 };
