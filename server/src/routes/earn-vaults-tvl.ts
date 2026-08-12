@@ -28,7 +28,7 @@ import {
   CACHE_DEFAULT_HEADERS,
 } from '../utils/cache-control.js';
 import { allowAnyOrigin } from '../utils/cors.js';
-import { methodNotAllowed } from '../utils/method-guard.js';
+import { allowOnlyMethod } from '../utils/method-guard.js';
 
 import type { VaultsTvlResponse } from 'types/earn-api';
 
@@ -114,8 +114,10 @@ for (const vault of getLocalManifestEarnVaults()) {
   caches[vault.name] = createTtlCache<TvlResult>();
 }
 
+const ROUTE = '/api/earn/vaults-tvl';
+
 export const earnVaultsTvlRoute: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/api/earn/vaults-tvl', async (req, reply) => {
+  fastify.get(ROUTE, async (req, reply) => {
     allowAnyOrigin(reply);
     try {
       const manifestConfig = await getExternalManifestConfig();
@@ -157,5 +159,5 @@ export const earnVaultsTvlRoute: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  methodNotAllowed(fastify, '/api/earn/vaults-tvl', ['GET']);
+  allowOnlyMethod(fastify, ROUTE, ['GET']);
 };

@@ -24,6 +24,7 @@ import { getTokenAddress } from 'config/networks/token-address';
 import { Token, TOKEN_SYMBOLS } from 'consts/tokens';
 import { useStableToUsd } from 'shared/hooks/use-stable-to-usd';
 import { getTokenDecimals } from 'utils/token-decimals';
+import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 
 const selectBalance = (data: GetBalanceData) => data.value;
 
@@ -252,7 +253,7 @@ export const useStethBalance = ({
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', chainId, isL2],
     enabled,
-    staleTime: Infinity,
+    ...STRATEGY_IMMUTABLE,
     queryFn: async () => (isL2 ? l2.steth.getContract() : stETH.getContract()),
   });
 
@@ -283,7 +284,7 @@ export const useWstethBalance = ({
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', chainId, isL2],
     enabled,
-    staleTime: Infinity,
+    ...STRATEGY_IMMUTABLE,
     queryFn: () => (isL2 ? l2.wsteth.getContract() : wstETH.getContract()),
   });
 

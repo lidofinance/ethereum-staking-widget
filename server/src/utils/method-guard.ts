@@ -18,7 +18,7 @@ const ALL_METHODS: HTTPMethods[] = [
  *
  * HEAD is implied by GET (Fastify exposeHeadRoutes) and never blocked here.
  */
-export const methodNotAllowed = (
+export const allowOnlyMethod = (
   fastify: FastifyInstance,
   url: string,
   allowed: HTTPMethods[],

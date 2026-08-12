@@ -33,7 +33,7 @@ import { configManifestRoute } from './routes/config-manifest.js';
 const fastify = Fastify({
   logger: loggerOptions,
   trustProxy: true,
-  // Slow-loris / partial-headers protection (same intent as the old
+  // partial-headers protection (same intent as the old
   // server.mjs headersTimeout/requestTimeout settings).
   bodyLimit: 1024 * 1024, // 1 MiB
   connectionTimeout: 60_000,

@@ -4,13 +4,15 @@ import { dirname, resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
+import sri from 'vite-plugin-sri-gen';
 import { vitePrerenderPlugin } from 'vite-prerender-plugin';
 
 import { metaTagsToHtml, pageMeta, ROUTE_META, sitemapXml } from './shared/seo';
 import { createHash } from 'node:crypto';
 
 const root = dirname(fileURLToPath(import.meta.url));
-const isIpfs = process.env.VITE_IPFS_MODE === 'true';
+const isIpfs = process.env.IPFS_MODE === 'true';
+
 const shim = (rel: string) => resolve(root, 'shims', rel);
 
 /**
@@ -199,6 +201,7 @@ export default defineConfig({
     // The `import { ReactComponent }` sites (@svgr/webpack convention) are
     // migrated to the `?react` suffix form.
     svgr(),
+    sri(),
   ],
   resolve: {
     alias: [

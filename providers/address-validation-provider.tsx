@@ -16,6 +16,7 @@ import {
 import { useApiAddressValidation } from 'shared/hooks/use-api-address-validation';
 import { standardFetcher } from 'utils/standardFetcher';
 import { Address } from 'viem';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 
 type AddressValidationContextType = {
   isValidAddress: boolean;
@@ -130,7 +131,7 @@ export const AddressValidationProvider = ({
   const { data: staticBlocklist } = useQuery<AddressValidationFile>({
     queryKey: ['validation-static-file'],
     enabled: !config.ipfsMode && config.useValidationFile,
-    staleTime: Infinity,
+    ...STRATEGY_CONSTANT,
     retry: 1,
     queryFn: async () => {
       const data = await standardFetcher<AddressValidationFile>(

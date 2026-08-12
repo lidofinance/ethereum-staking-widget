@@ -6,7 +6,7 @@ import {
 } from '../utils/external-manifest.js';
 import { applyCacheControl } from '../utils/cache-control.js';
 import { allowAnyOrigin } from '../utils/cors.js';
-import { methodNotAllowed } from '../utils/method-guard.js';
+import { allowOnlyMethod } from '../utils/method-guard.js';
 
 /**
  * Serves the config manifest from the same source the server itself reads:
@@ -19,8 +19,10 @@ import { methodNotAllowed } from '../utils/method-guard.js';
 const CACHE_EXTERNAL_MANIFEST_HEADERS =
   'public, max-age=60, stale-if-error=1200, stale-while-revalidate=30';
 
+const ROUTE = '/api/config-manifest';
+
 export const configManifestRoute: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/api/config-manifest', async (_req, reply) => {
+  fastify.get(ROUTE, async (_req, reply) => {
     allowAnyOrigin(reply);
     const manifest = await fetchExternalManifest();
     // lets probes distinguish a degraded manifest from a healthy one
@@ -29,5 +31,5 @@ export const configManifestRoute: FastifyPluginAsync = async (fastify) => {
     return manifest;
   });
 
-  methodNotAllowed(fastify, '/api/config-manifest', ['GET']);
+  allowOnlyMethod(fastify, ROUTE, ['GET']);
 };

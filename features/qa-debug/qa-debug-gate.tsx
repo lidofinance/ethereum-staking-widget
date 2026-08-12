@@ -8,14 +8,14 @@ import { useDebugGesture } from './use-debug-gesture';
 const QaDrawer = lazy(() => import('./qa-drawer/qa-drawer'));
 
 const QaDebugGateInner: FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [wasOpened, setWasOpened] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean | null>(null);
 
   const open = useCallback(() => {
     setIsOpen(true);
-    setWasOpened(true);
   }, []);
   const close = useCallback(() => setIsOpen(false), []);
+
+  const wasOpened = isOpen !== null;
 
   useDebugGesture(open);
 

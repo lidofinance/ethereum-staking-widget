@@ -12,7 +12,9 @@ import { createCachedProxy } from '../utils/cached-proxy.js';
 import { getExternalManifestConfig } from '../utils/external-manifest.js';
 import { getValidationFile } from '../utils/validation-file.js';
 import { allowAnyOrigin } from '../utils/cors.js';
-import { methodNotAllowed } from '../utils/method-guard.js';
+import { allowOnlyMethod } from '../utils/method-guard.js';
+
+const ROUTE = '/api/validation';
 
 /**
  * Address validation — ported from `pages/api/validation.ts`, with the
@@ -46,11 +48,11 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
     fastify.log.info(
       'validation: no VALIDATION_SERVICE_BASE_PATH and no VALIDATION_FILE_PATH — route returns 404',
     );
-    fastify.get('/api/validation', async (_req, reply) => {
+    fastify.get(ROUTE, async (_req, reply) => {
       reply.code(404).send();
     });
     // wrong-method contract (405 + Allow) holds even when disabled
-    methodNotAllowed(fastify, '/api/validation', ['GET']);
+    allowOnlyMethod(fastify, ROUTE, ['GET']);
     return;
   }
 
@@ -90,7 +92,7 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
       })
     : null;
 
-  fastify.get('/api/validation', async (req, reply) => {
+  fastify.get(ROUTE, async (req, reply) => {
     allowAnyOrigin(reply);
     const q = req.query as { address?: unknown };
     if (typeof q.address !== 'string' || !isAddress(q.address)) {
@@ -108,5 +110,5 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
     return proxy(req, reply);
   });
 
-  methodNotAllowed(fastify, '/api/validation', ['GET']);
+  allowOnlyMethod(fastify, ROUTE, ['GET']);
 };
