@@ -9,6 +9,17 @@ import {
 import { getFunctionNameFromAbi } from 'utils/get-function-name-from-abi';
 
 const UNKNOWN_LABEL = 'unknown';
+const ADDRESS_LENGTH = 42; // '0x' + 40 hex chars
+const LOG_ERROR_MAX_LENGTH = 200;
+
+// Parser errors can quote their whole input, so keep log lines bounded.
+const shortError = (error: unknown): string => {
+  const text =
+    error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  return text.length > LOG_ERROR_MAX_LENGTH
+    ? `${text.slice(0, LOG_ERROR_MAX_LENGTH)}…`
+    : text;
+};
 
 /**
  * Port of `utilsApi/collect-request-address-metric.ts` — increments the
@@ -48,7 +59,10 @@ export const collectRequestAddressMetric = ({
       }
 
       const { to, data } = call.params[0];
-      const address = getAddress(to as string);
+      // Metrics collection is independent of the route's own checks, so verify
+      // the shape here rather than assuming a well-formed address.
+      if (typeof to !== 'string' || to.length !== ADDRESS_LENGTH) return;
+      const address = getAddress(to);
       const contractName = (
         METRIC_CONTRACT_ADDRESSES as unknown as Record<
           number,
@@ -87,7 +101,9 @@ export const collectRequestAddressMetric = ({
         .inc(1);
     } catch (error) {
       console.warn(
-        `[collectRequestAddressMetric] skipping malformed call: ${error}`,
+        `[collectRequestAddressMetric] skipping malformed call: ${shortError(
+          error,
+        )}`,
       );
     }
   });

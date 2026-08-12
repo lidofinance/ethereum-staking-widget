@@ -76,7 +76,7 @@ CONFIG_MANIFEST_PATH=...      # Path to a mounted config manifest file (e.g. k8s
                               # The file is public: never put deployment-private data in it.
 ```
 
-## ipfs.json
+## REMOTE_CONFIG_MANIFEST.json
 
 Static config for IPFS deployment:
 

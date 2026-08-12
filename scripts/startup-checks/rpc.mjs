@@ -97,7 +97,10 @@ export const startupCheckRPCs = async () => {
       return results;
     } catch (err) {
       console.error('[startupCheckRPCs] Error during RPC checks:', err);
-      return null;
+      // Exit process to prevent start with a broken RPC config, same as the other startup checks
+      process.exit(1);
     }
   })();
+
+  return globalStartupRPCChecks.promise;
 };

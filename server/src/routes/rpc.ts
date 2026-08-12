@@ -234,99 +234,114 @@ const statusBucket = (status: number): string => {
   return `${Math.min(Math.max(Math.floor(status / 100), 1), 5)}xx`;
 };
 
+// Cap the request body below the server's 1 MiB default, sized off the largest
+// batches this app actually sends. Withdrawal reads pass request-id arrays, and
+// the transport packs up to PROVIDER_MAX_BATCH calls per POST:
+//   getClaimableEther, MAX_SHOWN_REQUEST_PER_TYPE (1024) x 2 arrays  128kb
+//   findCheckpointHints, 1024 ids                                     64kb
+//   getWithdrawalStatus, STATUS_BATCH_SIZE (500) ids                  32kb
+//   claimWithdrawals, MAX_REQUESTS_COUNT (256)                        32kb
+// Two large reads in one batch window reach ~193kb, ~225kb with a claim gas
+// estimate alongside. 512kb keeps ~2.3x headroom — re-measure before lowering.
+const MAX_BODY_BYTES = 512 * 1024;
+
 export const rpcRoute: FastifyPluginAsync = async (fastify) => {
-  fastify.post('/api/rpc', async (req, reply) => {
-    // 1. Validate chain selection.
-    const q = querySchema.safeParse(req.query);
-    if (!q.success) {
-      return reply.code(400).send({
-        error: 'missing or invalid chainId query parameter',
-      });
-    }
-    const chainId = q.data.chainId;
-    const urls = rpcProviders[chainId];
-    if (!urls || urls.length === 0) {
-      return reply.code(400).send({
-        error: `chain ${chainId} not configured`,
-      });
-    }
-
-    // 2. Parse body (single call or batch).
-    const body = req.body;
-    if (body == null || typeof body !== 'object') {
-      return reply.code(400).send({ error: 'invalid JSON-RPC body' });
-    }
-    const isBatch = Array.isArray(body);
-    const calls = isBatch ? body : [body];
-
-    // 3. Batch size cap.
-    if (calls.length > PROVIDER_MAX_BATCH) {
-      return reply.code(400).send({
-        error: `batch size ${calls.length} exceeds max ${PROVIDER_MAX_BATCH}`,
-      });
-    }
-    if (calls.length === 0) {
-      return reply.code(400).send({ error: 'empty batch' });
-    }
-
-    // 4. eth_call address/method metrics (fire-and-forget, never throws).
-    collectRequestAddressMetric({
-      calls,
-      chainId,
-      metrics: metrics.request.ethCallToAddress,
-    });
-
-    // 5. Parse + validate each call.
-    const validated: JsonRpcCall[] = [];
-    const validationErrors: RpcResponse[] = [];
-    for (const raw of calls) {
-      const parsed = jsonRpcCallSchema.safeParse(raw);
-      if (!parsed.success) {
-        validationErrors.push(
-          rpcError(
-            (raw as { id?: JsonRpcCall['id'] })?.id,
-            -32600,
-            'invalid JSON-RPC envelope',
-          ),
-        );
-        continue;
-      }
-      const callError = validateCall(parsed.data, chainId);
-      if (callError) {
-        validationErrors.push({
-          jsonrpc: '2.0',
-          id: parsed.data.id ?? null,
-          error: callError,
+  fastify.post(
+    '/api/rpc',
+    { bodyLimit: MAX_BODY_BYTES },
+    async (req, reply) => {
+      // 1. Validate chain selection.
+      const q = querySchema.safeParse(req.query);
+      if (!q.success) {
+        return reply.code(400).send({
+          error: 'missing or invalid chainId query parameter',
         });
-        continue;
       }
-      validated.push(parsed.data);
-    }
+      const chainId = q.data.chainId;
+      const urls = rpcProviders[chainId];
+      if (!urls || urls.length === 0) {
+        return reply.code(400).send({
+          error: `chain ${chainId} not configured`,
+        });
+      }
 
-    // 6. If anything failed validation, short-circuit — do not call
-    //    upstream. Matches the Next.js handler: a single bad call in a
-    //    batch fails the whole batch (defensive default — avoids any
-    //    partial forwarding of unvalidated calls).
-    if (validationErrors.length > 0) {
-      return reply.send(isBatch ? validationErrors : validationErrors[0]);
-    }
+      // 2. Parse body (single call or batch).
+      const body = req.body;
+      if (body == null || typeof body !== 'object') {
+        return reply.code(400).send({ error: 'invalid JSON-RPC body' });
+      }
+      const isBatch = Array.isArray(body);
+      const calls = isBatch ? body : [body];
 
-    // 7. Forward to upstream with failover.
-    const proxied = await proxyToUpstream(
-      urls,
-      chainId,
-      isBatch ? validated : validated[0],
-      req.log,
-    );
-    if ('error' in proxied) {
-      // Wrap in JSON-RPC error shape so clients parse it.
-      return reply.send(
-        rpcError(null, proxied.error.code, proxied.error.message),
+      // 3. Batch size cap.
+      if (calls.length > PROVIDER_MAX_BATCH) {
+        return reply.code(400).send({
+          error: `batch size ${calls.length} exceeds max ${PROVIDER_MAX_BATCH}`,
+        });
+      }
+      if (calls.length === 0) {
+        return reply.code(400).send({ error: 'empty batch' });
+      }
+
+      // 4. eth_call address/method metrics (fire-and-forget, never throws).
+      collectRequestAddressMetric({
+        calls,
+        chainId,
+        metrics: metrics.request.ethCallToAddress,
+      });
+
+      // 5. Parse + validate each call.
+      const validated: JsonRpcCall[] = [];
+      const validationErrors: RpcResponse[] = [];
+      for (const raw of calls) {
+        const parsed = jsonRpcCallSchema.safeParse(raw);
+        if (!parsed.success) {
+          validationErrors.push(
+            rpcError(
+              (raw as { id?: JsonRpcCall['id'] })?.id,
+              -32600,
+              'invalid JSON-RPC envelope',
+            ),
+          );
+          continue;
+        }
+        const callError = validateCall(parsed.data, chainId);
+        if (callError) {
+          validationErrors.push({
+            jsonrpc: '2.0',
+            id: parsed.data.id ?? null,
+            error: callError,
+          });
+          continue;
+        }
+        validated.push(parsed.data);
+      }
+
+      // 6. If anything failed validation, short-circuit — do not call
+      //    upstream. Matches the Next.js handler: a single bad call in a
+      //    batch fails the whole batch (defensive default — avoids any
+      //    partial forwarding of unvalidated calls).
+      if (validationErrors.length > 0) {
+        return reply.send(isBatch ? validationErrors : validationErrors[0]);
+      }
+
+      // 7. Forward to upstream with failover.
+      const proxied = await proxyToUpstream(
+        urls,
+        chainId,
+        isBatch ? validated : validated[0],
+        req.log,
       );
-    }
+      if ('error' in proxied) {
+        // Wrap in JSON-RPC error shape so clients parse it.
+        return reply.send(
+          rpcError(null, proxied.error.code, proxied.error.message),
+        );
+      }
 
-    return reply.type('application/json').send(proxied.data);
-  });
+      return reply.type('application/json').send(proxied.data);
+    },
+  );
 
   methodNotAllowed(fastify, '/api/rpc', ['POST']);
 };

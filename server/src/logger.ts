@@ -1,6 +1,7 @@
 import { satanizer, commonPatterns } from '@lidofinance/satanizer';
 
 import { config } from './config.js';
+import { clampArgs } from './utils/clamp-log-args.js';
 
 /**
  * Secret masking for pino logs — port of `next-logger.config.cjs`.
@@ -42,12 +43,14 @@ export const loggerOptions = {
     },
   },
   hooks: {
+    // Cap arguments before masking — masking cost grows faster than linearly
+    // with payload size. See utils/clamp-log-args.ts for the limits.
     logMethod(
       this: unknown,
       inputArgs: unknown[],
       method: (...args: unknown[]) => void,
     ) {
-      return method.apply(this, mask(inputArgs));
+      return method.apply(this, mask(clampArgs(inputArgs)));
     },
   },
 };

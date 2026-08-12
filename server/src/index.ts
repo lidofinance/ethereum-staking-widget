@@ -6,6 +6,12 @@ import './load-env.js';
 import Fastify from 'fastify';
 
 import { startupCheckManifestFile } from '../../scripts/startup-checks/config-manifest.mjs';
+import { startupCheckValidationFile } from '../../scripts/startup-checks/validation-file.mjs';
+import { getRPCChecks } from '../../scripts/startup-checks/rpc.mjs';
+import {
+  registerSecretsRotationRestart,
+  registerShutdownSignals,
+} from '../../scripts/shutdown.mjs';
 
 import { config, rpcProviders } from './config.js';
 import { loggerOptions } from './logger.js';
@@ -41,11 +47,16 @@ const start = async (): Promise<void> => {
   );
   fastify.log.info({ rpcSummary }, 'startup: RPC providers per chain');
 
-  // Fail fast on a broken CONFIG_MANIFEST_PATH file (the check process.exits
-  // on an invalid manifest; skipped when the env is unset). RPC startup
-  // checks run separately inside metrics collection.
+  // Fail fast on a broken manifest/validation file — both checks process.exit
+  // on invalid content and skip when their env path is unset. Awaited before
+  // listen so a broken config never passes readiness. RPC checks are kicked
+  // off by the metrics collector; await whatever it has already started.
   if (process.env.RUN_STARTUP_CHECKS === 'true') {
-    void startupCheckManifestFile();
+    await Promise.all([
+      startupCheckManifestFile(),
+      startupCheckValidationFile(),
+      getRPCChecks(),
+    ]);
   }
 
   // Plugins (order matters: metrics first so requests are tracked,
@@ -73,21 +84,14 @@ const start = async (): Promise<void> => {
   await fastify.register(configManifestRoute);
 
   await fastify.listen({ host: config.HOST, port: config.PORT });
-};
 
-const gracefulShutdown = (signal: string): void => {
-  fastify.log.info({ signal }, 'shutdown signal received');
-  fastify
-    .close()
-    .then(() => process.exit(0))
-    .catch((err) => {
-      fastify.log.error({ err }, 'error during shutdown');
-      process.exit(1);
-    });
+  // Shared with the Next target: graceful close on signals (force-exit timer
+  // guards a hung close) and restart-by-exit on OpenBao secret rotation.
+  // Fastify's close callback takes no error argument — the helper's error
+  // branch stays dormant, the exit path is unchanged.
+  registerShutdownSignals(fastify);
+  registerSecretsRotationRestart(fastify);
 };
-
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
 start().catch((err) => {
   console.error('Fatal startup error:', maskedError(err));
