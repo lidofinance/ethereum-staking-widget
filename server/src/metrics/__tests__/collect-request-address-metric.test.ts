@@ -133,4 +133,40 @@ describe('collectRequestAddressMetric', () => {
     });
     expect(recorded.length).toBe(1);
   });
+
+  // Log lines must stay bounded regardless of entry size: parser errors can
+  // quote their whole input back.
+  it('never logs an oversized `to` value, and keeps processing the batch', async () => {
+    const { counter, recorded } = makeCounterMock();
+    const oversizedTo = `0x${'a'.repeat(128 * 1024)}`;
+
+    await collectRequestAddressMetric({
+      calls: [makeEthCall(oversizedTo), makeEthCall(VALID_UNKNOWN_TO)],
+      chainId: CHAIN_MAINNET,
+      metrics: counter,
+    });
+
+    expect(recorded.length).toBe(1);
+    for (const args of warnSpy.mock.calls) {
+      const line = args.map(String).join(' ');
+      expect(line.length).toBeLessThan(1024);
+      expect(line).not.toContain('aaaaaaaaaa');
+    }
+  });
+
+  it('bounds the logged text when a call throws', async () => {
+    const { counter } = makeCounterMock();
+    // 42-char `to` passes the length guard but fails checksum parsing, so this
+    // exercises the catch branch.
+    await collectRequestAddressMetric({
+      calls: [makeEthCall(`0x${'z'.repeat(40)}`)],
+      chainId: CHAIN_MAINNET,
+      metrics: counter,
+    });
+
+    expect(warnSpy).toHaveBeenCalled();
+    for (const args of warnSpy.mock.calls) {
+      expect(args.map(String).join(' ').length).toBeLessThan(512);
+    }
+  });
 });

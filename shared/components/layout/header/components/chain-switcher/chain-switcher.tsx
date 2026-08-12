@@ -1,5 +1,11 @@
 import { FC, useState, useMemo, createElement, ComponentType } from 'react';
-import { CHAIN_ICONS_MAP, useDappStatus, wagmiChainMap } from 'modules/web3';
+import { Link, Loader } from '@lidofinance/lido-ui';
+import {
+  CHAIN_ICONS_MAP,
+  getPrettyChainName,
+  useDappStatus,
+  wagmiChainMap,
+} from 'modules/web3';
 
 import {
   ChainSwitcherOptions,
@@ -22,13 +28,19 @@ const overriddenChainNames: Record<number, string> = {
 };
 
 export const ChainSwitcher: FC = () => {
-  const { isDappActive, chainId, setChainId, supportedChainIds } =
-    useDappStatus();
+  const {
+    isDappActive,
+    chainId,
+    canSwitchChain,
+    isSwitchChainPending,
+    supportedChainIds,
+    requestChangeChain,
+  } = useDappStatus();
 
   const [opened, setOpened] = useState(false);
   const isLocked = useMemo(
-    () => supportedChainIds.length < 2,
-    [supportedChainIds],
+    () => supportedChainIds.length < 2 || isSwitchChainPending,
+    [supportedChainIds, isSwitchChainPending],
   );
 
   const iconsMap = useMemo(
@@ -53,14 +65,18 @@ export const ChainSwitcher: FC = () => {
       <ChainSwitcherStyled
         data-testid={`currentChain=${chainId}`}
         $disabled={isLocked}
+        $loading={isSwitchChainPending}
         onClick={() => {
           if (!isLocked) {
             setOpened((prev) => !prev);
           }
         }}
       >
-        <IconStyle>{iconsMap[chainId].iconComponent}</IconStyle>
+        <IconStyle $loading={isSwitchChainPending}>
+          {iconsMap[chainId].iconComponent}
+        </IconStyle>
         {!isLocked && <ArrowStyle data-testid="canExpanded" $opened={opened} />}
+        {isSwitchChainPending && <Loader size="small" />}
       </ChainSwitcherStyled>
 
       {!isLocked && (
@@ -69,7 +85,7 @@ export const ChainSwitcher: FC = () => {
             currentChainId={chainId}
             onSelect={(chainId) => {
               setOpened(false);
-              setChainId(chainId);
+              requestChangeChain(chainId);
             }}
             setOpened={setOpened}
             opened={opened}
@@ -77,7 +93,22 @@ export const ChainSwitcher: FC = () => {
           />
           {!isDappActive && (
             <SelectIconTooltip showArrow>
-              This network doesn’t match your wallet’s network
+              This network doesn’t match your wallet’s network.{' '}
+              {canSwitchChain && (
+                <>
+                  <br />
+                  <Link
+                    href="#"
+                    aria-disabled={isSwitchChainPending}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!isSwitchChainPending) requestChangeChain(chainId);
+                    }}
+                  >
+                    Switch to {getPrettyChainName(chainId)}.
+                  </Link>
+                </>
+              )}
             </SelectIconTooltip>
           )}
         </>
