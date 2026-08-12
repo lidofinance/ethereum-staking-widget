@@ -21,6 +21,8 @@ vi.mock('../../config.js', () => ({
     DEFAULT_CHAIN: 1,
     MANIFEST_OVERRIDE: undefined,
   },
+  // imported by logger.ts (via utils/masked-error.ts) for secret masking
+  rpcProvidersUrls: {},
 }));
 
 const { metricsLabelsMock, startTimerMock } = vi.hoisted(() => ({

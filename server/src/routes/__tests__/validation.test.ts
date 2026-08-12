@@ -23,6 +23,8 @@ vi.mock('../../config.js', () => ({
       return process.env.TEST_VALIDATION_FILE || undefined;
     },
   },
+  // imported by logger.ts (via utils/masked-error.ts) for secret masking
+  rpcProvidersUrls: {},
 }));
 
 vi.mock('../../metrics/index.js', () => ({

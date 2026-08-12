@@ -10,7 +10,7 @@ import Fastify from 'fastify';
 vi.mock('../../config.js', () => ({
   config: { NODE_ENV: 'test' },
   PROVIDER_MAX_BATCH: 20,
-  rpcProviders: {
+  rpcProvidersUrls: {
     1: ['https://rpc-primary.test/KEY', 'https://rpc-fallback.test/KEY'],
   },
 }));

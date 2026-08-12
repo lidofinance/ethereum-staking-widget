@@ -16,7 +16,7 @@ import { clampArgs } from './utils/clamp-log-args.js';
  * `utils/masked-error.ts`.
  */
 const RPC_URL_VALUES = Object.values(rpcProvidersUrls).flatMap((value) =>
-  (value || '').map((url) => url.trim()).filter(Boolean),
+  (value ?? []).map((url) => url.trim()).filter(Boolean),
 );
 
 const patterns = [...commonPatterns, ...RPC_URL_VALUES].filter(Boolean);
