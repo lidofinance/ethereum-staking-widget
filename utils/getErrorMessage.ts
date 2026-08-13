@@ -16,6 +16,9 @@ export enum ErrorMessage {
   INVALID_REFERRAL = 'Invalid referral address or ENS',
   INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
   BUNDLE_NOT_FOUND = 'Could not locate transaction. Check your wallet for details.',
+  UNAUTHORIZED_PROVIDER = 'Your wallet has not authorized this request.\nReload the page and try again.',
+  PROVIDER_DISCONNECTED = 'Your wallet is disconnected.\nReconnect your wallet and try again.',
+  CHAIN_DISCONNECTED = 'Your wallet is not connected to the selected network.\nSwitch to the selected network in your wallet and try again.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -56,6 +59,12 @@ export const getError = (error: unknown): ErrorMessage | string => {
     case 'BUNDLE_NOT_FOUND':
     case 5730:
       return ErrorMessage.BUNDLE_NOT_FOUND;
+    case 4100:
+      return ErrorMessage.UNAUTHORIZED_PROVIDER;
+    case 4900:
+      return ErrorMessage.PROVIDER_DISCONNECTED;
+    case 4901:
+      return ErrorMessage.CHAIN_DISCONNECTED;
     default:
       return ErrorMessage.SOMETHING_WRONG;
   }
@@ -63,7 +72,13 @@ export const getError = (error: unknown): ErrorMessage | string => {
 
 export const getErrorMessage = (error: unknown): ErrorMessage | string => {
   try {
-    console.error('TX_ERROR:', { error, error_string: JSON.stringify(error) });
+    console.error('TX_ERROR:', {
+      error,
+      // JSON.stringify drops non-enumerable Error fields and never walks
+      // `cause` — which is exactly where the provider code hides
+      cause_chain: describeCauseChain(error),
+      error_string: JSON.stringify(error),
+    });
   } catch (e) {
     console.error('TX_ERROR:', e);
   }
@@ -73,6 +88,62 @@ export const getErrorMessage = (error: unknown): ErrorMessage | string => {
   trackErrorDebounced(errorMessage);
 
   return errorMessage;
+};
+
+// Depth cap doubles as a cycle guard: `cause` chains are occasionally circular
+const MAX_CAUSE_DEPTH = 5;
+
+// EIP-1193 provider errors we can explain to the user. They never arrive bare:
+// the SDK wraps every failure into SDKError and stamps its own bucket code
+// (TRANSACTION_ERROR) on top, so the actionable code survives only in `cause`.
+const PROVIDER_ERROR_CODES: readonly number[] = [4100, 4900, 4901];
+
+const PROVIDER_ERROR_NAMES: Record<string, number> = {
+  unauthorizedprovidererror: 4100,
+  providerdisconnectederror: 4900,
+  chaindisconnectederror: 4901,
+};
+
+const matchProviderError = (error: object): number | null => {
+  if (
+    'code' in error &&
+    typeof error.code === 'number' &&
+    PROVIDER_ERROR_CODES.includes(error.code)
+  )
+    return error.code;
+
+  if ('name' in error && typeof error.name === 'string')
+    return PROVIDER_ERROR_NAMES[error.name.toLowerCase()] ?? null;
+
+  return null;
+};
+
+// Deliberately matches only codes we can explain. Returning whatever code sits
+// deepest would be wrong: viem `cause` chains often bottom out at a raw -32000
+const findProviderErrorCode = (
+  error: unknown,
+  depth = MAX_CAUSE_DEPTH,
+): number | null => {
+  if (depth <= 0 || !error || typeof error !== 'object') return null;
+
+  return (
+    matchProviderError(error) ??
+    ('cause' in error ? findProviderErrorCode(error.cause, depth - 1) : null)
+  );
+};
+
+const describeCauseChain = (
+  error: unknown,
+  depth = MAX_CAUSE_DEPTH,
+): { name?: unknown; code?: unknown }[] => {
+  if (depth <= 0 || !error || typeof error !== 'object') return [];
+
+  const { name, code } = error as { name?: unknown; code?: unknown };
+
+  return [
+    { name, code },
+    ...('cause' in error ? describeCauseChain(error.cause, depth - 1) : []),
+  ];
 };
 
 // extracts message from Errors made by us
@@ -170,6 +241,11 @@ export const extractCodeFromError = (
       return 'DEVICE_LOCKED';
     }
   }
+  // Must run before the generic `code` read below: SDKError's bucket code sits
+  // at the top level and would shadow the provider code nested in `cause`
+  const providerErrorCode = findProviderErrorCode(error);
+  if (providerErrorCode) return providerErrorCode;
+
   if ('code' in error) {
     if (typeof error.code === 'string') return error.code.toUpperCase();
     if (typeof error.code == 'number') return error.code;
@@ -206,6 +282,12 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
   [ErrorMessage.INVALID_REFERRAL]: MATOMO_ERROR_EVENTS_TYPES.INVALID_REFERRAL,
   [ErrorMessage.INVALID_SIGNATURE]: MATOMO_ERROR_EVENTS_TYPES.INVALID_SIGNATURE,
   [ErrorMessage.BUNDLE_NOT_FOUND]: MATOMO_ERROR_EVENTS_TYPES.BUNDLE_NOT_FOUND,
+  [ErrorMessage.UNAUTHORIZED_PROVIDER]:
+    MATOMO_ERROR_EVENTS_TYPES.UNAUTHORIZED_PROVIDER,
+  [ErrorMessage.PROVIDER_DISCONNECTED]:
+    MATOMO_ERROR_EVENTS_TYPES.PROVIDER_DISCONNECTED,
+  [ErrorMessage.CHAIN_DISCONNECTED]:
+    MATOMO_ERROR_EVENTS_TYPES.CHAIN_DISCONNECTED,
 };
 
 const trackErrorDebounced = debounce((errorMessage: string) => {

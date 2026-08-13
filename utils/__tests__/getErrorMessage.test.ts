@@ -3,6 +3,7 @@ import type { TransactionReceipt } from 'viem';
 import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
 import {
   getErrorMessage,
+  getErrorHint,
   ErrorMessage,
   extractCodeFromError,
 } from '../getErrorMessage';
@@ -167,5 +168,80 @@ describe('extractCodeFromError', () => {
         'An unknown RPC error occurred.\nDetails: Ledger device: Locked device (0x5515)\nVersion: viem@2.50.4',
     };
     expect(extractCodeFromError(error)).toBe('DEVICE_LOCKED');
+  });
+});
+
+// The SDK wraps every tx failure into SDKError and stamps its own bucket code
+// (TRANSACTION_ERROR) on top of the viem chain, so the EIP-1193 code the wallet
+// actually returned survives only inside `cause`.
+describe('extractCodeFromError: provider errors nested in cause', () => {
+  const sdkWrapped = (cause: unknown) => ({
+    name: 'SDKError',
+    code: 'TRANSACTION_ERROR',
+    message: 'The requested method and/or account has not been authorized.',
+    cause,
+  });
+
+  test('digs 4100 out from under the SDK bucket code', () => {
+    const error = sdkWrapped({
+      name: 'TransactionExecutionError',
+      cause: { name: 'UnauthorizedProviderError', code: 4100 },
+    });
+    expect(extractCodeFromError(error)).toBe(4100);
+    expect(getErrorMessage(error)).toBe(ErrorMessage.UNAUTHORIZED_PROVIDER);
+  });
+
+  test('digs 4900 and 4901 out of the cause chain', () => {
+    expect(
+      getErrorMessage(sdkWrapped({ name: 'ProviderDisconnectedError' })),
+    ).toBe(ErrorMessage.PROVIDER_DISCONNECTED);
+    expect(getErrorMessage(sdkWrapped({ code: 4901 }))).toBe(
+      ErrorMessage.CHAIN_DISCONNECTED,
+    );
+  });
+
+  // node_modules holds a dozen viem copies, so a provider error may arrive
+  // from a foreign realm with its numeric code already stripped by a wrapper
+  test('falls back to the viem error name when the code is absent', () => {
+    const error = sdkWrapped({ name: 'unauthorizedProviderError' });
+    expect(extractCodeFromError(error)).toBe(4100);
+  });
+
+  // Guards the deliberate narrowness of the cause walk: viem chains routinely
+  // bottom out at a raw -32000, which the switch reads as "Not enough ether"
+  test('does not surface unrecognized codes from the cause chain', () => {
+    const error = sdkWrapped({ name: 'InvalidInputRpcError', code: -32000 });
+    expect(getErrorMessage(error)).toBe(ErrorMessage.SOMETHING_WRONG);
+  });
+
+  test('survives a circular cause chain', () => {
+    const error: Record<string, unknown> = {
+      code: 'TRANSACTION_ERROR',
+      name: 'SDKError',
+    };
+    error.cause = error;
+    expect(getErrorMessage(error)).toBe(ErrorMessage.SOMETHING_WRONG);
+  });
+
+  // A top-level provider code must keep working — the walk starts at the root
+  test('matches a bare provider error without any wrapping', () => {
+    expect(getErrorMessage({ code: 4100 })).toBe(
+      ErrorMessage.UNAUTHORIZED_PROVIDER,
+    );
+  });
+});
+
+describe('getErrorHint', () => {
+  test('returns a hint for explained provider errors', () => {
+    expect(getErrorHint(ErrorMessage.UNAUTHORIZED_PROVIDER)).toBe(
+      'Reload the page and try again.',
+    );
+  });
+
+  // The generic fallback must stay silent: a hint under "Something went wrong."
+  // would be a guess presented to the user as a diagnosis
+  test('returns nothing for the generic fallback', () => {
+    expect(getErrorHint(ErrorMessage.SOMETHING_WRONG)).toBeUndefined();
+    expect(getErrorHint('some arbitrary text')).toBeUndefined();
   });
 });
