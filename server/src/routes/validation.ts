@@ -12,9 +12,7 @@ import { createCachedProxy } from '../utils/cached-proxy.js';
 import { getExternalManifestConfig } from '../utils/external-manifest.js';
 import { getValidationFile } from '../utils/validation-file.js';
 import { allowAnyOrigin } from '../utils/cors.js';
-import { allowOnlyMethod } from '../utils/method-guard.js';
-
-const ROUTE = '/api/validation';
+import { ROUTES } from '../consts.js';
 
 /**
  * Address validation — ported from `pages/api/validation.ts`, with the
@@ -36,7 +34,7 @@ const ROUTE = '/api/validation';
  * - API version comes from the external manifest's `api.validation.version`
  *   (default '1') — the same `getExternalConfig()` source the legacy route
  *   used (the PoC port drifted to a MANIFEST_OVERRIDE-as-URL scheme).
- * - GET only (405 otherwise), 10s upstream timeout, 1s LRU cache.
+ * - GET only (404 otherwise), 10s upstream timeout, 1s LRU cache.
  * - `ignoreParams: true` — the address travels in the path; nothing else is
  *   forwarded upstream.
  */
@@ -48,11 +46,9 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
     fastify.log.info(
       'validation: no VALIDATION_SERVICE_BASE_PATH and no VALIDATION_FILE_PATH — route returns 404',
     );
-    fastify.get(ROUTE, async (_req, reply) => {
+    fastify.get(ROUTES.api.validation, async (_req, reply) => {
       reply.code(404).send();
     });
-    // wrong-method contract (405 + Allow) holds even when disabled
-    allowOnlyMethod(fastify, ROUTE, ['GET']);
     return;
   }
 
@@ -92,7 +88,7 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
       })
     : null;
 
-  fastify.get(ROUTE, async (req, reply) => {
+  fastify.get(ROUTES.api.validation, async (req, reply) => {
     allowAnyOrigin(reply);
     const q = req.query as { address?: unknown };
     if (typeof q.address !== 'string' || !isAddress(q.address)) {
@@ -109,6 +105,4 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
     reply.header('x-validation-source', 'upstream');
     return proxy(req, reply);
   });
-
-  allowOnlyMethod(fastify, ROUTE, ['GET']);
 };

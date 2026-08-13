@@ -11,15 +11,13 @@ import {
   rewardsQuerySchema,
 } from '../utils/rewards-query-schema.js';
 import { allowAnyOrigin } from '../utils/cors.js';
-import { allowOnlyMethod } from '../utils/method-guard.js';
-
-const ROUTE = '/api/rewards';
+import { ROUTES } from '../consts.js';
 
 /**
  * Ported from `pages/api/rewards.ts` (+ `utilsApi/rewards-handler.ts`).
  *
  * Defenses preserved verbatim:
- * - GET only (405 + Allow otherwise).
+ * - GET only
  * - Query whitelist (REWARDS_ALLOWED_QUERY_PARAMS) bounds the upstream URL
  *   and the cache key.
  * - Zod schema with `.strict()` rejects unknown keys; `limit ≤ 100`,
@@ -35,11 +33,9 @@ const ROUTE = '/api/rewards';
 export const rewardsRoute: FastifyPluginAsync = async (fastify) => {
   if (!config.REWARDS_BACKEND) {
     fastify.log.info('rewards: REWARDS_BACKEND not set — route returns 404');
-    fastify.get(ROUTE, async (_req, reply) => {
+    fastify.get(ROUTES.api.rewards, async (_req, reply) => {
       reply.code(404).send();
     });
-    // wrong-method contract (405 + Allow) holds even when disabled
-    allowOnlyMethod(fastify, ROUTE, ['GET']);
     return;
   }
 
@@ -50,7 +46,7 @@ export const rewardsRoute: FastifyPluginAsync = async (fastify) => {
     timeout: 10_000,
   });
 
-  fastify.get(ROUTE, async (req, reply) => {
+  fastify.get(ROUTES.api.rewards, async (req, reply) => {
     allowAnyOrigin(reply);
     const parsed = rewardsQuerySchema.safeParse(req.query);
     if (!parsed.success) {
@@ -65,6 +61,4 @@ export const rewardsRoute: FastifyPluginAsync = async (fastify) => {
     applyCacheControl(reply, CACHE_REWARDS_HEADERS);
     return proxy(req, reply);
   });
-
-  allowOnlyMethod(fastify, ROUTE, ['GET']);
 };

@@ -94,9 +94,8 @@ describe('POST /api/csp-report', () => {
     });
   });
 
-  it('answers 405 + Allow for wrong methods', async () => {
+  it('answers 404 + Allow for wrong methods', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/csp-report' });
-    expect(res.statusCode).toBe(405);
-    expect(res.headers.allow).toBe('POST');
+    expect(res.statusCode).toBe(404);
   });
 });

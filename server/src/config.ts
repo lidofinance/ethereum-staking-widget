@@ -24,7 +24,7 @@ const EL_RPC_SCHEMA = Object.values(CHAINS).reduce(
  * `config/get-secret-config.ts`.
  *
  * Chain set matches the current widget (Soneium 1868/1946 were dropped
- * 2026-06-17, commit adfad475): Mainnet, Holesky, Hoodi, Sepolia, Optimism,
+ * 2026-06-17, commit adfad475): Mainnet, Hoodi, Sepolia, Optimism,
  * OptimismSepolia, Unichain, UnichainSepolia.
  *
  * All RPC URL lists are comma-separated; consumers split.

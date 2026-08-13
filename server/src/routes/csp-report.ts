@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify';
 
-import { allowOnlyMethod } from '../utils/method-guard.js';
+import { ROUTES } from '../consts.js';
 
 /**
  * Receives CSP violation reports from the browser. Ported from
@@ -22,8 +22,6 @@ import { allowOnlyMethod } from '../utils/method-guard.js';
  */
 const BODY_LIMIT_BYTES = 32 * 1024;
 
-const ROUTE = '/api/csp-report';
-
 export const cspReportRoute: FastifyPluginAsync = async (fastify) => {
   for (const contentType of [
     'application/csp-report',
@@ -42,21 +40,23 @@ export const cspReportRoute: FastifyPluginAsync = async (fastify) => {
     );
   }
 
-  fastify.post(ROUTE, { bodyLimit: BODY_LIMIT_BYTES }, async (req, reply) => {
-    let violation: unknown = {};
-    if (typeof req.body === 'object' && req.body !== null) {
-      violation = req.body;
-    } else if (typeof req.body === 'string') {
-      try {
-        violation = JSON.parse(req.body);
-      } catch {
-        violation = { parseError: true, bodyLen: req.body.length };
+  fastify.post(
+    ROUTES.api.cspReport,
+    { bodyLimit: BODY_LIMIT_BYTES },
+    async (req, reply) => {
+      let violation: unknown = {};
+      if (typeof req.body === 'object' && req.body !== null) {
+        violation = req.body;
+      } else if (typeof req.body === 'string') {
+        try {
+          violation = JSON.parse(req.body);
+        } catch {
+          violation = { parseError: true, bodyLen: req.body.length };
+        }
       }
-    }
 
-    req.log.warn({ type: 'CSP Violation', violation }, 'csp-violation');
-    return reply.status(200).send({ status: 'ok' });
-  });
-
-  allowOnlyMethod(fastify, ROUTE, ['POST']);
+      req.log.warn({ type: 'CSP Violation', violation }, 'csp-violation');
+      return reply.status(200).send({ status: 'ok' });
+    },
+  );
 };
