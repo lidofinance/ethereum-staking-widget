@@ -17,6 +17,7 @@ export enum ErrorMessage {
   INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
   BUNDLE_NOT_FOUND = 'Could not locate transaction. Check your wallet for details.',
   UNAUTHORIZED_PROVIDER = 'Your wallet has not authorized this request.\nReload the page and try again.',
+  SITE_BLOCKED = 'Your wallet has temporarily blocked requests from this site.\nUnblock this site in your wallet or try again later.',
   PROVIDER_DISCONNECTED = 'Your wallet is disconnected.\nReconnect your wallet and try again.',
   CHAIN_DISCONNECTED = 'Your wallet is not connected to the selected network.\nSwitch to the selected network in your wallet and try again.',
 }
@@ -59,6 +60,8 @@ export const getError = (error: unknown): ErrorMessage | string => {
     case 'BUNDLE_NOT_FOUND':
     case 5730:
       return ErrorMessage.BUNDLE_NOT_FOUND;
+    case 'SITE_BLOCKED':
+      return ErrorMessage.SITE_BLOCKED;
     case 4100:
       return ErrorMessage.UNAUTHORIZED_PROVIDER;
     case 4900:
@@ -129,6 +132,36 @@ const findProviderErrorCode = (
   return (
     matchProviderError(error) ??
     ('cause' in error ? findProviderErrorCode(error.cause, depth - 1) : null)
+  );
+};
+
+// MetaMask's "temporarily block this site" prompt (offered after a few
+// rejections in a row) rejects every later request with a plain 4100. The
+// marker in `details` is the only thing separating it from a generic
+// unauthorized error — and the difference matters: the block outlives a page
+// reload, so the UNAUTHORIZED_PROVIDER advice would send the user in circles.
+const SPAM_FILTER_MARKER = 'spam filter';
+
+// `details` carries it on the viem layer; `message` covers the case where that
+// layer was dropped and only the wallet's own error survived
+const hasSpamFilterBlock = (
+  error: unknown,
+  depth = MAX_CAUSE_DEPTH,
+): boolean => {
+  if (depth <= 0 || !error || typeof error !== 'object') return false;
+
+  const { details, message } = error as {
+    details?: unknown;
+    message?: unknown;
+  };
+
+  return (
+    [details, message].some(
+      (field) =>
+        typeof field === 'string' &&
+        field.toLowerCase().includes(SPAM_FILTER_MARKER),
+    ) ||
+    ('cause' in error && hasSpamFilterBlock(error.cause, depth - 1))
   );
 };
 
@@ -241,6 +274,10 @@ export const extractCodeFromError = (
       return 'DEVICE_LOCKED';
     }
   }
+  // Must run before the provider walk below: a site block arrives as a 4100
+  // and would otherwise be answered with the generic unauthorized advice
+  if (hasSpamFilterBlock(error)) return 'SITE_BLOCKED';
+
   // Must run before the generic `code` read below: SDKError's bucket code sits
   // at the top level and would shadow the provider code nested in `cause`
   const providerErrorCode = findProviderErrorCode(error);
@@ -284,6 +321,7 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
   [ErrorMessage.BUNDLE_NOT_FOUND]: MATOMO_ERROR_EVENTS_TYPES.BUNDLE_NOT_FOUND,
   [ErrorMessage.UNAUTHORIZED_PROVIDER]:
     MATOMO_ERROR_EVENTS_TYPES.UNAUTHORIZED_PROVIDER,
+  [ErrorMessage.SITE_BLOCKED]: MATOMO_ERROR_EVENTS_TYPES.SITE_BLOCKED,
   [ErrorMessage.PROVIDER_DISCONNECTED]:
     MATOMO_ERROR_EVENTS_TYPES.PROVIDER_DISCONNECTED,
   [ErrorMessage.CHAIN_DISCONNECTED]:
