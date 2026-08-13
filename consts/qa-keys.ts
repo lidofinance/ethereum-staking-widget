@@ -48,6 +48,7 @@ export type QaKey = (typeof QA_KEYS)[keyof typeof QA_KEYS];
 
 // Keys with dedicated drawer UI — intentionally absent from QA_MOCK_GROUPS.
 export const QA_CUSTOM_UI_KEYS: QaKey[] = [
+  QA_KEYS.matomoLogging,
   QA_KEYS.externalConfigMockEnabled,
   QA_KEYS.externalConfigMock,
 ];
@@ -78,16 +79,6 @@ export type QaMockGroup = {
 };
 
 export const QA_MOCK_GROUPS: QaMockGroup[] = [
-  {
-    title: 'Analytics',
-    mocks: [
-      {
-        key: QA_KEYS.matomoLogging,
-        label: 'Log Matomo events to console',
-        type: 'boolean',
-      },
-    ],
-  },
   {
     title: 'Security banner (IPFS / infra)',
     mocks: [
