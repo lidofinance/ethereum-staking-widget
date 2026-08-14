@@ -17,10 +17,8 @@ import dynamics from 'config/dynamics';
 import mainnetSet from 'networks/mainnet.json';
 import hoodiSet from 'networks/hoodi.json';
 import sepoliaSet from 'networks/sepolia.json';
-import holeskySet from 'networks/holesky.json';
 
 // Devnet deployments
-import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json';
 import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json';
 
 // For future overrides of APIs in devnets
@@ -160,15 +158,12 @@ const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.entries(
 const NETWORKS_MAP = {
   ...L2_NETWORK_MAP,
   [CHAINS.Mainnet]: mainnetSet as NetworkConfig,
-  [CHAINS.Holesky]: holeskySet as NetworkConfig,
   [CHAINS.Hoodi]: hoodiSet as NetworkConfig,
   [CHAINS.Sepolia]: sepoliaSet as NetworkConfig,
 } as Record<string, NetworkConfig>;
 
 // keys MUST correlate with the `DEVNET_OVERRIDES` env
 const DEVNETS_MAP = {
-  // TODO: remove
-  'hoodi-devnet-0': hoodiDevnet0Set as NetworkConfig,
   'hoodi-devnet-1': hoodiDevnet1Set as NetworkConfig,
 } as Record<string, NetworkConfig>;
 

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 export const useStETHContractAddress = () => {
@@ -8,7 +9,7 @@ export const useStETHContractAddress = () => {
   return useQuery({
     queryKey: ['use-steth-contract-address', isL2, l2.steth, stETH],
     enabled: !!(isL2 ? l2.steth : stETH),
-    staleTime: Infinity,
+    ...STRATEGY_IMMUTABLE,
     queryFn: () =>
       isL2 ? l2.steth.contractAddress() : stETH.contractAddress(),
   });

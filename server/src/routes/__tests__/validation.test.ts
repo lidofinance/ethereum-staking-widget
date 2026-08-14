@@ -23,6 +23,8 @@ vi.mock('../../config.js', () => ({
       return process.env.TEST_VALIDATION_FILE || undefined;
     },
   },
+  // imported by logger.ts (via utils/masked-error.ts) for secret masking
+  rpcProvidersUrls: {},
 }));
 
 vi.mock('../../metrics/index.js', () => ({
@@ -175,7 +177,7 @@ describe('/api/validation', () => {
     expect(readFileMock).not.toHaveBeenCalled();
   });
 
-  it('answers wrong methods with 405 + Allow, including when disabled', async () => {
+  it('answers wrong methods with 404, including when disabled', async () => {
     for (const env of [undefined, 'https://validation.test']) {
       if (env) process.env.TEST_VALIDATION_UPSTREAM = env;
       else {
@@ -184,8 +186,7 @@ describe('/api/validation', () => {
       }
       const app = await buildApp();
       const res = await app.inject({ method: 'POST', url: '/api/validation' });
-      expect(res.statusCode).toBe(405);
-      expect(res.headers.allow).toBe('GET');
+      expect(res.statusCode).toBe(404);
     }
   });
 });

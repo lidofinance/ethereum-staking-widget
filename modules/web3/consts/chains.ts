@@ -29,7 +29,6 @@ export type SupportedChainLabels = {
 
 export const ETHEREUM_CHAINS = new Set([
   CHAINS.Mainnet,
-  CHAINS.Holesky,
   CHAINS.Hoodi,
   CHAINS.Sepolia,
 ]);
@@ -46,7 +45,6 @@ export const UNICHAIN_CHAINS = new Set([
 
 export const CHAIN_ICONS_MAP = new Map([
   [CHAINS.Mainnet, EthereumMainnetLogo],
-  [CHAINS.Holesky, EthereumMainnetLogo],
   [CHAINS.Hoodi, EthereumMainnetLogo],
   [CHAINS.Sepolia, EthereumMainnetLogo],
   [CHAINS.Optimism, OptimismLogo],
@@ -72,8 +70,6 @@ export const getChainTypeByChainId = (
 // - Ethereum(Hoodi)
 // - or
 // - Ethereum(Sepolia)
-// - or
-// - Ethereum(Holesky)
 export const getPrettyChainName = (chainId: number): string => {
   const chainType = getChainTypeByChainId(chainId);
   const chain = wagmiChainMap[chainId];

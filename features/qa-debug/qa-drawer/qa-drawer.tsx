@@ -7,6 +7,7 @@ import { Drawer } from 'shared/components/drawer';
 import { ConfigSnapshot } from './config-snapshot';
 import { ExternalConfigSection } from './external-config-section';
 import { FeatureFlagsSection } from './feature-flags-section';
+import { MatomoLogSection } from './matomo-log-section';
 import { QaMocksSection } from './qa-mocks-section';
 
 type QaDrawerProps = {
@@ -40,6 +41,7 @@ const QaDrawer: FC<QaDrawerProps> = ({ isOpen, onClose }) => (
   >
     <FeatureFlagsSection />
     <QaMocksSection />
+    <MatomoLogSection />
     <ExternalConfigSection />
     <ConfigSnapshot />
   </Drawer>

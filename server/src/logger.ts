@@ -1,6 +1,6 @@
 import { satanizer, commonPatterns } from '@lidofinance/satanizer';
 
-import { config } from './config.js';
+import { config, rpcProvidersUrls } from './config.js';
 import { clampArgs } from './utils/clamp-log-args.js';
 
 /**
@@ -15,20 +15,8 @@ import { clampArgs } from './utils/clamp-log-args.js';
  * hook does NOT cover `console.*` — those sites must mask explicitly via
  * `utils/masked-error.ts`.
  */
-const RPC_URL_VALUES = [
-  config.EL_RPC_URLS_1,
-  config.EL_RPC_URLS_10,
-  config.EL_RPC_URLS_130,
-  config.EL_RPC_URLS_1301,
-  config.EL_RPC_URLS_17000,
-  config.EL_RPC_URLS_560048,
-  config.EL_RPC_URLS_11155111,
-  config.EL_RPC_URLS_11155420,
-].flatMap((value) =>
-  (value || '')
-    .split(',')
-    .map((url) => url.trim())
-    .filter(Boolean),
+const RPC_URL_VALUES = Object.values(rpcProvidersUrls).flatMap((value) =>
+  (value ?? []).map((url) => url.trim()).filter(Boolean),
 );
 
 const patterns = [...commonPatterns, ...RPC_URL_VALUES].filter(Boolean);

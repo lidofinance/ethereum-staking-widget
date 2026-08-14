@@ -32,17 +32,9 @@ server {
     try_files $uri =404;
   }
 
-  # Required for Gnosis Safe apps (legacy next.config.mjs headers()).
-  location = /manifest.json {
-    include /var/cache/nginx/security-headers.conf;
-    add_header access-control-allow-origin "*" always;
-    add_header cross-origin-resource-policy "cross-origin" always;
-    try_files $uri =404;
-  }
-
-  # Required for the CoW widget iframe (swap.cow.fi) to fetch token lists
-  # cross-origin as a fallback.
-  location /token-lists/ {
+  # CORS-open resources: /manifest.json for Gnosis Safe apps; /token-lists/* for the CoW widget iframe
+  # (swap.cow.fi) to fetch token lists cross-origin as a fallback.
+  location ~ ^/(manifest\.json$|token-lists/) {
     include /var/cache/nginx/security-headers.conf;
     add_header access-control-allow-origin "*" always;
     add_header access-control-allow-methods "GET, HEAD, OPTIONS" always;

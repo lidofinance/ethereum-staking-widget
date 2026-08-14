@@ -8,6 +8,7 @@ import {
 
 import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
+import { z } from 'zod';
 import invariant from 'tiny-invariant';
 import {
   AddressValidationFile,
@@ -16,6 +17,12 @@ import {
 import { useApiAddressValidation } from 'shared/hooks/use-api-address-validation';
 import { standardFetcher } from 'utils/standardFetcher';
 import { Address } from 'viem';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+
+const StaticValidationFileSchema = z.object({
+  addresses: z.array(z.string()),
+  isBroken: z.boolean().optional().default(false),
+});
 
 type AddressValidationContextType = {
   isValidAddress: boolean;
@@ -130,17 +137,17 @@ export const AddressValidationProvider = ({
   const { data: staticBlocklist } = useQuery<AddressValidationFile>({
     queryKey: ['validation-static-file'],
     enabled: !config.ipfsMode && config.useValidationFile,
-    staleTime: Infinity,
+    ...STRATEGY_CONSTANT,
     retry: 1,
     queryFn: async () => {
-      const data = await standardFetcher<AddressValidationFile>(
-        '/runtime/validation.json',
-        { headers: { Accept: 'application/json' } },
-      );
-      if (!Array.isArray(data?.addresses)) {
-        throw new Error('invalid validation.json shape');
-      }
-      return data;
+      const data = await standardFetcher('/runtime/validation.json', {
+        headers: { Accept: 'application/json' },
+      });
+      const parsed = StaticValidationFileSchema.parse(data);
+      return {
+        addresses: new Set(parsed.addresses.map((addr) => addr.toLowerCase())),
+        isBroken: parsed.isBroken,
+      };
     },
   });
 

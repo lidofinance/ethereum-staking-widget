@@ -1,6 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 
 import metrics from '../metrics/index.js';
+import { ROUTES } from '../consts.js';
 
 /**
  * Prometheus scrape endpoint. In k8s this port is not exposed publicly —
@@ -8,7 +9,7 @@ import metrics from '../metrics/index.js';
  * `staking-widget` Helm chart).
  */
 export const metricsRoute: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/api/metrics', async (_req, reply) => {
+  fastify.get(ROUTES.api.metrics, async (_req, reply) => {
     reply.header('content-type', metrics.registry.contentType);
     return metrics.registry.metrics();
   });

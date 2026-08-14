@@ -7978,6 +7978,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"entities@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "entities@npm:8.0.0"
+  checksum: 10c0/938e631664c19451823344a351aeeafd74fae2d5fa51e4d5b6ff635afaefd4bacf0f609989888c04c42733f46ffdac15211608267ebb02488005891a4793e94d
+  languageName: node
+  linkType: hard
+
 "env-paths@npm:^2.2.0, env-paths@npm:^2.2.1":
   version: 2.2.1
   resolution: "env-paths@npm:2.2.1"
@@ -11183,6 +11190,7 @@ __metadata:
     typescript-eslint: "npm:8.64.0"
     viem: "npm:2.50.4"
     vite: "npm:^8.0.0"
+    vite-plugin-sri-gen: "npm:^1.7.3"
     vite-plugin-svgr: "npm:^4.3.0"
     vite-prerender-plugin: "npm:^0.5.13"
     vite-tsconfig-paths: "npm:^5.1.4"
@@ -12481,6 +12489,15 @@ __metadata:
     json-parse-even-better-errors: "npm:^2.3.0"
     lines-and-columns: "npm:^1.1.6"
   checksum: 10c0/77947f2253005be7a12d858aedbafa09c9ae39eb4863adf330f7b416ca4f4a08132e453e08de2db46459256fb66afaac5ee758b44fe6541b7cdaf9d252e59585
+  languageName: node
+  linkType: hard
+
+"parse5@npm:^8.0.0":
+  version: 8.0.1
+  resolution: "parse5@npm:8.0.1"
+  dependencies:
+    entities: "npm:^8.0.0"
+  checksum: 10c0/c3c1c5aab55f6e4be5245599790e56e64be7764a4a0edd7f98db4fe3bb380f63add752fa047dff0496446c25f4104f0c7c1967723de640bde92306a7bb67ed2f
   languageName: node
   linkType: hard
 
@@ -15323,6 +15340,17 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/099c73d2980493a372d7c91d7593c62c9bb534a91293f6ae308a88292e16a4c89301db8899fec98597a9e6ee51f02bd9ed857f498946b2ee905c9cae00e5289d
+  languageName: node
+  linkType: hard
+
+"vite-plugin-sri-gen@npm:^1.7.3":
+  version: 1.7.3
+  resolution: "vite-plugin-sri-gen@npm:1.7.3"
+  dependencies:
+    parse5: "npm:^8.0.0"
+  peerDependencies:
+    vite: ">=4.0.0"
+  checksum: 10c0/c348a4a3fa5e7778a012b595a5ac60a386939aa774622bdff64d29a78ded948d83b2633d38b61dc4c66bc34419fdf9562b21d76eea7a4d3736d5b66372b5c6fe
   languageName: node
   linkType: hard
 

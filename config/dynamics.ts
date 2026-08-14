@@ -1,4 +1,5 @@
 import * as dynamics from 'env-dynamics.mjs';
+import { CHAIN_LIST, type CHAIN_ID } from './chains';
 
 /**
  * Runtime env source — the "one image, many envs" contract.
@@ -60,9 +61,17 @@ const toOptionalString = (val: unknown): string | undefined =>
   // `getManifestKey(N, '')` would produce `"N-"` and break the lookup.
   typeof val === 'string' && val.length > 0 ? val : undefined;
 
-const normalize = (src: Record<string, unknown>): typeof dynamics => {
+type RPC_MAP = {
+  [chainId in CHAIN_ID]: string[];
+};
+
+type DynamicsNormalized = typeof dynamics & {
+  prefillUnsafeElRpcUrls: RPC_MAP;
+};
+
+const normalize = (src: Record<string, unknown>): DynamicsNormalized => {
   const get = (k: string) => src[k];
-  return {
+  const normalizedResult = {
     ipfsMode: toBoolean(get('ipfsMode')),
     selfOrigin: String(get('selfOrigin') ?? dynamics.selfOrigin),
     rootOrigin: String(get('rootOrigin') ?? dynamics.rootOrigin),
@@ -76,22 +85,14 @@ const normalize = (src: Record<string, unknown>): typeof dynamics => {
       dynamics.supportedChains,
     ),
     manifestOverride: toOptionalString(get('manifestOverride')),
-    prefillUnsafeElRpcUrls1: toStringList(get('prefillUnsafeElRpcUrls1')),
-    prefillUnsafeElRpcUrls17000: toStringList(
-      get('prefillUnsafeElRpcUrls17000'),
-    ),
-    prefillUnsafeElRpcUrls560048: toStringList(
-      get('prefillUnsafeElRpcUrls560048'),
-    ),
-    prefillUnsafeElRpcUrls11155111: toStringList(
-      get('prefillUnsafeElRpcUrls11155111'),
-    ),
-    prefillUnsafeElRpcUrls10: toStringList(get('prefillUnsafeElRpcUrls10')),
-    prefillUnsafeElRpcUrls11155420: toStringList(
-      get('prefillUnsafeElRpcUrls11155420'),
-    ),
-    prefillUnsafeElRpcUrls130: toStringList(get('prefillUnsafeElRpcUrls130')),
-    prefillUnsafeElRpcUrls1301: toStringList(get('prefillUnsafeElRpcUrls1301')),
+    prefillUnsafeElRpcUrls: {
+      ...Object.fromEntries(
+        CHAIN_LIST.map((chainId) => [
+          chainId,
+          toStringList(get(`prefillUnsafeElRpcUrls${chainId}`)),
+        ]),
+      ),
+    } as RPC_MAP,
     enableQaHelpers: toBoolean(get('enableQaHelpers')),
     walletconnectProjectId:
       toOptionalString(get('walletconnectProjectId')) ??
@@ -108,7 +109,24 @@ const normalize = (src: Record<string, unknown>): typeof dynamics => {
     addressApiValidationEnabled: toBoolean(get('addressApiValidationEnabled')),
     useValidationFile: toBoolean(get('useValidationFile')),
     useConfigManifestFile: toBoolean(get('useConfigManifestFile')),
-  } as typeof dynamics;
+  };
+
+  if (
+    new Set(normalizedResult.supportedChains).size !==
+    normalizedResult.supportedChains.length
+  ) {
+    throw new Error(
+      `Dynamics config error: supportedChains (${normalizedResult.supportedChains}) must not contain duplicates`,
+    );
+  }
+
+  if (normalizedResult.defaultChain !== normalizedResult.supportedChains[0]) {
+    throw new Error(
+      `Dynamics config error: defaultChain (${normalizedResult.defaultChain}) must be the first element of supportedChains (${normalizedResult.supportedChains})`,
+    );
+  }
+
+  return normalizedResult;
 };
 
 // Don't use dynamics directly in the project!

@@ -10,7 +10,7 @@ import Fastify from 'fastify';
 vi.mock('../../config.js', () => ({
   config: { NODE_ENV: 'test' },
   PROVIDER_MAX_BATCH: 20,
-  rpcProviders: {
+  rpcProvidersUrls: {
     1: ['https://rpc-primary.test/KEY', 'https://rpc-fallback.test/KEY'],
   },
 }));
@@ -73,10 +73,9 @@ describe('/api/rpc', () => {
     expect(ALLOWED_LOGS_ADDRESS).toBeTruthy();
   });
 
-  it('answers wrong methods with 405 + Allow', async () => {
+  it('answers wrong methods with 404', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/rpc?chainId=1' });
-    expect(res.statusCode).toBe(405);
-    expect(res.headers.allow).toBe('POST');
+    expect(res.statusCode).toBe(404);
   });
 
   it('rejects a missing/invalid chainId with 400', async () => {

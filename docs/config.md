@@ -18,7 +18,7 @@
 ```
 EL_RPC_URLS_1=...             # Mainnet RPC (comma-separated, first is primary)
 EL_RPC_URLS_11155111=...      # Sepolia
-EL_RPC_URLS_17000=...         # Holesky
+EL_RPC_URLS_560048=...         # Hoodi
 PREFILL_UNSAFE_EL_RPC_URLS_*  # For IPFS mode (exposed to client)
 ```
 
@@ -91,4 +91,4 @@ Smart contract addresses per network:
 
 - `networks/mainnet.json`
 - `networks/sepolia.json`
-- `networks/holesky.json`
+- `networks/hoodi.json`

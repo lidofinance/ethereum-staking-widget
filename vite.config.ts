@@ -4,13 +4,15 @@ import { dirname, resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
+import sri from 'vite-plugin-sri-gen';
 import { vitePrerenderPlugin } from 'vite-prerender-plugin';
 
 import { metaTagsToHtml, pageMeta, ROUTE_META, sitemapXml } from './shared/seo';
-import { IPFS_BASE_SCRIPT_HASH } from './features/ipfs/ipfs-base-script';
+import { createHash } from 'node:crypto';
 
 const root = dirname(fileURLToPath(import.meta.url));
-const isIpfs = process.env.VITE_IPFS_MODE === 'true';
+const isIpfs = process.env.IPFS_MODE === 'true';
+
 const shim = (rel: string) => resolve(root, 'shims', rel);
 
 /**
@@ -38,6 +40,24 @@ const shim = (rel: string) => resolve(root, 'shims', rel);
  * absolute asset hrefs so the build works from any gateway path prefix.
  */
 const ipfsHeadDefaults = (): Plugin => {
+  // IPFS SPA base-path reference:
+  // https://github.com/Velenir/nextjs-ipfs-example
+  //
+  // IPFS gateways serve the build from arbitrary path prefixes
+  // (/ipfs/<CID>/...), so relative asset URLs need a <base> pointing at the
+  // current directory. The script must run before the bundle evaluates.
+  const IPFS_BASE_SCRIPT_CONTENT = `
+(function () {
+  const base = document.createElement('base');
+  base.href = window.location.pathname;
+  document.head.append(base);
+})();
+`;
+
+  const IPFS_BASE_SCRIPT_HASH =
+    'sha256-' +
+    createHash('sha256').update(IPFS_BASE_SCRIPT_CONTENT).digest('base64');
+
   // Mirrors the non-report parts of the legacy config/csp for IPFS mode.
   const csp = [
     "default-src 'self'",
@@ -59,13 +79,12 @@ const ipfsHeadDefaults = (): Plugin => {
   return {
     name: 'ipfs-head-defaults',
     transformIndexHtml(html) {
-      return html
-        .replace(/(href|src)="\//g, '$1="./')
-        .replace(
-          '</head>',
-          `    <meta http-equiv="Content-Security-Policy" content="${csp}" />\n` +
-            `    ${metaTagsToHtml(pageMeta(undefined))}\n  </head>`,
-        );
+      return html.replace(/(href|src)="\//g, '$1="./').replace(
+        '</head>',
+        `<script>${IPFS_BASE_SCRIPT_CONTENT}</script>
+<meta http-equiv="Content-Security-Policy" content="${csp}" />
+${metaTagsToHtml(pageMeta(undefined))}\n  </head>`,
+      );
     },
   };
 };
@@ -182,6 +201,7 @@ export default defineConfig({
     // The `import { ReactComponent }` sites (@svgr/webpack convention) are
     // migrated to the `?react` suffix form.
     svgr(),
+    sri(),
   ],
   resolve: {
     alias: [

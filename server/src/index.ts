@@ -13,7 +13,7 @@ import {
   registerShutdownSignals,
 } from '../../scripts/shutdown.mjs';
 
-import { config, rpcProviders } from './config.js';
+import { config, rpcProvidersUrls } from './config.js';
 import { loggerOptions } from './logger.js';
 import { maskedError } from './utils/masked-error.js';
 import { requestMetricsPlugin } from './plugins/request-metrics.js';
@@ -33,7 +33,7 @@ import { configManifestRoute } from './routes/config-manifest.js';
 const fastify = Fastify({
   logger: loggerOptions,
   trustProxy: true,
-  // Slow-loris / partial-headers protection (same intent as the old
+  // partial-headers protection (same intent as the old
   // server.mjs headersTimeout/requestTimeout settings).
   bodyLimit: 1024 * 1024, // 1 MiB
   connectionTimeout: 60_000,
@@ -43,7 +43,7 @@ const start = async (): Promise<void> => {
   // Diagnostic: log which chains have RPC URLs configured (counts only,
   // no URL values — those are secrets).
   const rpcSummary = Object.fromEntries(
-    Object.entries(rpcProviders).map(([id, urls]) => [id, urls.length]),
+    Object.entries(rpcProvidersUrls).map(([id, urls]) => [id, urls.length]),
   );
   fastify.log.info({ rpcSummary }, 'startup: RPC providers per chain');
 

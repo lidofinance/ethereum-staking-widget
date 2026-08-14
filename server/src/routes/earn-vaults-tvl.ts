@@ -17,7 +17,7 @@ import {
 import { STG_COLLECTOR_CONFIG } from 'features/earn/vault-stg/consts-data';
 import { getDVVVaultContract } from 'features/earn/vault-dvv/contracts';
 
-import { rpcProviders } from '../config.js';
+import { rpcProvidersUrls } from '../config.js';
 import {
   getExternalManifestConfig,
   getLocalManifestEarnVaults,
@@ -28,9 +28,9 @@ import {
   CACHE_DEFAULT_HEADERS,
 } from '../utils/cache-control.js';
 import { allowAnyOrigin } from '../utils/cors.js';
-import { methodNotAllowed } from '../utils/method-guard.js';
 
 import type { VaultsTvlResponse } from 'types/earn-api';
+import { ROUTES } from '../consts.js';
 
 /**
  * Earn vaults TVL — full port of `pages/api/earn/vaults-tvl.ts` (the
@@ -50,7 +50,7 @@ type TvlResult = { tvlEthWei: string };
 type STGCollectResponse = { totalBase: bigint };
 
 const mainnetClient = (): PublicClient => {
-  const urls = rpcProviders[mainnet.id] ?? [];
+  const urls = rpcProvidersUrls[mainnet.id] ?? [];
   if (urls.length === 0) {
     throw new Error(
       `EL_RPC_URLS_1 is not configured — cannot compute on-chain TVL`,
@@ -115,7 +115,7 @@ for (const vault of getLocalManifestEarnVaults()) {
 }
 
 export const earnVaultsTvlRoute: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/api/earn/vaults-tvl', async (req, reply) => {
+  fastify.get(ROUTES.api.earn.vaultsTvl, async (req, reply) => {
     allowAnyOrigin(reply);
     try {
       const manifestConfig = await getExternalManifestConfig();
@@ -156,6 +156,4 @@ export const earnVaultsTvlRoute: FastifyPluginAsync = async (fastify) => {
       return reply.code(500).send({ error: 'Internal Server Error' });
     }
   });
-
-  methodNotAllowed(fastify, '/api/earn/vaults-tvl', ['GET']);
 };

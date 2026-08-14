@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify';
 
-import { methodNotAllowed } from '../utils/method-guard.js';
+import { ROUTES } from '../consts.js';
 
 /**
  * Receives CSP violation reports from the browser. Ported from
@@ -41,7 +41,7 @@ export const cspReportRoute: FastifyPluginAsync = async (fastify) => {
   }
 
   fastify.post(
-    '/api/csp-report',
+    ROUTES.api.cspReport,
     { bodyLimit: BODY_LIMIT_BYTES },
     async (req, reply) => {
       let violation: unknown = {};
@@ -59,6 +59,4 @@ export const cspReportRoute: FastifyPluginAsync = async (fastify) => {
       return reply.status(200).send({ status: 'ok' });
     },
   );
-
-  methodNotAllowed(fastify, '/api/csp-report', ['POST']);
 };

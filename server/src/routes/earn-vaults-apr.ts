@@ -24,10 +24,10 @@ import {
   CACHE_DEFAULT_HEADERS,
 } from '../utils/cache-control.js';
 import { allowAnyOrigin } from '../utils/cors.js';
-import { methodNotAllowed } from '../utils/method-guard.js';
 import metrics from '../metrics/index.js';
 
 import type { VaultsAprResponse } from 'types/earn-api';
+import { ROUTES } from '../consts.js';
 
 /**
  * Earn vaults APR — full port of `pages/api/earn/vaults-apr.ts` (the
@@ -80,7 +80,7 @@ for (const vault of getLocalManifestEarnVaults()) {
 }
 
 export const earnVaultsAprRoute: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/api/earn/vaults-apr', async (req, reply) => {
+  fastify.get(ROUTES.api.earn.vaultsApr, async (req, reply) => {
     allowAnyOrigin(reply);
     try {
       const manifestConfig = await getExternalManifestConfig();
@@ -140,6 +140,4 @@ export const earnVaultsAprRoute: FastifyPluginAsync = async (fastify) => {
       return reply.code(500).send({ error: 'Failed to fetch earn vaults apr' });
     }
   });
-
-  methodNotAllowed(fastify, '/api/earn/vaults-apr', ['GET']);
 };

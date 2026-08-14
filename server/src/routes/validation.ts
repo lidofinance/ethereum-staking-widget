@@ -12,7 +12,7 @@ import { createCachedProxy } from '../utils/cached-proxy.js';
 import { getExternalManifestConfig } from '../utils/external-manifest.js';
 import { getValidationFile } from '../utils/validation-file.js';
 import { allowAnyOrigin } from '../utils/cors.js';
-import { methodNotAllowed } from '../utils/method-guard.js';
+import { ROUTES } from '../consts.js';
 
 /**
  * Address validation — ported from `pages/api/validation.ts`, with the
@@ -34,7 +34,7 @@ import { methodNotAllowed } from '../utils/method-guard.js';
  * - API version comes from the external manifest's `api.validation.version`
  *   (default '1') — the same `getExternalConfig()` source the legacy route
  *   used (the PoC port drifted to a MANIFEST_OVERRIDE-as-URL scheme).
- * - GET only (405 otherwise), 10s upstream timeout, 1s LRU cache.
+ * - GET only (404 otherwise), 10s upstream timeout, 1s LRU cache.
  * - `ignoreParams: true` — the address travels in the path; nothing else is
  *   forwarded upstream.
  */
@@ -46,11 +46,9 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
     fastify.log.info(
       'validation: no VALIDATION_SERVICE_BASE_PATH and no VALIDATION_FILE_PATH — route returns 404',
     );
-    fastify.get('/api/validation', async (_req, reply) => {
+    fastify.get(ROUTES.api.validation, async (_req, reply) => {
       reply.code(404).send();
     });
-    // wrong-method contract (405 + Allow) holds even when disabled
-    methodNotAllowed(fastify, '/api/validation', ['GET']);
     return;
   }
 
@@ -90,7 +88,7 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
       })
     : null;
 
-  fastify.get('/api/validation', async (req, reply) => {
+  fastify.get(ROUTES.api.validation, async (req, reply) => {
     allowAnyOrigin(reply);
     const q = req.query as { address?: unknown };
     if (typeof q.address !== 'string' || !isAddress(q.address)) {
@@ -107,6 +105,4 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
     reply.header('x-validation-source', 'upstream');
     return proxy(req, reply);
   });
-
-  methodNotAllowed(fastify, '/api/validation', ['GET']);
 };

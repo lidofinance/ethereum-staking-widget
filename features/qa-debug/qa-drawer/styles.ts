@@ -51,6 +51,33 @@ export const SnapshotActions = styled.div`
   gap: 8px;
 `;
 
+export const LogList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--lido-color-background);
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  overflow: auto;
+  max-height: 320px;
+`;
+
+export const LogEntry = styled.div`
+  word-break: break-word;
+`;
+
+export const LogTime = styled.span`
+  color: var(--lido-color-textSecondary);
+  margin-right: 6px;
+`;
+
+export const LogEventName = styled.span`
+  font-weight: 700;
+`;
+
 export const JsonTextarea = styled.textarea`
   box-sizing: border-box;
   width: 100%;

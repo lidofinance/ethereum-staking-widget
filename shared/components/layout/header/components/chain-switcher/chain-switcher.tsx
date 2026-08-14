@@ -18,6 +18,7 @@ import {
   IconStyle,
   ArrowStyle,
 } from './styles';
+import type { CHAIN_ID } from 'consts/chains';
 
 type IconsMapType = Record<number, ChainOption>;
 
@@ -44,17 +45,18 @@ export const ChainSwitcher: FC = () => {
 
   const iconsMap = useMemo(
     () =>
-      supportedChainIds.reduce((acc: IconsMapType, chainId: number) => {
-        acc[chainId] = {
-          name: overriddenChainNames[chainId] ?? wagmiChainMap[chainId].name,
-          iconComponent: CHAIN_ICONS_MAP.has(Number(chainId))
-            ? createElement(
-                CHAIN_ICONS_MAP.get(Number(chainId)) as ComponentType,
-              )
-            : null,
-        };
-        return acc;
-      }, {}),
+      (supportedChainIds as CHAIN_ID[]).reduce(
+        (acc: IconsMapType, chainId: CHAIN_ID) => {
+          acc[chainId] = {
+            name: overriddenChainNames[chainId] ?? wagmiChainMap[chainId].name,
+            iconComponent: CHAIN_ICONS_MAP.has(chainId)
+              ? createElement(CHAIN_ICONS_MAP.get(chainId) as ComponentType)
+              : null,
+          };
+          return acc;
+        },
+        {},
+      ),
     [supportedChainIds],
   );
 

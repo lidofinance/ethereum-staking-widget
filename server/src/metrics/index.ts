@@ -14,7 +14,7 @@ import {
   startupCheckRPCs,
 } from '../../../scripts/startup-checks/rpc.mjs';
 
-import { config, supportedChainIds } from '../config.js';
+import { config } from '../config.js';
 import { maskedError } from '../utils/masked-error.js';
 
 /**
@@ -166,7 +166,7 @@ const collectStartupMetrics = async (registry: Registry): Promise<void> => {
     prefix: METRICS_PREFIX,
     registry,
     defaultChain: `${config.DEFAULT_CHAIN}`,
-    supportedChains: supportedChainIds.map((chain) => `${chain}`),
+    supportedChains: config.SUPPORTED_CHAINS.map((s) => `${s}`),
     version: buildInfoJson.version,
     commit: buildInfoJson.commit,
     branch: buildInfoJson.branch,

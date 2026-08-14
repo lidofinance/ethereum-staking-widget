@@ -1,4 +1,5 @@
 import { promises as fs } from 'node:fs';
+import { z } from 'zod';
 
 import { config } from '../config.js';
 import metrics from '../metrics/index.js';
@@ -20,25 +21,27 @@ import { maskedError } from './masked-error.js';
  * Content re-read at most once a minute (the file only changes on
  * redeploy/config-map update).
  */
-export interface AddressValidationFile {
-  addresses: string[];
+
+const ADDRESS_VALIDATION_FILE_SCHEMA = z.object({
+  addresses: z.array(z.string()),
+  isBroken: z.boolean().optional(),
+});
+
+export type AddressValidationFile = z.infer<
+  typeof ADDRESS_VALIDATION_FILE_SCHEMA
+>;
+
+export type AddressValidationFileParsed = {
+  addresses: Set<string>;
   isBroken?: boolean;
-}
+};
 
 const CACHE_TTL_MS = 60_000;
 
 const isValidValidationFile = (
   data: unknown,
 ): data is AddressValidationFile => {
-  return (
-    typeof data === 'object' &&
-    data !== null &&
-    'addresses' in data &&
-    Array.isArray(data.addresses) &&
-    (data as { addresses: unknown[] }).addresses.every(
-      (addr) => typeof addr === 'string',
-    )
-  );
+  return ADDRESS_VALIDATION_FILE_SCHEMA.safeParse(data).success;
 };
 
 const loadValidationFile = async (): Promise<AddressValidationFile> => {
@@ -62,7 +65,10 @@ const loadValidationFile = async (): Promise<AddressValidationFile> => {
         .inc(1);
       return { addresses: [], isBroken: true };
     }
-    return parsed;
+    return {
+      addresses: parsed.addresses.map((address) => address.toLowerCase()),
+      isBroken: parsed.isBroken ?? false,
+    };
   } catch (error) {
     console.error('[validation-file] Failed to load:', maskedError(error));
     // bounded label: errno code, not the raw message (label cardinality)
@@ -77,12 +83,22 @@ const loadValidationFile = async (): Promise<AddressValidationFile> => {
   }
 };
 
-let cached: { value: AddressValidationFile; at: number } | null = null;
+let cached: { value: AddressValidationFileParsed; at: number } | null = null;
 
-export const getValidationFile = async (): Promise<AddressValidationFile> => {
-  const now = Date.now();
-  if (!cached || now - cached.at >= CACHE_TTL_MS) {
-    cached = { value: await loadValidationFile(), at: now };
-  }
-  return cached.value;
-};
+export const getValidationFile =
+  async (): Promise<AddressValidationFileParsed> => {
+    const now = Date.now();
+    if (cached && now - cached.at < CACHE_TTL_MS) {
+      return cached.value;
+    }
+
+    const loaded = await loadValidationFile();
+    cached = {
+      value: {
+        addresses: new Set(loaded.addresses),
+        isBroken: loaded.isBroken,
+      },
+      at: now,
+    };
+    return cached.value;
+  };

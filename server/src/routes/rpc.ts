@@ -1,14 +1,14 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
-import { PROVIDER_MAX_BATCH, rpcProviders } from '../config.js';
+import { PROVIDER_MAX_BATCH, rpcProvidersUrls } from '../config.js';
 import {
   isAllowedCallAddress,
   isAllowedLogsAddress,
 } from '../data/rpc-allowlist.js';
 import metrics from '../metrics/index.js';
 import { collectRequestAddressMetric } from '../metrics/collect-request-address-metric.js';
-import { methodNotAllowed } from '../utils/method-guard.js';
+import { ROUTES } from '../consts.js';
 
 /**
  * JSON-RPC proxy — THE security-critical surface. Ported from
@@ -247,7 +247,7 @@ const MAX_BODY_BYTES = 512 * 1024;
 
 export const rpcRoute: FastifyPluginAsync = async (fastify) => {
   fastify.post(
-    '/api/rpc',
+    ROUTES.api.rpc,
     { bodyLimit: MAX_BODY_BYTES },
     async (req, reply) => {
       // 1. Validate chain selection.
@@ -258,7 +258,7 @@ export const rpcRoute: FastifyPluginAsync = async (fastify) => {
         });
       }
       const chainId = q.data.chainId;
-      const urls = rpcProviders[chainId];
+      const urls = rpcProvidersUrls[chainId];
       if (!urls || urls.length === 0) {
         return reply.code(400).send({
           error: `chain ${chainId} not configured`,
@@ -342,6 +342,4 @@ export const rpcRoute: FastifyPluginAsync = async (fastify) => {
       return reply.type('application/json').send(proxied.data);
     },
   );
-
-  methodNotAllowed(fastify, '/api/rpc', ['POST']);
 };
