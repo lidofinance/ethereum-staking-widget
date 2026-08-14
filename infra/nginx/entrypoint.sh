@@ -103,14 +103,45 @@ EOF
 
 # --- 2. CSP header -----------------------------------------------------------
 # Directives ported from the legacy config/csp/index.ts (next-secure-headers
-# is gone with Next). The sha256 hash allows the lido-ui cookie-theme inline
-# script; frame-ancestors * keeps wallet embeds (Ledger Live, Safe) working.
+# is gone with Next). frame-ancestors * keeps wallet embeds (Ledger Live,
+# Safe) working. NB: the legacy lido-ui cookie-theme hash ('sha256-wTvVT3oJ…')
+# is gone — the Vite SPA has no such inline script (theme init runs inside
+# the bundle).
 CSP_TRUSTED="$(printf '%s' "${CSP_TRUSTED_HOSTS:-}" | tr ',' ' ')"
+
+# Per-build CSP source for the inline import map through which
+# vite-plugin-sri-gen delivers module-graph SRI (its content — and hash —
+# changes every build). Written by emit-import-map-csp-hash in
+# vite.config.ts. Without it an enforcing CSP blocks the import map and
+# module-graph integrity silently disappears (the app keeps working,
+# unverified — fail-open), so a missing hash is fatal exactly when CSP is
+# enforcing; a malformed one is fatal always (packaging bug or tampering).
+IMPORT_MAP_HASH_FILE="/usr/share/nginx/html/importmap-csp-hash.txt"
+IMPORT_MAP_HASH=""
+if [ -f "$IMPORT_MAP_HASH_FILE" ]; then
+  IMPORT_MAP_HASH="$(tr -d '\r\n' < "$IMPORT_MAP_HASH_FILE")"
+  if ! printf '%s' "$IMPORT_MAP_HASH" | grep -Eq '^sha256-[A-Za-z0-9+/]{43}=$'; then
+    echo "entrypoint: ERROR: malformed ${IMPORT_MAP_HASH_FILE}" >&2
+    exit 1
+  fi
+fi
+if [ -z "$IMPORT_MAP_HASH" ]; then
+  if [ "${CSP_REPORT_ONLY:-}" = "true" ]; then
+    echo "entrypoint: WARNING: ${IMPORT_MAP_HASH_FILE} missing — an enforcing CSP would block the SRI import map" >&2
+  else
+    echo "entrypoint: ERROR: ${IMPORT_MAP_HASH_FILE} missing — enforcing CSP would silently disable module-graph SRI" >&2
+    exit 1
+  fi
+fi
+SCRIPT_SRC_EXTRA=""
+if [ -n "$IMPORT_MAP_HASH" ]; then
+  SCRIPT_SRC_EXTRA="'${IMPORT_MAP_HASH}' "
+fi
 
 # CoW origin must track features/dex-withdrawals/cowswap/consts.ts
 # COWSWAP_BASE_URL — flipping IS_COWSWAP_STAGING there requires updating
 # frame-src/child-src here too.
-CSP_VALUE="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.reown.com; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' 'sha256-wTvVT3oJ2rMAqNUILvSYccTn53N47S3NIZbPE0ql0No=' ${CSP_TRUSTED}; connect-src 'self' https: wss:; frame-ancestors *; frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; child-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; object-src 'none'; media-src 'none'; manifest-src 'self'; form-action 'self'; script-src-attr 'none'; base-uri 'none'"
+CSP_VALUE="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.reown.com; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' ${SCRIPT_SRC_EXTRA}${CSP_TRUSTED}; connect-src 'self' https: wss:; frame-ancestors *; frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; child-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; object-src 'none'; media-src 'none'; manifest-src 'self'; form-action 'self'; script-src-attr 'none'; base-uri 'none'"
 
 if [ -n "${CSP_REPORT_URI:-}" ]; then
   CSP_VALUE="${CSP_VALUE}; report-uri ${CSP_REPORT_URI}"

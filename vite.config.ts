@@ -64,7 +64,11 @@ const ipfsHeadDefaults = (): Plugin => {
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data: https://fonts.reown.com",
     "img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com",
-    `script-src 'self' 'sha256-wTvVT3oJ2rMAqNUILvSYccTn53N47S3NIZbPE0ql0No=' ${IPFS_BASE_SCRIPT_HASH}`,
+    // The only inline script in the IPFS build is the <base> bootstrap
+    // above. (The legacy lido-ui cookie-theme hash 'sha256-wTvVT3oJ…' is
+    // gone: the SPA initializes theme via initGlobalCookieTheme inside the
+    // bundle, ScriptThemeValue is rendered nowhere.)
+    `script-src 'self' ${IPFS_BASE_SCRIPT_HASH}`,
     "connect-src 'self' https: wss:",
     "frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com",
     "child-src 'self' https://*.walletconnect.org https://*.walletconnect.com",
@@ -116,27 +120,28 @@ const emitSitemap = (): Plugin => {
  * (no children), so JSON-LD is post-processed here. `<` is escaped to
  * `<` so data can never break out of the script element.
  */
+const walkIndexHtml = async (dir: string): Promise<string[]> => {
+  const out: string[] = [];
+  const entries = await readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const path = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) {
+      out.push(...(await walkIndexHtml(path)));
+    } else if (entry.name === 'index.html') {
+      out.push(path);
+    }
+  }
+  return out;
+};
+
 const injectJsonLd = (): Plugin => {
   const distDir = resolve(root, 'dist');
-  const walk = async (dir: string): Promise<string[]> => {
-    const out: string[] = [];
-    const entries = await readdir(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const path = `${dir}/${entry.name}`;
-      if (entry.isDirectory()) {
-        out.push(...(await walk(path)));
-      } else if (entry.name === 'index.html') {
-        out.push(path);
-      }
-    }
-    return out;
-  };
   return {
     name: 'inject-json-ld',
     apply: 'build',
     enforce: 'post',
     async closeBundle() {
-      const files = await walk(distDir);
+      const files = await walkIndexHtml(distDir);
       for (const file of files) {
         const routePath =
           file.slice(distDir.length).replace(/\/index\.html$/, '') || '/';
@@ -147,6 +152,54 @@ const injectJsonLd = (): Plugin => {
         const script = `<script type="application/ld+json">${json}</script>`;
         await writeFile(file, html.replace('</head>', `${script}</head>`));
       }
+    },
+  };
+};
+
+// NB: the prerender entry chunk (assets/prerender-*.js) is NOT build-time
+// dead weight and must not be pruned from the bundle: rolldown assigns
+// modules shared between scripts/prerender.ts and the app (shared/seo and
+// friends) to it, so app chunks statically import it at runtime
+// (empirically: the index entry side-effect-imports it, withdrawals pulls
+// named exports). It ships SRI-covered like any other chunk.
+
+/**
+ * Emit `importmap-csp-hash.txt` into the build output: the sha256 CSP
+ * source of the inline import map that vite-plugin-sri-gen injects into
+ * every HTML file. The nginx entrypoint splices it into the runtime CSP's
+ * script-src — an enforcing CSP without it blocks the import map, and
+ * module-graph SRI silently disappears (documented fail-open of the
+ * plugin). A single header-level hash only works if the map is
+ * byte-identical across all prerendered HTML files, so divergence fails
+ * the build rather than silently un-verifying some routes.
+ */
+const emitImportMapCspHash = (): Plugin => {
+  const distDir = resolve(root, 'dist');
+  return {
+    name: 'emit-import-map-csp-hash',
+    apply: 'build',
+    enforce: 'post',
+    async closeBundle() {
+      const files = await walkIndexHtml(distDir);
+      const hashes = new Set<string>();
+      for (const file of files) {
+        const match = (await readFile(file, 'utf-8')).match(
+          /<script type="importmap">(.*?)<\/script>/s,
+        );
+        if (!match) {
+          throw new Error(`emit-import-map-csp-hash: no import map in ${file}`);
+        }
+        hashes.add(createHash('sha256').update(match[1]).digest('base64'));
+      }
+      if (hashes.size !== 1) {
+        throw new Error(
+          `emit-import-map-csp-hash: import maps diverge across HTML files (${hashes.size} variants) — a single CSP hash cannot cover them`,
+        );
+      }
+      await writeFile(
+        resolve(distDir, 'importmap-csp-hash.txt'),
+        `sha256-${[...hashes][0]}\n`,
+      );
     },
   };
 };
@@ -194,6 +247,7 @@ export default defineConfig({
           }),
           emitSitemap(),
           injectJsonLd(),
+          emitImportMapCspHash(),
         ]),
     // SVGs:
     //   `import url from 'foo.svg'`             → URL string (Vite default)
@@ -203,16 +257,26 @@ export default defineConfig({
     svgr(),
     // runtimePatchDynamicLinks (default true) prepends an SRI runtime + a map
     // of ALL other assets' hashes into every entry chunk AFTER Rollup has
-    // fixed the content-hashed filenames. The prerender entry imports almost
-    // no app code, so its filename stays stable across builds while the
-    // injected map changes — same URL, new bytes. With immutable asset
-    // caching (nginx max-age=31536000 + Cloudflare) a cached copy from a
-    // previous deploy then fails the fresh HTML's integrity check and the
+    // fixed the content-hashed filenames. Entry filenames then no longer
+    // track entry bytes across builds — same URL, new bytes. With immutable
+    // asset caching (nginx max-age=31536000 + Cloudflare) a cached copy from
+    // a previous deploy then fails the fresh HTML's integrity check and the
     // browser blocks it. Disabled: integrity is still delivered via static
     // tags, the inline import map and modulepreload links — all in HTML,
     // which is short-cached — and chunk bytes stay true to their hashed
     // names.
-    sri({ runtimePatchDynamicLinks: false }),
+    sri({
+      runtimePatchDynamicLinks: false,
+      // IPFS: the relative base ('./') cannot produce valid import-map
+      // keys, so the plugin skips the import map there and module-graph
+      // chunks reached only via static imports inside lazy chunks would
+      // load with NO integrity (the plugin warns: 48 chunks at the time of
+      // writing). false moves all hashes to static modulepreload links —
+      // full-graph coverage in every SRI-capable browser, at the cost of
+      // eager-fetching the graph. Web keeps the import map (lazy loading
+      // preserved); its CSP hash is emitted by emitImportMapCspHash.
+      ...(isIpfs ? { importMapIntegrity: false } : {}),
+    }),
   ],
   resolve: {
     alias: [
