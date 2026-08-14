@@ -201,7 +201,18 @@ export default defineConfig({
     // The `import { ReactComponent }` sites (@svgr/webpack convention) are
     // migrated to the `?react` suffix form.
     svgr(),
-    sri(),
+    // runtimePatchDynamicLinks (default true) prepends an SRI runtime + a map
+    // of ALL other assets' hashes into every entry chunk AFTER Rollup has
+    // fixed the content-hashed filenames. The prerender entry imports almost
+    // no app code, so its filename stays stable across builds while the
+    // injected map changes — same URL, new bytes. With immutable asset
+    // caching (nginx max-age=31536000 + Cloudflare) a cached copy from a
+    // previous deploy then fails the fresh HTML's integrity check and the
+    // browser blocks it. Disabled: integrity is still delivered via static
+    // tags, the inline import map and modulepreload links — all in HTML,
+    // which is short-cached — and chunk bytes stay true to their hashed
+    // names.
+    sri({ runtimePatchDynamicLinks: false }),
   ],
   resolve: {
     alias: [
