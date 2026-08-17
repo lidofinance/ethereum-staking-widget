@@ -64,6 +64,8 @@ export const useWithdrawalRequest = ({
       const onTryAllowance = () => {
         closeModal();
         setIsForceAllowance(true);
+        // allows force Allowance to be set before running the form submit again
+        setTimeout(() => onRetry?.(), 0);
       };
 
       let isSigningPermit = false;

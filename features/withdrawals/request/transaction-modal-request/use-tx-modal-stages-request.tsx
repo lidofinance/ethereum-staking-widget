@@ -110,16 +110,16 @@ const getTxModalStagesRequest = (
           suggestTryAllowance && (
             <Text color="secondary" size="xxs">
               Problem with signing Permit message?
-              <br />{' '}
+              <br /> Try{' '}
               <Link
                 onClick={(e) => {
                   e.preventDefault();
                   onTryAllowance?.();
                 }}
               >
-                Try Allowance
-              </Link>
-              .
+                Allowance flow
+              </Link>{' '}
+              instead.
             </Text>
           )
         }
