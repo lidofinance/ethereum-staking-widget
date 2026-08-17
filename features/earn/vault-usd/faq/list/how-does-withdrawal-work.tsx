@@ -8,12 +8,13 @@ export const HowDoesWithdrawalWork: FC<{ id?: string }> = ({ id }) => {
       <ul>
         <li>
           <strong>Request withdrawal</strong> by issuing a withdrawal request
-          from earnUSD to USDC tokens. Withdrawals are typically fulfilled
-          within ~72 hours under normal conditions.
+          from earnUSD to USDC. If the buffer has enough liquidity to cover your
+          request, it&apos;s fulfilled instantly. Otherwise, your request enters
+          the withdrawal queue, which is typically settled within ~72 hours.
         </li>
         <li>
-          <strong>Claim:</strong> Claim your USDC after the withdrawal request
-          has been processed.
+          <strong>Claim</strong> your USDC once the withdrawal request has been
+          processed.
         </li>
       </ul>
     </FaqItem>

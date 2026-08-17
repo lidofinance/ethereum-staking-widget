@@ -8,11 +8,14 @@ ARG BUILD_COMMIT=unknown
 WORKDIR /app
 
 RUN apk add --no-cache git=~2
-COPY package.json yarn.lock ./
+# .yarn/releases is the committed yarn pinned by yarnPath in .yarnrc.yml;
+# the stock Yarn 1 from the node image delegates to it — no corepack needed
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/releases .yarn/releases
 # copy with validate_addresses JSON file
-# COPY package.json yarn.lock validate_addresses.example.json ./
+# COPY package.json yarn.lock .yarnrc.yml validate_addresses.example.json ./
 
-RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
+RUN yarn install --immutable --mode=skip-build && yarn cache clean --all
 COPY . .
 
 # Populate build-info.json

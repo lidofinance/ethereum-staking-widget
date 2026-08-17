@@ -10,6 +10,17 @@ import {
 import { getFunctionNameFromAbi } from './get-function-name-from-abi';
 
 const UNKNOWN_LABEL = 'unknown';
+const ADDRESS_LENGTH = 42; // '0x' + 40 hex chars
+const LOG_ERROR_MAX_LENGTH = 200;
+
+// Parser errors can quote their whole input, so keep log lines bounded.
+const shortError = (error: unknown) => {
+  const text =
+    error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  return text.length > LOG_ERROR_MAX_LENGTH
+    ? `${text.slice(0, LOG_ERROR_MAX_LENGTH)}…`
+    : text;
+};
 
 /**
  * Increments the eth_call Counter per batch entry. Labels bounded:
@@ -43,6 +54,9 @@ export const collectRequestAddressMetric = async ({
       }
 
       const { to, data } = call.params[0];
+      // Metrics collection is independent of the route's own checks, so verify
+      // the shape here rather than assuming a well-formed address.
+      if (typeof to !== 'string' || to.length !== ADDRESS_LENGTH) return;
       const address = getAddress(to);
       const contractName = METRIC_CONTRACT_ADDRESSES?.[chainId]?.[address];
       const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
@@ -72,7 +86,9 @@ export const collectRequestAddressMetric = async ({
         .inc(1);
     } catch (error) {
       console.warn(
-        `[collectRequestAddressMetric] skipping malformed call: ${error}`,
+        `[collectRequestAddressMetric] skipping malformed call: ${shortError(
+          error,
+        )}`,
       );
     }
   });
