@@ -1,0 +1,15 @@
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="white"/>
+<mask id="mask0_4033_1673" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+<path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_4033_1673)">
+<path d="M6.60163 29.9991C10.2476 29.9991 13.2033 27.0434 13.2033 23.3974C13.2033 19.7514 10.2476 16.7958 6.60163 16.7958C2.95565 16.7958 0 19.7514 0 23.3974C0 27.0434 2.95565 29.9991 6.60163 29.9991Z" fill="#082B53"/>
+<mask id="mask1_4033_1673" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="5" y="0" width="3" height="19">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M5.87598 18.3729V0.680496H7.34764V18.3729H5.87598Z" fill="white"/>
+</mask>
+<g mask="url(#mask1_4033_1673)">
+<path d="M24 12C24 18.6275 18.6275 24 12 24C5.3726 24 0 18.6275 0 12C0 5.37262 5.3726 3.05176e-05 12 3.05176e-05C18.6275 3.05176e-05 24 5.37262 24 12Z" fill="#082B53"/>
+</g>
+</g>
+</svg>

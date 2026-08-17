@@ -7,4 +7,5 @@ export const enum METRIC_NAMES {
   ETH_CALL_ADDRESS_TO = 'eth_call_address_to',
   SSR_COUNT = 'ssr_count',
   VALIDATION_FILE_LOAD_ERROR = 'validation_file_load_error',
+  CONFIG_MANIFEST_LOAD_ERROR = 'config_manifest_load_error',
 }

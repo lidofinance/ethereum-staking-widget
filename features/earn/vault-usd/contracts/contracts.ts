@@ -7,8 +7,9 @@ import {
   COLLECTOR_ABI,
   DEPOSIT_QUEUE_ABI,
   SYNC_DEPOSIT_QUEUE_ABI,
-  REDEEM_QUEUE_ABI,
+  ASYNC_REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
+  SYNC_REDEEM_QUEUE_ABI,
 } from 'modules/mellow-meta-vaults/abi';
 import { TOKENS } from 'consts/tokens';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -76,7 +77,7 @@ export const getRedeemQueueContractUSDC = <TPublicClient extends PublicClient>(
   );
 
   return getContract({
-    abi: REDEEM_QUEUE_ABI,
+    abi: ASYNC_REDEEM_QUEUE_ABI,
     address,
     client: {
       public: publicClient,
@@ -101,11 +102,60 @@ export const getRedeemQueueWritableContractUSDC = <
   );
 
   return getContract({
-    abi: REDEEM_QUEUE_ABI,
+    abi: ASYNC_REDEEM_QUEUE_ABI,
     address,
     client: {
       public: publicClient,
       wallet: walletClient,
+    },
+  });
+};
+
+export const getSyncRedeemQueueWritableContractUSDC = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>(
+  publicClient: TPublicClient,
+  walletClient: TWalletClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'usdSyncRedeemQueueUSDC',
+  );
+  invariant(
+    address,
+    `no USD Sync Redeem Queue USDC contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: SYNC_REDEEM_QUEUE_ABI,
+    address,
+    client: {
+      public: publicClient,
+      wallet: walletClient,
+    },
+  });
+};
+
+export const getSyncRedeemQueueContractUSDC = <
+  TPublicClient extends PublicClient,
+>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'usdSyncRedeemQueueUSDC',
+  );
+  invariant(
+    address,
+    `no USD Sync Redeem Queue USDC contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: SYNC_REDEEM_QUEUE_ABI,
+    address,
+    client: {
+      public: publicClient,
     },
   });
 };

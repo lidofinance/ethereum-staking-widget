@@ -4,7 +4,8 @@ import {
   COLLECTOR_ABI,
   SYNC_DEPOSIT_QUEUE_ABI,
   DEPOSIT_QUEUE_ABI,
-  REDEEM_QUEUE_ABI,
+  ASYNC_REDEEM_QUEUE_ABI,
+  SYNC_REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
 } from '../abi';
 
@@ -34,8 +35,7 @@ export type SyncDepositQueueContract = ContractReadonly<
 >;
 
 export type DepositQueueContract =
-  | AsyncDepositQueueContract
-  | SyncDepositQueueContract;
+  AsyncDepositQueueContract | SyncDepositQueueContract;
 
 export type AsyncDepositQueueWritableContract = Contract<
   typeof DEPOSIT_QUEUE_ABI
@@ -46,11 +46,22 @@ export type SyncDepositQueueWritableContract = Contract<
 >;
 
 export type DepositQueueWritableContract =
-  | AsyncDepositQueueWritableContract
-  | SyncDepositQueueWritableContract;
+  AsyncDepositQueueWritableContract | SyncDepositQueueWritableContract;
 
-export type RedeemQueueContract = ContractReadonly<typeof REDEEM_QUEUE_ABI>;
+export type AsyncRedeemQueueContract = ContractReadonly<
+  typeof ASYNC_REDEEM_QUEUE_ABI
+>;
 
-export type RedeemQueueWritableContract = Contract<typeof REDEEM_QUEUE_ABI>;
+export type AsyncRedeemQueueWritableContract = Contract<
+  typeof ASYNC_REDEEM_QUEUE_ABI
+>;
+
+export type SyncRedeemQueueContract = ContractReadonly<
+  typeof SYNC_REDEEM_QUEUE_ABI
+>;
+
+export type SyncRedeemQueueWritableContract = Contract<
+  typeof SYNC_REDEEM_QUEUE_ABI
+>;
 
 export type ShareManagerContract = Contract<typeof SHARE_MANAGER_ABI>;

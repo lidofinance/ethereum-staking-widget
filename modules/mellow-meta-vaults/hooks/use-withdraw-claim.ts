@@ -11,7 +11,7 @@ import {
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { RedeemQueueWritableContract } from '../types/contracts';
+import { AsyncRedeemQueueWritableContract } from '../types/contracts';
 
 export const useWithdrawClaim = <WithdrawToken extends string>({
   redeemQueue,
@@ -22,7 +22,7 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
   matomoEventStart,
   matomoEventSuccess,
 }: {
-  redeemQueue: RedeemQueueWritableContract;
+  redeemQueue: AsyncRedeemQueueWritableContract;
   token: WithdrawToken;
   txModalStages: TxModalStages;
   refetchTokenBalance: (token: WithdrawToken) => unknown;

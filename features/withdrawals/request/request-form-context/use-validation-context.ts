@@ -3,9 +3,8 @@ import {
   MAX_REQUESTS_COUNT_LEDGER_LIMIT,
   MAX_REQUESTS_COUNT,
 } from 'features/withdrawals/withdrawals-constants';
-import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useIsLedgerLive } from 'modules/web3';
 import type {
   RequestFormDataType,
   RequestFormValidationAsyncContextType,

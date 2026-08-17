@@ -23,6 +23,8 @@ import {
   type TradeGuardModalState,
 } from './trade-guard-modal';
 import invariant from 'tiny-invariant';
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 // ---------------------------------------------------------------------------
 // Oracle result → level/messages
@@ -102,6 +104,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
       helpTip?: SigningHelpTip,
     ): Promise<boolean> =>
       new Promise((resolve) => {
+        trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteError);
         // Resolve any pending modal before opening a new one
         resolveRef.current?.(false);
         resolveRef.current = resolve;

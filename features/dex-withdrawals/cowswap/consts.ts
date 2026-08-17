@@ -31,6 +31,7 @@ export const LIDO_APP_CODE = 'Lido Staking Widget';
 export const COWSWAP_WIDGET_LOADING_TIMEOUT_MS = 1_000 * 60 * 2; // 2 minutes
 export const MAX_ORDER_AGE_SECONDS = 60 * 30; // 30 minutes
 export const MAX_ORDER_AGE_MINUTES = Math.floor(MAX_ORDER_AGE_SECONDS / 60);
+export const TRADE_REPORT_EVENT_DEBOUNCE_MS = 3_000; // 3 seconds
 
 export const IS_COWSWAP_STAGING = false;
 

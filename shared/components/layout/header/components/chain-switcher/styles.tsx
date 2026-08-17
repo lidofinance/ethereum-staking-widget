@@ -4,7 +4,10 @@ export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
 `;
 
-export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
+export const ChainSwitcherStyled = styled.div<{
+  $disabled: boolean;
+  $loading?: boolean;
+}>`
   z-index: 202;
 
   display: inline-flex;
@@ -16,7 +19,7 @@ export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
   overflow: ${({ $disabled }) => ($disabled ? 'hidden' : 'visible')};
   box-sizing: border-box;
 
-  width: ${({ $disabled }) => ($disabled ? '44px' : '68px')};
+  width: ${({ $disabled, $loading }) => ($disabled && !$loading ? '44px' : '68px')};
   height: 44px;
   margin-right: 12px;
   padding: 9px 8px;
@@ -47,12 +50,18 @@ export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
   }
 `;
 
-export const IconStyle = styled.span`
+export const IconStyle = styled.span<{ $loading?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: stretch;
   justify-self: stretch;
+
+  ${({ $loading }) =>
+    $loading &&
+    css`
+      opacity: 0.5;
+    `}
 `;
 
 export const ArrowStyle = styled.div<{ $opened: boolean }>`

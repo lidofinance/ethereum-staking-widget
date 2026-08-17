@@ -59,7 +59,7 @@ export const StageIconLimit = createStageIcon(
   <LedgerFail fill="transparent" />,
 );
 
-export const StageIconDialog = createStageIcon(
+export const StageIconWarning = createStageIcon(
   <WarningIcon />,
   <WarningIcon />,
 );

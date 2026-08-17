@@ -7,6 +7,7 @@ import {
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { VaultWithdrawWarning } from 'features/earn/shared/v2/vault-warning';
+import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
 
 import { UsdVaultWithdrawFormProvider } from './form-context';
 import { UsdVaultWithdrawRequests } from './withdraw-requests';
@@ -37,14 +38,9 @@ const UsdVaultWithdrawFormContent: FC = () => {
         <VaultTxInfoRow
           title="Waiting time"
           data-testid="waiting-time"
-          help={
-            <>
-              Withdrawals take up to 72 hours to process. Once ready, your funds
-              can be claimed in the Lido UI
-            </>
-          }
+          help={WITHDRAWAL_WAITING_TIME_TOOLTIP}
         >
-          {'up to 72 hours'}
+          {'Instant or up to 72 hours'}
         </VaultTxInfoRow>
       </VaultTxInfo>
       <UsdVaultWithdrawSubmitButton />

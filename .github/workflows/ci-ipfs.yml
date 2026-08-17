@@ -19,7 +19,7 @@ jobs:
       tag: ${{ steps.build-info.outputs.tag }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -27,7 +27,7 @@ jobs:
       - name: Enable corepack
         run: corepack enable
       - name: Install node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: 'yarn'

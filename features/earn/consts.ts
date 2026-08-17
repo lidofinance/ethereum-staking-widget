@@ -40,7 +40,7 @@ export const ETH_WITHDRAW_PATH = `${EARN_PATH}/${EARN_VAULT_ETH_SLUG}/${EARN_VAU
 export const USD_DEPOSIT_PATH = `${EARN_PATH}/${EARN_VAULT_USD_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
 export const USD_WITHDRAW_PATH = `${EARN_PATH}/${EARN_VAULT_USD_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`;
 
-// Asserts equality to IPFS.json
+// Asserts equality to REMOTE_CONFIG_MANIFEST.json
 export type EarnVaultKey = EnsureSameType<
   (typeof EARN_VAULTS)[number],
   ManifestConfigEarnVault

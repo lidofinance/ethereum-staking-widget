@@ -1,18 +1,24 @@
 import invariant from 'tiny-invariant';
 import { config } from 'config';
 
-import { ManifestSchema, ManifestConfigPages } from './validate';
+import {
+  ManifestSchema,
+  ManifestConfigPages,
+  type ManifestKey,
+} from './validate';
 
 import type { Manifest, ManifestConfigPage } from './types';
 
-import FallbackLocalManifest from 'IPFS.json';
+import FallbackLocalManifest from 'REMOTE_CONFIG_MANIFEST.json';
 
 export const getManifestKey = (
   defaultChain: number,
   manifestOverride?: string,
-) =>
-  `${defaultChain}` +
-  (typeof manifestOverride === 'string' ? `-${manifestOverride}` : '');
+): ManifestKey =>
+  (`${defaultChain}` +
+    (typeof manifestOverride === 'string'
+      ? `-${manifestOverride}`
+      : '')) as ManifestKey;
 
 export const getLocalFallbackManifest = () => {
   const fallbackParsing = ManifestSchema.safeParse(FallbackLocalManifest);
@@ -28,7 +34,7 @@ export const shouldRedirectToRoot = (
   manifest: Manifest | null,
 ): boolean => {
   const { defaultChain } = config;
-  const chainSettings = manifest?.[`${defaultChain}`];
+  const chainSettings = manifest?.[getManifestKey(defaultChain)];
   const pages = chainSettings?.config?.pages;
   const isDisabled =
     !!pages?.[currentPath as ManifestConfigPage]?.shouldDisable;

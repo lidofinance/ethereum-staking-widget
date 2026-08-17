@@ -2,7 +2,8 @@ import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
 import { rpcFactory } from '@lidofinance/next-pages';
 
-import { config, secretConfig } from 'config';
+// Aliased: `config` is reserved below for Next's route config export.
+import { config as appConfig, secretConfig } from 'config';
 import { API_ROUTES } from 'consts/api';
 import { CHAINS } from 'consts/chains';
 import { METRICS_PREFIX } from 'consts/metrics';
@@ -73,7 +74,7 @@ const rpc =
       prefix: METRICS_PREFIX,
       registry: Metrics.registry,
     },
-    defaultChain: `${config.defaultChain}`,
+    defaultChain: `${appConfig.defaultChain}`,
     providers: {
       [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
       [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
@@ -88,7 +89,7 @@ const rpc =
       allowedRPCMethods,
       allowedCallAddresses,
       allowedLogsAddresses,
-      maxBatchCount: config.PROVIDER_MAX_BATCH,
+      maxBatchCount: appConfig.PROVIDER_MAX_BATCH,
       blockEmptyAddressGetLogs: true,
       maxGetLogsRange: 20_000, // only 20k blocks size historical queries
       maxResponseSize: 1_000_000, // 1mb max response
@@ -96,6 +97,21 @@ const rpc =
   });
 
 if (!g.__rpcSingleton__) g.__rpcSingleton__ = rpc;
+
+// Cap the request body below Next's 1MB default, sized off the largest batches
+// this app actually sends. Withdrawal reads pass request-id arrays, and the
+// transport packs up to PROVIDER_MAX_BATCH calls per POST:
+//   getClaimableEther, MAX_SHOWN_REQUEST_PER_TYPE (1024) x 2 arrays  128kb
+//   findCheckpointHints, 1024 ids                                     64kb
+//   getWithdrawalStatus, STATUS_BATCH_SIZE (500) ids                  32kb
+//   claimWithdrawals, MAX_REQUESTS_COUNT (256)                        32kb
+// Two large reads in one batch window reach ~193kb, ~225kb with a claim gas
+// estimate alongside. 512kb keeps ~2.3x headroom — re-measure before lowering.
+export const config = {
+  api: {
+    bodyParser: { sizeLimit: '512kb' },
+  },
+};
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.POST]),
