@@ -61,7 +61,7 @@
     "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.45.2",
     "react-is": "^18.2.0",
-    "reef-knot": "8.3.0-alpha.1",
+    "reef-knot": "8.3.0",
     "styled-components": "^5.3.5",
     "tiny-invariant": "^1.1.0",
     "viem": "2.55.11",
