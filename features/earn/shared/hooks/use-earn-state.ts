@@ -1,7 +1,8 @@
+import { useRouter } from 'next/router';
+
+import { useIsLedgerLive } from 'modules/web3';
 import { useConfig } from 'config/use-config';
 import { EARN_PATH } from 'consts/urls';
-import { useRouter } from 'next/router';
-import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
 import {
   type EarnStateValue,

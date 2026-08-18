@@ -6,7 +6,7 @@ import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 const BORING_VAULT_URL =
   'https://docs.veda.tech/architecture-and-flow-of-funds/boringvault';
 const MACRO_URL = 'https://0xmacro.com/';
-const SPEARBIT_URL = 'https://cantina.xyz/solutions/spearbit';
+const SPEARBIT_URL = 'https://www.cantina.security/web3';
 const AUDITS_URL = 'https://github.com/Veda-Labs/boring-vault/tree/main/audit';
 
 export const IsGGVAudited: FC = () => {
