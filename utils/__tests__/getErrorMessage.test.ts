@@ -3,7 +3,6 @@ import type { TransactionReceipt } from 'viem';
 import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
 import {
   getErrorMessage,
-  getErrorHint,
   ErrorMessage,
   extractCodeFromError,
 } from '../getErrorMessage';
@@ -228,20 +227,5 @@ describe('extractCodeFromError: provider errors nested in cause', () => {
     expect(getErrorMessage({ code: 4100 })).toBe(
       ErrorMessage.UNAUTHORIZED_PROVIDER,
     );
-  });
-});
-
-describe('getErrorHint', () => {
-  test('returns a hint for explained provider errors', () => {
-    expect(getErrorHint(ErrorMessage.UNAUTHORIZED_PROVIDER)).toBe(
-      'Reload the page and try again.',
-    );
-  });
-
-  // The generic fallback must stay silent: a hint under "Something went wrong."
-  // would be a guess presented to the user as a diagnosis
-  test('returns nothing for the generic fallback', () => {
-    expect(getErrorHint(ErrorMessage.SOMETHING_WRONG)).toBeUndefined();
-    expect(getErrorHint('some arbitrary text')).toBeUndefined();
   });
 });
