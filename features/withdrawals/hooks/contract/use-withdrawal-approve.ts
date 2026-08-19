@@ -25,18 +25,11 @@ export const useWithdrawalApprove = (
   const debouncedAmount = useDebouncedValue(amount, 500);
 
   const { data, error, isLoading, isFetching, refetch } = useQuery({
-    queryKey: [
-      'use-withdrawal-approve',
-      withdraw.core.chainId,
-      account,
-      debouncedAmount.toString(),
-      token,
-    ],
+    queryKey: ['use-withdrawal-approve', withdraw.core.chainId, account, token],
     enabled,
     ...STRATEGY_EAGER,
     queryFn: () =>
-      withdraw.approval.checkAllowance({
-        amount: debouncedAmount,
+      withdraw.approval.getAllowance({
         account,
         token,
       }),
@@ -45,8 +38,8 @@ export const useWithdrawalApprove = (
   });
 
   return {
-    allowance: data?.allowance,
-    needsApprove: data?.needsApprove,
+    allowance: data,
+    needsApprove: data !== undefined ? data < debouncedAmount : undefined,
     isLoading,
     isFetching,
     error,
