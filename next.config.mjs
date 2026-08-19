@@ -145,7 +145,6 @@ export default withBundleAnalyzer({
       porto: false,
       '@gemini-wallet/core': false,
       '@base-org/account': false,
-      accounts: false,
     };
 
     // Alias exact 'zod' imports to a wrapper that disables Zod's eval-based JIT

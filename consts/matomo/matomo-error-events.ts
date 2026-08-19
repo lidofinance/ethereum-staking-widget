@@ -11,10 +11,6 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   INVALID_REFERRAL = 'INVALID_REFERRAL',
   INVALID_SIGNATURE = 'INVALID_SIGNATURE',
   BUNDLE_NOT_FOUND = 'BUNDLE_NOT_FOUND',
-  UNAUTHORIZED_PROVIDER = 'UNAUTHORIZED_PROVIDER',
-  SITE_BLOCKED = 'SITE_BLOCKED',
-  PROVIDER_DISCONNECTED = 'PROVIDER_DISCONNECTED',
-  CHAIN_DISCONNECTED = 'CHAIN_DISCONNECTED',
   SOMETHING_WRONG = 'SOMETHING_WRONG',
 }
 
@@ -71,26 +67,6 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'Could not locate transaction. Check your wallet for details.',
     'eth_widget_errors_bundle_not_found',
-  ],
-  [MATOMO_ERROR_EVENTS_TYPES.UNAUTHORIZED_PROVIDER]: [
-    'Ethereum_Staking_Widget_Errors',
-    'Your wallet has not authorized this request.',
-    'eth_widget_errors_unauthorized_provider',
-  ],
-  [MATOMO_ERROR_EVENTS_TYPES.SITE_BLOCKED]: [
-    'Ethereum_Staking_Widget_Errors',
-    'Your wallet has temporarily blocked requests from this site.',
-    'eth_widget_errors_site_blocked',
-  ],
-  [MATOMO_ERROR_EVENTS_TYPES.PROVIDER_DISCONNECTED]: [
-    'Ethereum_Staking_Widget_Errors',
-    'Your wallet is disconnected.',
-    'eth_widget_errors_provider_disconnected',
-  ],
-  [MATOMO_ERROR_EVENTS_TYPES.CHAIN_DISCONNECTED]: [
-    'Ethereum_Staking_Widget_Errors',
-    'Your wallet is not connected to the selected network.',
-    'eth_widget_errors_chain_disconnected',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG]: [
     'Ethereum_Staking_Widget_Errors',
