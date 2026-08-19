@@ -38,6 +38,7 @@ REWARDS_BACKEND=...           # Rewards data API
 MATOMO_URL=...                # Analytics
 ETH_API_BASE_PATH=...         # Lido eth-api
 WQ_API_BASE_PATH=...          # Withdrawals queue API
+COWSWAP_WIDGET_BASE_URL=...  # CowSwap widget base URL
 ```
 
 ### Security
