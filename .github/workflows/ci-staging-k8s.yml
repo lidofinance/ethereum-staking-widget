@@ -1,18 +1,17 @@
 # TEMP: to be migrated to crit-staging
-name: [K8S] Build and push staking-widget to staging
+name: "[K8S] Build and push staking-widget to staging"
 
-run-name: [K8S] Build and push staking-widget:staging to staging
+run-name: "[K8S] Build and push staking-widget:staging to staging"
 
 on:
   workflow_dispatch:
-# TODO: Uncomment once manual execution is no longer required
-#  push:
-#    branches:
-#      - main
-#    paths-ignore:
-#      - '.github/**'
-#      - 'test/**'
-#      - '**.md'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - 'test/**'
+      - '**.md'
 
 permissions:
   contents: read

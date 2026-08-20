@@ -1,17 +1,16 @@
-name: [K8S] Build and push staking-widget to dev
+name: "[K8S] Build and push staking-widget to dev"
 
-run-name: [K8S] Build and push staking-widget:dev to dev
+run-name: "[K8S] Build and push staking-widget:dev to dev"
 
 on:
   workflow_dispatch:
-# TODO: Uncomment once manual execution is no longer required
-#  push:
-#    branches:
-#      - develop
-#    paths-ignore:
-#      - '.github/**'
-#      - 'tests/**'
-#      - '**.md'
+  push:
+    branches:
+      - develop
+    paths-ignore:
+      - '.github/**'
+      - 'tests/**'
+      - '**.md'
 
 permissions:
   contents: read
