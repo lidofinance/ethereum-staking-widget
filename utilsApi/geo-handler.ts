@@ -1,6 +1,8 @@
 import type { API } from '@lidofinance/next-api-wrapper';
 
+import { config } from 'config';
 import { GEO_AVAILABILITY, type GeoResponse } from 'consts/geo';
+import { getGeoAvailability } from 'utils/geo';
 
 import { getExternalConfig } from './get-external-config';
 
@@ -10,20 +12,30 @@ import { getExternalConfig } from './get-external-config';
 const CF_COUNTRY_HEADER = 'cf-ipcountry';
 const UNRESOLVED_COUNTRY_CODES = new Set(['XX', 'T1']);
 
-const readCountry = (raw: string | string[] | undefined): string | null => {
-  const value = (Array.isArray(raw) ? raw[0] : raw)?.trim().toUpperCase();
+const getCountryCode = (raw: string | string[] | undefined): string | null => {
+  const countryCode = (Array.isArray(raw) ? raw[0] : raw)?.trim().toUpperCase();
 
-  if (!value || !/^[A-Z]{2}$/.test(value)) return null;
-  if (UNRESOLVED_COUNTRY_CODES.has(value)) return null;
+  if (!countryCode || !/^[A-Z]{2}$/.test(countryCode)) return null;
+  if (UNRESOLVED_COUNTRY_CODES.has(countryCode)) return null;
 
-  return value;
+  return countryCode;
 };
 
-// Log once per process: the header is either missing on every request or on
-// none of them, so logging each one is just noise. Error level, because in
-// production it means every visitor now gets the limited experience.
-let hasReportedUnresolvedCountry = false;
+// Without Cloudflare (local dev, test setups) the header never arrives, so
+// `experience` is always `limited`. `QA_GEO_COUNTRY` stands in for it:
+// - fallback, not override — a real header always wins
+// - only the header is faked, the rest of the logic runs as usual
+// - needs ENABLE_QA_HELPERS, which production does not set
+const getQaCountryCode = (): string | null =>
+  config.enableQaHelpers ? getCountryCode(config.qaGeoCountry) : null;
 
+// Both reports fire once per process: the header is either missing on every
+// request or on none of them, so logging each one is just noise.
+let hasReportedUnresolvedCountry = false;
+let hasReportedQaCountry = false;
+
+// Error level, because in production a missing header means every visitor now
+// gets the limited experience.
 const reportUnresolvedCountry = () => {
   if (hasReportedUnresolvedCountry) return;
   hasReportedUnresolvedCountry = true;
@@ -36,6 +48,18 @@ const reportUnresolvedCountry = () => {
   );
 };
 
+// Not an error: someone configured this deliberately. Still worth one line, so
+// a surprising answer is traceable to the env var rather than to the edge.
+const reportQaCountry = (country: string) => {
+  if (hasReportedQaCountry) return;
+  hasReportedQaCountry = true;
+
+  console.info(
+    `[geoHandler] no "${CF_COUNTRY_HEADER}" header — standing in for it with ` +
+      `QA_GEO_COUNTRY=${country}`,
+  );
+};
+
 /**
  * Handler for `/api/geo`. Tells the UI which experience to render.
  *
@@ -45,9 +69,15 @@ const reportUnresolvedCountry = () => {
  *   3. the country is not on that list
  *
  * Anything else answers availability: limited.
+ *
+ * Without Cloudflare, `QA_GEO_COUNTRY` can stand in for step 1 — see `getQaCountryCode`.
  */
 export const geoHandler: API = async (req, res) => {
-  const country = readCountry(req.headers[CF_COUNTRY_HEADER]);
+  const headerCountry = getCountryCode(req.headers[CF_COUNTRY_HEADER]);
+  const qaCountry = headerCountry ? null : getQaCountryCode();
+  const country = headerCountry ?? qaCountry;
+
+  if (qaCountry) reportQaCountry(qaCountry);
 
   if (!country) {
     reportUnresolvedCountry();
@@ -78,15 +108,9 @@ export const geoHandler: API = async (req, res) => {
     return;
   }
 
-  // the schema already uppercases the list, but compare case-insensitively
-  // anyway so this keeps working if that ever changes
-  const isListed = limitedCountries.some(
-    (code) => code.toUpperCase() === country,
-  );
-
   const response: GeoResponse = {
     country,
-    availability: isListed ? GEO_AVAILABILITY.limited : GEO_AVAILABILITY.full,
+    availability: getGeoAvailability(country, limitedCountries),
   };
 
   res.status(200).json(response);

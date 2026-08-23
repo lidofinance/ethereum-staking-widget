@@ -10,6 +10,14 @@ vi.mock('../get-external-config', () => ({
   getExternalConfig: vi.fn(),
 }));
 
+// the handler only reads these two, and both need to vary per test
+const configMock = vi.hoisted(() => ({
+  enableQaHelpers: false,
+  qaGeoCountry: undefined as string | undefined,
+}));
+
+vi.mock('config', () => ({ config: configMock }));
+
 const getExternalConfigMock = vi.mocked(getExternalConfig);
 
 type MockRes = NextApiResponse & {
@@ -56,13 +64,19 @@ const call = async (headers: Record<string, string | string[]> = {}) => {
 describe('geoHandler', () => {
   let errorSpy: MockInstance;
 
+  let infoSpy: MockInstance;
+
   beforeEach(() => {
     setLimitedCountries(['US']);
+    configMock.enableQaHelpers = false;
+    configMock.qaGeoCountry = undefined;
     errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    infoSpy = vi.spyOn(console, 'info').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
     errorSpy.mockRestore();
+    infoSpy.mockRestore();
     vi.clearAllMocks();
   });
 
@@ -141,5 +155,49 @@ describe('geoHandler', () => {
 
       expect(res._sent).toEqual({ country: null, availability: 'limited' });
     });
+  });
+
+  describe('QA_GEO_COUNTRY', () => {
+    it('is ignored while QA helpers are off', async () => {
+      configMock.qaGeoCountry = 'DE';
+      const res = await call();
+
+      expect(res._sent).toEqual({ country: null, availability: 'limited' });
+    });
+
+    it('stands in for a missing header when QA helpers are on', async () => {
+      configMock.enableQaHelpers = true;
+      configMock.qaGeoCountry = 'DE';
+      const res = await call();
+
+      expect(res._sent).toEqual({ country: 'DE', availability: 'full' });
+    });
+
+    it('runs the manifest lookup on the stand-in like any other country', async () => {
+      configMock.enableQaHelpers = true;
+      configMock.qaGeoCountry = 'us';
+      const res = await call();
+
+      expect(res._sent).toEqual({ country: 'US', availability: 'limited' });
+    });
+
+    it('never overrides a header Cloudflare did set', async () => {
+      configMock.enableQaHelpers = true;
+      configMock.qaGeoCountry = 'DE';
+      const res = await call({ 'cf-ipcountry': 'US' });
+
+      expect(res._sent).toEqual({ country: 'US', availability: 'limited' });
+    });
+
+    it.each(['XX', 'T1', 'USA', '', 'not-a-code'])(
+      'falls back to limited for the unusable value %o',
+      async (value) => {
+        configMock.enableQaHelpers = true;
+        configMock.qaGeoCountry = value;
+        const res = await call();
+
+        expect(res._sent).toEqual({ country: null, availability: 'limited' });
+      },
+    );
   });
 });

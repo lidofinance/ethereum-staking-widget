@@ -9,7 +9,7 @@
  * the country, the config that names the limited regions was readable, and the
  * country is not among them. Every other path — no Cloudflare header, an
  * unreachable route, a malformed body, a build with no API at all — ends at
- * `limited`.
+ * `limited`. The functions that do the resolving live in `utils/geo`.
  */
 
 export const GEO_AVAILABILITY = {
@@ -25,14 +25,3 @@ export type GeoResponse = {
   country: string | null;
   availability: GeoAvailability;
 };
-
-/**
- * Narrows an untrusted value to an availability, fail-closed: only a literal
- * `full` yields the full experience. Takes `unknown` on purpose — the API
- * response is parsed JSON that nothing has validated, so a truncated or
- * unexpected body has to land on `limited` rather than be trusted.
- */
-export const resolveGeoAvailability = (value: unknown): GeoAvailability =>
-  value === GEO_AVAILABILITY.full
-    ? GEO_AVAILABILITY.full
-    : GEO_AVAILABILITY.limited;
