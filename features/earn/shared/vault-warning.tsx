@@ -2,8 +2,13 @@ import styled, { css } from 'styled-components';
 import WarningIconSrc from 'assets/icons/attention-triangle.svg';
 import InfoIconSrc from 'assets/icons/info-warning.svg';
 
-type VaultWarningProps = {
+type VaultWarningVariantProps = {
   variant?: 'warning' | 'info';
+};
+
+type VaultWarningProps = VaultWarningVariantProps & {
+  // replaces the variant's default icon, e.g. with a spinner
+  icon?: React.ReactNode;
 };
 
 export const WarningIcon = styled.img.attrs({
@@ -25,7 +30,7 @@ export const InfoWarningIcon = styled.img.attrs({
   margin: 5px;
 `;
 
-const WarningContainer = styled.div<VaultWarningProps>`
+const WarningContainer = styled.div<VaultWarningVariantProps>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -47,7 +52,7 @@ const WarningContainer = styled.div<VaultWarningProps>`
   }
 `;
 
-const WarningContent = styled.div<VaultWarningProps>`
+const WarningContent = styled.div<VaultWarningVariantProps>`
   flex: 1;
 
   font-size: 12px;
@@ -70,11 +75,11 @@ const WarningContent = styled.div<VaultWarningProps>`
 export const VaultWarning = ({
   children,
   variant = 'warning',
+  icon,
 }: React.PropsWithChildren<VaultWarningProps>) => {
   return (
     <WarningContainer variant={variant} data-testid="vault-warning">
-      {variant === 'warning' && <WarningIcon />}
-      {variant === 'info' && <InfoWarningIcon />}
+      {icon ?? (variant === 'warning' ? <WarningIcon /> : <InfoWarningIcon />)}
       <WarningContent variant={variant}>{children}</WarningContent>
     </WarningContainer>
   );

@@ -38,9 +38,12 @@ const getMockedCountry = (): string | null => {
   return countryCode && /^[A-Z]{2}$/.test(countryCode) ? countryCode : null;
 };
 
+// the QA mock lives in localStorage, so the query has to run to read it
+const IS_QUERY_ENABLED = CAN_RESOLVE_REGION || config.enableQaHelpers;
+
 type UseGeoAvailabilityResult = GeoResponse & {
   isLimited: boolean;
-  isLoading: boolean;
+  isResolving: boolean;
 };
 
 /**
@@ -48,18 +51,24 @@ type UseGeoAvailabilityResult = GeoResponse & {
  *
  * Fail-closed: `limited` holds until the route positively answers `full`, so a
  * request in flight, a failed one, and a build without the route all read as
- * limited. Render against `isLoading` rather than `isLimited` alone if the
+ * limited. Render against `isResolving` rather than `isLimited` alone if the
  * screen should not settle before the answer arrives.
  *
- * A visitor's country does not change mid-session, so the query is immutable.
+ * `isResolving` covers both "the browser has not asked yet" and "the request is
+ * in flight", which is what a statically rendered page needs: the prerendered
+ * HTML must not claim the region is limited before anyone has asked, or it
+ * flashes that claim at every visitor and mismatches on hydration. A build that
+ * never asks is not resolving — it is already answered, fail-closed.
+ *
+ * A visitor's country does not change mid-session, so the query is immutable —
+ * the answer survives client-side navigation between earn pages.
  */
 export const useGeoAvailability = (): UseGeoAvailabilityResult => {
   const { geo } = useConfig().externalConfig;
 
-  const { data, isLoading } = useQuery<GeoResponse>({
+  const { data, isPending } = useQuery<GeoResponse>({
     queryKey: ['geo-availability'],
-    // the QA mock lives in localStorage, so the query has to run to read it
-    enabled: CAN_RESOLVE_REGION || config.enableQaHelpers,
+    enabled: IS_QUERY_ENABLED,
     ...STRATEGY_IMMUTABLE,
     // failing closed means a blip costs the visitor the full experience for the
     // rest of the session, so retry a little and re-resolve on a recovered link
@@ -91,6 +100,6 @@ export const useGeoAvailability = (): UseGeoAvailabilityResult => {
     country: data?.country ?? null,
     availability,
     isLimited: availability === GEO_AVAILABILITY.limited,
-    isLoading,
+    isResolving: IS_QUERY_ENABLED && isPending,
   };
 };
