@@ -10,3 +10,15 @@ export const GeoNoticeWrapper = styled.div`
 export const GeoNoticeLoader = styled(Loader).attrs({ size: 'small' })`
   flex: 0 0 auto;
 `;
+
+// stands in for CardCta, so it keeps that slot's top margin; the notice itself
+// stays under the card's overlay link (the card must remain clickable), only
+// the Terms of Service link is lifted above it
+export const VaultCardGeoNoticeWrapper = styled.div`
+  margin-top: 32px;
+
+  a {
+    position: relative;
+    z-index: 20;
+  }
+`;
