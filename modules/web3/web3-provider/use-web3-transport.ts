@@ -9,7 +9,6 @@ import {
   custom,
   hexToNumber,
   Chain,
-  UnsupportedProviderMethodError,
   InvalidParamsRpcError,
   isAddressEqual,
   getAddress,
@@ -22,104 +21,111 @@ import { providersStore } from 'reef-knot/core-react';
 
 // We disable those methods so wagmi uses getLogs instead to watch events
 // Filters are not suitable for public rpc and break when changing between fallbacks
-const DISABLED_METHODS = new Set([
+const DISABLED_METHODS = [
   'eth_newFilter',
   'eth_getFilterChanges',
   'eth_uninstallFilter',
-]);
+];
 
-// Viem transport wrapper that allows runtime changes via setter
+// rejects eth_getLogs requests without address before they reach an RPC,
+// public nodes choke on such block-wide scans
+const assertGetLogsHasAddress = (requestParams: {
+  method: string;
+  params?: unknown;
+}) => {
+  if (
+    requestParams.method !== 'eth_getLogs' ||
+    !Array.isArray(requestParams.params)
+  ) {
+    return;
+  }
+
+  const [filter] = requestParams.params as [
+    { address?: string | string[] } | undefined,
+  ];
+  // works for empty array, empty string and all falsish values
+  if (!filter?.address?.length) {
+    console.warn(
+      '[runtimeMutableTransport] rejected eth_getLogs without address',
+      requestParams,
+    );
+    throw new InvalidParamsRpcError(
+      new Error(`Empty address for eth_getLogs is not supported`),
+    );
+  }
+};
+
+// Viem transport wrapper that delegates requests to a wallet-first fallback
+// stack when a wallet provider is set at runtime via setter,
+// or to the default stack otherwise
 const runtimeMutableTransport = (
   mainTransports: Transport[],
 ): [Transport, (t: Transport | null) => void] => {
-  let withInjectedTransport: Transport | null = null;
+  let injectedTransport: Transport | null = null;
 
-  // tuple [RuntimeMutableTransport(), injectedTransporterSetter()]
+  // tuple [RuntimeMutableTransport(), injectedTransportSetter()]
   return [
     (params) => {
-      const defaultTransport = fallback(mainTransports)(params);
-      let externalOnResponse: OnResponseFn;
+      let externalOnResponse: OnResponseFn | undefined;
 
-      const onResponse: OnResponseFn = (params) => {
-        if (params.status === 'error' && !(params as any).skipLog) {
-          console.warn(
-            `[runtimeMutableTransport] error in RuntimeMutableTransport(using injected: ${!!withInjectedTransport})`,
-            params,
-          );
+      const instantiate = (transports: Transport[], withInjected: boolean) => {
+        const instance = fallback(transports)(params);
+        instance.value?.onResponse((response: Parameters<OnResponseFn>[0]) => {
+          if (response.status === 'error') {
+            console.warn(
+              `[runtimeMutableTransport] error in RuntimeMutableTransport(using injected: ${withInjected})`,
+              response,
+            );
+          }
+          externalOnResponse?.(response);
+        });
+        return instance;
+      };
+
+      const defaultInstance = instantiate(mainTransports, false);
+
+      // the wallet-first stack is memoized and rebuilt only when the setter
+      // delivers another transport — connection changes are much rarer than requests
+      let currentInjected: Transport | null = null;
+      let injectedInstance: ReturnType<Transport> | null = null;
+
+      const getActiveInstance = () => {
+        if (injectedTransport !== currentInjected) {
+          currentInjected = injectedTransport;
+          injectedInstance = currentInjected
+            ? instantiate([currentInjected, ...mainTransports], true)
+            : null;
         }
-        externalOnResponse?.(params);
+        return injectedInstance ?? defaultInstance;
       };
 
       return createTransport(
         {
           key: 'RuntimeMutableTransport',
           name: 'RuntimeMutableTransport',
-          //@ts-expect-error invalid typings
+          // retries are handled by the fallback stacks inside
+          retryCount: 0,
+          methods: { exclude: DISABLED_METHODS },
+          //@ts-expect-error viem cannot assign a concrete implementation to the generic EIP1193RequestFn
           async request(requestParams, options) {
-            const transport = withInjectedTransport
-              ? withInjectedTransport(params)
-              : defaultTransport;
-
-            if (DISABLED_METHODS.has(requestParams.method)) {
-              const error = new UnsupportedProviderMethodError(
-                new Error(`Method ${requestParams.method} is not supported`),
-              );
-              onResponse({
-                error,
-                method: requestParams.method,
-                params: params as unknown[],
-                transport,
-                status: 'error',
-                // skip logging because we expect wagmi to try those
-                skipLog: true,
-              } as any);
-              throw error;
-            }
-
-            if (
-              requestParams.method === 'eth_getLogs' &&
-              Array.isArray(requestParams?.params) &&
-              // works for empty array, empty string and all falsish values
-              !requestParams.params[0]?.address?.length
-            ) {
-              const error = new InvalidParamsRpcError(
-                new Error(`Empty address for eth_getLogs is not supported`),
-              );
-              onResponse({
-                error,
-                method: requestParams.method,
-                params: params as unknown[],
-                transport,
-                status: 'error',
-              });
-              throw error;
-            }
-
-            transport.value?.onResponse(onResponse);
-            return transport.request(requestParams, options);
+            assertGetLogsHasAddress(requestParams);
+            return getActiveInstance().request(requestParams, options);
           },
           // crucial cause we quack like a fallback transport and some connectors(WC) rely on this
           type: 'fallback',
         },
         // transport.value contents
         {
-          // this is fallbackTransport specific field, used by WC connectors to extract rpc Urls
-          // we can use defaultTransport because no injected transport
-          transports: defaultTransport.value?.transports,
-          // providers that use this transport, use this to set onResponse callback for transport,
+          // this is fallbackTransport specific field, used by WC connectors to extract rpc Urls,
+          // we expose the default stack so they get our backend RPC first
+          transports: defaultInstance.value?.transports,
+          // part of the fallback transport interface we quack
           onResponse: (fn: OnResponseFn) => (externalOnResponse = fn),
         },
       );
     },
-    (injectedTransport: Transport | null) => {
-      if (injectedTransport) {
-        withInjectedTransport = fallback([
-          injectedTransport,
-          ...mainTransports,
-        ]);
-      } else {
-        withInjectedTransport = null;
-      }
+    (transport: Transport | null) => {
+      injectedTransport = transport;
     },
   ];
 };
