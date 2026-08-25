@@ -3366,16 +3366,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/lido-app-ui@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "@lidofinance/lido-app-ui@npm:1.1.1"
+"@lidofinance/lido-app-ui@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@lidofinance/lido-app-ui@npm:1.1.2"
   dependencies:
     "@lidofinance/lido-shared-ui": "npm:^1.1.2"
     classnames: "npm:2.5.1"
   peerDependencies:
     react: ^18
     react-dom: ^18
-  checksum: 10c0/339011b75e5fdbb35a90662ab66b5c2ec3c94a878729901f50f38b825f2057fe86c39046c3675d83b25a07bc7736c72ad369bf2be565848fd9440c009d33821a
+  checksum: 10c0/cc8e0082de4003213a018338654525a4c87c5a7f429eeb7a48d54c722d68a0da1ce2988c03b28d1f16a23d1b1fe3638a99de523621f65e00adab1dc0fa52cee3
   languageName: node
   linkType: hard
 
@@ -11979,7 +11979,7 @@ __metadata:
     "@lidofinance/api-rpc": "npm:^0.48.0"
     "@lidofinance/eth-api-providers": "npm:^0.48.0"
     "@lidofinance/eth-providers": "npm:^0.48.0"
-    "@lidofinance/lido-app-ui": "npm:^1.1.1"
+    "@lidofinance/lido-app-ui": "npm:^1.1.2"
     "@lidofinance/lido-ethereum-sdk": "npm:4.8.0"
     "@lidofinance/lido-ui": "npm:^3.42.1"
     "@lidofinance/next-api-wrapper": "npm:^0.48.0"
