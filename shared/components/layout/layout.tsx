@@ -1,5 +1,6 @@
 import { ReactNode, FC, PropsWithChildren } from 'react';
-import { ContainerProps } from '@lidofinance/lido-ui';
+import { TestEnvBanner } from '@lidofinance/lido-app-ui';
+import type { ContainerProps } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 
@@ -29,6 +30,7 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
 
   return (
     <>
+      {!config.isProd && <TestEnvBanner />}
       <Header />
       <Main size={containerSize}>
         {config.ipfsMode && (

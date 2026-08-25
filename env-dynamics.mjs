@@ -16,6 +16,9 @@ const toBoolean = (val) => {
 };
 
 /** @type boolean */
+export const isProd = toBoolean(process.env.IS_PROD);
+
+/** @type boolean */
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
 /** @type string */
