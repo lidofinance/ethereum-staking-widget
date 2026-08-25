@@ -11,6 +11,8 @@ import {
   Chain,
   UnsupportedProviderMethodError,
   InvalidParamsRpcError,
+  isAddressEqual,
+  getAddress,
 } from 'viem';
 
 import type { OnResponseFn } from 'viem/_types/clients/transports/fallback';
@@ -144,10 +146,13 @@ const getMetaMaskInjectedProvider = async (
       provider.request({ method: 'eth_accounts' }),
       provider.request({ method: 'eth_chainId' }),
     ]);
-    const activeAccount = connection.accounts[0]?.toLowerCase();
+    const activeAccount =
+      connection.accounts[0] && getAddress(connection.accounts[0]);
     return activeAccount &&
       hexToNumber(chainId) === connection.chainId &&
-      accounts.some((account) => account.toLowerCase() === activeAccount)
+      accounts.some((account) =>
+        isAddressEqual(getAddress(account), activeAccount),
+      )
       ? provider
       : null;
   } catch {
