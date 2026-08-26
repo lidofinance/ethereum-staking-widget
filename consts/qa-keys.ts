@@ -222,4 +222,15 @@ export const QA_MOCK_GROUPS: QaMockGroup[] = [
       },
     ],
   },
+  {
+    title: 'Testing environment banner',
+    mocks: [
+      {
+        key: QA_KEYS.testEnvBanner,
+        label: 'Testing environment banner',
+        description: 'Indicates if the testing environment banner is shown',
+        type: 'boolean',
+      },
+    ],
+  },
 ];
