@@ -24,19 +24,13 @@ const projectAliases = [
   replacement: resolve(projectRoot, dirName),
 }));
 
-// Same shims the Vite build uses (vite.config.ts) — tests exercising
-// `config/*` reach `next/config` etc. through them, so the old
-// vitest.setup.ts mock is gone.
-const nextShims = ['router', 'link', 'head', 'config', 'dynamic', 'app'].map(
-  (mod) => ({
-    find: new RegExp(`^next/${mod}(\\.js)?$`),
-    replacement: resolve(
-      projectRoot,
-      'shims',
-      `next-${mod}.${mod === 'app' ? 'ts' : 'tsx'}`,
-    ),
-  }),
-);
+// Same shims the Vite build uses (vite.config.ts) — kept only for
+// dependency-side specifiers (e.g. `next/link.js` in @lidofinance/lido-ui);
+// app code imports react-router / react-helmet-async directly.
+const nextShims = ['router', 'link', 'head'].map((mod) => ({
+  find: new RegExp(`^next/${mod}(\\.js)?$`),
+  replacement: resolve(projectRoot, 'shims', `next-${mod}.tsx`),
+}));
 
 export default defineConfig({
   plugins: [react()],
@@ -44,10 +38,6 @@ export default defineConfig({
     alias: [
       ...projectAliases,
       ...nextShims,
-      {
-        find: /^next$/,
-        replacement: resolve(projectRoot, 'shims', 'next-types.ts'),
-      },
       {
         find: 'assets',
         replacement: resolve(projectRoot, 'assets'),

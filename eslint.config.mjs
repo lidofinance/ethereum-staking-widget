@@ -254,6 +254,25 @@ export default defineConfig(
           ],
         },
       ],
+      // `next/*` resolves to compatibility shims (shims/) kept for
+      // node_modules dependencies only — app code must import react-router /
+      // react-helmet-async directly. Warning severity keeps misuses
+      // scannable via `yarn lint`; pre-commit runs --max-warnings=0, so new
+      // violations still fail there. Runtime counterpart:
+      // shims/shim-guard.ts.
+      'no-restricted-syntax': [
+        'warn',
+        {
+          selector: 'ImportDeclaration[source.value=/^next(\\u002F|$)/]',
+          message:
+            'next/* is shimmed for dependencies only — import react-router / react-helmet-async directly (see shims/shim-guard.ts).',
+        },
+        {
+          selector: 'ImportExpression[source.value=/^next(\\u002F|$)/]',
+          message:
+            'next/* is shimmed for dependencies only — import react-router / react-helmet-async directly (see shims/shim-guard.ts).',
+        },
+      ],
     },
   },
   // The api workspace imports framework-neutral repo-root modules (ABIs,

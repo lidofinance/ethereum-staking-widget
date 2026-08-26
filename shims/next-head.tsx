@@ -1,6 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import type { ReactNode } from 'react';
 
+import { warnShimUsage } from './shim-guard';
+
 /**
  * Compatibility shim for `next/head`. Resolved via Vite alias.
  *
@@ -11,5 +13,6 @@ import type { ReactNode } from 'react';
  * The `<HelmetProvider>` is mounted in `app/main.tsx`.
  */
 export default function HeadShim({ children }: { children?: ReactNode }) {
+  warnShimUsage('next/head');
   return <Helmet>{children}</Helmet>;
 }

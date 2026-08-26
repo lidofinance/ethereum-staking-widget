@@ -6,6 +6,8 @@ import {
   useSearchParams,
 } from 'react-router';
 
+import { warnShimUsage } from './shim-guard';
+
 /**
  * Compatibility shim for `next/router` so existing page/feature code can
  * keep importing `useRouter` unchanged. The shape mirrors the subset of
@@ -26,12 +28,12 @@ import {
  *   `app/router-layout.tsx` built on React Router's `useNavigation`.
  */
 
-export interface UrlObject {
+interface UrlObject {
   pathname?: string;
   query?: Record<string, string | string[] | undefined>;
 }
 
-export type Url = string | UrlObject;
+type Url = string | UrlObject;
 
 const buildUrl = (url: Url): string => {
   if (typeof url === 'string') return url;
@@ -50,7 +52,7 @@ const buildUrl = (url: Url): string => {
   return qs ? `${path}?${qs}` : path;
 };
 
-export interface RouterShim {
+interface RouterShim {
   query: Record<string, string | string[] | undefined>;
   /**
    * Shim extension (not in NextRouter): search params only, WITHOUT route
@@ -70,6 +72,7 @@ export interface RouterShim {
 }
 
 export const useRouter = (): RouterShim => {
+  warnShimUsage('next/router');
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();

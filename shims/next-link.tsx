@@ -1,7 +1,15 @@
 import { forwardRef, type AnchorHTMLAttributes, type ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router';
 
-import type { Url } from './next-router';
+import { warnShimUsage } from './shim-guard';
+
+// Mirrors the (now-internal) Url shape of shims/next-router.tsx.
+type Url =
+  | string
+  | {
+      pathname?: string;
+      query?: Record<string, string | string[] | undefined>;
+    };
 
 /**
  * Compatibility shim for `next/link` (and the `next/link.js` specifier used
@@ -61,6 +69,7 @@ const NextLinkShim = forwardRef<HTMLAnchorElement, LinkProps>(
     },
     ref,
   ) => {
+    warnShimUsage('next/link');
     return (
       <RouterLink to={buildPath(href)} replace={replace} ref={ref} {...rest}>
         {children}
