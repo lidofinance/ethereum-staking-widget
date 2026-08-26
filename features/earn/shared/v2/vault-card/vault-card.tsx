@@ -22,7 +22,7 @@ import {
   TitleTextStyled,
   VaultWarning,
 } from './styles';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 import { EARN_PATH } from 'consts/urls';
 import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 import { FormatPercent } from 'shared/formatters/format-percent';
@@ -102,7 +102,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   return (
     <CardWrapper $variant={variant} data-testid={`${urlSlug}-vault-card`}>
       <CardOverlayLink
-        as={LocalLink}
+        as={Link}
         href={depositHref}
         onClick={depositLinkCallback}
         data-testid="open-vault-btn"
@@ -208,11 +208,11 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       </CardStats>
       {warning && <VaultWarning>{warning}</VaultWarning>}
       <CardCta data-testid="vault-button">
-        <LocalLink href={depositHref} onClick={depositLinkCallback}>
+        <Link href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}
           </Button>
-        </LocalLink>
+        </Link>
       </CardCta>
     </CardWrapper>
   );

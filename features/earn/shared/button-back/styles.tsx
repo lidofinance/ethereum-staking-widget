@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 import ChevronLeft from 'assets/icons/chevron-left.svg?react';
 
-export const LocalLinkStyled = styled(LocalLink)`
+export const LinkStyled = styled(Link)`
   display: inline-flex;
   text-decoration: none;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;

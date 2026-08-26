@@ -1,6 +1,6 @@
 import { Box, Button } from '@lidofinance/lido-ui';
 import { HOME_PATH } from 'consts/urls';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 
 type ErrorBlockNoStethProps = {
   hasSteth?: boolean;
@@ -23,13 +23,13 @@ export const ErrorBlockNoSteth = ({ hasSteth }: ErrorBlockNoStethProps) => {
       <Box textAlign="center" pb="12px">
         {text}
       </Box>
-      <LocalLink href={HOME_PATH}>
+      <Link href={HOME_PATH}>
         {!hasSteth && (
           <Box>
             <Button size={'xs'}>Stake now</Button>
           </Box>
         )}
-      </LocalLink>
+      </Link>
     </Box>
   );
 };

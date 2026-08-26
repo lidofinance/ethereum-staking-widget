@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { Button, Link } from '@lidofinance/lido-ui';
+import { Button, Link as OuterLink } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { Drawer } from 'shared/components/drawer';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
@@ -30,7 +30,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({
     footer={
       <>
         {!shouldHideUpgradeNowButton && (
-          <LocalLink href={ETH_DEPOSIT_PATH}>
+          <Link href={ETH_DEPOSIT_PATH}>
             <Button
               fullwidth
               onClick={() => {
@@ -42,9 +42,9 @@ export const DrawerRight: FC<DrawerRightProps> = ({
             >
               Upgrade now
             </Button>
-          </LocalLink>
+          </Link>
         )}
-        <Link href={`${config.helpOrigin}/en`} target="_blank">
+        <OuterLink href={`${config.helpOrigin}/en`} target="_blank">
           <Button
             fullwidth
             variant="outlined"
@@ -57,7 +57,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({
           >
             Get in touch
           </Button>
-        </Link>
+        </OuterLink>
       </>
     }
   >
@@ -80,7 +80,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({
     <DrawerRightText data-testid="mellow-points-text">
       All accumulated Mellow points, as well as Obol and SSV rewards, remain
       yours. Your Mellow points balance is visible on the{' '}
-      <Link
+      <OuterLink
         href="https://app.mellow.finance/dashboard"
         target="_blank"
         onClick={() => {
@@ -90,15 +90,18 @@ export const DrawerRight: FC<DrawerRightProps> = ({
         }}
       >
         Mellow Dashboard
-      </Link>
+      </OuterLink>
       . Obol rewards can be claimed{' '}
-      <Link href="https://launchpad.obol.org/cluster/list/" target="_blank">
+      <OuterLink
+        href="https://launchpad.obol.org/cluster/list/"
+        target="_blank"
+      >
         here
-      </Link>
+      </OuterLink>
       , and SSV rewards can be claimed{' '}
-      <Link href="https://www.ssvrewards.com/" target="_blank">
+      <OuterLink href="https://www.ssvrewards.com/" target="_blank">
         here
-      </Link>
+      </OuterLink>
       .
     </DrawerRightText>
   </Drawer>
