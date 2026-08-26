@@ -1,5 +1,5 @@
 import { useParams } from 'react-router';
-import Head from 'next/head';
+import { Helmet } from 'react-helmet-async';
 
 import { Layout } from 'shared/components';
 import { Withdrawals } from 'features/withdrawals';
@@ -20,9 +20,9 @@ export default function WithdrawalsPage() {
       title="Withdrawals"
       subtitle="Request stETH/wstETH withdrawal and claim ETH"
     >
-      <Head>
+      <Helmet>
         <title>Withdrawals | Lido</title>
-      </Head>
+      </Helmet>
       <Withdrawals mode={mode} />
     </Layout>
   );

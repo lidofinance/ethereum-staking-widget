@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import { Helmet } from 'react-helmet-async';
 
 import { Layout } from 'shared/components';
 import { EarnVaultsList } from 'features/earn';
@@ -11,10 +11,10 @@ const PAGE_DESCRIPTION =
 export default function EarnPage() {
   return (
     <Layout stylesV2 title={PAGE_TITLE}>
-      <Head>
+      <Helmet>
         <title>{`${PAGE_TITLE} | Lido`}</title>
         <meta name="description" content={PAGE_DESCRIPTION} />
-      </Head>
+      </Helmet>
       <EarnVaultsList />
     </Layout>
   );

@@ -1,5 +1,5 @@
 import { useParams } from 'react-router';
-import Head from 'next/head';
+import { Helmet } from 'react-helmet-async';
 
 import { Layout } from 'shared/components';
 import { VaultPageDVV, VaultPageGGV, VaultPageSTG } from 'features/earn';
@@ -48,13 +48,13 @@ const VaultActionPage = ({
 
   return (
     <Layout containerSize={containerSize}>
-      <Head>
+      <Helmet>
         <title>{`${vaultTitle} ${action} | Earn | Lido`}</title>
         <meta
           name="description"
           content={`${vaultTitle} vault ${action} on Lido`}
         />
-      </Head>
+      </Helmet>
 
       <VaultPage action={action} />
     </Layout>

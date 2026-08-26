@@ -1,5 +1,5 @@
 import { useParams } from 'react-router';
-import Head from 'next/head';
+import { Helmet } from 'react-helmet-async';
 
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
@@ -24,9 +24,9 @@ export default function WrapPage() {
         title="Wrap & Unwrap"
         subtitle="Stable-balance stETH wrapper for DeFi"
       >
-        <Head>
+        <Helmet>
           <title>Wrap | Lido</title>
-        </Head>
+        </Helmet>
         <WrapUnwrapTabs mode={mode === 'unwrap' ? 'unwrap' : 'wrap'} />
         <DisclaimerSection>
           <LegalDisclaimer />

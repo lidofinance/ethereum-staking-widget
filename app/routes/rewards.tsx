@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import { Helmet } from 'react-helmet-async';
 
 import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
@@ -18,14 +18,14 @@ export default function RewardsPage() {
       subtitle="Track your Ethereum staking rewards with Lido"
       containerSize="content"
     >
-      <Head>
+      <Helmet>
         <title>Track your Ethereum staking rewards | Lido</title>
         <meta
           name="description"
           content="Keep track of your daily Ethereum staking rewards using our stETH
         reward tracker. View stETH balances, historical rewards and transfers."
         />
-      </Head>
+      </Helmet>
 
       <RewardsHistoryProvider>
         <TopCard />

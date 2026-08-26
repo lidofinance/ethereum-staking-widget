@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import { Helmet } from 'react-helmet-async';
 import { ServicePage } from '@lidofinance/lido-ui';
 
 /**
@@ -10,9 +10,9 @@ import { ServicePage } from '@lidofinance/lido-ui';
 export default function NotFoundPage() {
   return (
     <ServicePage title="404">
-      <Head>
+      <Helmet>
         <title>Lido | Page Not Found</title>
-      </Head>
+      </Helmet>
       Page Not Found
     </ServicePage>
   );
