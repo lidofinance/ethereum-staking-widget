@@ -109,6 +109,7 @@ const normalize = (src: Record<string, unknown>): DynamicsNormalized => {
     addressApiValidationEnabled: toBoolean(get('addressApiValidationEnabled')),
     useValidationFile: toBoolean(get('useValidationFile')),
     useConfigManifestFile: toBoolean(get('useConfigManifestFile')),
+    isProd: toBoolean(get('isProd')),
   };
 
   if (

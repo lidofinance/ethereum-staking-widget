@@ -12,6 +12,7 @@ import { QaDebugGate } from 'features/qa-debug';
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient';
 import { ErrorBoundaryFallback } from 'shared/components/error-boundary';
+import '@lidofinance/lido-app-ui/index.css';
 
 nProgress.configure({ showSpinner: false });
 

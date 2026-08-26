@@ -25,6 +25,8 @@ export const DescriptionText = styled(Text).attrs({
   color: 'secondary',
 })`
   text-align: center;
+  // lets error messages carry a second line without any markup
+  white-space: pre-line;
 `;
 
 export const Description = styled.div`

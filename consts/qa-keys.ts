@@ -13,6 +13,8 @@ export const QA_KEYS = {
     'mock-qa-helpers-security-banner-is-version-unsafe',
   securityBannerIsNotVerifiable:
     'mock-qa-helpers-security-banner-is-not-verifiable',
+  // Testing environment banner (shared/components/layout/test-env-banner.tsx)
+  testEnvBanner: 'mock-qa-helpers-show-test-env-banner',
   // dual governance banner
   dgBannerEnabled: 'mock-qa-helpers-dg-banner-enabled',
   dgState: 'mock-qa-helpers-dg-state',
