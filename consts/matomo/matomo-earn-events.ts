@@ -127,6 +127,8 @@ export const enum MATOMO_EARN_EVENTS_TYPES {
   // Earn USD Withdrawal
   earnUsdWithdrawalTab = 'earnUsdWithdrawalTab',
   earnUsdWithdrawalMax = 'earnUsdWithdrawalMax',
+  earnUsdWithdrawalSelectTokenUsdc = 'earnUsdWithdrawalSelectTokenUsdc',
+  earnUsdWithdrawalSelectTokenUsdt = 'earnUsdWithdrawalSelectTokenUsdt',
   earnUsdWithdrawalStart = 'earnUsdWithdrawalStart',
   earnUsdWithdrawalFinish = 'earnUsdWithdrawalFinish',
   earnUsdWithdrawalCancel = 'earnUsdWithdrawalCancel',
@@ -645,6 +647,16 @@ export const MATOMO_EARN_EVENTS: Record<
     'Ethereum_Earn_Widget',
     'Click on "Max" in input on Withdrawal tab on Lido Earn USD',
     'eth_earn_lido_earn_usd_withdrawal_max',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalSelectTokenUsdc]: [
+    'Ethereum_Earn_Widget',
+    'Select USDC to receive on Withdrawal tab on Lido Earn USD',
+    'eth_earn_lido_earn_usd_withdrawal_select_token_usdc',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalSelectTokenUsdt]: [
+    'Ethereum_Earn_Widget',
+    'Select USDT to receive on Withdrawal tab on Lido Earn USD',
+    'eth_earn_lido_earn_usd_withdrawal_select_token_usdt',
   ],
   [MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalStart]: [
     'Ethereum_Earn_Widget',

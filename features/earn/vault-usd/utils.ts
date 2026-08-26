@@ -5,7 +5,7 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { UNIX_TIMESTAMP_SCHEMA, PERCENT_SCHEMA, APY_SCHEMA } from 'utils/zod';
 import { USD_VAULT_STATS_ORIGIN } from './consts';
 import { TokenSymbol } from 'consts/tokens';
-import { UsdDepositToken } from './types';
+import { UsdDepositToken, UsdWithdrawToken } from './types';
 import { asToken } from 'utils/as-token';
 
 export const ALLOCATION_SCHEMA = z.array(
@@ -59,4 +59,9 @@ export const fetchUsdVaultStatsApr = async () => {
 // but some functions expects UsdDepositToken which is lowercase.
 export const asUsdDepositToken = (token: TokenSymbol) => {
   return asToken<UsdDepositToken>(token);
+};
+
+// Same as asUsdDepositToken, but for the withdrawal payout token.
+export const asUsdWithdrawToken = (token: TokenSymbol) => {
+  return asToken<UsdWithdrawToken>(token);
 };
