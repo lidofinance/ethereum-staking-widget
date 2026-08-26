@@ -1,6 +1,6 @@
 import { FC, MouseEvent, useCallback } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router';
 
 import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
@@ -19,7 +19,7 @@ import type { FaqEntry } from './faq-data';
  * delegated tracking handler.
  */
 const FaqAnswer: FC<{ html: string }> = ({ html }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -28,10 +28,10 @@ const FaqAnswer: FC<{ html: string }> = ({ html }) => {
       const href = anchor?.getAttribute('href');
       if (href?.startsWith('/')) {
         event.preventDefault();
-        void router.push(href);
+        void navigate(href);
       }
     },
-    [router],
+    [navigate],
   );
 
   return (

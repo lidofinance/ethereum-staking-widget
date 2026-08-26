@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'react-router';
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
@@ -27,7 +27,7 @@ import { HeaderSettingsButton } from './header-settings-button';
 import { ThemeTogglerStyled } from './styles';
 
 const HeaderWallet: FC = () => {
-  const router = useRouter();
+  const [searchParams] = useSearchParams();
   const { rpcSettingsPageOnInfraIsEnabled } = useFeatureFlag(
     RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
   );
@@ -36,7 +36,7 @@ const HeaderWallet: FC = () => {
 
   const chainName = CHAINS[walletChainId || defaultChainId];
   const showNet = isTestnet && isDappActive;
-  const queryTheme = router?.query?.theme;
+  const queryTheme = searchParams.get('theme');
 
   const chainColor = useMemo(
     () => getChainColor(walletChainId || defaultChainId),

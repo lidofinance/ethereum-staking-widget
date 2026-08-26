@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { EARN_PATH } from 'consts/urls';
 import { useEarnState } from './use-earn-state';
 
@@ -11,12 +11,13 @@ import { useEarnState } from './use-earn-state';
  * where individual vaults are disabled but earn itself is still accessible.
  */
 export const useEarnVaultGuard = (vaultName: string) => {
-  const router = useRouter();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isVaultDisabled } = useEarnState();
 
   useEffect(() => {
-    if (!router.isReady || !isVaultDisabled(vaultName)) return;
+    if (!isVaultDisabled(vaultName)) return;
 
-    void router.push({ pathname: EARN_PATH, query: router.searchQuery });
-  }, [isVaultDisabled, vaultName, router, router.isReady]);
+    void navigate({ pathname: EARN_PATH, search: searchParams.toString() });
+  }, [isVaultDisabled, vaultName, navigate, searchParams]);
 };

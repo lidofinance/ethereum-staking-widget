@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, ReactNode } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useConfig } from 'config';
@@ -17,7 +17,8 @@ export const ExternalForbiddenRouteProvider = ({
   children: ReactNode;
 }) => {
   const [showContent, setShowContent] = useState(true);
-  const router = useRouter();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const path = useRouterPath();
   const { pages } = useConfig().externalConfig;
 
@@ -31,14 +32,14 @@ export const ExternalForbiddenRouteProvider = ({
         pages[forbiddenPath]?.shouldDisable
       ) {
         setShowContent(false);
-        // searchQuery excludes route params — they must not leak into the
+        // search params exclude route params — they must not leak into the
         // redirect query string (`/?vault=usd&action=deposit`)
-        void router
-          .push({ pathname: HOME_PATH, query: router.searchQuery })
-          .finally(() => setShowContent(true));
+        void Promise.resolve(
+          navigate({ pathname: HOME_PATH, search: searchParams.toString() }),
+        ).finally(() => setShowContent(true));
       }
     }
-  }, [pages, path, router]);
+  }, [pages, path, navigate, searchParams]);
 
   const effectDeps = useMemo(() => [pages, path], [pages, path]);
 

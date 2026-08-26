@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useRouter } from 'next/router';
+import { createSearchParams, useNavigate } from 'react-router';
 
 /**
  * Historically these hooks prefixed URLs with the IPFS hash-routing base
@@ -9,19 +9,28 @@ import { useRouter } from 'next/router';
  * are thin wrappers kept for their call sites.
  */
 export const usePrefixedPush = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   return useCallback(
     (url: string, query?: Record<string, string>) =>
-      router.push({ pathname: url, query }),
-    [router],
+      navigate({
+        pathname: url,
+        search: query ? createSearchParams(query).toString() : '',
+      }),
+    [navigate],
   );
 };
 
 export const usePrefixedReplace = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   return useCallback(
     (url: string, query?: Record<string, string>) =>
-      router.replace({ pathname: url, query }),
-    [router],
+      navigate(
+        {
+          pathname: url,
+          search: query ? createSearchParams(query).toString() : '',
+        },
+        { replace: true },
+      ),
+    [navigate],
   );
 };
