@@ -19,6 +19,10 @@ export const GEO_LIMITED_TEXT = (
   </>
 );
 
+export const GEO_LIMITED_CARD_TEXT =
+  'This vault is not available in your region. Withdrawals remain ' +
+  'available for funds deposited earlier.';
+
 export const GEO_UNRESOLVED_TEXT =
   "We couldn't verify your region. Deposits are unavailable until we can " +
   'confirm it. Withdrawals remain available for funds deposited earlier.';
