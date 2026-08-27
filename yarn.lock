@@ -2438,16 +2438,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/lido-app-ui@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "@lidofinance/lido-app-ui@npm:1.1.2"
+"@lidofinance/lido-app-ui@npm:1.1.3":
+  version: 1.1.3
+  resolution: "@lidofinance/lido-app-ui@npm:1.1.3"
   dependencies:
-    "@lidofinance/lido-shared-ui": "npm:^1.1.2"
+    "@lidofinance/lido-shared-ui": "npm:^1.1.3"
     classnames: "npm:2.5.1"
   peerDependencies:
     react: ^18
     react-dom: ^18
-  checksum: 10c0/cc8e0082de4003213a018338654525a4c87c5a7f429eeb7a48d54c722d68a0da1ce2988c03b28d1f16a23d1b1fe3638a99de523621f65e00adab1dc0fa52cee3
+  checksum: 10c0/c5c8b249c5cd1f0cf6894c8ef8976ac5d1b8fc87516649e3291d94fc6c4b0a160520cc9c816dffa85e1ff1bf00dd60d03b83f2f33731671cadcd4eec764ac53a
   languageName: node
   linkType: hard
 
@@ -2467,13 +2467,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/lido-shared-ui@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "@lidofinance/lido-shared-ui@npm:1.1.2"
+"@lidofinance/lido-shared-ui@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "@lidofinance/lido-shared-ui@npm:1.1.3"
+  dependencies:
+    classnames: "npm:2.5.1"
+    ua-parser-js: "npm:2.0.3"
   peerDependencies:
     react: ^18
     react-dom: ^18
-  checksum: 10c0/377ae8547545006a0316c3cbe6a8d2ddcfdc9fa753db6a46cc769fe00a71c413360dfcf6e5a4b7643767357d85484afcc3e85bcb1912c74b7e8bd7e9f568a973
+  checksum: 10c0/a14c761cadfeba4fca46e31af2f8dd729cc6d948f0c551ebc69d623bfa2dc63160d97e168c47dbac8643924e6c325cca971798b8476aac8963eb2244a7578823
+  languageName: node
+  linkType: hard
+
+"@lidofinance/lido-ui@npm:3.43.0":
+  version: 3.43.0
+  resolution: "@lidofinance/lido-ui@npm:3.43.0"
+  dependencies:
+    "@styled-system/should-forward-prop": "npm:5.1.5"
+    react-collapsed: "npm:4.2.0"
+    react-jazzicon: "npm:^1.0.4"
+    react-toastify: "npm:7.0.4"
+    react-transition-group: "npm:4"
+    styled-system: "npm:5.1.5"
+    ua-parser-js: "npm:^1.0.35"
+    use-callback-ref: "npm:1.2.5"
+  peerDependencies:
+    react: 16 || 17 || 18
+    react-dom: 16 || 17 || 18
+    react-is: 16 || 17 || 18
+    styled-components: ^5.3.5
+  checksum: 10c0/dc64cf638b7884882b169a549aa09fbc8d72d940e1bd5a3ca2f3b2e3bdbb247f2f72257ab9a47c3cb778c9bcf6e57612764dddf4b6ec9580fd24443db402f589
   languageName: node
   linkType: hard
 
@@ -2495,27 +2519,6 @@ __metadata:
     react-is: 16 || 17 || 18
     styled-components: ^5.3.5
   checksum: 10c0/5094045213056ef76efec22e1887e3973a0135b48037ab09b3fa8901946ac944fe0ab1e4bbbfd4497ff4f1c18c8183c81b833ebf5090c77481aa5ed7698ac9fa
-  languageName: node
-  linkType: hard
-
-"@lidofinance/lido-ui@npm:^3.42.1":
-  version: 3.42.1
-  resolution: "@lidofinance/lido-ui@npm:3.42.1"
-  dependencies:
-    "@styled-system/should-forward-prop": "npm:5.1.5"
-    react-collapsed: "npm:4.2.0"
-    react-jazzicon: "npm:^1.0.4"
-    react-toastify: "npm:7.0.4"
-    react-transition-group: "npm:4"
-    styled-system: "npm:5.1.5"
-    ua-parser-js: "npm:^1.0.35"
-    use-callback-ref: "npm:1.2.5"
-  peerDependencies:
-    react: 16 || 17 || 18
-    react-dom: 16 || 17 || 18
-    react-is: 16 || 17 || 18
-    styled-components: ^5.3.5
-  checksum: 10c0/db39335890831dd4028eacbbb2147f06bb04c3dd1c97a7df084ca71457f7d94085b987292437039ae3e0aa98a55bf859eb19dbff75df2dcc08f9c652880d845a
   languageName: node
   linkType: hard
 
@@ -5012,6 +5015,16 @@ __metadata:
   version: 0.7.34
   resolution: "@types/ms@npm:0.7.34"
   checksum: 10c0/ac80bd90012116ceb2d188fde62d96830ca847823e8ca71255616bc73991aa7d9f057b8bfab79e8ee44ffefb031ddd1bcce63ea82f9e66f7c31ec02d2d823ccc
+  languageName: node
+  linkType: hard
+
+"@types/node-fetch@npm:^2.6.12":
+  version: 2.6.13
+  resolution: "@types/node-fetch@npm:2.6.13"
+  dependencies:
+    "@types/node": "npm:*"
+    form-data: "npm:^4.0.4"
+  checksum: 10c0/6313c89f62c50bd0513a6839cdff0a06727ac5495ccbb2eeda51bb2bbbc4f3c0a76c0393a491b7610af703d3d2deb6cf60e37e59c81ceeca803ffde745dbf309
   languageName: node
   linkType: hard
 
@@ -7818,6 +7831,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"detect-europe-js@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "detect-europe-js@npm:0.1.2"
+  checksum: 10c0/46fccf2a9ddeec8ecb7a369be1452f84856cbd0ccdeb3c47e41fe6c9d69f63d6bd75f91b5aa1ae310e56d8fbcbff0e802b1504cdcc3a92f3327c94408e6d07a2
+  languageName: node
+  linkType: hard
+
 "detect-indent@npm:^7.0.2":
   version: 7.0.2
   resolution: "detect-indent@npm:7.0.2"
@@ -9281,7 +9301,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.0":
+"form-data@npm:^4.0.0, form-data@npm:^4.0.4":
   version: 4.0.6
   resolution: "form-data@npm:4.0.6"
   dependencies:
@@ -10471,6 +10491,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-standalone-pwa@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "is-standalone-pwa@npm:0.1.1"
+  checksum: 10c0/af1a11edef4a8f00c24014576285070fb73eebb3583cae790c0a825e338e19f05048a26e5fd5ef10f6056032d6a4520054ff824532c15df784933c0fcc5e13fd
+  languageName: node
+  linkType: hard
+
 "is-stream@npm:^2.0.0":
   version: 2.0.1
   resolution: "is-stream@npm:2.0.1"
@@ -11101,9 +11128,9 @@ __metadata:
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:9.39.5"
     "@lidofinance/analytics-matomo": "npm:^0.61.0"
-    "@lidofinance/lido-app-ui": "npm:^1.1.2"
+    "@lidofinance/lido-app-ui": "npm:1.1.3"
     "@lidofinance/lido-ethereum-sdk": "npm:4.8.0"
-    "@lidofinance/lido-ui": "npm:^3.42.1"
+    "@lidofinance/lido-ui": "npm:3.43.0"
     "@lidofinance/rpc": "npm:^0.48.0"
     "@metamask/connect-evm": "npm:2.1.1"
     "@playwright/test": "npm:1.61.1"
@@ -14780,10 +14807,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ua-is-frozen@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "ua-is-frozen@npm:0.1.2"
+  checksum: 10c0/fb41929bd4924c9676391e6d7197d30580749a96697a83c8b6e77fb137e3ff8492dcd1e6f871f6a9517848651a93af37bfefb25385f16d90e19678ade22d30b7
+  languageName: node
+  linkType: hard
+
 "ua-parser-js@npm:1.0.37, ua-parser-js@npm:^1.0.35":
   version: 1.0.37
   resolution: "ua-parser-js@npm:1.0.37"
   checksum: 10c0/dac8cf82a55b2e097bd2286954e01454c4cfcf23c9d9b56961ce94bda3cec5a38ca536e6e84c20a4000a9d4b4a4abcbd98ec634ccebe21be36595ea3069126e4
+  languageName: node
+  linkType: hard
+
+"ua-parser-js@npm:2.0.3":
+  version: 2.0.3
+  resolution: "ua-parser-js@npm:2.0.3"
+  dependencies:
+    "@types/node-fetch": "npm:^2.6.12"
+    detect-europe-js: "npm:^0.1.2"
+    is-standalone-pwa: "npm:^0.1.1"
+    node-fetch: "npm:^2.7.0"
+    ua-is-frozen: "npm:^0.1.2"
+  bin:
+    ua-parser-js: script/cli.js
+  checksum: 10c0/0fd098a19c11ecddf35f65a9a86a44e4d6147fbed4ad1813d0142c55d305ba2220f41b48c5a60f082552ff4a93bbb5edb1b24de0af45271d1735b63794fef1e0
   languageName: node
   linkType: hard
 

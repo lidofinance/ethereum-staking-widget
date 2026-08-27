@@ -39,12 +39,6 @@
       "@lidofinance/lido-ui": [
         "./node_modules/@lidofinance/lido-ui/dist/types/index.d.ts"
       ],
-      // lido-app-ui ships types but its package.json `exports` map has no
-      // `types` condition, so `bundler` resolution can't see them. Remove
-      // once the upstream fix (lidofinance/ui) is released.
-      "@lidofinance/lido-app-ui": [
-        "./node_modules/@lidofinance/lido-app-ui/dist/types/index.d.ts"
-      ],
       "@lidofinance/analytics-matomo": [
         "./node_modules/@lidofinance/analytics-matomo/dist/index.d.ts"
       ],
