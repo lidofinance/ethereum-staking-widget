@@ -6,7 +6,7 @@ type GeoNoticeProps = {
   showLimitedNotice?: boolean;
 };
 
-export const GeoNotice = ({ showLimitedNotice = false }: GeoNoticeProps) => {
+export const GeoNotice = ({ showLimitedNotice = true }: GeoNoticeProps) => {
   const state = useGeoNoticeState(showLimitedNotice);
 
   if (!state) return null;

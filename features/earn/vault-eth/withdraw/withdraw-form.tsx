@@ -8,7 +8,6 @@ import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
 import { VaultWithdrawWarning } from 'features/earn/shared/v2/vault-warning/vault-withdraw-warning';
-import { GeoNotice } from 'features/earn/shared/v2/geo-notice';
 import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
 
 import { EthVaultWithdrawFormProvider } from './form-context';
@@ -29,7 +28,6 @@ const EthVaultWithdrawFormContent: FC = () => {
     <>
       <UpgradeAssetsBlock />
       <BlockSidePanel>
-        <GeoNotice />
         <ActionSwitch isWithdraw />
         <VaultForm data-testid="withdraw-form">
           <VaultWithdrawWarning

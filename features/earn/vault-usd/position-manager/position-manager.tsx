@@ -34,7 +34,7 @@ export const UsdVaultPositionManager: FC<{
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
   return (
     <BlockSidePanel>
-      <GeoNotice showLimitedNotice={isDeposit} />
+      {isDeposit && <GeoNotice />}
       <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
       {isDeposit && <UsdVaultDepositForm />}
       {isWithdraw && <UsdVaultWithdrawForm />}

@@ -25,7 +25,7 @@ export const EthVaultDepositForm: FC = () => {
     <EthDepositFormProvider>
       <UpgradeAssetsBlock />
       <BlockSidePanel>
-        <GeoNotice showLimitedNotice />
+        <GeoNotice />
         <ActionSwitch />
         <VaultForm data-testid="deposit-form">
           <VaultDepositWarning
