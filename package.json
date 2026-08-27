@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "^4.3.6",
-    "@cowprotocol/widget-react": "3.2.0",
+    "@cowprotocol/widget-react": "3.2.5",
     "@lidofinance/analytics-matomo": "^0.61.0",
     "@lidofinance/api-metrics": "^0.48.0",
     "@lidofinance/api-rpc": "^0.48.0",

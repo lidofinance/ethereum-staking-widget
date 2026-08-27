@@ -2009,17 +2009,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cowprotocol/cow-sdk@npm:9.2.2":
-  version: 9.2.2
-  resolution: "@cowprotocol/cow-sdk@npm:9.2.2"
+"@cowprotocol/cow-sdk@npm:9.2.6":
+  version: 9.2.6
+  resolution: "@cowprotocol/cow-sdk@npm:9.2.6"
   dependencies:
-    "@cowprotocol/sdk-app-data": "npm:5.3.1"
-    "@cowprotocol/sdk-common": "npm:0.12.0"
-    "@cowprotocol/sdk-config": "npm:2.3.1"
-    "@cowprotocol/sdk-contracts-ts": "npm:3.2.1"
-    "@cowprotocol/sdk-order-book": "npm:4.0.1"
-    "@cowprotocol/sdk-order-signing": "npm:1.1.2"
-    "@cowprotocol/sdk-trading": "npm:2.2.2"
+    "@cowprotocol/sdk-app-data": "npm:5.3.3"
+    "@cowprotocol/sdk-common": "npm:0.12.1"
+    "@cowprotocol/sdk-config": "npm:2.4.0"
+    "@cowprotocol/sdk-contracts-ts": "npm:3.3.3"
+    "@cowprotocol/sdk-order-book": "npm:4.0.2"
+    "@cowprotocol/sdk-order-signing": "npm:1.1.6"
+    "@cowprotocol/sdk-trading": "npm:2.2.6"
   peerDependencies:
     "@openzeppelin/merkle-tree": ^1.x
     cross-fetch: ^3.x
@@ -2031,46 +2031,46 @@ __metadata:
       optional: false
     multiformats:
       optional: true
-  checksum: 10c0/a8bb2cabea3a451123d2944190fe4924c2317e546a86b67bb4c59ea45dce9a7126d8bccc0e3bc09058efa1636f773db2bd04ff1a1796de55d0600ee3a89c8beb
+  checksum: 10c0/4fb78f79ca27e9ccfcca44683d5c68308c82f9d2e4e401a1abc94e91b33f17be208fdd64769abdad7005f3e70c2ba5d9297c5fc4a27534455ce84a7953b307b1
   languageName: node
   linkType: hard
 
-"@cowprotocol/currency@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@cowprotocol/currency@npm:1.2.1"
+"@cowprotocol/currency@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@cowprotocol/currency@npm:1.3.0"
   dependencies:
-    "@cowprotocol/cow-sdk": "npm:9.2.2"
+    "@cowprotocol/cow-sdk": "npm:9.2.6"
     jsbi: "npm:3.2.5"
-  checksum: 10c0/5eba12a079b5c5960c83eec2c26ab257b7f833985acd1e7d15e8e865b21c67ed26f753a4b471c28cdd749e5a6d2f4ee38d3796b8ccc69f8af82d413ad0c2e4ff
+  checksum: 10c0/ca108553c1e490a6862bd64b53e6d77fe3ea7056c1e6715438ece486a6b5f514bbcdd9b67a1e555408e1a7e1847bd11a5c991163c8b018ef24726fc9e8f25953
   languageName: node
   linkType: hard
 
-"@cowprotocol/events@npm:^4.7.1":
-  version: 4.7.1
-  resolution: "@cowprotocol/events@npm:4.7.1"
+"@cowprotocol/events@npm:^4.10.0":
+  version: 4.10.0
+  resolution: "@cowprotocol/events@npm:4.10.0"
   dependencies:
-    "@cowprotocol/cow-sdk": "npm:9.2.2"
-    "@cowprotocol/sdk-bridging": "npm:4.2.2"
-    "@cowprotocol/types": "npm:^4.5.1"
-  checksum: 10c0/2253a8ad225cb22897b4c5d6ca9fa9f39f27caa4b6c746b2bce69ae1046d7ea425d61412e51d9e932d8fdc38febfbaded0b8be77ce4f6756780992aba5dd30d9
+    "@cowprotocol/cow-sdk": "npm:9.2.6"
+    "@cowprotocol/sdk-bridging": "npm:4.4.2"
+    "@cowprotocol/types": "npm:^4.8.0"
+  checksum: 10c0/362446f3df73a6ecf9f2d0a7b52d882de8540bb733b061dc8b8d2b1496f05b1b07fc59bf4299336c75b66c58958c5f992e024c67346c4f81f79546928d6d17ae
   languageName: node
   linkType: hard
 
-"@cowprotocol/iframe-transport@npm:^2.3.2":
-  version: 2.3.2
-  resolution: "@cowprotocol/iframe-transport@npm:2.3.2"
+"@cowprotocol/iframe-transport@npm:^2.3.5":
+  version: 2.3.5
+  resolution: "@cowprotocol/iframe-transport@npm:2.3.5"
   dependencies:
-    "@cowprotocol/types": "npm:^4.5.1"
+    "@cowprotocol/types": "npm:^4.8.0"
     eventemitter3: "npm:4.0.7"
-  checksum: 10c0/e9ee47ee18b97c3004d3602084556e15934ba081ec87e06cff22b55c98b2945000d79909151609d0ee2e7fe9ff0eb6b8a8c9e9ce808f96508ac36c685a35a379
+  checksum: 10c0/f4c48b4e6651c251b06853fd0d91263123f5ffec74c2666054f8d9d96222f2c1bf9ea4412d02a912f166f498c66b02f3ba2f143efdd644a58f563a8761d77d1d
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-app-data@npm:5.3.1":
-  version: 5.3.1
-  resolution: "@cowprotocol/sdk-app-data@npm:5.3.1"
+"@cowprotocol/sdk-app-data@npm:5.3.3":
+  version: 5.3.3
+  resolution: "@cowprotocol/sdk-app-data@npm:5.3.3"
   dependencies:
-    "@cowprotocol/sdk-common": "npm:0.12.0"
+    "@cowprotocol/sdk-common": "npm:0.12.1"
     ajv: "npm:^8.11.0"
     cross-fetch: "npm:^3.1.5"
     ipfs-unixfs-importer: "npm:^16.1.5"
@@ -2080,151 +2080,151 @@ __metadata:
     ajv: ^8.x
     cross-fetch: ^3.x
     multiformats: ^9.x
-  checksum: 10c0/d6b8be1c6d985975fa95627fd1da9eafb8866c86d04b4f42dcdb49181a08c3a050ef84244be19108b73d16352d54ec75d715e59dbe763000c25a8a949f55d69b
+  checksum: 10c0/f8ffc117fba0780f4e8b45a76588439beb8146b2eb20a4456477495a045afb74382eeb453906901564e784c4d52da4c9d75fd9a1ae0bcaa09f9d1565348b503f
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-bridging@npm:4.2.2":
-  version: 4.2.2
-  resolution: "@cowprotocol/sdk-bridging@npm:4.2.2"
+"@cowprotocol/sdk-bridging@npm:4.4.2":
+  version: 4.4.2
+  resolution: "@cowprotocol/sdk-bridging@npm:4.4.2"
   dependencies:
-    "@cowprotocol/sdk-app-data": "npm:5.3.1"
-    "@cowprotocol/sdk-common": "npm:0.12.0"
-    "@cowprotocol/sdk-config": "npm:2.3.1"
-    "@cowprotocol/sdk-contracts-ts": "npm:3.2.1"
-    "@cowprotocol/sdk-cow-shed": "npm:0.4.1"
-    "@cowprotocol/sdk-order-book": "npm:4.0.1"
-    "@cowprotocol/sdk-trading": "npm:2.2.2"
-    "@cowprotocol/sdk-weiroll": "npm:0.2.0"
+    "@cowprotocol/sdk-app-data": "npm:5.3.3"
+    "@cowprotocol/sdk-common": "npm:0.12.1"
+    "@cowprotocol/sdk-config": "npm:2.4.0"
+    "@cowprotocol/sdk-contracts-ts": "npm:3.3.3"
+    "@cowprotocol/sdk-cow-shed": "npm:0.4.5"
+    "@cowprotocol/sdk-order-book": "npm:4.0.2"
+    "@cowprotocol/sdk-trading": "npm:2.2.6"
+    "@cowprotocol/sdk-weiroll": "npm:0.2.2"
     "@defuse-protocol/one-click-sdk-typescript": "npm:0.1.1-0.2"
     json-stable-stringify: "npm:^1.3.0"
-  checksum: 10c0/b3d59e412fdcfec244e0ef52cf49f3d2665eece4b5a3a1939aa9809b17c8d418f178689bbcb222b6aaf32cb5dc200f613128c6e2c07742d794a7589db5a2109d
+  checksum: 10c0/fba643681d5769e3ae83012d82d2f0422b19265ddb28bdc9738ac3ed8d0cc0393d8e0e4b122df1f255984d7052e2d9920bb1e8bb18747358e1b2af594822ac40
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-common@npm:0.12.0":
-  version: 0.12.0
-  resolution: "@cowprotocol/sdk-common@npm:0.12.0"
+"@cowprotocol/sdk-common@npm:0.12.1":
+  version: 0.12.1
+  resolution: "@cowprotocol/sdk-common@npm:0.12.1"
   dependencies:
-    "@cowprotocol/sdk-config": "npm:2.3.1"
-  checksum: 10c0/7707c79acfcb88ba8a52c514e579f9339acb69d89355ef0ffed3bbf316881f09d1f24a0c80afcdd0e941909e5ce6f82a14e646ee880d4c79fce03c0a0ae1b7c3
+    "@cowprotocol/sdk-config": "npm:2.4.0"
+  checksum: 10c0/9dd534ec703c79b3a89ce760b5da045cc5ad67d5d59dbb4c507b961c70775fd0632df7fae7046df52e0a510b337f045f7fcc87cd451992c36034d0b5d9e5e01f
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-config@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@cowprotocol/sdk-config@npm:2.3.1"
+"@cowprotocol/sdk-config@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@cowprotocol/sdk-config@npm:2.4.0"
   dependencies:
     exponential-backoff: "npm:^3.1.1"
     limiter: "npm:^2.1.0"
-  checksum: 10c0/fb44c2026c26be0bd3fed8087a64ca2b529e6da4b4f3033671af4a5d80a4abdf14f4035ef20b605cf2d51636772351881bda904f70d749fd4b7e42466c224acc
+  checksum: 10c0/b2bae55066a0704df93b664933b67b85f71108a9d24bf3b54b9ad0f81a00106163c34b756fa77c36549529bc37afa31e9cb2e8a6a765c2329960ab8fb87b1222
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-contracts-ts@npm:3.2.1":
-  version: 3.2.1
-  resolution: "@cowprotocol/sdk-contracts-ts@npm:3.2.1"
+"@cowprotocol/sdk-contracts-ts@npm:3.3.3":
+  version: 3.3.3
+  resolution: "@cowprotocol/sdk-contracts-ts@npm:3.3.3"
   dependencies:
-    "@cowprotocol/sdk-common": "npm:0.12.0"
-    "@cowprotocol/sdk-config": "npm:2.3.1"
-  checksum: 10c0/9fb69e313c2be088766b1199e1e3fd8e5b069395fff66499ec2ee7b4e8723e761d05983a38dc8e32cb0975762fbe9b3f28689d997c7a9feefc4ba3643b5bfb2c
+    "@cowprotocol/sdk-common": "npm:0.12.1"
+    "@cowprotocol/sdk-config": "npm:2.4.0"
+  checksum: 10c0/38920b14c647168ca7adc582b3bab276146f39ea5580ca93091702ac8cb1127fa4c6044508956931cf89d0be4d679e918f645107b42af74554d033250fe73210
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-cow-shed@npm:0.4.1":
-  version: 0.4.1
-  resolution: "@cowprotocol/sdk-cow-shed@npm:0.4.1"
+"@cowprotocol/sdk-cow-shed@npm:0.4.5":
+  version: 0.4.5
+  resolution: "@cowprotocol/sdk-cow-shed@npm:0.4.5"
   dependencies:
-    "@cowprotocol/sdk-common": "npm:0.12.0"
-    "@cowprotocol/sdk-config": "npm:2.3.1"
-    "@cowprotocol/sdk-contracts-ts": "npm:3.2.1"
-  checksum: 10c0/bc7ecb65a22eb8c13d8f67b566957e16db78598cd3b70a5c70b3c30858d109eb701f63cac10fd7f8c9227aac7d06ef002b143ee218133ddf216fe324d740c3bc
+    "@cowprotocol/sdk-common": "npm:0.12.1"
+    "@cowprotocol/sdk-config": "npm:2.4.0"
+    "@cowprotocol/sdk-contracts-ts": "npm:3.3.3"
+  checksum: 10c0/be841fa07b954a147d4d01bf9c1737a0287bda28bb62593b0ddb682007fef27b8675d7b783960732936cb182bd69683b05178af1440846f1038909f6a709223a
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-order-book@npm:4.0.1":
-  version: 4.0.1
-  resolution: "@cowprotocol/sdk-order-book@npm:4.0.1"
+"@cowprotocol/sdk-order-book@npm:4.0.2":
+  version: 4.0.2
+  resolution: "@cowprotocol/sdk-order-book@npm:4.0.2"
   dependencies:
-    "@cowprotocol/sdk-common": "npm:0.12.0"
-    "@cowprotocol/sdk-config": "npm:2.3.1"
+    "@cowprotocol/sdk-common": "npm:0.12.1"
+    "@cowprotocol/sdk-config": "npm:2.4.0"
     cross-fetch: "npm:^3.2.0"
     exponential-backoff: "npm:^3.1.2"
     limiter: "npm:^3.0.0"
-  checksum: 10c0/fcacb3a39f1a348a1ade458ef4d2c7df17387c86085ba88d838ab045646421b8dbae1497a4a603b55b2cf3a67ad1e45b14aa5956a596d68c3c84687ba20a6509
+  checksum: 10c0/0f5fdf7ff6d6194eb45f501ef7e69225c7bfaacaa1f02495db4cc42a9a5f7b6d408cbd3a8f9049ac4192de5a98ff1ed84fe070538479301a7e0e5e906d77099e
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-order-signing@npm:1.1.2":
-  version: 1.1.2
-  resolution: "@cowprotocol/sdk-order-signing@npm:1.1.2"
+"@cowprotocol/sdk-order-signing@npm:1.1.6":
+  version: 1.1.6
+  resolution: "@cowprotocol/sdk-order-signing@npm:1.1.6"
   dependencies:
-    "@cowprotocol/sdk-common": "npm:0.12.0"
-    "@cowprotocol/sdk-config": "npm:2.3.1"
-    "@cowprotocol/sdk-contracts-ts": "npm:3.2.1"
-    "@cowprotocol/sdk-order-book": "npm:4.0.1"
-  checksum: 10c0/205e1cf89331a1b37a45014143ce01f1505f718fd6cd292ef32f2509f45b54fa11bff2fd8da1bc999f0eb634e14fa995d82a6c706ee11fde47dbe6eb9f58a877
+    "@cowprotocol/sdk-common": "npm:0.12.1"
+    "@cowprotocol/sdk-config": "npm:2.4.0"
+    "@cowprotocol/sdk-contracts-ts": "npm:3.3.3"
+    "@cowprotocol/sdk-order-book": "npm:4.0.2"
+  checksum: 10c0/9156237b47cfc898f11e8bb36d5d9e5c8f100be1bab798577b10262fe81e22447b5b98e055d7bd8f3d945a67698f60c7f59b72591437493b938de5034a831ab2
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-trading@npm:2.2.2":
-  version: 2.2.2
-  resolution: "@cowprotocol/sdk-trading@npm:2.2.2"
+"@cowprotocol/sdk-trading@npm:2.2.6":
+  version: 2.2.6
+  resolution: "@cowprotocol/sdk-trading@npm:2.2.6"
   dependencies:
-    "@cowprotocol/sdk-app-data": "npm:5.3.1"
-    "@cowprotocol/sdk-common": "npm:0.12.0"
-    "@cowprotocol/sdk-config": "npm:2.3.1"
-    "@cowprotocol/sdk-contracts-ts": "npm:3.2.1"
-    "@cowprotocol/sdk-order-book": "npm:4.0.1"
-    "@cowprotocol/sdk-order-signing": "npm:1.1.2"
+    "@cowprotocol/sdk-app-data": "npm:5.3.3"
+    "@cowprotocol/sdk-common": "npm:0.12.1"
+    "@cowprotocol/sdk-config": "npm:2.4.0"
+    "@cowprotocol/sdk-contracts-ts": "npm:3.3.3"
+    "@cowprotocol/sdk-order-book": "npm:4.0.2"
+    "@cowprotocol/sdk-order-signing": "npm:1.1.6"
     deepmerge: "npm:^4.3.1"
-  checksum: 10c0/45417071a7f8a344e12bed39d8dbb133e61c798730dc7c9a3398ae90a1c62e0e789ee46482c7bf1b7b1f486a0e0a687191455a3f60b36407c1efeedc678e0941
+  checksum: 10c0/ae120bcb12ce06571ffcdde26dda5e623dc13a04b49c9bff29d47afc136211e443a588ce7a4d32487574c00368577cdbf33c437d6ac307877ac78c3eb3ddf779
   languageName: node
   linkType: hard
 
-"@cowprotocol/sdk-weiroll@npm:0.2.0":
-  version: 0.2.0
-  resolution: "@cowprotocol/sdk-weiroll@npm:0.2.0"
+"@cowprotocol/sdk-weiroll@npm:0.2.2":
+  version: 0.2.2
+  resolution: "@cowprotocol/sdk-weiroll@npm:0.2.2"
   dependencies:
-    "@cowprotocol/sdk-common": "npm:0.12.0"
-    "@cowprotocol/sdk-config": "npm:2.3.1"
-  checksum: 10c0/437a324dee18517404419b28317fd939beb66e13f1daecf711f064b422c5c6a210dacb0626cff483329847ec2f8760afcbd626b307a85359203397f4453b84fe
+    "@cowprotocol/sdk-common": "npm:0.12.1"
+    "@cowprotocol/sdk-config": "npm:2.4.0"
+  checksum: 10c0/fa9cb3d8aa9380b63844509cda4d762d2d42ea25fd0b219492262a67ec2aea3666b1d36607aef47c872be5177f5b6bd28174ba7c728820b9579ed5865c8d4877
   languageName: node
   linkType: hard
 
-"@cowprotocol/types@npm:^4.5.1":
-  version: 4.5.1
-  resolution: "@cowprotocol/types@npm:4.5.1"
+"@cowprotocol/types@npm:^4.8.0":
+  version: 4.8.0
+  resolution: "@cowprotocol/types@npm:4.8.0"
   dependencies:
-    "@cowprotocol/cow-sdk": "npm:9.2.2"
-    "@cowprotocol/currency": "npm:^1.2.1"
-    "@cowprotocol/sdk-bridging": "npm:4.2.2"
+    "@cowprotocol/cow-sdk": "npm:9.2.6"
+    "@cowprotocol/currency": "npm:^1.3.0"
+    "@cowprotocol/sdk-bridging": "npm:4.4.2"
     eventemitter3: "npm:4.0.7"
-  checksum: 10c0/62361b03c14255ff090c79e6b894b84a5dcfc4ca8c93eb353168c1e52dbc142f4f1013c8ec27a54fd6d14310f96c333849f7a68a762c936f09694022337fd278
+  checksum: 10c0/b6f9a0d13f96db9f38aefcc554758e26d99e9dafcb7993617ac0a5c4ba53cc830730250419b431a77e5ee80ad24a30071308ed0bcc838c8b85ded942d4aaed8a
   languageName: node
   linkType: hard
 
-"@cowprotocol/widget-lib@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "@cowprotocol/widget-lib@npm:4.4.0"
+"@cowprotocol/widget-lib@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "@cowprotocol/widget-lib@npm:4.5.0"
   dependencies:
-    "@cowprotocol/cow-sdk": "npm:9.2.2"
-    "@cowprotocol/events": "npm:^4.7.1"
-    "@cowprotocol/iframe-transport": "npm:^2.3.2"
-  checksum: 10c0/58ee31f9820082c8c7c53dd609842b335474cba3bdcacd7755b9d761e9b85ebff682d9743e21f48cf0f1b4e2dc6e079d50ac1a1c3d13cea9af2f91e45be81319
+    "@cowprotocol/cow-sdk": "npm:9.2.6"
+    "@cowprotocol/events": "npm:^4.10.0"
+    "@cowprotocol/iframe-transport": "npm:^2.3.5"
+  checksum: 10c0/20a7e14e7ee31de3c61144f2081ba24c69b51ac378e159b41ea9f5ad3dc2119e91dd1c059778d99726d7aedd9c8a9ef466203cf857d0e765dbacf1cd4f2a3230
   languageName: node
   linkType: hard
 
-"@cowprotocol/widget-react@npm:3.2.0":
-  version: 3.2.0
-  resolution: "@cowprotocol/widget-react@npm:3.2.0"
+"@cowprotocol/widget-react@npm:3.2.5":
+  version: 3.2.5
+  resolution: "@cowprotocol/widget-react@npm:3.2.5"
   dependencies:
-    "@cowprotocol/events": "npm:^4.7.1"
-    "@cowprotocol/types": "npm:^4.5.1"
-    "@cowprotocol/widget-lib": "npm:^4.4.0"
+    "@cowprotocol/events": "npm:^4.10.0"
+    "@cowprotocol/types": "npm:^4.8.0"
+    "@cowprotocol/widget-lib": "npm:^4.5.0"
   peerDependencies:
     react: 19.1.2
-  checksum: 10c0/278d3a3ae85df02d4f92ec8229b736d5972fec9083e4125bb067bc768c644ff120df5086ec5c0c297fd19c16a61a5dd50877351c463bfc40f544c0371dcd44f0
+  checksum: 10c0/8bbaf92d782626783f709c8a146fa917d24bf30057eaa018b4a6f95333783410e8508f6b24fccfb1d915d6202547151846b6a957b28cce9fdb7b823090f83049
   languageName: node
   linkType: hard
 
@@ -11971,7 +11971,7 @@ __metadata:
     "@commitlint/cli": "npm:20.3.1"
     "@commitlint/config-conventional": "npm:20.3.1"
     "@commitlint/prompt": "npm:20.3.1"
-    "@cowprotocol/widget-react": "npm:3.2.0"
+    "@cowprotocol/widget-react": "npm:3.2.5"
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:9.39.5"
     "@lidofinance/analytics-matomo": "npm:^0.61.0"
