@@ -40,7 +40,7 @@ export const rewardsRoute: FastifyPluginAsync = async (fastify) => {
   }
 
   const proxy = createCachedProxy({
-    proxyUrl: config.REWARDS_BACKEND + '/',
+    proxyUrl: config.REWARDS_BACKEND,
     cacheTTL: 1_000,
     allowedQueryParams: REWARDS_ALLOWED_QUERY_PARAMS,
     timeout: 10_000,
