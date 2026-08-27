@@ -27,6 +27,10 @@ export const QA_KEYS = {
     'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit',
   mellowSyncRedeemLiquidAssets:
     'mock-qa-helpers-mellow-sync-redeem-liquid-assets',
+  // geo availability — set via `window.setMockGeoCountry('US')`, which
+  // reloads the page (the geo query is immutable, a live edit would not
+  // refetch). Read in shared/hooks/use-geo-availability.ts.
+  geoCountry: 'mock-qa-helpers-geo-country',
   // CoW trade guard (overrides can only tighten protection, never relax it)
   tradeGuardLevel: 'mock-qa-helpers-trade-guard-level',
   tradeGuardOracleBlock: 'mock-qa-helpers-trade-guard-oracle-block',
@@ -48,11 +52,14 @@ export const QA_KEYS = {
 
 export type QaKey = (typeof QA_KEYS)[keyof typeof QA_KEYS];
 
-// Keys with dedicated drawer UI — intentionally absent from QA_MOCK_GROUPS.
+// Keys with dedicated UI — intentionally absent from QA_MOCK_GROUPS.
 export const QA_CUSTOM_UI_KEYS: QaKey[] = [
   QA_KEYS.matomoLogging,
   QA_KEYS.externalConfigMockEnabled,
   QA_KEYS.externalConfigMock,
+  // no drawer control: an open-ended country code with a reload-on-set
+  // contract (window.setMockGeoCountry) does not fit the descriptor types
+  QA_KEYS.geoCountry,
 ];
 
 type QaMockControl =

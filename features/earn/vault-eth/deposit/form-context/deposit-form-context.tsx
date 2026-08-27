@@ -10,6 +10,7 @@ import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-for
 import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
+import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
 
 import type {
   ETHDepositFormDataContextValue,
@@ -42,6 +43,7 @@ export const EthVaultDepositFormProvider: React.FC<{
   // Wallet state
   const { isDappActive, isWalletConnected } = useDappStatus();
   const { isEthVaultAvailable, isDepositEnabled } = useEthVaultAvailable();
+  const { isDepositGeoAvailable } = useEarnGeoGate();
 
   const {
     validationContext,
@@ -59,7 +61,8 @@ export const EthVaultDepositFormProvider: React.FC<{
     defaultValues: { amount: null, token: TOKEN_SYMBOLS.eth, referral: null },
     disabled:
       (isWalletConnected && !isDappActive) ||
-      (isEthVaultAvailable && !isDepositEnabled),
+      (isEthVaultAvailable && !isDepositEnabled) ||
+      !isDepositGeoAvailable,
     criteriaMode: 'firstError',
     mode: 'onChange',
     context: validationContext,

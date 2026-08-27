@@ -4,8 +4,7 @@ export const RequestsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: ${({ theme }) =>
-    theme.name === 'light' ? `#F6F7F8` : 'var(--lido-color-controlBg)'};
+  background-color: var(--custom-color-controlBg);
   padding: ${({ theme }) => theme.spaceMap.md}px;
   margin-bottom: ${({ theme }) => theme.spaceMap.lg}px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;

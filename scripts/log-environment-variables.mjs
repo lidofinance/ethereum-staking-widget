@@ -22,6 +22,7 @@ export const openKeys = [
   'CSP_REPORT_URI',
 
   'ENABLE_QA_HELPERS',
+  'QA_GEO_COUNTRY',
 
   'REWARDS_BACKEND',
   'VALIDATION_SERVICE_BASE_PATH',

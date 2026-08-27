@@ -76,6 +76,12 @@ export const prefillUnsafeElRpcUrls = [1, ...supportedChains].reduce(
 /** @type boolean */
 export const enableQaHelpers = toBoolean(env.ENABLE_QA_HELPERS);
 
+// QA_GEO_COUNTRY (the Cloudflare-country stand-in, see .env.example) is NOT
+// exported here: on develop it flowed through the Next runtime config to the
+// /api/geo handler, but in this build the fastify server reads it from env
+// directly (server/src/config.ts) and the SPA never uses it.
+
+/** @type string */
 export const walletconnectProjectId = env.WALLETCONNECT_PROJECT_ID;
 
 /** @type string */

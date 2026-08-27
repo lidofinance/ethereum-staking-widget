@@ -28,6 +28,7 @@ import { validationRoute } from './routes/validation.js';
 import { rpcRoute } from './routes/rpc.js';
 import { earnVaultsAprRoute } from './routes/earn-vaults-apr.js';
 import { earnVaultsTvlRoute } from './routes/earn-vaults-tvl.js';
+import { geoRoute } from './routes/geo.js';
 import { configManifestRoute } from './routes/config-manifest.js';
 
 const fastify = Fastify({
@@ -81,6 +82,7 @@ const start = async (): Promise<void> => {
   await fastify.register(rpcRoute);
   await fastify.register(earnVaultsAprRoute);
   await fastify.register(earnVaultsTvlRoute);
+  await fastify.register(geoRoute);
   await fastify.register(configManifestRoute);
 
   await fastify.listen({ host: config.HOST, port: config.PORT });

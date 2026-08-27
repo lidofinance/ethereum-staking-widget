@@ -52,10 +52,15 @@ CSP_REPORT_URI=...            # CSP violation reporting endpoint
 
 ```
 ENABLE_QA_HELPERS=true        # QA debug drawer + localStorage mocks (see testing.md)
+QA_GEO_COUNTRY=DE             # Stand-in country for /api/geo without Cloudflare
 IPFS_MODE=true                # IPFS distribution mode
 COLLECT_METRICS=true          # Enable Prometheus metrics
 RUN_STARTUP_CHECKS=true       # Health checks on startup
 ```
+
+With `ENABLE_QA_HELPERS=true` the browser console also gets
+`setMockGeoCountry('US')` — it pins the geo country per browser and outranks
+both `QA_GEO_COUNTRY` and the real Cloudflare header. No argument clears it.
 
 ### Rate limiting
 

@@ -75,6 +75,16 @@ const envSchema = z.object({
   CSP_REPORT_URI: z.string().optional(),
   CSP_REPORT_ONLY: z.string().optional(),
 
+  // QA helpers (never set in production). ENABLE_QA_HELPERS gates
+  // QA_GEO_COUNTRY, which stands in for the Cloudflare country header on
+  // stands that do not sit behind Cloudflare — see routes/geo.ts. Boolean
+  // semantics match env-dynamics.mjs `toBoolean` ('true'/'1' → true).
+  ENABLE_QA_HELPERS: z
+    .string()
+    .optional()
+    .transform((v) => v?.toLowerCase() === 'true' || v === '1'),
+  QA_GEO_COUNTRY: z.string().optional(),
+
   // Observability
   COLLECT_METRICS: z.coerce.boolean().default(true),
 

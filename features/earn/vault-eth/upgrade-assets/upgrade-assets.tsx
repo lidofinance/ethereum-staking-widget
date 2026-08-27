@@ -10,6 +10,7 @@ import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
 import { QA_KEYS } from 'consts/qa-keys';
 import { overrideWithQAMockBigInt } from 'utils/qa';
 import { useReferralQueryValue } from 'shared/hooks/use-query-values-form';
+import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
 
 import {
   UpgradeAssets,
@@ -59,6 +60,7 @@ export const UpgradeAssetsBlock: FC = () => {
   const { balances, refetchBalances } = useUpgradableTokenBalances();
   const [isUpgrading, setIsUpgrading] = useState(false);
   const referral = useReferralQueryValue();
+  const { isDepositGeoAvailable } = useEarnGeoGate();
   const { openDrawer: openDrawerRight } = useEthVaultDrawer();
 
   const { deposit } = useEthVaultDeposit();
@@ -109,7 +111,7 @@ export const UpgradeAssetsBlock: FC = () => {
     [deposit, queryClient, referral, refetchBalances],
   );
 
-  if (!isWalletConnected) return null;
+  if (!isWalletConnected || !isDepositGeoAvailable) return null;
 
   const tokensWithBalance = ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE.filter(
     (token) => {

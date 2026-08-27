@@ -31,6 +31,7 @@ import { FormatToken } from 'shared/formatters/format-token';
 import { Badge } from 'features/earn/shared/badge';
 import { getTokenDecimals } from 'utils/token-decimals';
 import { useConfig } from 'config/use-config';
+import { VaultCardGeoCta } from 'features/earn/shared/v2/geo-notice';
 import { InlineLoader } from '../../inline-loader';
 import { VaultTip } from '../../vault-tip';
 import { shouldShowApxUpdateTooltip } from '../apy-update-tooltip-text';
@@ -66,6 +67,8 @@ type VaultCardProps = {
   depositLinkCallback?: () => void;
   protectedBadgeTooltipText?: React.ReactNode;
   warning?: React.ReactNode;
+  // swaps the CTA for the geo notice while the region is unchecked or locked
+  isGeoGated?: boolean;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -80,6 +83,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   depositLinkCallback,
   protectedBadgeTooltipText,
   warning,
+  isGeoGated = false,
 }) => {
   const isDeprecated = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === urlSlug,
@@ -90,6 +94,16 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   const isMobile = useBreakpoint('md');
 
   const showApxUpdateTooltip = shouldShowApxUpdateTooltip(stats);
+
+  const cta = (
+    <CardCta data-testid="vault-button">
+      <Link href={depositHref} onClick={depositLinkCallback}>
+        <Button fullwidth variant="translucent">
+          {ctaLabel}
+        </Button>
+      </Link>
+    </CardCta>
+  );
 
   const apxValue = (
     <StatValue $accent $muted={stats.isApxStale} data-testid="apx-value">
@@ -207,13 +221,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         )}
       </CardStats>
       {warning && <VaultWarning>{warning}</VaultWarning>}
-      <CardCta data-testid="vault-button">
-        <Link href={depositHref} onClick={depositLinkCallback}>
-          <Button fullwidth variant="translucent">
-            {ctaLabel}
-          </Button>
-        </Link>
-      </CardCta>
+      {isGeoGated ? <VaultCardGeoCta>{cta}</VaultCardGeoCta> : cta}
     </CardWrapper>
   );
 };

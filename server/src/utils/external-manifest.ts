@@ -27,7 +27,7 @@ import { maskedError } from './masked-error.js';
  *
  * The schema here is intentionally loose (`config` block passed through as
  * received) — full Zod validation of the manifest lives with the frontend;
- * the server only reads `api.validation.version` and `earnVaults`.
+ * the server only reads `api.validation.version`, `earnVaults` and `geo`.
  */
 const GITHUB_RAW_MAIN_PATH =
   'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main';
@@ -50,6 +50,8 @@ export interface ManifestEarnVault {
 export interface ManifestEntryConfig {
   api?: { validation?: { version?: string } };
   earnVaults?: ManifestEarnVault[];
+  // untrusted as received; routes/geo.ts narrows it defensively
+  geo?: unknown;
   [key: string]: unknown;
 }
 
