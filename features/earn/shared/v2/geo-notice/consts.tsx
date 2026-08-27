@@ -15,7 +15,8 @@ export const GEO_LIMITED_TEXT = (
     <Link href="https://mellow.finance/Runtime-Labs-Vault-Legal-Notice.pdf">
       Terms of Service
     </Link>
-    , this vault is not available in your current region.
+    , this vault is not available in your current region. Withdrawals remain
+    available for funds deposited earlier.
   </>
 );
 
