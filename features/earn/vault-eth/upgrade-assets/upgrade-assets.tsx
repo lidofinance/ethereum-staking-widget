@@ -110,7 +110,7 @@ export const UpgradeAssetsBlock: FC = () => {
     [deposit, queryClient, referral, refetchBalances],
   );
 
-  if (!isWalletConnected) return null;
+  if (!isWalletConnected || !isDepositGeoAvailable) return null;
 
   const tokensWithBalance = ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE.filter(
     (token) => {
@@ -159,7 +159,6 @@ export const UpgradeAssetsBlock: FC = () => {
               })
             }
             loading={isUpgrading}
-            disabled={!isDepositGeoAvailable}
             data-testid="upgrade-button"
           >
             Upgrade
