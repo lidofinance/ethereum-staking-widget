@@ -3,6 +3,7 @@ import { createBrowserRouter, createHashRouter, redirect } from 'react-router';
 
 import RouterLayout from './router-layout';
 import HomePage from './routes/home';
+import { hasTrailingSlash, stripTrailingSlashLoader } from './trailing-slash';
 
 /**
  * Route table — mirrors the Next.js Pages Router surface as of the
@@ -44,6 +45,18 @@ const lazyRoute =
 export const router = createRouter([
   {
     Component: RouterLayout,
+    // `/wrap/` → `/wrap` (see app/trailing-slash.ts). A layout loader does
+    // not re-run on child navigations by itself, so ADD a trigger for URLs
+    // that need normalizing — on top of (never instead of) the default
+    // revalidation logic, which must stay intact for actions/param changes.
+    loader: stripTrailingSlashLoader,
+    shouldRevalidate: ({ nextUrl, defaultShouldRevalidate }) =>
+      defaultShouldRevalidate || hasTrailingSlash(nextUrl.pathname),
+    // a route with a loader renders this during the initial load; the served
+    // body is empty until the app mounts anyway (head-only prerender), so
+    // null changes nothing visible — it only silences the RR7 warning about
+    // a missing HydrateFallback
+    HydrateFallback: () => null,
     children: [
       { index: true, Component: HomePage },
       { path: 'wrap', lazy: lazyRoute(() => import('./routes/wrap')) },
