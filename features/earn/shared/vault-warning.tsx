@@ -50,8 +50,7 @@ const WarningContainer = styled.div<VaultWarningStyleProps>`
   ${({ variant }) =>
     variant === 'info' &&
     css`
-      background-color: ${({ theme }) =>
-        theme.name === 'light' ? `#F6F7F8` : 'var(--lido-color-controlBg)'};
+      background-color: var(--custom-color-controlBg);
     `}
 
   ${({ theme }) => theme.mediaQueries.md} {
