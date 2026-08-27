@@ -1,0 +1,31 @@
+# TEMP: to be migrated to crit-staging
+name: "[K8S] Build and push staking-widget to staging"
+
+run-name: "[K8S] Build and push staking-widget:staging to staging"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - 'test/**'
+      - '**.md'
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-push:
+    uses: lidofinance/actions/.github/workflows/k8s-build-push-harbor.yml@c7b5b6c5d8013046347d728d748fa741eb214e28
+    with:
+      tag: staging
+      registry: registry.staging.k8s-staging.org
+      registry_username: ${{ vars.REGISTRY_USERNAME }}
+      image: team-si/staking-widget
+      environment: harbor_stage_release
+      # build_context: .
+      # dockerfile: Dockerfile
+    secrets:
+      registry_token: ${{ secrets.HARBOR_STAGE_TOKEN }}

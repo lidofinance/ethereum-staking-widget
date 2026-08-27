@@ -4,7 +4,6 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 import { useLidoSDK } from 'modules/web3';
 import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
-import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 
 export type UseApproveResponse = {
   allowance?: bigint;
@@ -22,21 +21,12 @@ export const useWithdrawalApprove = (
 
   const enabled = !!(withdraw.core.chainId && account && token);
 
-  const debouncedAmount = useDebouncedValue(amount, 500);
-
   const { data, error, isLoading, isFetching, refetch } = useQuery({
-    queryKey: [
-      'use-withdrawal-approve',
-      withdraw.core.chainId,
-      account,
-      debouncedAmount.toString(),
-      token,
-    ],
+    queryKey: ['use-withdrawal-approve', withdraw.core.chainId, token],
     enabled,
     ...STRATEGY_EAGER,
     queryFn: () =>
-      withdraw.approval.checkAllowance({
-        amount: debouncedAmount,
+      withdraw.approval.getAllowance({
         account,
         token,
       }),
@@ -45,8 +35,8 @@ export const useWithdrawalApprove = (
   });
 
   return {
-    allowance: data?.allowance,
-    needsApprove: data?.needsApprove,
+    allowance: data,
+    needsApprove: data !== undefined ? data < amount : undefined,
     isLoading,
     isFetching,
     error,
