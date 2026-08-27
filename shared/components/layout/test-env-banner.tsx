@@ -4,7 +4,8 @@ import { config } from 'config';
 import NoSsrWrapper from '../no-ssr-wrapper';
 
 const showTestEnvBanner = overrideWithQAMockBoolean(
-  !config.isProd,
+  // prevents showing the banner if envs are stale and missing isProd
+  config.isProd === false,
   'mock-qa-helpers-show-test-env-banner',
 );
 
