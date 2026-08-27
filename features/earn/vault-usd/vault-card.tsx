@@ -67,6 +67,7 @@ export const UsdVaultCard = () => {
       }}
       protectedBadgeTooltipText={<ProtectedTooltip />}
       warning={<VaultListWarning warningText={listWarningText} />}
+      isGeoGated
     />
   );
 };

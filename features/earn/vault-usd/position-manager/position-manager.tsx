@@ -12,6 +12,7 @@ import {
 } from '../../consts';
 import { SwitchStyled } from './styles';
 import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
+import { GeoNotice } from 'features/earn/shared/v2/geo-notice';
 
 const routes = [
   {
@@ -33,6 +34,7 @@ export const UsdVaultPositionManager: FC<{
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
   return (
     <BlockSidePanel>
+      {isDeposit && <GeoNotice />}
       <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
       {isDeposit && <UsdVaultDepositForm />}
       {isWithdraw && <UsdVaultWithdrawForm />}
