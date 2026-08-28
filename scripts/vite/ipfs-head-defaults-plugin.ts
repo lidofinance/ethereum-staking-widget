@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { Plugin } from 'vite';
 
 import { metaTagsToHtml, pageMeta } from '../../shared/seo';
+import { WINDOW_ENV_LOADER_CSP_HASH } from './window-env-plugin';
 
 /**
  * IPFS serves a single `index.html` (no path-based routing), so the
@@ -37,11 +38,13 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data: https://fonts.reown.com",
     "img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com",
-    // The only inline script in the IPFS build is the <base> bootstrap
-    // above. (The legacy lido-ui cookie-theme hash 'sha256-wTvVT3oJ…' is
-    // gone: the SPA initializes theme via initGlobalCookieTheme inside the
-    // bundle, ScriptThemeValue is rendered nowhere.)
-    `script-src 'self' ${IPFS_BASE_SCRIPT_HASH}`,
+    // The only inline scripts in the IPFS build are the <base> bootstrap
+    // above and the window.__env__ loader (the env DATA element is
+    // type="application/json" — not executable, outside script-src). The
+    // legacy lido-ui cookie-theme hash 'sha256-wTvVT3oJ…' is gone: the SPA
+    // initializes theme via initGlobalCookieTheme inside the bundle,
+    // ScriptThemeValue is rendered nowhere.
+    `script-src 'self' ${IPFS_BASE_SCRIPT_HASH} ${WINDOW_ENV_LOADER_CSP_HASH}`,
     "connect-src 'self' https: wss:",
     "frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com",
     "child-src 'self' https://*.walletconnect.org https://*.walletconnect.com",

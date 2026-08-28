@@ -12,9 +12,19 @@ import { injectJsonLdPlugin } from './scripts/vite/inject-json-ld-plugin';
 import { ipfsHeadDefaultsPlugin } from './scripts/vite/ipfs-head-defaults-plugin';
 import { rawMarkdownPlugin } from './scripts/vite/raw-markdown-plugin';
 import { shimUsageReporterPlugin } from './scripts/vite/shim-usage-reporter-plugin';
+import { windowEnvPlugin } from './scripts/vite/window-env-plugin';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const isIpfs = process.env.IPFS_MODE === 'true';
+
+// Shared by dev serve and preview: same /api → fastify contract as the
+// nginx proxy_pass in production.
+const API_PROXY = {
+  '/api': {
+    target: process.env.API_DEV_URL || 'http://localhost:3001',
+    changeOrigin: true,
+  },
+};
 
 const shim = (rel: string) => resolve(root, 'shims', rel);
 
@@ -54,6 +64,10 @@ export default defineConfig({
     reactPlugin(),
     rawMarkdownPlugin(),
     shimUsageReporterPlugin(root),
+    // Runtime env: inlines window.__env__ in dev/IPFS; web builds keep the
+    // index.html placeholder for the nginx entrypoint (see the plugin for
+    // the full contract).
+    windowEnvPlugin(root, isIpfs),
     // SEO. Web build: HEAD-ONLY prerender — per-route <head> emitted into
     // static per-route index.html files, body stays the SPA bootstrap
     // (never hydrated) + sitemap.xml + JSON-LD. IPFS build: single
@@ -158,14 +172,18 @@ export default defineConfig({
   },
   server: {
     port: Number(process.env.PORT) || 3000,
-    proxy: isIpfs
-      ? undefined
-      : {
-          '/api': {
-            target: process.env.API_DEV_URL || 'http://localhost:3001',
-            changeOrigin: true,
-          },
-        },
+    proxy: isIpfs ? undefined : API_PROXY,
+  },
+  // `yarn preview` — production-shaped run of the real dist/ against the
+  // built api, envs from .env.local, no docker. HTML substitution and the
+  // build preflight live in windowEnvPlugin's configurePreviewServer.
+  preview: {
+    port: Number(process.env.PORT) || 3000,
+    // no silent port hopping: the fallback port would be 3001 — the api's —
+    // and a busy 3000 usually means a forgotten dev server, not a reason
+    // to relocate a production-shaped preview.
+    strictPort: true,
+    proxy: isIpfs ? undefined : API_PROXY,
   },
   envPrefix: ['VITE_'],
   define: {

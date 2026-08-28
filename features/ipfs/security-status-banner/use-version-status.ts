@@ -34,12 +34,12 @@ export const useVersionStatus = () => {
       const urlCid = URL_CID_REGEX.exec(window.location.href)?.groups?.cid;
       if (urlCid) return urlCid;
 
-      const response = await fetch(
-        `${config.BASE_PATH_ASSET}/runtime/window-env.js`,
-        {
-          method: 'HEAD',
-        },
-      );
+      // any always-bundled asset works here — we only need the gateway's
+      // X-Ipfs-Roots response header (the former /runtime/window-env.js is
+      // gone: runtime env ships as an inline script in the HTML)
+      const response = await fetch(`${config.BASE_PATH_ASSET}/manifest.json`, {
+        method: 'HEAD',
+      });
 
       return response.headers.get('X-Ipfs-Roots');
     },

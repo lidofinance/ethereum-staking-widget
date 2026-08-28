@@ -1,7 +1,8 @@
-// This module is imported both by Node scripts (scripts/build-dynamics.mjs)
-// and by the browser bundle (config/dynamics.ts falls back to it when
-// /runtime/window-env.js is absent, e.g. plain `vite dev`). In the browser
-// `process` does not exist — guard it so module init never throws.
+// This module is imported both inside the Vite process
+// (scripts/vite/window-env-plugin.ts builds the inline window.__env__
+// script from it in dev/IPFS) and by the browser bundle (config/dynamics.ts
+// falls back to it where no window exists, e.g. vitest's node env). In the
+// browser `process` does not exist — guard it so module init never throws.
 const env = typeof process !== 'undefined' && process.env ? process.env : {};
 
 /**

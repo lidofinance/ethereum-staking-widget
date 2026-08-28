@@ -116,7 +116,7 @@ export const useAddressValidation = () => {
  * - web pod: same configmap served by nginx as /runtime/validation.json,
  *   prefetched here once per session (staleTime: Infinity) so it is
  *   already cached when the api goes down mid-session
- * - dev: scripts/write-window-env.mjs hashes VALIDATION_FILE_PATH into
+ * - dev: scripts/write-validation-file.mjs hashes VALIDATION_FILE_PATH into
  *   public/runtime/validation.json (same URL as k8s)
  *
  * CACHING (via react-query):

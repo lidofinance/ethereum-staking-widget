@@ -14,9 +14,9 @@ COPY server/package.json server/package.json
 RUN HUSKY=0 yarn install --immutable
 
 COPY . .
-# window-env.js placeholder is generated at container start by the nginx
-# entrypoint; the build only needs the static bundle. BUILD env can inject
-# BASE_PATH if ever needed.
+# Built env-free: the HTML keeps a window.__env__ placeholder that the
+# nginx entrypoint substitutes per environment at container start. BUILD
+# env can inject BASE_PATH if ever needed.
 RUN yarn build:web
 
 FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
