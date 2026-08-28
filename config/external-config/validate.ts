@@ -110,6 +110,35 @@ const EarnAllocationSchema = z
   .default({ labelAllowList: [], hiddenIds: [] });
 
 //
+// Geo
+//
+
+// Visitors resolved to one of these countries get the limited experience.
+// Codes are ISO 3166-1 alpha-2; unrecognised entries are dropped rather than
+// failing the whole manifest, so a typo cannot take the config down.
+const GeoCountryListSchema = z.preprocess(
+  (value) =>
+    Array.isArray(value)
+      ? value.filter(
+          (code) =>
+            typeof code === 'string' && /^[A-Za-z]{2}$/.test(code.trim()),
+        )
+      : value,
+  z
+    .array(z.string())
+    .transform((codes) => [
+      ...new Set(codes.map((code) => code.trim().toUpperCase())),
+    ]),
+);
+
+const GeoSchema = z
+  .object({
+    limited: GeoCountryListSchema.optional().default([]),
+  })
+  .optional()
+  .default({ limited: [] });
+
+//
 // Feature flags
 //
 
@@ -260,6 +289,7 @@ const ManifestConfigSchema = z.object({
   earnVaults: EarnVaultListSchema.optional().default([]),
   earnVaultsBanner: EarnVaultsBannerSchema,
   earnAllocation: EarnAllocationSchema,
+  geo: GeoSchema,
   pages: PagesEntrySchema.optional().default({}),
   wallets: WalletsConfigSchema,
   api: ApiSchema.optional().default({}),

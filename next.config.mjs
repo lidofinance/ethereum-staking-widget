@@ -93,9 +93,14 @@ export default withBundleAnalyzer({
     config.module.exprContextCritical = false;
 
     config.module.rules.push(
-      // Teach webpack to import svg and md files
+      // Teach webpack to import svg and md files.
+      // The `issuer` restricts SVG-as-React-component transformation to imports
+      // from JS/TS code only. SVGs referenced from CSS (e.g. url(...) inside
+      // @lidofinance/lido-app-ui styles) fall through to Next.js built-in
+      // asset handling instead of being broken by svgr.
       {
         test: /\.svg$/,
+        issuer: /\.[jt]sx?$/,
         use: ['@svgr/webpack', 'url-loader'],
       },
       {

@@ -16,6 +16,9 @@ const toBoolean = (val) => {
 };
 
 /** @type boolean */
+export const isProd = toBoolean(process.env.IS_PROD);
+
+/** @type boolean */
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
 /** @type string */
@@ -81,6 +84,15 @@ export const prefillUnsafeElRpcUrls1301 =
 
 /** @type boolean */
 export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
+
+/**
+ * Replaces the Cloudflare country header on environments that do not sit
+ * behind Cloudflare (local dev, test setups). Ignored unless
+ * ENABLE_QA_HELPERS is on, so it has no effect in production.
+ *
+ * @type string
+ */
+export const qaGeoCountry = process.env.QA_GEO_COUNTRY;
 
 export const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
 

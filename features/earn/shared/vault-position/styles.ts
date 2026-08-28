@@ -6,8 +6,7 @@ export const PositionContainer = styled.div`
   padding: ${({ theme }) => theme.spaceMap.md}px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   gap: ${({ theme }) => theme.spaceMap.lg}px;
-  background-color: ${({ theme }) =>
-    theme.name === 'light' ? `#F6F7F8` : 'var(--lido-color-controlBg)'};
+  background-color: var(--custom-color-controlBg);
 
   ${({ theme }) => theme.mediaQueries.md} {
     padding: 12px;
