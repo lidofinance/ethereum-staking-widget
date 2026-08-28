@@ -26,8 +26,8 @@ export const HowDoesWithdrawalWork: FC<{ id?: string }> = ({ id }) => {
           </ul>
         </li>
         <li>
-          <strong>Claim</strong> your USDC once the withdrawal request has been
-          processed.
+          <strong>Claim</strong> your USDC or USDT once the withdrawal request
+          has been processed.
         </li>
       </ul>
     </FaqItem>
