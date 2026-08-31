@@ -21,6 +21,15 @@ RUN yarn build:web
 
 FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
 
+# Node runtime for the entrypoint's window-env CLI: it prints the processed
+# client env JSON at boot (transforms + validation live in
+# config/client-env-manifest.ts — no env logic in shell). Runs once per
+# container start, never serves traffic. The base image is unprivileged —
+# switch to root for apk alone.
+USER root
+RUN apk add --no-cache nodejs
+USER 101
+
 # Read-only root FS friendly: nginx writes cache + tmp into
 # /var/cache/nginx and /tmp, which the helm chart mounts as emptyDir.
 COPY infra/nginx/nginx.conf /etc/nginx/nginx.conf
@@ -34,6 +43,10 @@ COPY infra/nginx/security-headers.conf.template /etc/nginx/template-src/security
 
 # Static assets from the build stage.
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Self-contained window-env CLI bundle (esbuild output, no node_modules),
+# outside the html root so it is never served.
+COPY --from=builder /app/dist-node/window-env-cli.mjs /etc/nginx/window-env-cli.mjs
 
 # Runtime env script + nginx config are (re)written at container start.
 COPY --chmod=755 infra/nginx/entrypoint.sh /docker-entrypoint.d/40-render-runtime-config.sh

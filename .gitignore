@@ -30,6 +30,7 @@ test/playwright-report
 
 # build output
 /dist/
+/dist-node/
 /.next/
 /server/dist/
 /out/

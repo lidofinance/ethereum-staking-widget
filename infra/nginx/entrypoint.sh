@@ -3,16 +3,16 @@
 # same image artifact serve different environments (Hoodi, Sepolia,
 # Mainnet) from different Helm releases with identical builds:
 #
-# 1. Write /var/cache/nginx/window-env.json — plain JSON runtime env for
-#    the SPA, spliced into the window-env data element of every HTML
-#    response by nginx SSI (see default.conf.template). WHICH env vars go
-#    in is not this script's knowledge: the build emits
-#    window-env-manifest.txt from config/client-env-manifest.ts (the single
-#    source of truth) and the loop below just follows it. The data element
-#    is NOT executable; the fixed loader script that parses it into
-#    window.__env__ ships in the build, already CSP-hashed there
-#    (scripts/vite/window-env-plugin.ts) — nothing executable is generated
-#    at boot, so no hashing tools in this image.
+# 1. Write /var/cache/nginx/window-env.json — the FINAL client config
+#    shape as plain JSON, spliced into the window-env data element of
+#    every HTML response by nginx SSI (see default.conf.template). All env
+#    knowledge (sources, transforms, invariants) lives in
+#    config/client-env-manifest.ts; this script just runs its bundled CLI
+#    (scripts/window-env-cli.ts → window-env-cli.mjs, baked into the
+#    image) — a config error exits non-zero and the pod dies at boot
+#    instead of misconfiguring browsers. The data element is NOT
+#    executable; the fixed loader script that parses it into
+#    window.__env__ ships in the build, already CSP-hashed there.
 # 2. Render nginx config templates, substituting ${SELF_ORIGIN} (feeds the
 #    sub_filter that resolves __PUBLIC_ORIGIN__ in served HTML/XML/TXT)
 #    and the CSP header assembled from CSP_* env vars.
@@ -50,56 +50,14 @@ esac
 # independently of the bundle and skewed against it (new bundle + old env —
 # the missing-isProd banner incident). Server-side inclusion keeps env
 # atomic with the response — a cached copy is old-but-consistent, never a
-# mix — and the JSON below never crosses a config-string or sed layer, so
-# only JSON-level escaping is needed.
-
-# JSON string escaping. `<` additionally becomes the < escape (still
-# valid JSON) so no value can smuggle `</script>` — or an SSI directive —
-# into the raw-text script element the JSON is included into. Control chars are
-# never legit in these values — drop them. Mirrors windowEnvPayload() in
-# scripts/vite/window-env-plugin.ts.
-jesc() {
-  printf '%s' "$1" | tr -d '\000-\037' | sed \
-    -e 's/\\/\\\\/g' \
-    -e 's/"/\\"/g' \
-    -e 's/</\\u003C/g'
-}
-
-# The env list, emitted by the build from config/client-env-manifest.ts.
-# Line format: <jsonKey> <value|presence> <ENV_VAR>.
-#   value    — ship the env var's content (unset/empty → key omitted,
-#              browser-side fallbacks apply);
-#   presence — ship only "true"/"false" (the value itself, e.g. an api-pod
-#              file path, must never reach the browser).
-WINDOW_ENV_MANIFEST="$HTML_ROOT/window-env-manifest.txt"
-if [ ! -f "$WINDOW_ENV_MANIFEST" ]; then
-  echo "entrypoint: ERROR: ${WINDOW_ENV_MANIFEST} missing — the build did not emit the env manifest" >&2
+# mix. The CLI prints the final transformed shape and handles its own
+# escaping; a validation failure inside it must kill the boot.
+WINDOW_ENV_CLI="${WINDOW_ENV_CLI:-/etc/nginx/window-env-cli.mjs}"
+if ! node "$WINDOW_ENV_CLI" > "$CACHE_DIR/window-env.json" ||
+  [ ! -s "$CACHE_DIR/window-env.json" ]; then
+  echo "entrypoint: ERROR: window-env CLI failed — refusing to serve without runtime env" >&2
   exit 1
 fi
-
-WINDOW_ENV_JSON="{"
-SEP=""
-while IFS=' ' read -r key kind envName; do
-  [ -n "$key" ] || continue
-  # the manifest is a build artifact — reject anything but the expected
-  # shape rather than interpolate surprises into JSON keys
-  if ! printf '%s %s %s' "$key" "$kind" "$envName" |
-    grep -Eq '^[A-Za-z0-9]+ (value|presence) [A-Z0-9_]+$'; then
-    echo "entrypoint: ERROR: malformed manifest line: '$key $kind $envName'" >&2
-    exit 1
-  fi
-  val="$(printenv "$envName" || true)"
-  if [ "$kind" = "presence" ]; then
-    if [ -n "$val" ]; then val="true"; else val="false"; fi
-  elif [ -z "$val" ]; then
-    continue
-  fi
-  WINDOW_ENV_JSON="${WINDOW_ENV_JSON}${SEP}\"${key}\":\"$(jesc "$val")\""
-  SEP=","
-done < "$WINDOW_ENV_MANIFEST"
-WINDOW_ENV_JSON="${WINDOW_ENV_JSON}}"
-
-printf '%s' "$WINDOW_ENV_JSON" > "$CACHE_DIR/window-env.json"
 
 # --- 2. CSP header -----------------------------------------------------------
 # Directives ported from the legacy config/csp/index.ts (next-secure-headers
