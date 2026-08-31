@@ -1,6 +1,4 @@
-import invariant from 'tiny-invariant';
-
-import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
+import { API_ROUTES, getApiPath } from 'consts/api';
 import { LIDO_TOKENS_VALUES } from 'consts/tokens';
 
 import { standardFetcher } from './standardFetcher';
@@ -15,9 +13,7 @@ export const getOneInchRate = async (params: GetOneInchRateParams) => {
 
   const urlParams = new URLSearchParams({ token });
   if (amount) urlParams.append('amount', amount.toString());
-  const url = getEthApiPath(ETH_API_ROUTES.SWAP_ONE_INCH, urlParams);
-
-  invariant(url, 'Missing URL for OneInch rate request');
+  const url = `${getApiPath(API_ROUTES.SWAP_ONE_INCH)}?${urlParams}`;
 
   const data = await standardFetcher<{
     rate: number;

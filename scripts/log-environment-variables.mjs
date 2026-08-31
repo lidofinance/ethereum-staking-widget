@@ -39,6 +39,7 @@ export const openKeys = [
 ];
 
 export const secretKeys = [
+  'ONE_INCH_API_KEY',
   'EL_RPC_URLS_1',
   'EL_RPC_URLS_10',
   'EL_RPC_URLS_130',

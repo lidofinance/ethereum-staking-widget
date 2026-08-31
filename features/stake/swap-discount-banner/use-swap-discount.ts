@@ -44,6 +44,7 @@ export const useSwapDiscount = () => {
   return useQuery({
     queryKey: ['swap-discount-rate', config.STAKE_SWAP_INTEGRATION],
     ...STRATEGY_LAZY,
+    enabled: !(config.ipfsMode && config.STAKE_SWAP_INTEGRATION === 'one-inch'),
     queryFn: async () => {
       try {
         return await fetchRate(config.STAKE_SWAP_INTEGRATION);

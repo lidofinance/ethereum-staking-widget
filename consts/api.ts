@@ -9,6 +9,7 @@ export const enum API_ROUTES {
   EARN_VAULTS_APR = 'api/earn/vaults-apr',
   EARN_VAULTS_TVL = 'api/earn/vaults-tvl',
   GEO = 'api/geo',
+  SWAP_ONE_INCH = 'api/swap/one-inch',
 }
 
 /**
@@ -25,7 +26,6 @@ export const enum ETH_API_ROUTES {
   STETH_STATS = '/v1/protocol/steth/stats',
   STETH_SMA_APR = '/v1/protocol/steth/apr/sma',
   STETH_APR = '/v1/protocol/steth/apr',
-  SWAP_ONE_INCH = '/v1/swap/one-inch',
   /**
    * @deprecated not used anymore
    */

@@ -298,6 +298,7 @@ export default withBundleAnalyzer({
     rateLimitTimeFrame: process.env.RATE_LIMIT_TIME_FRAME,
 
     ethAPIBasePath: process.env.ETH_API_BASE_PATH,
+    oneInchAPIKey: process.env.ONE_INCH_API_KEY,
     rewardsBackendAPI: process.env.REWARDS_BACKEND,
     validationAPI: process.env.VALIDATION_SERVICE_BASE_PATH,
     validationFilePath: process.env.VALIDATION_FILE_PATH,
