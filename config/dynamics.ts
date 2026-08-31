@@ -1,17 +1,22 @@
-import * as dynamics from 'env-dynamics.mjs';
-import { CHAIN_LIST, type CHAIN_ID } from './chains';
+import {
+  ENV_MANIFEST,
+  PREFILL_RPC_ENTRIES,
+  readWindowEnv,
+  type EnvEntry,
+} from './client-env-manifest';
+import { type CHAIN_ID } from './chains';
 
 /**
  * Runtime env source — the "one image, many envs" contract.
  *
- * `window.__env__` is set by an inline script in the HTML itself: in k8s
- * the nginx entrypoint substitutes the index.html placeholder per
- * environment (values arrive as RAW STRINGS, or are absent); in dev serve
- * and IPFS builds `scripts/vite/window-env-plugin.ts` inlines the typed
- * env-dynamics values. Where there is no window at all (vitest node env),
- * the import of `env-dynamics.mjs` provides typed build-time defaults.
+ * `window.__env__` is set by the fixed loader script from the window-env
+ * JSON data element in the HTML (see scripts/vite/window-env-plugin.ts):
+ * values arrive as RAW STRINGS keyed per config/client-env-manifest.ts, filled in
+ * by nginx SSI in k8s and by the vite plugin in dev/IPFS/preview. Where
+ * there is no window at all (vitest node env, the api bundle),
+ * readWindowEnv() reads the same manifest straight from process.env.
  *
- * Normalize so callers see one shape regardless of the source.
+ * Normalize so callers see one typed shape regardless of the source.
  */
 
 // NOTE: Window.__env__ is declared globally by @lidofinance/analytics-matomo.
@@ -33,7 +38,7 @@ const toNumber = (val: unknown, fallback: number): number => {
   return fallback;
 };
 
-const toNumberList = (val: unknown, fallback: number[]): number[] => {
+const toNumberList = (val: unknown, fallback: readonly number[]): number[] => {
   if (Array.isArray(val)) {
     return val.map((v) => toNumber(v, 0)).filter((n) => n);
   }
@@ -43,7 +48,7 @@ const toNumberList = (val: unknown, fallback: number[]): number[] => {
       .map((s) => parseInt(s.trim(), 10))
       .filter((n) => Number.isFinite(n));
   }
-  return fallback;
+  return [...fallback];
 };
 
 const toStringList = (val: unknown): string[] => {
@@ -66,51 +71,58 @@ type RPC_MAP = {
   [chainId in CHAIN_ID]: string[];
 };
 
-type DynamicsNormalized = typeof dynamics & {
-  prefillUnsafeElRpcUrls: RPC_MAP;
+// Manifest entry `type` → normalized value type.
+type TypeToValue = {
+  string: string;
+  optionalString: string | undefined;
+  boolean: boolean;
+  number: number;
+  numberList: number[];
+  presence: boolean;
+};
+
+type DynamicsNormalized = {
+  [
+    K in keyof typeof ENV_MANIFEST
+  ]: TypeToValue[(typeof ENV_MANIFEST)[K]['type']];
+} & { prefillUnsafeElRpcUrls: RPC_MAP };
+
+const convert = (entry: EnvEntry, raw: unknown): unknown => {
+  switch (entry.type) {
+    case 'string':
+      return toOptionalString(raw) ?? entry.fallback;
+    case 'optionalString':
+      return toOptionalString(raw);
+    case 'boolean':
+    case 'presence':
+      return toBoolean(raw);
+    case 'number':
+      return toNumber(raw, entry.fallback);
+    case 'numberList':
+      return toNumberList(raw, entry.fallback);
+  }
 };
 
 const normalize = (src: Record<string, unknown>): DynamicsNormalized => {
   const get = (k: string) => src[k];
+
   const normalizedResult = {
-    ipfsMode: toBoolean(get('ipfsMode')),
-    selfOrigin: String(get('selfOrigin') ?? dynamics.selfOrigin),
-    rootOrigin: String(get('rootOrigin') ?? dynamics.rootOrigin),
-    docsOrigin: String(get('docsOrigin') ?? dynamics.docsOrigin),
-    helpOrigin: String(get('helpOrigin') ?? dynamics.helpOrigin),
-    researchOrigin: String(get('researchOrigin') ?? dynamics.researchOrigin),
-    blogOrigin: String(get('blogOrigin') ?? dynamics.blogOrigin),
-    defaultChain: toNumber(get('defaultChain'), dynamics.defaultChain),
-    supportedChains: toNumberList(
-      get('supportedChains'),
-      dynamics.supportedChains,
-    ),
-    manifestOverride: toOptionalString(get('manifestOverride')),
-    prefillUnsafeElRpcUrls: {
-      ...Object.fromEntries(
-        CHAIN_LIST.map((chainId) => [
-          chainId,
-          toStringList(get(`prefillUnsafeElRpcUrls${chainId}`)),
-        ]),
-      ),
-    } as RPC_MAP,
-    enableQaHelpers: toBoolean(get('enableQaHelpers')),
-    walletconnectProjectId:
-      toOptionalString(get('walletconnectProjectId')) ??
-      dynamics.walletconnectProjectId,
-    matomoHost: toOptionalString(get('matomoHost')) ?? dynamics.matomoHost,
-    ethAPIBasePath:
-      toOptionalString(get('ethAPIBasePath')) ?? dynamics.ethAPIBasePath,
-    wqAPIBasePath:
-      toOptionalString(get('wqAPIBasePath')) ?? dynamics.wqAPIBasePath,
-    rewardsBackendBasePath:
-      toOptionalString(get('rewardsBackendBasePath')) ??
-      dynamics.rewardsBackendBasePath,
-    devnetOverrides: toOptionalString(get('devnetOverrides')),
-    addressApiValidationEnabled: toBoolean(get('addressApiValidationEnabled')),
-    useValidationFile: toBoolean(get('useValidationFile')),
-    useConfigManifestFile: toBoolean(get('useConfigManifestFile')),
-    isProd: toBoolean(get('isProd')),
+    ...(Object.fromEntries(
+      Object.entries(ENV_MANIFEST).map(([key, entry]) => [
+        key,
+        convert(entry, get(key)),
+      ]),
+    ) as {
+      [
+        K in keyof typeof ENV_MANIFEST
+      ]: TypeToValue[(typeof ENV_MANIFEST)[K]['type']];
+    }),
+    prefillUnsafeElRpcUrls: Object.fromEntries(
+      PREFILL_RPC_ENTRIES.map(({ chainId, key }) => [
+        chainId,
+        toStringList(get(key)),
+      ]),
+    ) as RPC_MAP,
   };
 
   if (
@@ -131,19 +143,13 @@ const normalize = (src: Record<string, unknown>): DynamicsNormalized => {
   return normalizedResult;
 };
 
-// Don't use dynamics directly in the project!
-// Only through:
-// code```
-//    import { config } from 'config'; // or
-//    import { config } from './get-config'; // in config "namespace"
-// ```
 // Fail closed on web production builds: a missing window.__env__ means the
-// window-env inline script was not substituted into the HTML (served
-// outside the nginx entrypoint / preview middleware, or tampered with).
-// The silent alternative is booting on the build-time env-dynamics
-// defaults, which are TESTNET values — worse than a hard failure. Dev and
-// vitest (PROD=false) keep the fallback; IPFS builds inline the env
-// statically at build time, so absence there is not a runtime condition.
+// window-env data element was never filled in (served outside the nginx
+// SSI / preview middleware, or tampered with). The silent alternative is
+// booting on the manifest's TESTNET fallbacks — worse than a hard failure.
+// Dev and vitest (PROD=false) keep the fallback; IPFS builds inline the
+// env statically at build time, so absence there is not a runtime
+// condition.
 // `?.`: the api's esbuild bundle also evaluates this module in plain Node,
 // where import.meta.env does not exist at all (and the short-circuit keeps
 // the vite-only __IPFS_MODE__ identifier unevaluated there).
@@ -154,13 +160,19 @@ if (
   !window.__env__
 ) {
   throw new Error(
-    'Runtime env missing: the window.__env__ inline script was not injected into the page',
+    'Runtime env missing: the window-env data element was not populated',
   );
 }
 
+// Don't use dynamics directly in the project!
+// Only through:
+// code```
+//    import { config } from 'config'; // or
+//    import { config } from './get-config'; // in config "namespace"
+// ```
 const src =
   typeof window !== 'undefined' && window.__env__
-    ? window.__env__
-    : (dynamics as unknown as Record<string, unknown>);
+    ? (window.__env__ as unknown as Record<string, unknown>)
+    : readWindowEnv();
 
 export default normalize(src);

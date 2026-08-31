@@ -7,7 +7,7 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/common';
 
 // Framework-neutral env source (browser: window.__env__; Node: process.env
-// via env-dynamics.mjs). This module is imported BOTH by the frontend and
+// via config/client-env-manifest.ts). This module is imported BOTH by the frontend and
 // by the api server (RPC allowlists + earn contracts share this single
 // source of contract addresses) — it must not touch `next/config`,
 // `config/get-preconfig`, or anything else browser- or Next-coupled.

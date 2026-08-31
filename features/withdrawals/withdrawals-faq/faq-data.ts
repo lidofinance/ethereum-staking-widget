@@ -14,7 +14,7 @@
  * - internal tab links use absolute paths (upgraded to SPA navigation by
  *   `faq-list.tsx` at runtime); anchor links target the entry `id`s;
  * - external Lido origins are the canonical public defaults
- *   (env-dynamics.mjs fallbacks) — the static artifact is env-agnostic
+ *   (config/client-env-manifest.ts fallbacks) — the static artifact is env-agnostic
  *   and these URLs do not vary across our deployments.
  *
  * NOT here: "Is there any minimum or maximum amount..." — its numbers come

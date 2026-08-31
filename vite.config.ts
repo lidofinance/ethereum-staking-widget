@@ -17,15 +17,6 @@ import { windowEnvPlugin } from './scripts/vite/window-env-plugin';
 const root = dirname(fileURLToPath(import.meta.url));
 const isIpfs = process.env.IPFS_MODE === 'true';
 
-// Shared by dev serve and preview: same /api → fastify contract as the
-// nginx proxy_pass in production.
-const API_PROXY = {
-  '/api': {
-    target: process.env.API_DEV_URL || 'http://localhost:3001',
-    changeOrigin: true,
-  },
-};
-
 const shim = (rel: string) => resolve(root, 'shims', rel);
 
 /**
@@ -155,10 +146,6 @@ export default defineConfig({
       // eval-based JIT (CSP forbids eval). 'zod/mini' etc. stay untouched.
       { find: /^zod$/, replacement: resolve(root, 'utils/zod-setup.ts') },
       // Root-level modules imported with bare specifiers.
-      {
-        find: /^env-dynamics\.mjs$/,
-        replacement: resolve(root, 'env-dynamics.mjs'),
-      },
       { find: /^IPFS\.json$/, replacement: resolve(root, 'IPFS.json') },
       {
         find: /^REMOTE_CONFIG_MANIFEST\.json$/,
@@ -172,18 +159,14 @@ export default defineConfig({
   },
   server: {
     port: Number(process.env.PORT) || 3000,
-    proxy: isIpfs ? undefined : API_PROXY,
-  },
-  // `yarn preview` — production-shaped run of the real dist/ against the
-  // built api, envs from .env.local, no docker. HTML substitution and the
-  // build preflight live in windowEnvPlugin's configurePreviewServer.
-  preview: {
-    port: Number(process.env.PORT) || 3000,
-    // no silent port hopping: the fallback port would be 3001 — the api's —
-    // and a busy 3000 usually means a forgotten dev server, not a reason
-    // to relocate a production-shaped preview.
-    strictPort: true,
-    proxy: isIpfs ? undefined : API_PROXY,
+    proxy: isIpfs
+      ? undefined
+      : {
+          '/api': {
+            target: process.env.API_DEV_URL || 'http://localhost:3001',
+            changeOrigin: true,
+          },
+        },
   },
   envPrefix: ['VITE_'],
   define: {

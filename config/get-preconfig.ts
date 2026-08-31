@@ -1,7 +1,7 @@
 import { default as dynamics } from './dynamics';
 
 // Formerly `publicRuntimeConfig` from `next/config` (kept the same shape).
-// Everything else always flowed through `window.__env__` / `env-dynamics.mjs`
+// Everything else always flowed through `window.__env__` / `config/client-env-manifest.ts`
 // (see `config/dynamics.ts`).
 const publicRuntimeConfig = {
   // BASE_URL is Vite's resolved `base` (from BASE_PATH in vite.config.ts);

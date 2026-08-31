@@ -1,6 +1,6 @@
 // MUST be the first import: populates process.env from .env.local before
 // any other module reads env at import time (config.ts Zod parse,
-// env-dynamics.mjs consumed via config/networks).
+// config/client-env-manifest.ts consumed via config/networks).
 import './load-env.js';
 
 import Fastify from 'fastify';

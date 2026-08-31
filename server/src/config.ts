@@ -41,7 +41,7 @@ const envSchema = z.object({
   RATE_LIMIT: z.coerce.number().int().min(1).default(100),
   RATE_LIMIT_TIME_FRAME: z.coerce.number().int().min(1).default(60),
 
-  // Chain selection. Fallbacks match env-dynamics.mjs (Hoodi only) — a
+  // Chain selection. Fallbacks match config/client-env-manifest.ts (Hoodi only) — a
   // missing SUPPORTED_CHAINS must behave the same on both sides, otherwise
   // the RPC allowlist covers 8 chains while the metric maps cover 1.
   DEFAULT_CHAIN: z.coerce.number().int().default(560048),
@@ -78,7 +78,7 @@ const envSchema = z.object({
   // QA helpers (never set in production). ENABLE_QA_HELPERS gates
   // QA_GEO_COUNTRY, which stands in for the Cloudflare country header on
   // stands that do not sit behind Cloudflare — see routes/geo.ts. Boolean
-  // semantics match env-dynamics.mjs `toBoolean` ('true'/'1' → true).
+  // semantics match config/client-env-manifest.ts `toBoolean` ('true'/'1' → true).
   ENABLE_QA_HELPERS: z
     .string()
     .optional()

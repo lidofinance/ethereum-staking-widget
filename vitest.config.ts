@@ -50,10 +50,6 @@ export default defineConfig({
         find: 'build-info.json',
         replacement: resolve(projectRoot, 'build-info.json'),
       },
-      {
-        find: 'env-dynamics.mjs',
-        replacement: resolve(projectRoot, 'env-dynamics.mjs'),
-      },
     ],
   },
   define: {

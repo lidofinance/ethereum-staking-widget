@@ -14,7 +14,6 @@
     "build": "yarn build:web && yarn workspace api build",
     "build:web": "node --env-file-if-exists=.env.local scripts/write-validation-file.mjs && vite build",
     "build:ipfs": "IPFS_MODE=true vite build",
-    "preview": "node scripts/preview-check.mjs && concurrently -n web,api -c blue,green \"yarn preview:web\" \"yarn workspace api start\"",
     "preview:web": "vite preview",
     "start:api": "yarn workspace api start",
     "lint": "eslint .",

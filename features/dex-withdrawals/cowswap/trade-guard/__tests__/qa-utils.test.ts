@@ -1,6 +1,6 @@
 import { vi, afterEach, describe, it, expect, type Mock } from 'vitest';
 
-// Mock utils/qa to break the ESM config chain (env-dynamics.mjs)
+// Mock utils/qa to break the ESM config chain (config/client-env-manifest.ts)
 vi.mock('utils/qa', () => ({
   overrideWithQAMockString: vi.fn((value: string) => value),
   overrideWithQAMockNumber: vi.fn((value: number) => value),

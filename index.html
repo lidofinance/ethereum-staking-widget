@@ -23,11 +23,14 @@
     <title>Stake with Lido | Lido</title>
 
     <!--
-      Runtime env — the "one image, many envs" contract. This NON-EXECUTABLE
-      data element receives base64(JSON) env in place of __WINDOW_ENV__:
-        - k8s web: at response time by nginx sub_filter, assembled from
+      Runtime env — the "one image, many envs" contract; the env list lives
+      in config/client-env-manifest.ts. This NON-EXECUTABLE data element receives
+      plain-JSON env in place of __WINDOW_ENV__:
+        - k8s web: the build swaps the placeholder for an nginx SSI include
+          and the JSON is spliced in at response time, written from
           container env at boot by infra/nginx/entrypoint.sh;
-        - dev serve / IPFS build: by scripts/vite/window-env-plugin.ts.
+        - dev serve / IPFS build: filled in directly by
+          scripts/vite/window-env-plugin.ts.
       The same plugin injects the fixed loader script right after this tag
       (it parses the data into window.__env__ before the main bundle) and
       emits the loader's CSP hash at build. Inline rather than an external
