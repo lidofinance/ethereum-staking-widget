@@ -41,7 +41,11 @@ yarn dev:ipfs # will start with HMR
 
 ### Environment variables
 
-Note! Avoid using `NEXT_PUBLIC_` environment variables as it hinders our CI pipeline. Please use server-side environment variables and pass them to the client using `getInitialProps` in `_app.tsx`.
+Frontend runtime env has a single source of truth: `config/client-env-manifest.ts` —
+adding an entry there is the only step needed to expose a new env var to the
+browser config (see `docs/config.md` for the delivery mechanism). Server-only
+env is read by the api workspace (`server/src/config.ts`) and never reaches
+the browser.
 
 ### Automatic versioning
 
@@ -54,16 +58,27 @@ git commit -m "fix: a bug in calculation"
 git commit -m "feat: dark theme"
 ```
 
-## Production
+## Production build locally
+
+Runs the same containers k8s runs (`Dockerfile.web` + `Dockerfile.api`),
+wired like the helm release: nginx serves the static build, splices runtime
+env into the HTML via SSI, and proxies `/api/*` to the api container. Env is
+read from `.env.local` — the same file `yarn dev` uses — at container boot:
 
 ```bash
-yarn build && yarn start
+docker compose up --build
+# → http://localhost:3000
 ```
 
-for IPFS mode below:
+Env-only changes need no rebuild: edit `.env.local` and `docker compose up`
+again. See `compose.yaml` for the local-only overrides (file-mount features
+are disabled by default) and `docs/config.md` for how runtime env reaches
+the browser.
+
+For the static IPFS bundle:
 
 ```bash
-yarn build:ipfs
+yarn build:ipfs # emits dist/
 ```
 
 ## Adding a new route API

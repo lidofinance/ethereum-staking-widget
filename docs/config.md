@@ -1,5 +1,53 @@
 # Configuration & Environment Variables
 
+## Runtime env delivery ("one image, many envs")
+
+The web image is built env-free; browsers receive runtime env as a
+NON-EXECUTABLE JSON data element inside the HTML itself
+(`<script type="application/json" id="window-env">`), parsed into
+`window.__env__` by a fixed, CSP-hashed loader script. There is no
+separately fetchable env URL, so env can never cache-skew against the
+bundle — a cached HTML response is old-but-consistent.
+
+**Single source of truth: `config/client-env-manifest.ts`.** Each entry
+pairs an env var with the zod transform that produces its final typed
+value; `ClientEnv = z.infer<…>` is the config type. Adding a frontend env
+var = adding one entry there. Everything else derives:
+
+- dev serve / IPFS builds: `scripts/vite/window-env-plugin.ts` fills the
+  element in from process env (`.env.local` included);
+- k8s web: the build ships an nginx SSI include instead; at container boot
+  `infra/nginx/entrypoint.sh` runs the bundled `scripts/window-env-cli.ts`
+  (esbuild output baked into the image; the runtime image carries `nodejs`
+  for this one boot-time call) and nginx splices the JSON into every HTML
+  response;
+- no-window runtimes (vitest, the api bundle): `config/dynamics.ts` falls
+  back to `buildClientEnv(process.env)`.
+
+Because only post-transform values are serialized, presence-style flags
+(`useValidationFile` etc.) ship as `true`/`false` while their source values
+(file paths, internal hosts) never reach the browser — by construction.
+
+### Deploy-visible behavior (for infra)
+
+- **The web pod fails at boot** — instead of serving bad config — when:
+  the env CLI fails or config invariants are violated (duplicate
+  `SUPPORTED_CHAINS`, `DEFAULT_CHAIN` not first), the build's
+  `window-env-csp-hash.txt` is missing/malformed, or (enforcing CSP only)
+  `importmap-csp-hash.txt` is missing. A crash-looping pod after a deploy
+  most likely means misconfigured env, not a broken image.
+- **`IS_PROD=true` must be set on production** — it suppresses the test-env
+  banner. (Previously this flag was never delivered to the SPA at all.)
+- The `/runtime` emptyDir mount for `window-env.js` is obsolete — nothing
+  writes there at boot anymore (`/var/cache/nginx` covers the env JSON).
+- Env-only redeploys need no CDN purge: env travels inside the HTML
+  response, never as a standalone cached asset.
+
+Mechanism tests: `yarn test:unit` covers the manifest/serializer/loader
+contract (`config/__tests__/client-env-manifest.test.ts`). The full stack —
+real nginx SSI, CSP splicing, the api proxy — runs locally with
+`docker compose up --build` (see README "Production build locally").
+
 ## Config system
 
 - `config/get-config.ts` — main configuration object
@@ -9,7 +57,9 @@
 - `config/groups/` — config sections (web3, cache, ipfs, etc.)
 - `config/feature-flags/` — feature flag definitions
 - `config/networks/` — network/chain configuration
-- `config/csp/` — Content Security Policy config
+- `config/client-env-manifest.ts` — runtime env source of truth (see above)
+- CSP is assembled at container boot by `infra/nginx/entrypoint.sh` (web)
+  and at build time by `scripts/vite/ipfs-head-defaults-plugin.ts` (IPFS)
 
 ## Key env vars
 

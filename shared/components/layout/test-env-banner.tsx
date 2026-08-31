@@ -4,8 +4,10 @@ import { config } from 'config';
 import { QA_KEYS } from 'consts/qa-keys';
 
 const showTestEnvBanner = overrideWithQAMockBoolean(
-  // prevents showing the banner if envs are stale and missing isProd
-  config.isProd === false,
+  // isProd comes from the window-env data element, which is atomic with
+  // the HTML response — the stale-cached-env failure mode this check once
+  // defended against no longer exists.
+  !config.isProd,
   QA_KEYS.testEnvBanner,
 );
 

@@ -19,10 +19,8 @@
 
 set -eu
 
-# Overridable for the out-of-container test harness only — in the image
-# these are always the defaults.
-HTML_ROOT="${HTML_ROOT:-/usr/share/nginx/html}"
-CACHE_DIR="${CACHE_DIR:-/var/cache/nginx}"
+HTML_ROOT="/usr/share/nginx/html"
+CACHE_DIR="/var/cache/nginx"
 mkdir -p "$CACHE_DIR"
 
 # --- guardrails ------------------------------------------------------------
@@ -52,7 +50,7 @@ esac
 # atomic with the response — a cached copy is old-but-consistent, never a
 # mix. The CLI prints the final transformed shape and handles its own
 # escaping; a validation failure inside it must kill the boot.
-WINDOW_ENV_CLI="${WINDOW_ENV_CLI:-/etc/nginx/window-env-cli.mjs}"
+WINDOW_ENV_CLI="/etc/nginx/window-env-cli.mjs"
 if ! node "$WINDOW_ENV_CLI" > "$CACHE_DIR/window-env.json" ||
   [ ! -s "$CACHE_DIR/window-env.json" ]; then
   echo "entrypoint: ERROR: window-env CLI failed — refusing to serve without runtime env" >&2
@@ -93,32 +91,21 @@ if [ -z "$IMPORT_MAP_HASH" ]; then
 fi
 # Build-time CSP hash of the window-env LOADER script (fixed content,
 # injected into the HTML by scripts/vite/window-env-plugin.ts, which emits
-# this file alongside it). Unlike the import map's fail-open, a blocked
-# loader means NO env at all → config/dynamics.ts throws → blank app, so a
-# missing hash is fatal exactly when CSP is enforcing; malformed is fatal
-# always (packaging bug or tampering).
+# this file alongside it UNCONDITIONALLY — unlike the import map there is
+# no legitimate build without it, so missing or malformed is always a
+# packaging bug or tampering: fatal even in report-only mode.
 WINDOW_ENV_HASH_FILE="$HTML_ROOT/window-env-csp-hash.txt"
-WINDOW_ENV_LOADER_HASH=""
-if [ -f "$WINDOW_ENV_HASH_FILE" ]; then
-  WINDOW_ENV_LOADER_HASH="$(tr -d '\r\n' < "$WINDOW_ENV_HASH_FILE")"
-  if ! printf '%s' "$WINDOW_ENV_LOADER_HASH" | grep -Eq '^sha256-[A-Za-z0-9+/]{43}=$'; then
-    echo "entrypoint: ERROR: malformed ${WINDOW_ENV_HASH_FILE}" >&2
-    exit 1
-  fi
+if [ ! -f "$WINDOW_ENV_HASH_FILE" ]; then
+  echo "entrypoint: ERROR: ${WINDOW_ENV_HASH_FILE} missing — the build did not emit the window-env loader hash" >&2
+  exit 1
 fi
-if [ -z "$WINDOW_ENV_LOADER_HASH" ]; then
-  if [ "${CSP_REPORT_ONLY:-}" = "true" ]; then
-    echo "entrypoint: WARNING: ${WINDOW_ENV_HASH_FILE} missing — an enforcing CSP would block the window-env loader (no runtime env)" >&2
-  else
-    echo "entrypoint: ERROR: ${WINDOW_ENV_HASH_FILE} missing — enforcing CSP would block the window-env loader and blank the app" >&2
-    exit 1
-  fi
+WINDOW_ENV_LOADER_HASH="$(tr -d '\r\n' < "$WINDOW_ENV_HASH_FILE")"
+if ! printf '%s' "$WINDOW_ENV_LOADER_HASH" | grep -Eq '^sha256-[A-Za-z0-9+/]{43}=$'; then
+  echo "entrypoint: ERROR: malformed ${WINDOW_ENV_HASH_FILE}" >&2
+  exit 1
 fi
 
-SCRIPT_SRC_EXTRA=""
-if [ -n "$WINDOW_ENV_LOADER_HASH" ]; then
-  SCRIPT_SRC_EXTRA="'${WINDOW_ENV_LOADER_HASH}' "
-fi
+SCRIPT_SRC_EXTRA="'${WINDOW_ENV_LOADER_HASH}' "
 if [ -n "$IMPORT_MAP_HASH" ]; then
   SCRIPT_SRC_EXTRA="${SCRIPT_SRC_EXTRA}'${IMPORT_MAP_HASH}' "
 fi

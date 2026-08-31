@@ -48,16 +48,13 @@ import { walkIndexHtml } from './walk-index-html';
 
 // The id pins the exact tag for every substituting party (this plugin, the
 // loader's getElementById) and for humans inspecting a served page.
-export const WINDOW_ENV_TAG_OPEN =
-  '<script type="application/json" id="window-env">';
+const WINDOW_ENV_TAG_OPEN = '<script type="application/json" id="window-env">';
 export const WINDOW_ENV_PLACEHOLDER = `${WINDOW_ENV_TAG_OPEN}__WINDOW_ENV__</script>`;
 
 // What the web build ships instead of the payload — nginx SSI fills it in
 // at response time (ssi on + the internal /window-env.json location, see
 // infra/nginx/default.conf.template).
-export const WINDOW_ENV_SSI_INCLUDE =
-  '<!--#include virtual="/window-env.json" -->';
-const WINDOW_ENV_SSI_ELEMENT = `${WINDOW_ENV_TAG_OPEN}${WINDOW_ENV_SSI_INCLUDE}</script>`;
+const WINDOW_ENV_SSI_ELEMENT = `${WINDOW_ENV_TAG_OPEN}<!--#include virtual="/window-env.json" --></script>`;
 
 /**
  * The one executable piece — byte-exact source of the CSP hash, so any
