@@ -26,14 +26,6 @@ export const enum ETH_API_ROUTES {
   STETH_STATS = '/v1/protocol/steth/stats',
   STETH_SMA_APR = '/v1/protocol/steth/apr/sma',
   STETH_APR = '/v1/protocol/steth/apr',
-  /**
-   * @deprecated not used anymore
-   */
-  SWAP_JUMPER = '/v1/swap/jumper',
-  /**
-   * @deprecated not used anymore
-   */
-  CURVE_APR = '/v1/pool/curve/steth-eth/apr/last',
 }
 
 export const getEthApiPath = (
