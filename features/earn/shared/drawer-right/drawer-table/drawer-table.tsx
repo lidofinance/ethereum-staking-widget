@@ -70,7 +70,11 @@ const DATA = [
         cells: [
           'Fees',
           ['1 % management fee', '10 % performance fee'],
-          ['0.2 % management fee', '15 % performance fee'],
+          [
+            'flexible, capped at:',
+            '0.5 % management fee',
+            '20 % performance fee',
+          ],
         ],
       },
     ],
