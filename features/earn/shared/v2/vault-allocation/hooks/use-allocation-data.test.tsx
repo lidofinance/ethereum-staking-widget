@@ -183,7 +183,7 @@ describe('useAllocationData grouping and sorting', () => {
     ]);
   });
 
-  it('moves nested Available to the flat summary row', () => {
+  it('rolls nested Others and Available up to the metavault summary rows', () => {
     const result = getAllocationData(
       createData([
         createFlatAllocation({
@@ -212,17 +212,16 @@ describe('useAllocationData grouping and sorting', () => {
       ]),
     );
 
-    expect(result.groups[0]?.items).toEqual([
-      expect.objectContaining({
-        label: 'Others',
-        isSummary: true,
-        allocation: 0.04,
-      }),
-    ]);
-    expect(result.groups[0]).toEqual(
-      expect.objectContaining({ allocation: 0.9998, tvlUSD: 99.98 }),
-    );
+    expect(result.groups[0]?.items).toEqual([]);
+    expect(result.groups[0]?.allocation).toBeCloseTo(0.9994, 10);
+    expect(result.groups[0]?.tvlUSD).toBeCloseTo(99.94, 10);
     expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Others',
+        isSummary: true,
+        allocation: 0.0004,
+        tvlUSD: 0.04,
+      }),
       expect.objectContaining({
         name: 'Available',
         isSummary: true,
@@ -277,6 +276,215 @@ describe('useAllocationData grouping and sorting', () => {
         tvlUSD: 130,
       }),
     );
+  });
+
+  it('merges nested Pending and Others into the metavault summary rows', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: 'vault',
+          label: 'Vault',
+          sharePercent: 20,
+          allocations: [
+            createNestedAllocation('large', 50),
+            createNestedAllocation('pending-child', 30, {
+              category: 'pending-deposits',
+              protocol: undefined,
+            }),
+            createNestedAllocation('unknown-position', 20),
+          ],
+        }),
+      ]),
+    );
+
+    expect(result.groups[0]?.items).toEqual([
+      expect.objectContaining({ label: 'large', allocation: 50, tvlUSD: 50 }),
+    ]);
+    expect(result.groups[0]).toEqual(
+      expect.objectContaining({ allocation: 10, tvlUSD: 50 }),
+    );
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({ name: 'Pending', allocation: 6, tvlUSD: 30 }),
+      expect.objectContaining({ name: 'Others', allocation: 4, tvlUSD: 20 }),
+    ]);
+  });
+
+  it('aggregates flat and nested Pending allocations into one final row', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          id: 'flat-pending',
+          sharePercent: 5,
+          category: 'pending-deposits',
+          protocol: undefined,
+        }),
+        createFlatAllocation({
+          type: 'nested',
+          id: 'smaller-vault',
+          label: 'Smaller vault',
+          sharePercent: 20,
+          allocations: [
+            createNestedAllocation('nested-pending-1', 10, {
+              category: 'pending-deposits',
+              protocol: undefined,
+            }),
+          ],
+        }),
+        createFlatAllocation({
+          type: 'nested',
+          id: 'larger-vault',
+          label: 'Larger vault',
+          sharePercent: 30,
+          allocations: [
+            createNestedAllocation('nested-pending-2', 20, {
+              category: 'pending-deposits',
+              protocol: undefined,
+            }),
+          ],
+        }),
+      ]),
+    );
+
+    expect(result.groups.every((group) => group.items.length === 0)).toBe(true);
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Pending',
+        allocation: 13,
+        tvlUSD: 130,
+      }),
+    ]);
+  });
+
+  it('never emits summary rows inside a subvault', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: 'vault',
+          label: 'Vault',
+          sharePercent: 100,
+          allocations: [
+            createNestedAllocation('large', 40),
+            createNestedAllocation('token-child', 20, {
+              category: 'token',
+              protocol: undefined,
+            }),
+            createNestedAllocation('pending-child', 20, {
+              category: 'pending-deposits',
+              protocol: undefined,
+            }),
+            createNestedAllocation('other-child', 20, {
+              category: 'other',
+              protocol: undefined,
+            }),
+          ],
+        }),
+      ]),
+    );
+
+    expect(result.groups[0]?.items.map(({ label }) => label)).toEqual([
+      'large',
+    ]);
+    expect(result.flatItems?.map(({ name }) => name)).toEqual([
+      'Pending',
+      'Others',
+      'Available',
+    ]);
+  });
+
+  it('drops a fully rolled-up subvault without double counting it', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: 'vault',
+          label: 'Vault',
+          sharePercent: 20,
+          allocations: [
+            createNestedAllocation('pending-child', 100, {
+              category: 'pending-deposits',
+              protocol: undefined,
+            }),
+          ],
+        }),
+      ]),
+    );
+
+    expect(result.groups).toEqual([]);
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Pending',
+        allocation: 20,
+        tvlUSD: 100,
+      }),
+    ]);
+    expect(consoleDebugSpy).not.toHaveBeenCalledWith(
+      '[Vault allocation] Allocation moved to Others',
+      {
+        reason: 'below-min-display-percent',
+        id: 'vault',
+      },
+    );
+  });
+
+  it('moves only the share left after roll-up of a below-threshold subvault to Others', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({
+          type: 'nested',
+          id: 'vault',
+          label: 'Vault',
+          sharePercent: 0.15,
+          allocations: [
+            createNestedAllocation('token-child', 50, {
+              category: 'token',
+              protocol: undefined,
+            }),
+            createNestedAllocation('large', 50),
+          ],
+        }),
+      ]),
+    );
+
+    expect(result.groups).toEqual([]);
+    expect(result.flatItems?.map(({ name }) => name)).toEqual([
+      'Others',
+      'Available',
+    ]);
+    expect(result.flatItems?.[0]?.allocation).toBeCloseTo(0.075, 12);
+    expect(result.flatItems?.[0]?.tvlUSD).toBeCloseTo(50, 12);
+    expect(result.flatItems?.[1]?.allocation).toBeCloseTo(0.075, 12);
+    expect(result.flatItems?.[1]?.tvlUSD).toBeCloseTo(50, 12);
+  });
+
+  it('keeps the displayed shares summing to the total vault share', () => {
+    const result = getAllocationData(
+      createData([
+        createFlatAllocation({ id: 'large', label: 'Large', sharePercent: 40 }),
+        createFlatAllocation({
+          type: 'nested',
+          id: 'vault',
+          label: 'Vault',
+          sharePercent: 60,
+          allocations: [
+            createNestedAllocation('medium', 50),
+            createNestedAllocation('pending-child', 30, {
+              category: 'pending-deposits',
+              protocol: undefined,
+            }),
+            createNestedAllocation('unknown-position', 20),
+          ],
+        }),
+      ]),
+    );
+
+    const total = [...result.groups, ...(result.flatItems ?? [])].reduce(
+      (sum, entry) => sum + entry.allocation,
+      0,
+    );
+
+    expect(total).toBeCloseTo(100, 9);
   });
 
   it('shows top-level Others produced by an invisible nested group', () => {
@@ -416,12 +624,21 @@ describe('useAllocationData grouping and sorting', () => {
     );
     const items = result.groups[0]?.items ?? [];
 
-    expect(items).toHaveLength(21);
-    expect(items.slice(0, 20).map(({ allocation }) => allocation)).toEqual(
+    expect(items).toHaveLength(20);
+    expect(items.map(({ allocation }) => allocation)).toEqual(
       Array.from({ length: 20 }, (_, index) => 22 - index),
     );
-    expect(items[20]?.label).toBe('Others');
-    expect(items[20]?.allocation).toBe(3);
+    expect(result.groups[0]).toEqual(
+      expect.objectContaining({ allocation: 97, tvlUSD: 97 }),
+    );
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Others',
+        isSummary: true,
+        allocation: 3,
+        tvlUSD: 3,
+      }),
+    ]);
     expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
       {
@@ -458,9 +675,17 @@ describe('useAllocationData grouping and sorting', () => {
         label,
         allocation,
       })),
-    ).toEqual([
-      { label: 'Aave levered wstETH/ETH', allocation: 60 },
-      { label: 'Others', allocation: 40 },
+    ).toEqual([{ label: 'Aave levered wstETH/ETH', allocation: 60 }]);
+    expect(result.groups[0]).toEqual(
+      expect.objectContaining({ allocation: 60, tvlUSD: 60 }),
+    );
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Others',
+        isSummary: true,
+        allocation: 40,
+        tvlUSD: 40,
+      }),
     ]);
     expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',
@@ -597,7 +822,7 @@ describe('useAllocationData grouping and sorting', () => {
     );
   });
 
-  it('moves a hidden nested allocation to the subvault Others row', () => {
+  it('moves a hidden nested allocation to the metavault Others row', () => {
     const result = getAllocationData(
       createData([
         createFlatAllocation({
@@ -620,9 +845,17 @@ describe('useAllocationData grouping and sorting', () => {
         label,
         allocation,
       })),
-    ).toEqual([
-      { label: 'Allocation', allocation: 60 },
-      { label: 'Others', allocation: 40 },
+    ).toEqual([{ label: 'Allocation', allocation: 60 }]);
+    expect(result.groups[0]).toEqual(
+      expect.objectContaining({ allocation: 60, tvlUSD: 60 }),
+    );
+    expect(result.flatItems).toEqual([
+      expect.objectContaining({
+        name: 'Others',
+        isSummary: true,
+        allocation: 40,
+        tvlUSD: 40,
+      }),
     ]);
     expect(consoleDebugSpy).toHaveBeenCalledWith(
       '[Vault allocation] Allocation moved to Others',

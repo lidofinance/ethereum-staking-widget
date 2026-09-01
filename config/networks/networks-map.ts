@@ -107,6 +107,7 @@ export const CONTRACT_NAMES = {
   usdSyncDepositQueueUSDT: 'usdSyncDepositQueueUSDT',
   usdShareManagerEARNUSD: 'usdShareManagerEARNUSD',
   usdRedeemQueueUSDC: 'usdRedeemQueueUSDC',
+  usdRedeemQueueUSDT: 'usdRedeemQueueUSDT',
   usdSyncRedeemQueueUSDC: 'usdSyncRedeemQueueUSDC',
   usdCollector: 'usdCollector',
 } as const;

@@ -4,6 +4,7 @@ import {
   ActionableTitle,
   Request,
 } from 'modules/mellow-meta-vaults/components/request';
+import { TOKENS } from 'consts/tokens';
 import { useUsdVaultDepositClaim } from '../hooks/use-deposit-claim';
 import { useUsdVaultPreviewWithdraw } from '../../withdraw/hooks/use-preview-withdraw';
 import { USD_VAULT_TOKEN_SYMBOL } from '../../consts';
@@ -19,6 +20,7 @@ export const UsdVaultDepositClaimableRequest = ({
 }) => {
   const { data: usdData } = useUsdVaultPreviewWithdraw({
     shares: claimableShares,
+    token: TOKENS.usdc,
   });
   if (claimableShares <= 0) {
     return null;
