@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@fastify/rate-limit": "^10.1.1",
-    "@lidofinance/api-metrics": "^0.48.0",
+    "@lidofinance/api-metrics": "0.64.0",
     "@lidofinance/lido-ethereum-sdk": "4.8.0",
-    "@lidofinance/satanizer": "^0.48.0",
+    "@lidofinance/satanizer": "0.64.0",
     "fastify": "^5.1.0",
     "fastify-plugin": "^5.0.1",
     "lru-cache": "11.4.0",

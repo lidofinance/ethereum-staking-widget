@@ -30,11 +30,11 @@
   "dependencies": {
     "@coinbase/wallet-sdk": "^4.3.6",
     "@cowprotocol/widget-react": "3.2.0",
-    "@lidofinance/analytics-matomo": "^0.61.0",
+    "@lidofinance/analytics-matomo": "0.64.0",
     "@lidofinance/lido-app-ui": "1.1.3",
     "@lidofinance/lido-ethereum-sdk": "4.8.0",
     "@lidofinance/lido-ui": "3.43.0",
-    "@lidofinance/rpc": "^0.48.0",
+    "@lidofinance/rpc": "0.64.0",
     "@metamask/connect-evm": "2.1.1",
     "@safe-global/safe-apps-provider": "~0.18.6",
     "@safe-global/safe-apps-sdk": "^9.1.0",

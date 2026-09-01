@@ -5,6 +5,8 @@ import VaultUsdIcon from './vault-usd.svg?react';
 import VaultDvvIcon from './vault-dvv.svg?react';
 import VaultGgvIcon from './vault-ggv.svg?react';
 import VaultStgIcon from './vault-stg.svg?react';
+// NB!: this SVG is large and occupies a lot of space in the bundle.
+// TODO: lazy load this icon
 import UpgradeIllustrationIcon from './upgrade.svg?react';
 import TokenEarnEthIcon from './token-earneth.svg?react';
 import TokenEarnUsdIcon from './token-earnusd.svg?react';

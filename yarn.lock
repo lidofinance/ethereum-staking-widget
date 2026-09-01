@@ -2198,19 +2198,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/analytics-matomo@npm:^0.61.0":
-  version: 0.61.0
-  resolution: "@lidofinance/analytics-matomo@npm:0.61.0"
-  checksum: 10c0/b59545e4e4b271208f6ca2fc91348987a1d98ff6495d48236d04abfc81575979f12151d1543bc6227d3db6b5cd51c151d4756798a908b1e9244897efa085ce56
+"@lidofinance/analytics-matomo@npm:0.64.0":
+  version: 0.64.0
+  resolution: "@lidofinance/analytics-matomo@npm:0.64.0"
+  checksum: 10c0/9c66d06b9fa32744a81a209fca039b6a849a29154cce62c0646124e635ffcc832d25088b1d4e99b84f47d6581f915a28591d0afff190daf860c0e8bf75330268
   languageName: node
   linkType: hard
 
-"@lidofinance/api-metrics@npm:^0.48.0":
-  version: 0.48.0
-  resolution: "@lidofinance/api-metrics@npm:0.48.0"
+"@lidofinance/api-metrics@npm:0.64.0":
+  version: 0.64.0
+  resolution: "@lidofinance/api-metrics@npm:0.64.0"
   peerDependencies:
     prom-client: ^14.0.0
-  checksum: 10c0/26791bf5ee70aa394e468040ce9302392c3ace72a6c8c4d69a6199fbb35f25fd31fbdd6e9c4aaa87d335e2c1154c7a039731fba79dd9338dcbafb0f1d60c6b1a
+  checksum: 10c0/b352f189d05e72d73cdd721f13d8a3cdff3673c0e545c7f6f06da59ed838f808dcab1e9e95729b23812893fbaffa284f6198ff0f691b0097da0c3ee09573cf57
   languageName: node
   linkType: hard
 
@@ -2286,10 +2286,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/satanizer@npm:^0.48.0":
-  version: 0.48.0
-  resolution: "@lidofinance/satanizer@npm:0.48.0"
-  checksum: 10c0/a51354eb74e0dc9c8818e586e4e0b5d2814781ff24b13070ac83e8fdf11b375096ba10d34170b258b1168c2cc1c383968dfdc6ab21b1562e44588cbf87d1a07a
+"@lidofinance/satanizer@npm:0.64.0":
+  version: 0.64.0
+  resolution: "@lidofinance/satanizer@npm:0.64.0"
+  checksum: 10c0/251afe45c05c163b9f3b39abf90ce1884959dc0093cd183f07b49f073eafca2ac2e9e070f575b73f7c29c09491ad96154bd7766618e76b8b52b980bf22ea812b
   languageName: node
   linkType: hard
 
@@ -5862,9 +5862,9 @@ __metadata:
   resolution: "api@workspace:server"
   dependencies:
     "@fastify/rate-limit": "npm:^10.1.1"
-    "@lidofinance/api-metrics": "npm:^0.48.0"
+    "@lidofinance/api-metrics": "npm:0.64.0"
     "@lidofinance/lido-ethereum-sdk": "npm:4.8.0"
-    "@lidofinance/satanizer": "npm:^0.48.0"
+    "@lidofinance/satanizer": "npm:0.64.0"
     "@types/node": "npm:^24.3.0"
     esbuild: "npm:^0.25.0"
     fastify: "npm:^5.1.0"
@@ -9982,7 +9982,7 @@ __metadata:
     "@cowprotocol/widget-react": "npm:3.2.0"
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:9.39.5"
-    "@lidofinance/analytics-matomo": "npm:^0.61.0"
+    "@lidofinance/analytics-matomo": "npm:0.64.0"
     "@lidofinance/lido-app-ui": "npm:1.1.3"
     "@lidofinance/lido-ethereum-sdk": "npm:4.8.0"
     "@lidofinance/lido-ui": "npm:3.43.0"
