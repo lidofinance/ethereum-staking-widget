@@ -12,7 +12,8 @@
 #    image) — a config error exits non-zero and the pod dies at boot
 #    instead of misconfiguring browsers. The data element is NOT
 #    executable; the fixed loader script that parses it into
-#    window.__env__ ships in the build, already CSP-hashed there.
+#    window.__env__ ships in the build; its CSP hash is a hardcoded
+#    constant (see section 2), pinned to the loader by a unit test.
 # 2. Render nginx config templates, substituting ${SELF_ORIGIN} (feeds the
 #    sub_filter that resolves __PUBLIC_ORIGIN__ in served HTML/XML/TXT)
 #    and the CSP header assembled from CSP_* env vars.
@@ -23,7 +24,11 @@ HTML_ROOT="/usr/share/nginx/html"
 CACHE_DIR="/var/cache/nginx"
 mkdir -p "$CACHE_DIR"
 
-# --- guardrails ------------------------------------------------------------
+#------------------------------------------------------------------------------------------
+#----------------------- 0. guardrails ----------------------------------------------------
+#------------------------------------------------------------------------------------------
+
+
 # SELF_ORIGIN lands inside a sed replacement and a CSP header: an empty
 # value silently produces relative og:image/canonical URLs (broken link
 # unfurls), and `|`/`&`/newlines would corrupt the rendered config.
@@ -42,14 +47,13 @@ case "$SELF_ORIGIN" in
     ;;
 esac
 
-# --- 1. runtime env for the SPA ---------------------------------------------
-# Env reaches the SPA inside the HTML response (SSI include), NOT as the
-# former stable-URL /runtime/window-env.js file: that file cached
-# independently of the bundle and skewed against it (new bundle + old env —
-# the missing-isProd banner incident). Server-side inclusion keeps env
-# atomic with the response — a cached copy is old-but-consistent, never a
-# mix. The CLI prints the final transformed shape and handles its own
-# escaping; a validation failure inside it must kill the boot.
+#------------------------------------------------------------------------------------------
+#----------------------- 1. runtime client env --------------------------------------------
+#------------------------------------------------------------------------------------------
+
+
+# Uses the window-env CLI baked into the image to write the final client config JSON
+# for inclusion in the HTML served by nginx.
 WINDOW_ENV_CLI="/etc/nginx/window-env-cli.mjs"
 if ! node "$WINDOW_ENV_CLI" > "$CACHE_DIR/window-env.json" ||
   [ ! -s "$CACHE_DIR/window-env.json" ]; then
@@ -57,21 +61,13 @@ if ! node "$WINDOW_ENV_CLI" > "$CACHE_DIR/window-env.json" ||
   exit 1
 fi
 
-# --- 2. CSP header -----------------------------------------------------------
-# Directives ported from the legacy config/csp/index.ts (next-secure-headers
-# is gone with Next). frame-ancestors * keeps wallet embeds (Ledger Live,
-# Safe) working. NB: the legacy lido-ui cookie-theme hash ('sha256-wTvVT3oJ…')
-# is gone — the Vite SPA has no such inline script (theme init runs inside
-# the bundle).
-CSP_TRUSTED="$(printf '%s' "${CSP_TRUSTED_HOSTS:-}" | tr ',' ' ')"
+#------------------------------------------------------------------------------------------
+#------------------------ 2. CSP header ---------------------------------------------------
+#------------------------------------------------------------------------------------------
 
-# Per-build CSP source for the inline import map through which
-# vite-plugin-sri-gen delivers module-graph SRI (its content — and hash —
-# changes every build). Written by emit-import-map-csp-hash in
-# vite.config.ts. Without it an enforcing CSP blocks the import map and
-# module-graph integrity silently disappears (the app keeps working,
-# unverified — fail-open), so a missing hash is fatal exactly when CSP is
-# enforcing; a malformed one is fatal always (packaging bug or tampering).
+
+# Per-build hash of generated SRI import map source for the inline import map through which
+# Written by emit-import-map-csp-hash in vite.config.ts
 IMPORT_MAP_HASH_FILE="$HTML_ROOT/importmap-csp-hash.txt"
 IMPORT_MAP_HASH=""
 if [ -f "$IMPORT_MAP_HASH_FILE" ]; then
@@ -89,31 +85,25 @@ if [ -z "$IMPORT_MAP_HASH" ]; then
     exit 1
   fi
 fi
-# Build-time CSP hash of the window-env LOADER script (fixed content,
-# injected into the HTML by scripts/vite/window-env-plugin.ts, which emits
-# this file alongside it UNCONDITIONALLY — unlike the import map there is
-# no legitimate build without it, so missing or malformed is always a
-# packaging bug or tampering: fatal even in report-only mode.
-WINDOW_ENV_HASH_FILE="$HTML_ROOT/window-env-csp-hash.txt"
-if [ ! -f "$WINDOW_ENV_HASH_FILE" ]; then
-  echo "entrypoint: ERROR: ${WINDOW_ENV_HASH_FILE} missing — the build did not emit the window-env loader hash" >&2
-  exit 1
-fi
-WINDOW_ENV_LOADER_HASH="$(tr -d '\r\n' < "$WINDOW_ENV_HASH_FILE")"
-if ! printf '%s' "$WINDOW_ENV_LOADER_HASH" | grep -Eq '^sha256-[A-Za-z0-9+/]{43}=$'; then
-  echo "entrypoint: ERROR: malformed ${WINDOW_ENV_HASH_FILE}" >&2
-  exit 1
-fi
+# CSP hash of the WINDOW_ENV_LOADER in scripts/vite/window-env-plugin.ts
+WINDOW_ENV_LOADER_HASH="sha256-6ApUdZunJlq8fZcraTYQbcZ6XIB1F85yxMoDe+8WwAY="
 
-SCRIPT_SRC_EXTRA="'${WINDOW_ENV_LOADER_HASH}' "
+# Trusted hosts for CSP script-src, comma-separated in the env var
+CSP_TRUSTED_SRC_VALUE="$(printf '%s' "${CSP_TRUSTED_HOSTS:-}" | tr ',' ' ')"
+
+
+# CSP trusted scripts: self, trusted hosts from env, env-loader script, and the per-build import map (if present)
+CSP_SCRIPT_SRC_VALUE="'self' ${CSP_TRUSTED_SRC_VALUE} '${WINDOW_ENV_LOADER_HASH}' "
 if [ -n "$IMPORT_MAP_HASH" ]; then
-  SCRIPT_SRC_EXTRA="${SCRIPT_SRC_EXTRA}'${IMPORT_MAP_HASH}' "
+  CSP_SCRIPT_SRC_VALUE="${CSP_SCRIPT_SRC_VALUE}'${IMPORT_MAP_HASH}' "
 fi
 
-# CoW origin must track features/dex-withdrawals/cowswap/consts.ts
-# COWSWAP_BASE_URL — flipping IS_COWSWAP_STAGING there requires updating
-# frame-src/child-src here too.
-CSP_VALUE="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.reown.com; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' ${SCRIPT_SRC_EXTRA}${CSP_TRUSTED}; connect-src 'self' https: wss:; frame-ancestors *; frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; child-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; object-src 'none'; media-src 'none'; manifest-src 'self'; form-action 'self'; script-src-attr 'none'; base-uri 'none'"
+# Used as iframe and img src for WalletConnect 
+CSP_WALLET_CONNECT_HOSTS="https://*.walletconnect.org https://*.walletconnect.com"
+
+CSP_IFRAME_VALUE="'self' https://swap.cow.fi ${CSP_WALLET_CONNECT_HOSTS}"
+
+CSP_VALUE="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.reown.com; img-src 'self' data: blob: ${CSP_WALLET_CONNECT_HOSTS}; script-src ${CSP_SCRIPT_SRC_VALUE}; connect-src 'self' https: wss:; frame-ancestors *; frame-src ${CSP_IFRAME_VALUE}; child-src ${CSP_IFRAME_VALUE}; worker-src 'none'; object-src 'none'; media-src 'none'; manifest-src 'self'; form-action 'self'; script-src-attr 'none'; base-uri 'none'"
 
 if [ -n "${CSP_REPORT_URI:-}" ]; then
   CSP_VALUE="${CSP_VALUE}; report-uri ${CSP_REPORT_URI}"
@@ -125,7 +115,13 @@ else
   CSP_HEADER_NAME="content-security-policy"
 fi
 
-# --- 3. render nginx config templates ---------------------------------------
+
+
+#------------------------------------------------------------------------------------------
+#----------------------- 3. render nginx config templates ---------------------------------
+#------------------------------------------------------------------------------------------
+
+
 # Our own sed instead of the image's 20-envsubst-on-templates.sh: that
 # script only `-w`-checks its output dir and doesn't create it, and
 # /var/cache/nginx/conf.d doesn't exist until we mkdir it here.

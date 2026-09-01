@@ -32,10 +32,9 @@ Because only post-transform values are serialized, presence-style flags
 
 - **The web pod fails at boot** — instead of serving bad config — when:
   the env CLI fails or config invariants are violated (duplicate
-  `SUPPORTED_CHAINS`, `DEFAULT_CHAIN` not first), the build's
-  `window-env-csp-hash.txt` is missing/malformed, or (enforcing CSP only)
-  `importmap-csp-hash.txt` is missing. A crash-looping pod after a deploy
-  most likely means misconfigured env, not a broken image.
+  `SUPPORTED_CHAINS`, `DEFAULT_CHAIN` not first), or (enforcing CSP only)
+  the build's `importmap-csp-hash.txt` is missing. A crash-looping pod
+  after a deploy most likely means misconfigured env, not a broken image.
 - **`IS_PROD=true` must be set on production** — it suppresses the test-env
   banner. (Previously this flag was never delivered to the SPA at all.)
 - The `/runtime` emptyDir mount for `window-env.js` is obsolete — nothing

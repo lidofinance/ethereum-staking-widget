@@ -2,8 +2,7 @@
 // buildClientEnv() reads when the hooks below run.
 import './load-local-env';
 
-import { createHash } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { Plugin } from 'vite';
 
@@ -38,9 +37,8 @@ import { walkIndexHtml } from './walk-index-html';
  *    old-but-consistent) and there is no separately-fetchable artifact;
  *  - a fixed LOADER script (WINDOW_ENV_LOADER below, injected in every
  *    mode) that parses the data element into `window.__env__`. Being
- *    build-time-static it is CSP-hashable at build: closeBundle emits
- *    `window-env-csp-hash.txt` for the nginx entrypoint (mirroring
- *    importmap-csp-hash.txt), and the IPFS CSP meta embeds the same hash —
+ *    static, its CSP hash is a hardcoded constant — embedded in the IPFS
+ *    CSP meta here and in the nginx CSP header by the entrypoint — so
  *    script EXECUTION stays hash-pinned. (Values in the data element are
  *    correspondingly NOT hash-covered — their integrity rests on the
  *    read-only html volume and the response-time include.)
@@ -57,18 +55,23 @@ export const WINDOW_ENV_PLACEHOLDER = `${WINDOW_ENV_TAG_OPEN}__WINDOW_ENV__</scr
 const WINDOW_ENV_SSI_ELEMENT = `${WINDOW_ENV_TAG_OPEN}<!--#include virtual="/window-env.json" --></script>`;
 
 /**
- * The one executable piece — byte-exact source of the CSP hash, so any
- * change here changes the emitted hash file and the IPFS CSP meta in the
- * same build. If the data element is missing or unpopulated, JSON.parse
- * throws, window.__env__ stays unset and config/dynamics.ts fails closed.
+ * The one executable piece — byte-exact source of the CSP hash below.
+ * DO NOT change this string without updating BOTH hardcoded hash copies:
+ * WINDOW_ENV_LOADER_CSP_HASH here (also embedded in the IPFS CSP meta)
+ * and SCRIPT_SRC_EXTRA in infra/nginx/entrypoint.sh — the unit test in
+ * config/__tests__/client-env-manifest.test.ts recomputes the hash and
+ * fails on any drift. If the data element is missing or unpopulated,
+ * JSON.parse throws, window.__env__ stays unset and config/dynamics.ts
+ * fails closed.
  */
 export const WINDOW_ENV_LOADER =
   'window.__env__=JSON.parse(document.getElementById("window-env").textContent)';
 
 const WINDOW_ENV_LOADER_TAG = `<script>${WINDOW_ENV_LOADER}</script>`;
 
+// sha256(WINDOW_ENV_LOADER), base64 — static because the loader is static.
 export const WINDOW_ENV_LOADER_CSP_HASH =
-  'sha256-' + createHash('sha256').update(WINDOW_ENV_LOADER).digest('base64');
+  'sha256-6ApUdZunJlq8fZcraTYQbcZ6XIB1F85yxMoDe+8WwAY=';
 
 // Payload for the data element (dev/IPFS): the same final-shape JSON the
 // window-env CLI prints in k8s — one producer implementation for all modes.
@@ -117,8 +120,7 @@ export const windowEnvPlugin = (root: string, isIpfs: boolean): Plugin => {
     },
     // Web build: an HTML file without exactly one SSI data element + one
     // loader would be served broken — no env, and config/dynamics.ts fails
-    // closed on that. Fail the build instead, then emit the loader's CSP
-    // hash for the nginx entrypoint.
+    // closed on that. Fail the build instead.
     async closeBundle() {
       if (!isBuild || isIpfs) return;
       const files = await walkIndexHtml(resolve(root, 'dist'));
@@ -139,10 +141,6 @@ export const windowEnvPlugin = (root: string, isIpfs: boolean): Plugin => {
           }
         }
       }
-      await writeFile(
-        resolve(root, 'dist/window-env-csp-hash.txt'),
-        `${WINDOW_ENV_LOADER_CSP_HASH}\n`,
-      );
     },
   };
 };

@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 import { buildClientEnv, serializeClientEnv } from '../client-env-manifest';
 import {
@@ -109,10 +111,21 @@ describe('window-env loader contract', () => {
     expect(WINDOW_ENV_LOADER).toContain('getElementById("window-env")');
   });
 
-  it('exports the CSP hash of its exact content', () => {
-    expect(WINDOW_ENV_LOADER_CSP_HASH).toBe(
+  it('has its exact content hashed into both hardcoded CSP hash copies', () => {
+    // The hash is hardcoded (the loader is a fixed constant) in two
+    // places: the plugin export (→ IPFS CSP meta) and the nginx
+    // entrypoint (→ web CSP header). This recomputation is the only
+    // thing catching a loader edit that forgets either copy.
+    const expected =
       'sha256-' +
-        createHash('sha256').update(WINDOW_ENV_LOADER).digest('base64'),
+      createHash('sha256').update(WINDOW_ENV_LOADER).digest('base64');
+    expect(WINDOW_ENV_LOADER_CSP_HASH).toBe(expected);
+    const entrypoint = readFileSync(
+      fileURLToPath(
+        new URL('../../infra/nginx/entrypoint.sh', import.meta.url),
+      ),
+      'utf8',
     );
+    expect(entrypoint).toContain(`WINDOW_ENV_LOADER_HASH="${expected}"`);
   });
 });
