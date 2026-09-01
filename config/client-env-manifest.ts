@@ -5,18 +5,22 @@ import { CHAIN_LIST, type CHAIN_ID } from './chains';
 /**
  * THE single source of truth for frontend runtime env — the "one image,
  * many envs" contract. Each entry pairs the env var (or a computed source)
- * with the zod schema that transforms the raw string into its FINAL typed
- * value. Adding an entry here is the only step needed to expose a new env
- * var to the browser config.
+ * with the transform that produces its final typed value and the zod
+ * schema of that FINAL shape. Adding an entry here is the only step needed
+ * to expose a new env var to the browser config.
  *
- * The window-env JSON data element carries the final shape produced by
- * `buildClientEnv()` — already transformed and validated, so the browser
- * only JSON.parses it (the fixed loader in scripts/vite/window-env-plugin.ts).
- * That gives two invariants for free:
- *  - the wire format IS the config shape (`ClientEnv = z.infer<…>`), and
- *  - only post-transform values ever ship: a presence-style flag like
- *    `useValidationFile` serializes as true/false while its source value
- *    (an api-pod file path) never reaches the browser.
+ * CLIENT_ENV_SCHEMA describes the wire format itself, so the SAME schema
+ * guards both ends of the pass-through:
+ *  - producers (`buildClientEnv()`) parse their transformed output before
+ *    it is serialized — a bad transform or config invariant violation
+ *    fails at the point of production;
+ *  - the browser (`parseClientEnv()` in config/dynamics.ts) parses the
+ *    JSON injected via the window-env data element — a tampered, corrupt
+ *    or shape-drifted payload throws instead of propagating garbage.
+ *
+ * Because only post-transform values are serialized, presence-style flags
+ * like `useValidationFile` ship as true/false while their source values
+ * (api-pod file paths, internal endpoints) never reach the browser.
  *
  * Producers of the JSON, all calling `buildClientEnv()`:
  *  - dev serve / IPFS build: scripts/vite/window-env-plugin.ts;
@@ -30,159 +34,168 @@ import { CHAIN_LIST, type CHAIN_ID } from './chains';
 
 type RawEnv = Record<string, string | undefined>;
 
-const toBoolean = (val: string | undefined): boolean =>
-  !!val && (val.toLowerCase() === 'true' || parseInt(val, 10) === 1);
+const asString = (val: unknown): string | undefined =>
+  typeof val === 'string' ? val : undefined;
+
+const toBoolean = (val: unknown): boolean => {
+  const s = asString(val);
+  return !!s && (s.toLowerCase() === 'true' || parseInt(s, 10) === 1);
+};
 
 const toNumber =
   (fallback: number) =>
-  (val: string | undefined): number => {
-    const n = val === undefined ? NaN : parseInt(val, 10);
+  (val: unknown): number => {
+    const s = asString(val);
+    const n = s === undefined ? NaN : parseInt(s, 10);
     return Number.isFinite(n) ? n : fallback;
   };
 
 const toNumberList =
   (fallback: readonly number[]) =>
-  (val: string | undefined): number[] => {
-    if (!val) return [...fallback];
-    return val
+  (val: unknown): number[] => {
+    const s = asString(val);
+    if (!s) return [...fallback];
+    return s
       .split(',')
-      .map((s) => parseInt(s.trim(), 10))
+      .map((part) => parseInt(part.trim(), 10))
       .filter((n) => Number.isFinite(n));
   };
 
-const toStringList = (val: string | undefined): string[] =>
-  val
-    ? val
+const toStringList = (val: unknown): string[] => {
+  const s = asString(val);
+  return s
+    ? s
         .split(',')
-        .map((s) => s.trim())
+        .map((part) => part.trim())
         .filter(Boolean)
     : [];
+};
 
 const withFallback =
   (fallback: string) =>
-  (val: string | undefined): string =>
-    val || fallback;
+  (val: unknown): string =>
+    asString(val) || fallback;
 
 // Empty string ≠ undefined for keys like manifestOverride:
 // `getManifestKey(N, '')` would produce `"N-"` and break the lookup.
-const toOptionalString = (val: string | undefined): string | undefined =>
-  val || undefined;
-
-const envString = z.string().optional();
+const toOptionalString = (val: unknown): string | undefined =>
+  asString(val) || undefined;
 
 type RPC_MAP = {
   [chainId in CHAIN_ID]: string[];
 };
 
-/** One manifest entry: where the raw value comes from + how it becomes the
- * final typed value. `source` is an env var name, or a function for values
- * assembled from several vars (prefill RPC urls). */
+/** One manifest entry: where the raw value comes from (`source`: an env
+ * var name, or a function for values assembled from several vars), the
+ * `transform` producing the final value, and the zod `shape` of that final
+ * value — the piece both ends validate against. */
 const entry = <S extends z.ZodType>(
   source: string | ((env: RawEnv) => unknown),
-  schema: S,
-) => ({ source, schema });
+  transform: (raw: unknown) => z.input<S>,
+  shape: S,
+) => ({ source, transform, shape });
+
+const optionalString = z.string().optional();
 
 const MANIFEST = {
-  ipfsMode: entry('IPFS_MODE', envString.transform(toBoolean)),
-  isProd: entry('IS_PROD', envString.transform(toBoolean)),
+  ipfsMode: entry('IPFS_MODE', toBoolean, z.boolean()),
+  isProd: entry('IS_PROD', toBoolean, z.boolean()),
   selfOrigin: entry(
     'SELF_ORIGIN',
-    envString.transform(withFallback('https://stake.lido.fi')),
+    withFallback('https://stake.lido.fi'),
+    z.string(),
   ),
-  rootOrigin: entry(
-    'ROOT_ORIGIN',
-    envString.transform(withFallback('https://lido.fi')),
-  ),
+  rootOrigin: entry('ROOT_ORIGIN', withFallback('https://lido.fi'), z.string()),
   docsOrigin: entry(
     'DOCS_ORIGIN',
-    envString.transform(withFallback('https://docs.lido.fi')),
+    withFallback('https://docs.lido.fi'),
+    z.string(),
   ),
   helpOrigin: entry(
     'HELP_ORIGIN',
-    envString.transform(withFallback('https://help.lido.fi')),
+    withFallback('https://help.lido.fi'),
+    z.string(),
   ),
   researchOrigin: entry(
     'RESEARCH_ORIGIN',
-    envString.transform(withFallback('https://research.lido.fi')),
+    withFallback('https://research.lido.fi'),
+    z.string(),
   ),
   blogOrigin: entry(
     'BLOG_ORIGIN',
-    envString.transform(withFallback('https://blog.lido.fi')),
+    withFallback('https://blog.lido.fi'),
+    z.string(),
   ),
   // Keep fallbacks as in 'config/get-secret-config.ts'
-  defaultChain: entry('DEFAULT_CHAIN', envString.transform(toNumber(560048))),
+  defaultChain: entry('DEFAULT_CHAIN', toNumber(560048), z.number().int()),
   supportedChains: entry(
     'SUPPORTED_CHAINS',
-    envString.transform(toNumberList([560048])),
+    toNumberList([560048]),
+    z.array(z.number().int()),
   ),
   manifestOverride: entry(
     'MANIFEST_OVERRIDE',
-    envString.transform(toOptionalString),
+    toOptionalString,
+    optionalString,
   ),
-  enableQaHelpers: entry('ENABLE_QA_HELPERS', envString.transform(toBoolean)),
+  enableQaHelpers: entry('ENABLE_QA_HELPERS', toBoolean, z.boolean()),
   walletconnectProjectId: entry(
     'WALLETCONNECT_PROJECT_ID',
-    envString.transform(toOptionalString),
+    toOptionalString,
+    optionalString,
   ),
-  matomoHost: entry('MATOMO_URL', envString.transform(toOptionalString)),
-  ethAPIBasePath: entry(
-    'ETH_API_BASE_PATH',
-    envString.transform(toOptionalString),
-  ),
-  wqAPIBasePath: entry(
-    'WQ_API_BASE_PATH',
-    envString.transform(toOptionalString),
-  ),
+  matomoHost: entry('MATOMO_URL', toOptionalString, optionalString),
+  ethAPIBasePath: entry('ETH_API_BASE_PATH', toOptionalString, optionalString),
+  wqAPIBasePath: entry('WQ_API_BASE_PATH', toOptionalString, optionalString),
   rewardsBackendBasePath: entry(
     'REWARDS_BACKEND_BASE_PATH',
-    envString.transform(toOptionalString),
+    toOptionalString,
+    optionalString,
   ),
-  devnetOverrides: entry(
-    'DEVNET_OVERRIDES',
-    envString.transform(toOptionalString),
-  ),
+  devnetOverrides: entry('DEVNET_OVERRIDES', toOptionalString, optionalString),
   // presence-only flags: the browser gets true/false, never the value —
   // these paths are api-pod filesystem details / internal endpoints
   addressApiValidationEnabled: entry(
     'VALIDATION_SERVICE_BASE_PATH',
-    envString.transform(Boolean),
+    Boolean,
+    z.boolean(),
   ),
-  useValidationFile: entry(
-    'VALIDATION_FILE_PATH',
-    envString.transform(Boolean),
-  ),
-  useConfigManifestFile: entry(
-    'CONFIG_MANIFEST_PATH',
-    envString.transform(Boolean),
-  ),
+  useValidationFile: entry('VALIDATION_FILE_PATH', Boolean, z.boolean()),
+  useConfigManifestFile: entry('CONFIG_MANIFEST_PATH', Boolean, z.boolean()),
   prefillUnsafeElRpcUrls: entry(
     (env) =>
       Object.fromEntries(
         CHAIN_LIST.map((chainId) => [
           chainId,
-          env[`PREFILL_UNSAFE_EL_RPC_URLS_${chainId}`] ?? '',
+          env[`PREFILL_UNSAFE_EL_RPC_URLS_${chainId}`],
         ]),
       ),
+    (raw) =>
+      Object.fromEntries(
+        Object.entries(raw as Record<string, unknown>).map(
+          ([chainId, urls]) => [chainId, toStringList(urls)],
+        ),
+      ),
     z
-      .record(z.string(), z.string().transform(toStringList))
+      .record(z.string(), z.array(z.string()))
       .transform((map) => map as RPC_MAP),
   ),
 } as const;
 
 type ManifestShape = {
-  [K in keyof typeof MANIFEST]: (typeof MANIFEST)[K]['schema'];
+  [K in keyof typeof MANIFEST]: (typeof MANIFEST)[K]['shape'];
 };
 
+/** The FINAL config shape — the wire format of the window-env data element.
+ * Parsed by every producer (buildClientEnv) AND by the browser on the
+ * injected JSON (parseClientEnv), so both ends of the pass-through are
+ * guarded by the same schema, config invariants included. */
 export const CLIENT_ENV_SCHEMA = z
   .object(
     Object.fromEntries(
-      Object.entries(MANIFEST).map(([key, { schema }]) => [key, schema]),
+      Object.entries(MANIFEST).map(([key, { shape }]) => [key, shape]),
     ) as ManifestShape,
   )
-  // Config invariants checked where the JSON is PRODUCED: at pod boot for
-  // k8s (the CLI exits non-zero and the container refuses to start) and at
-  // dev-server/build time locally — never first surfacing in a visitor's
-  // browser.
   .superRefine((cfg, ctx) => {
     if (new Set(cfg.supportedChains).size !== cfg.supportedChains.length) {
       ctx.addIssue({
@@ -203,17 +216,24 @@ export type ClientEnv = z.infer<typeof CLIENT_ENV_SCHEMA>;
 const defaultEnv = (): RawEnv =>
   typeof process !== 'undefined' && process.env ? process.env : {};
 
-/** Raw env → final validated config shape. Throws (ZodError) on invariant
- * violations — callers are producers, where failing loud is the point. */
+/** Raw env → transforms → final shape, validated. Throws (ZodError) on a
+ * broken transform or invariant violation — callers are producers, where
+ * failing loud is the point. */
 export const buildClientEnv = (env: RawEnv = defaultEnv()): ClientEnv =>
   CLIENT_ENV_SCHEMA.parse(
     Object.fromEntries(
-      Object.entries(MANIFEST).map(([key, { source }]) => [
+      Object.entries(MANIFEST).map(([key, { source, transform }]) => [
         key,
-        typeof source === 'string' ? env[source] : source(env),
+        transform(typeof source === 'string' ? env[source] : source(env)),
       ]),
     ),
   );
+
+/** Consumer-side guardrail: validates data that claims to be ClientEnv —
+ * the JSON the loader read from the window-env data element. Throws on a
+ * tampered, corrupt or shape-drifted payload (fail closed). */
+export const parseClientEnv = (data: unknown): ClientEnv =>
+  CLIENT_ENV_SCHEMA.parse(data);
 
 /** The exact bytes every producer puts into the window-env data element.
  * `<` is \u-escaped so no value can smuggle `</script>` (or an SSI

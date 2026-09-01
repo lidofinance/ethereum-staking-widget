@@ -1,4 +1,8 @@
-import { buildClientEnv, type ClientEnv } from './client-env-manifest';
+import {
+  buildClientEnv,
+  parseClientEnv,
+  type ClientEnv,
+} from './client-env-manifest';
 
 /**
  * Runtime env source — the "one image, many envs" contract.
@@ -41,9 +45,13 @@ if (
 //    import { config } from 'config'; // or
 //    import { config } from './get-config'; // in config "namespace"
 // ```
+// parseClientEnv, not a cast: the injected JSON is re-validated against
+// the same schema its producer used — a tampered, corrupt or
+// shape-drifted payload throws here (fail closed) instead of propagating
+// garbage into the app.
 const dynamics: ClientEnv =
   typeof window !== 'undefined' && window.__env__
-    ? (window.__env__ as unknown as ClientEnv)
+    ? parseClientEnv(window.__env__)
     : buildClientEnv();
 
 export default dynamics;

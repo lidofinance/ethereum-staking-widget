@@ -2,7 +2,11 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { buildClientEnv, serializeClientEnv } from '../client-env-manifest';
+import {
+  buildClientEnv,
+  parseClientEnv,
+  serializeClientEnv,
+} from '../client-env-manifest';
 import {
   WINDOW_ENV_LOADER,
   WINDOW_ENV_LOADER_CSP_HASH,
@@ -77,6 +81,29 @@ describe('buildClientEnv / serializeClientEnv', () => {
     );
     expect(accessed.size).toBeGreaterThan(0);
     expect(leaked.length).toBeLessThan(accessed.size);
+  });
+
+  it('validates the pass-through on both ends with the same schema', () => {
+    // producer output → wire → consumer: what buildClientEnv emits is
+    // accepted verbatim by parseClientEnv after the JSON round-trip
+    const produced = buildClientEnv(hostileEnv().env);
+    const consumed = parseClientEnv(JSON.parse(serializeClientEnv(produced)));
+    expect(consumed).toEqual(JSON.parse(JSON.stringify(produced)));
+  });
+
+  it('rejects injected payloads that are not the final shape', () => {
+    // consumer guardrail: garbage or shape drift in the data element must
+    // throw (fail closed), never propagate into the app
+    expect(() => parseClientEnv('garbage')).toThrow();
+    expect(() => parseClientEnv({})).toThrow();
+    const valid = JSON.parse(serializeClientEnv(buildClientEnv({})));
+    expect(() =>
+      parseClientEnv({ ...valid, supportedChains: 'not-a-list' }),
+    ).toThrow();
+    // config invariants hold on the consumer side too
+    expect(() =>
+      parseClientEnv({ ...valid, defaultChain: 1, supportedChains: [1, 1] }),
+    ).toThrow(/duplicates/);
   });
 
   it('rejects duplicated supportedChains at the producer', () => {
