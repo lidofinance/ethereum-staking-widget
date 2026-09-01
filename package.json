@@ -94,6 +94,7 @@
     "husky": "9.1.7",
     "jsonschema": "^1.4.1",
     "lint-staged": "17.0.8",
+    "node-html-parser": "^6.1.12",
     "prettier": "3.9.5",
     "typescript": "6.0.3",
     "typescript-eslint": "8.64.0",

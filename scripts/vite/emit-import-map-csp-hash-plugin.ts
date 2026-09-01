@@ -3,6 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { Plugin } from 'vite';
 
+import { parseHtml } from './parse-html';
 import { walkIndexHtml } from './walk-index-html';
 
 /**
@@ -25,13 +26,21 @@ export const emitImportMapCspHashPlugin = (root: string): Plugin => {
       const files = await walkIndexHtml(distDir);
       const hashes = new Set<string>();
       for (const file of files) {
-        const match = (await readFile(file, 'utf-8')).match(
-          /<script type="importmap">(.*?)<\/script>/s,
-        );
-        if (!match) {
-          throw new Error(`emit-import-map-csp-hash: no import map in ${file}`);
+        // real parser, not regex: the hash must cover the exact bytes the
+        // browser sees between the tags — a silently-wrong extraction
+        // would put a wrong hash in the CSP and disable module-graph SRI
+        const doc = parseHtml(await readFile(file, 'utf-8'));
+        const importMaps = doc
+          .querySelectorAll('script')
+          .filter((el) => el.getAttribute('type') === 'importmap');
+        if (importMaps.length !== 1) {
+          throw new Error(
+            `emit-import-map-csp-hash: expected exactly one import map in ${file}, found ${importMaps.length}`,
+          );
         }
-        hashes.add(createHash('sha256').update(match[1]).digest('base64'));
+        hashes.add(
+          createHash('sha256').update(importMaps[0].innerHTML).digest('base64'),
+        );
       }
       if (hashes.size !== 1) {
         throw new Error(

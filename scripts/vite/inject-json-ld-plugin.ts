@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import type { Plugin } from 'vite';
 
 import { ROUTE_META } from '../../shared/seo';
+import { parseHtml, requireHead } from './parse-html';
 import { walkIndexHtml } from './walk-index-html';
 
 /**
@@ -26,10 +27,15 @@ export const injectJsonLdPlugin = (root: string): Plugin => {
           file.slice(distDir.length).replace(/\/index\.html$/, '') || '/';
         const jsonLd = ROUTE_META[routePath]?.jsonLd;
         if (!jsonLd) continue;
-        const html = await readFile(file, 'utf-8');
+        // parsed injection, not `replace('</head>', …)`: the position is a
+        // real element, immune to a `</head>` literal inside inline content
+        const doc = parseHtml(await readFile(file, 'utf-8'));
         const json = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
-        const script = `<script type="application/ld+json">${json}</script>`;
-        await writeFile(file, html.replace('</head>', `${script}</head>`));
+        requireHead(doc, `inject-json-ld (${file})`).insertAdjacentHTML(
+          'beforeend',
+          `<script type="application/ld+json">${json}</script>`,
+        );
+        await writeFile(file, doc.toString());
       }
     },
   };

@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { Plugin } from 'vite';
 
 import { metaTagsToHtml, pageMeta } from '../../shared/seo';
+import { parseHtml, requireHead } from './parse-html';
 import { WINDOW_ENV_LOADER_CSP_HASH } from './window-env-plugin';
 
 /**
@@ -59,12 +60,27 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
   return {
     name: 'ipfs-head-defaults',
     transformIndexHtml(html) {
-      return html.replace(/(href|src)="\//g, '$1="./').replace(
-        '</head>',
+      const doc = parseHtml(html);
+      // Relativize absolute asset URLs (hand-written favicon/manifest hrefs
+      // in index.html — vite's `base: './'` covers everything it emits
+      // itself). A structural attribute walk, not a regex over the whole
+      // document: it can never rewrite lookalikes inside script content or
+      // JSON data elements, and protocol-relative `//host` URLs are safe.
+      for (const el of doc.querySelectorAll('*')) {
+        for (const attr of ['href', 'src'] as const) {
+          const value = el.getAttribute(attr);
+          if (value?.startsWith('/') && !value.startsWith('//')) {
+            el.setAttribute(attr, `.${value}`);
+          }
+        }
+      }
+      requireHead(doc, 'ipfs-head-defaults').insertAdjacentHTML(
+        'beforeend',
         `<script>${IPFS_BASE_SCRIPT_CONTENT}</script>
 <meta http-equiv="Content-Security-Policy" content="${csp}" />
-${metaTagsToHtml(pageMeta(undefined))}\n  </head>`,
+${metaTagsToHtml(pageMeta(undefined))}\n  `,
       );
+      return doc.toString();
     },
   };
 };

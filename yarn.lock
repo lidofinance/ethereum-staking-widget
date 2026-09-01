@@ -2277,12 +2277,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/rpc@npm:^0.48.0":
-  version: 0.48.0
-  resolution: "@lidofinance/rpc@npm:0.48.0"
+"@lidofinance/rpc@npm:0.64.0":
+  version: 0.64.0
+  resolution: "@lidofinance/rpc@npm:0.64.0"
   dependencies:
     isomorphic-fetch: "npm:^3.0.0"
-  checksum: 10c0/a6e33c9bb930fa5598f8bee350fbe20f376f0d6bc13330af2f0b4c5ce385ec4ae79c4995c98ca03ce260633169331ee40cc056be2eda5f267276cf5625c73ebe
+  checksum: 10c0/209a14d6e638833a7aa28f03bac558f34c1f022e27d570e932ccb6ed74edfb67e1a83fdaa7a389980254c56a56ada9531d9a0347ad80efce11695bf18b8f245e
   languageName: node
   linkType: hard
 
@@ -9986,7 +9986,7 @@ __metadata:
     "@lidofinance/lido-app-ui": "npm:1.1.3"
     "@lidofinance/lido-ethereum-sdk": "npm:4.8.0"
     "@lidofinance/lido-ui": "npm:3.43.0"
-    "@lidofinance/rpc": "npm:^0.48.0"
+    "@lidofinance/rpc": "npm:0.64.0"
     "@metamask/connect-evm": "npm:2.1.1"
     "@playwright/test": "npm:1.61.1"
     "@safe-global/safe-apps-provider": "npm:~0.18.6"
@@ -10024,6 +10024,7 @@ __metadata:
     lint-staged: "npm:17.0.8"
     lodash: "npm:^4.18.1"
     ms: "npm:^2.1.3"
+    node-html-parser: "npm:^6.1.12"
     nprogress: "npm:^0.2.0"
     prettier: "npm:3.9.5"
     react: "npm:^18.2.0"
