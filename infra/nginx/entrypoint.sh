@@ -3,20 +3,13 @@
 # same image artifact serve different environments (Hoodi, Sepolia,
 # Mainnet) from different Helm releases with identical builds:
 #
-# 1. Write /var/cache/nginx/window-env.json — the FINAL client config
-#    shape as plain JSON, spliced into the window-env data element of
-#    every HTML response by nginx SSI (see default.conf.template). All env
+# 1. Write /var/cache/nginx/window-env.json — the final client config as
+#    plain JSON, spliced into every HTML response by nginx SSI. Env
 #    knowledge (sources, transforms, invariants) lives in
-#    config/client-env-manifest.ts; this script just runs its bundled CLI
-#    (scripts/window-env-cli.ts → window-env-cli.mjs, baked into the
-#    image) — a config error exits non-zero and the pod dies at boot
-#    instead of misconfiguring browsers. The data element is NOT
-#    executable; the fixed loader script that parses it into
-#    window.__env__ ships in the build; its CSP hash is a hardcoded
-#    constant (see section 2), pinned to the loader by a unit test.
-# 2. Render nginx config templates, substituting ${SELF_ORIGIN} (feeds the
-#    sub_filter that resolves __PUBLIC_ORIGIN__ in served HTML/XML/TXT)
-#    and the CSP header assembled from CSP_* env vars.
+#    config/client-env-manifest.ts; this script just runs its bundled CLI.
+#    A config error exits non-zero and the pod dies at boot.
+# 2. Render nginx config templates: ${SELF_ORIGIN} (feeds the
+#    __PUBLIC_ORIGIN__ sub_filter) and the CSP header from CSP_* env vars.
 
 set -eu
 
