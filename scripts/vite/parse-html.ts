@@ -1,14 +1,7 @@
 import { parse, type HTMLElement } from 'node-html-parser';
 
 /**
- * The one way build plugins read or edit HTML — a real parser instead of
- * regex/string surgery over markup, so a match can never land inside
- * script content, JSON data elements, or comments, and injections are
- * positional (a real <head>) rather than "first occurrence of a
- * substring". node-html-parser is deliberately the same parser
- * vite-prerender-plugin uses to WRITE these files, and it serializes
- * minimally — bytes it didn't touch stay byte-identical, which matters
- * because CSP hashes are computed from these same files afterwards.
+ * HTML parser for editing the vite build output
  *
  * The options are load-bearing:
  *  - `comment: true` — without it comments are DROPPED on re-serialize,

@@ -3,33 +3,13 @@ import { z } from 'zod';
 import { CHAIN_LIST, type CHAIN_ID } from './chains';
 
 /**
- * THE single source of truth for frontend runtime env — the "one image,
- * many envs" contract. Each entry pairs the env var (or a computed source)
- * with the transform that produces its final typed value and the zod
- * schema of that FINAL shape. Adding an entry here is the only step needed
- * to expose a new env var to the browser config.
+ * THE single source of truth for frontend runtime ENVs (runtime injected)
  *
- * CLIENT_ENV_SCHEMA describes the wire format itself, so the SAME schema
- * guards both ends of the pass-through:
- *  - producers (`buildClientEnv()`) parse their transformed output before
- *    it is serialized — a bad transform or config invariant violation
- *    fails at the point of production;
- *  - the browser (`parseClientEnv()` in config/dynamics.ts) parses the
- *    JSON injected via the window-env data element — a tampered, corrupt
- *    or shape-drifted payload throws instead of propagating garbage.
+ *  - `MANIFEST` - describes the raw env var sources, transforms and final shape
+ *  - `buildClientEnv()` run by `window-env-cli`, reads and sanitizes raw env vars and secrets(presence check)
+ *     and produces the final shape, validated by zod
+ *  - `parseClientEnv()` run by the browser, parses and verifies JSON injected into HTML by nginx SSI
  *
- * Because only post-transform values are serialized, presence-style flags
- * like `useValidationFile` ship as true/false while their source values
- * (api-pod file paths, internal endpoints) never reach the browser.
- *
- * Producers of the JSON, all calling `buildClientEnv()`:
- *  - dev serve / IPFS build: scripts/vite/window-env-plugin.ts;
- *  - k8s web: scripts/window-env-cli.ts, esbuild-bundled at build and run
- *    by infra/nginx/entrypoint.sh at container boot (a config error kills
- *    the pod at boot, not in browsers) — nginx SSI splices the JSON into
- *    every HTML response;
- *  - no-window runtimes (vitest node env, the api bundle): the fallback in
- *    config/dynamics.ts.
  */
 
 type RawEnv = Record<string, string | undefined>;
@@ -186,11 +166,7 @@ type ManifestShape = {
   [K in keyof typeof MANIFEST]: (typeof MANIFEST)[K]['shape'];
 };
 
-/** The FINAL config shape — the wire format of the window-env data element.
- * Parsed by every producer (buildClientEnv) AND by the browser on the
- * injected JSON (parseClientEnv), so both ends of the pass-through are
- * guarded by the same schema, config invariants included. */
-export const CLIENT_ENV_SCHEMA = z
+const CLIENT_ENV_SCHEMA = z
   .object(
     Object.fromEntries(
       Object.entries(MANIFEST).map(([key, { shape }]) => [key, shape]),
@@ -216,16 +192,26 @@ export type ClientEnv = z.infer<typeof CLIENT_ENV_SCHEMA>;
 const defaultEnv = (): RawEnv =>
   typeof process !== 'undefined' && process.env ? process.env : {};
 
+/** The exact bytes every producer puts into the window-env data element.
+ * `<` is \u-escaped so no value can smuggle `</script>` (or an SSI
+ * directive) into the raw-text script element; still valid, readable JSON. */
+const serializeClientEnv = (clientEnv: ClientEnv): string =>
+  JSON.stringify(clientEnv).replace(/</g, '\\u003C');
+
 /** Raw env → transforms → final shape, validated. Throws (ZodError) on a
  * broken transform or invariant violation — callers are producers, where
  * failing loud is the point. */
-export const buildClientEnv = (env: RawEnv = defaultEnv()): ClientEnv =>
-  CLIENT_ENV_SCHEMA.parse(
-    Object.fromEntries(
-      Object.entries(MANIFEST).map(([key, { source, transform }]) => [
-        key,
-        transform(typeof source === 'string' ? env[source] : source(env)),
-      ]),
+export const buildAndSerializeClientEnv = (
+  env: RawEnv = defaultEnv(),
+): string =>
+  serializeClientEnv(
+    CLIENT_ENV_SCHEMA.parse(
+      Object.fromEntries(
+        Object.entries(MANIFEST).map(([key, { source, transform }]) => [
+          key,
+          transform(typeof source === 'string' ? env[source] : source(env)),
+        ]),
+      ),
     ),
   );
 
@@ -234,9 +220,3 @@ export const buildClientEnv = (env: RawEnv = defaultEnv()): ClientEnv =>
  * tampered, corrupt or shape-drifted payload (fail closed). */
 export const parseClientEnv = (data: unknown): ClientEnv =>
   CLIENT_ENV_SCHEMA.parse(data);
-
-/** The exact bytes every producer puts into the window-env data element.
- * `<` is \u-escaped so no value can smuggle `</script>` (or an SSI
- * directive) into the raw-text script element; still valid, readable JSON. */
-export const serializeClientEnv = (clientEnv: ClientEnv): string =>
-  JSON.stringify(clientEnv).replace(/</g, '\\u003C');

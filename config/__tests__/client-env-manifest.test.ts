@@ -3,9 +3,8 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import {
-  buildClientEnv,
+  buildAndSerializeClientEnv,
   parseClientEnv,
-  serializeClientEnv,
 } from '../client-env-manifest';
 import {
   WINDOW_ENV_LOADER,
@@ -51,8 +50,8 @@ const hostileEnv = (overrides: Record<string, string> = SANE_CHAINS) => {
 
 describe('buildClientEnv / serializeClientEnv', () => {
   it('produces a JSON-serializable final shape that round-trips losslessly', () => {
-    const env = buildClientEnv({});
-    const roundTripped = JSON.parse(serializeClientEnv(env));
+    const env = buildAndSerializeClientEnv({});
+    const roundTripped = JSON.parse(buildAndSerializeClientEnv(env));
     for (const [key, value] of Object.entries(env)) {
       if (value !== undefined) {
         expect(roundTripped[key]).toEqual(value);
@@ -62,7 +61,7 @@ describe('buildClientEnv / serializeClientEnv', () => {
 
   it('never emits a literal "<" — nothing can close the script element or arm SSI', () => {
     const { env } = hostileEnv();
-    const serialized = serializeClientEnv(buildClientEnv(env));
+    const serialized = buildAndSerializeClientEnv(env);
     expect(serialized).not.toContain('<');
     // and the escaping is lossless: hostile values survive the round-trip
     const values = JSON.stringify(JSON.parse(serialized));
@@ -75,7 +74,7 @@ describe('buildClientEnv / serializeClientEnv', () => {
     // env var this build READ also appeared verbatim in the payload, raw
     // values would be flowing through untransformed.
     const { env, accessed } = hostileEnv();
-    const serialized = serializeClientEnv(buildClientEnv(env));
+    const serialized = buildAndSerializeClientEnv(env);
     const leaked = [...accessed].filter((name) =>
       serialized.includes(`(${name})`),
     );
@@ -86,8 +85,8 @@ describe('buildClientEnv / serializeClientEnv', () => {
   it('validates the pass-through on both ends with the same schema', () => {
     // producer output → wire → consumer: what buildClientEnv emits is
     // accepted verbatim by parseClientEnv after the JSON round-trip
-    const produced = buildClientEnv(hostileEnv().env);
-    const consumed = parseClientEnv(JSON.parse(serializeClientEnv(produced)));
+    const produced = buildAndSerializeClientEnv(hostileEnv().env);
+    const consumed = parseClientEnv(JSON.parse(produced));
     expect(consumed).toEqual(JSON.parse(JSON.stringify(produced)));
   });
 
@@ -96,7 +95,7 @@ describe('buildClientEnv / serializeClientEnv', () => {
     // throw (fail closed), never propagate into the app
     expect(() => parseClientEnv('garbage')).toThrow();
     expect(() => parseClientEnv({})).toThrow();
-    const valid = JSON.parse(serializeClientEnv(buildClientEnv({})));
+    const valid = JSON.parse(buildAndSerializeClientEnv({}));
     expect(() =>
       parseClientEnv({ ...valid, supportedChains: 'not-a-list' }),
     ).toThrow();
@@ -108,20 +107,28 @@ describe('buildClientEnv / serializeClientEnv', () => {
 
   it('rejects duplicated supportedChains at the producer', () => {
     expect(() =>
-      buildClientEnv({ DEFAULT_CHAIN: '1', SUPPORTED_CHAINS: '1,1' }),
+      buildAndSerializeClientEnv({
+        DEFAULT_CHAIN: '1',
+        SUPPORTED_CHAINS: '1,1',
+      }),
     ).toThrow(/duplicates/);
   });
 
   it('rejects a defaultChain that is not the first supported chain', () => {
     expect(() =>
-      buildClientEnv({ DEFAULT_CHAIN: '5', SUPPORTED_CHAINS: '1,5' }),
+      buildAndSerializeClientEnv({
+        DEFAULT_CHAIN: '5',
+        SUPPORTED_CHAINS: '1,5',
+      }),
     ).toThrow(/first element/);
   });
 });
 
 describe('window-env loader contract', () => {
   it('parses the serialized payload from the data element into window.__env__', () => {
-    const payload = serializeClientEnv(buildClientEnv(hostileEnv().env));
+    const payload = serializeClientEnv(
+      buildAndSerializeClientEnv(hostileEnv().env),
+    );
     const window: { __env__?: unknown } = {};
     const document = {
       getElementById: (id: string) =>

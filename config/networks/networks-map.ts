@@ -9,8 +9,7 @@ import {
 // Framework-neutral env source (browser: window.__env__; Node: process.env
 // via config/client-env-manifest.ts). This module is imported BOTH by the frontend and
 // by the api server (RPC allowlists + earn contracts share this single
-// source of contract addresses) — it must not touch `next/config`,
-// `config/get-preconfig`, or anything else browser- or Next-coupled.
+// source of contract addresses)
 import dynamics from 'config/dynamics';
 
 // Main deployments

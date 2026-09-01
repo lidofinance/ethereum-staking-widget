@@ -1,15 +1,16 @@
 // load-local-env first: it populates process.env from .env.local, which
 // buildClientEnv() reads when the hooks below run.
-import './load-local-env';
+try {
+  process.loadEnvFile('.env.local');
+} catch {
+  // no .env.local — fine: CI/docker builds pass env directly
+}
 
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { Plugin } from 'vite';
 
-import {
-  buildClientEnv,
-  serializeClientEnv,
-} from '../../config/client-env-manifest';
+import { buildAndSerializeClientEnv } from '../../config/client-env-manifest';
 
 import { walkIndexHtml } from './walk-index-html';
 
@@ -75,8 +76,12 @@ export const WINDOW_ENV_LOADER_CSP_HASH =
 
 // Payload for the data element (dev/IPFS): the same final-shape JSON the
 // window-env CLI prints in k8s — one producer implementation for all modes.
-const windowEnvPayload = (): string => serializeClientEnv(buildClientEnv());
+const windowEnvPayload = (): string => buildAndSerializeClientEnv();
 
+/**
+ * Injects the window-env data element and loader script into every index.html for DEV/IPFS
+ * For Prod build, injects loader and SSI include for nginx
+ */
 export const windowEnvPlugin = (root: string, isIpfs: boolean): Plugin => {
   let isBuild = false;
   return {

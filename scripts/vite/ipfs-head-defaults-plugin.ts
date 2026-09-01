@@ -40,11 +40,7 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
     "font-src 'self' data: https://fonts.reown.com",
     "img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com",
     // The only inline scripts in the IPFS build are the <base> bootstrap
-    // above and the window.__env__ loader (the env DATA element is
-    // type="application/json" — not executable, outside script-src). The
-    // legacy lido-ui cookie-theme hash 'sha256-wTvVT3oJ…' is gone: the SPA
-    // initializes theme via initGlobalCookieTheme inside the bundle,
-    // ScriptThemeValue is rendered nowhere.
+    // above and the window.__env__ loader
     `script-src 'self' ${IPFS_BASE_SCRIPT_HASH} ${WINDOW_ENV_LOADER_CSP_HASH}`,
     "connect-src 'self' https: wss:",
     "frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com",
@@ -63,9 +59,7 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
       const doc = parseHtml(html);
       // Relativize absolute asset URLs (hand-written favicon/manifest hrefs
       // in index.html — vite's `base: './'` covers everything it emits
-      // itself). A structural attribute walk, not a regex over the whole
-      // document: it can never rewrite lookalikes inside script content or
-      // JSON data elements, and protocol-relative `//host` URLs are safe.
+      // itself).
       for (const el of doc.querySelectorAll('*')) {
         for (const attr of ['href', 'src'] as const) {
           const value = el.getAttribute(attr);

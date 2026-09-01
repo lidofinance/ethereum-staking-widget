@@ -1,13 +1,11 @@
 #!/bin/sh
+#
 # Startup jobs that derive from container env vars at boot — all let the
 # same image artifact serve different environments (Hoodi, Sepolia,
 # Mainnet) from different Helm releases with identical builds:
 #
-# 1. Write /var/cache/nginx/window-env.json — the final client config as
-#    plain JSON, spliced into every HTML response by nginx SSI. Env
-#    knowledge (sources, transforms, invariants) lives in
-#    config/client-env-manifest.ts; this script just runs its bundled CLI.
-#    A config error exits non-zero and the pod dies at boot.
+# 1. Generate and write /var/cache/nginx/window-env.json — the final client config as
+#    plain JSON, spliced into every HTML response by nginx SSI. 
 # 2. Render nginx config templates: ${SELF_ORIGIN} (feeds the
 #    __PUBLIC_ORIGIN__ sub_filter) and the CSP header from CSP_* env vars.
 

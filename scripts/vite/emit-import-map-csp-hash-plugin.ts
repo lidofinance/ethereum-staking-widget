@@ -26,9 +26,6 @@ export const emitImportMapCspHashPlugin = (root: string): Plugin => {
       const files = await walkIndexHtml(distDir);
       const hashes = new Set<string>();
       for (const file of files) {
-        // real parser, not regex: the hash must cover the exact bytes the
-        // browser sees between the tags — a silently-wrong extraction
-        // would put a wrong hash in the CSP and disable module-graph SRI
         const doc = parseHtml(await readFile(file, 'utf-8'));
         const importMaps = doc
           .querySelectorAll('script')

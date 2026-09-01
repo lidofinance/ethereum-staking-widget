@@ -87,13 +87,7 @@ server {
     sub_filter_once off;
     # Inline runtime env: the build ships the window-env data element as
     # `<!--#include virtual="/window-env.json" -->` and SSI splices in the
-    # plain-JSON file written by entrypoint.sh at boot — the payload never
-    # crosses a config string, and response-time inclusion keeps env atomic
-    # with the HTML: no separately-cacheable env artifact to skew against
-    # the bundle (the former stable-URL /runtime/window-env.js did exactly
-    # that). Safe to enable: all served HTML is a build artifact, and env
-    # values are `<`-escaped by the entrypoint, so no content can carry a
-    # live SSI directive. Default ssi_types is text/html only.
+    # plain-JSON file written by entrypoint.sh at boot
     ssi on;
     # text/html is sub_filter's built-in default (relisting it makes nginx
     # warn about a duplicate MIME type). sitemap.xml is text/xml (some
@@ -105,7 +99,7 @@ server {
 
   # Runtime env JSON for the SSI include in location / — written by
   # entrypoint.sh at container start. `internal`: subrequests only, a
-  # direct client fetch 404s, so there is no separately-cacheable env URL.
+  # direct client fetch 404s
   location = /window-env.json {
     internal;
     alias /var/cache/nginx/window-env.json;

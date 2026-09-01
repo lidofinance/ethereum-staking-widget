@@ -34,9 +34,7 @@ export const useVersionStatus = () => {
       const urlCid = URL_CID_REGEX.exec(window.location.href)?.groups?.cid;
       if (urlCid) return urlCid;
 
-      // any always-bundled asset works here — we only need the gateway's
-      // X-Ipfs-Roots response header (the former /runtime/window-env.js is
-      // gone: runtime env ships as an inline script in the HTML)
+      // extract X-Ipfs-Roots response header from bundled asset
       const response = await fetch(`${config.BASE_PATH_ASSET}/manifest.json`, {
         method: 'HEAD',
       });

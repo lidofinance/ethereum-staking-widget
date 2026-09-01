@@ -7,39 +7,35 @@
  * ipfsMode never fetches it, and a stale blocklist must not be published
  * into an immutable IPFS bundle.
  *
- * (What's left of write-window-env.mjs: the window-env.js runtime file is
- * gone — env now ships as an inline script in the HTML, injected by
- * scripts/vite/window-env-plugin.ts in dev/IPFS and by the nginx entrypoint
- * sub_filter in k8s.)
  *
  * Usage: node --env-file-if-exists=.env.local scripts/write-validation-file.mjs
  */
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
-// Sweep the pre-inline-env artifact: public/runtime is gitignored, so a
-// stale window-env.js from an older checkout would silently ride into
-// dist/ via Vite's publicDir and resurrect the cacheable-env problem.
-rmSync(resolve('./public/runtime/window-env.js'), { force: true });
-
-const sha256hex = (value) =>
-  createHash('sha256').update(value).digest('hex');
+const sha256hex = (value) => createHash('sha256').update(value).digest('hex');
 
 const validationFilePath = process.env.VALIDATION_FILE_PATH?.trim();
 if (validationFilePath && process.env.IPFS_MODE !== 'true') {
   try {
-    const source = JSON.parse(readFileSync(resolve(validationFilePath), 'utf8'));
+    const source = JSON.parse(
+      readFileSync(resolve(validationFilePath), 'utf8'),
+    );
     const hashed = {
       addresses: (source.addresses ?? []).map((addr) =>
         // already-hashed entries (64 hex) pass through
-        /^[0-9a-f]{64}$/i.test(addr) ? addr.toLowerCase() : sha256hex(addr.toLowerCase()),
+        /^[0-9a-f]{64}$/i.test(addr)
+          ? addr.toLowerCase()
+          : sha256hex(addr.toLowerCase()),
       ),
     };
     const outPath = resolve('./public/runtime/validation.json');
     mkdirSync(dirname(outPath), { recursive: true });
     writeFileSync(outPath, JSON.stringify(hashed));
-    console.info('wrote hashed validation file to public/runtime/validation.json');
+    console.info(
+      'wrote hashed validation file to public/runtime/validation.json',
+    );
   } catch (err) {
     console.warn(
       `validation file not written (${validationFilePath}): ${err.code ?? err}`,

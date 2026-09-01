@@ -10,7 +10,12 @@
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon-1080x1080.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/favicon-192x192.png"
+    />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <!--
@@ -23,21 +28,11 @@
     <title>Stake with Lido | Lido</title>
 
     <!--
-      Runtime env — the "one image, many envs" contract; the env list lives
-      in config/client-env-manifest.ts. This NON-EXECUTABLE data element receives
-      plain-JSON env in place of __WINDOW_ENV__:
-        - k8s web: the build swaps the placeholder for an nginx SSI include
-          and the JSON is spliced in at response time, written from
-          container env at boot by infra/nginx/entrypoint.sh;
-        - dev serve / IPFS build: filled in directly by
-          scripts/vite/window-env-plugin.ts.
-      The same plugin injects the fixed loader script right after this tag
-      (it parses the data into window.__env__ before the main bundle) and
-      emits the loader's CSP hash at build. Inline rather than an external
-      file so env is atomic with the HTML response — a cached copy is
-      old-but-consistent, never a new-bundle/old-env mix.
+      ENV injection script
     -->
-    <script type="application/json" id="window-env">__WINDOW_ENV__</script>
+    <script type="application/json" id="window-env">
+      __WINDOW_ENV__
+    </script>
   </head>
   <body>
     <div id="root"></div>
