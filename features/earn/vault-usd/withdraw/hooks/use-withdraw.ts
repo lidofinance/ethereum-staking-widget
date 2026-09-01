@@ -9,11 +9,15 @@ import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import {
   getCollectorContract,
-  getRedeemQueueWritableContractUSDC,
-  getSyncRedeemQueueWritableContractUSDC,
+  getRedeemQueueWritableContract,
+  getSyncRedeemQueueWritableContract,
 } from '../../contracts';
+import type { UsdWithdrawToken } from '../../types';
 
-export const useUsdVaultWithdraw = (onRetry: () => void) => {
+export const useUsdVaultWithdraw = (
+  onRetry: () => void,
+  token: UsdWithdrawToken,
+) => {
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesWithdraw({
     stageOperationArgs: {
@@ -31,18 +35,20 @@ export const useUsdVaultWithdraw = (onRetry: () => void) => {
   );
 
   const asyncRedeemQueue = useMemo(() => {
-    return getRedeemQueueWritableContractUSDC(
-      publicClientMainnet,
-      core.walletClient as WalletClient,
-    );
-  }, [publicClientMainnet, core.walletClient]);
+    return getRedeemQueueWritableContract({
+      publicClient: publicClientMainnet,
+      walletClient: core.walletClient as WalletClient,
+      token,
+    });
+  }, [publicClientMainnet, core.walletClient, token]);
 
   const syncRedeemQueue = useMemo(() => {
-    return getSyncRedeemQueueWritableContractUSDC(
-      publicClientMainnet,
-      core.walletClient as WalletClient,
-    );
-  }, [publicClientMainnet, core.walletClient]);
+    return getSyncRedeemQueueWritableContract({
+      publicClient: publicClientMainnet,
+      walletClient: core.walletClient as WalletClient,
+      token,
+    });
+  }, [publicClientMainnet, core.walletClient, token]);
 
   return useWithdraw({
     collector,
