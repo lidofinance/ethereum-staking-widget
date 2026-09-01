@@ -76,7 +76,7 @@ if [ -z "$IMPORT_MAP_HASH" ]; then
     exit 1
   fi
 fi
-# CSP hash of the WINDOW_ENV_LOADER in scripts/vite/window-env-plugin.ts
+# CSP hash of the inline window-env loader in index.html (pinned by unit test)
 WINDOW_ENV_LOADER_HASH="sha256-6ApUdZunJlq8fZcraTYQbcZ6XIB1F85yxMoDe+8WwAY="
 
 # Trusted hosts for CSP script-src, comma-separated in the env var

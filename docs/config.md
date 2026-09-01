@@ -2,50 +2,40 @@
 
 ## Runtime env delivery ("one image, many envs")
 
-The web image is built env-free; browsers receive runtime env as a
-NON-EXECUTABLE JSON data element inside the HTML itself
-(`<script type="application/json" id="window-env">`), parsed into
-`window.__env__` by a fixed, CSP-hashed loader script. There is no
-separately fetchable env URL, so env can never cache-skew against the
-bundle — a cached HTML response is old-but-consistent.
+The web image is built env-free. Browsers get runtime env as a
+non-executable JSON data element in the HTML
+(`<script type="application/json" id="window-env">`), read into
+`window.__env__` by a fixed, CSP-hashed loader. No separately fetchable env
+URL → no cache skew against the bundle.
 
-**Single source of truth: `config/client-env-manifest.ts`.** Each entry
-pairs an env var with the zod transform that produces its final typed
-value; `ClientEnv = z.infer<…>` is the config type. Adding a frontend env
-var = adding one entry there. Everything else derives:
+Single source of truth: `config/client-env-manifest.ts` — one entry per env
+var (source, transform, zod shape); `ClientEnv = z.infer<…>`. Adding an env
+= adding one entry. Producers:
 
-- dev serve / IPFS builds: `scripts/vite/window-env-plugin.ts` fills the
-  element in from process env (`.env.local` included);
-- k8s web: the build ships an nginx SSI include instead; at container boot
-  `infra/nginx/entrypoint.sh` runs the bundled `scripts/window-env-cli.ts`
-  (esbuild output baked into the image; the runtime image carries `nodejs`
-  for this one boot-time call) and nginx splices the JSON into every HTML
-  response;
-- no-window runtimes (vitest, the api bundle): `config/dynamics.ts` falls
-  back to `buildClientEnv(process.env)`.
+- dev / IPFS build: `scripts/vite/window-env-plugin.ts` (reads `.env.local`);
+- k8s web: `infra/nginx/entrypoint.sh` runs the bundled
+  `scripts/window-env-cli.ts` at boot; nginx SSI splices the JSON into
+  every HTML response;
+- no-window runtimes (vitest, api bundle): fallback in `config/dynamics.ts`.
 
-Because only post-transform values are serialized, presence-style flags
-(`useValidationFile` etc.) ship as `true`/`false` while their source values
-(file paths, internal hosts) never reach the browser — by construction.
+Only post-transform values ship: presence flags serialize as booleans;
+their source values (paths, internal hosts) never reach the browser. The
+same zod schema validates both ends — producer output and injected payload.
 
-### Deploy-visible behavior (for infra)
+### Deploy notes (infra)
 
-- **The web pod fails at boot** — instead of serving bad config — when:
-  the env CLI fails or config invariants are violated (duplicate
-  `SUPPORTED_CHAINS`, `DEFAULT_CHAIN` not first), or (enforcing CSP only)
-  the build's `importmap-csp-hash.txt` is missing. A crash-looping pod
-  after a deploy most likely means misconfigured env, not a broken image.
-- **`IS_PROD=true` must be set on production** — it suppresses the test-env
-  banner. (Previously this flag was never delivered to the SPA at all.)
-- The `/runtime` emptyDir mount for `window-env.js` is obsolete — nothing
-  writes there at boot anymore (`/var/cache/nginx` covers the env JSON).
-- Env-only redeploys need no CDN purge: env travels inside the HTML
-  response, never as a standalone cached asset.
+- Web pod **fails at boot** on env/config errors (duplicate
+  `SUPPORTED_CHAINS`, `DEFAULT_CHAIN` not first, CLI failure) or a missing
+  `importmap-csp-hash.txt` under enforcing CSP. Crash-loop after deploy ⇒
+  check env, not the image.
+- `IS_PROD=true` required on production — suppresses the test-env banner
+  (previously never delivered to the SPA).
+- The `/runtime` emptyDir for `window-env.js` is obsolete.
+- Env-only redeploys need no CDN purge — env travels inside the HTML.
 
-Mechanism tests: `yarn test:unit` covers the manifest/serializer/loader
-contract (`config/__tests__/client-env-manifest.test.ts`). The full stack —
-real nginx SSI, CSP splicing, the api proxy — runs locally with
-`docker compose up --build` (see README "Production build locally").
+Tests: `yarn test:unit` (`config/__tests__/client-env-manifest.test.ts`).
+Full stack locally: `docker compose up --build` (README → "Production build
+locally").
 
 ## Config system
 

@@ -41,11 +41,9 @@ yarn dev:ipfs # will start with HMR
 
 ### Environment variables
 
-Frontend runtime env has a single source of truth: `config/client-env-manifest.ts` —
-adding an entry there is the only step needed to expose a new env var to the
-browser config (see `docs/config.md` for the delivery mechanism). Server-only
-env is read by the api workspace (`server/src/config.ts`) and never reaches
-the browser.
+Frontend runtime env: one entry in `config/client-env-manifest.ts` is all it
+takes (delivery mechanism: `docs/config.md`). Server-only env lives in
+`server/src/config.ts` and never reaches the browser.
 
 ### Automatic versioning
 
@@ -60,26 +58,16 @@ git commit -m "feat: dark theme"
 
 ## Production build locally
 
-Runs the same containers k8s runs (`Dockerfile.web` + `Dockerfile.api`),
-wired like the helm release: nginx serves the static build, splices runtime
-env into the HTML via SSI, and proxies `/api/*` to the api container. Env is
-read from `.env.local` — the same file `yarn dev` uses — at container boot:
+The same containers k8s runs, wired like the helm release. Env comes from
+`.env.local` (read at container boot — re-`up` after edits, no rebuild):
 
 ```bash
 docker compose up --build
 # → http://localhost:3000
 ```
 
-Env-only changes need no rebuild: edit `.env.local` and `docker compose up`
-again. See `compose.yaml` for the local-only overrides (file-mount features
-are disabled by default) and `docs/config.md` for how runtime env reaches
-the browser.
-
-For the static IPFS bundle:
-
-```bash
-yarn build:ipfs # emits dist/
-```
+Local-only overrides live in `compose.yaml`; env delivery details in
+`docs/config.md`. Static IPFS bundle: `yarn build:ipfs` (emits `dist/`).
 
 ## Adding a new route API
 

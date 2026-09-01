@@ -28,11 +28,15 @@
     <title>Stake with Lido | Lido</title>
 
     <!--
-      ENV injection script
+      ENV injection, prod form: nginx SSI splices JSON into the data
+      element at response time; the vite plugin swaps the include for
+      inline JSON in dev/IPFS. The loader below is CSP-hashed — do NOT
+      reformat either line (exact bytes; pinned by unit test + prettier-ignore).
     -->
-    <script type="application/json" id="window-env">
-      __WINDOW_ENV__
-    </script>
+    <!-- prettier-ignore -->
+    <script type="application/json" id="window-env"><!--#include virtual="/window-env.json" --></script>
+    <!-- prettier-ignore -->
+    <script>window.__env__=JSON.parse(document.getElementById("window-env").textContent)</script>
   </head>
   <body>
     <div id="root"></div>

@@ -12,76 +12,41 @@ import type { Plugin } from 'vite';
 
 import { buildAndSerializeClientEnv } from '../../config/client-env-manifest';
 
+import { parseHtml } from './parse-html';
 import { walkIndexHtml } from './walk-index-html';
 
 /**
- * Runtime env delivery — the "one image, many envs" contract, inline
- * edition. The former mechanism (a stable-URL `/runtime/window-env.js`
- * rewritten per environment) had two structural flaws: the file cached
- * independently of the bundle and skewed against it (new bundle + old env —
- * the missing-`isProd` banner incident), and its content could never be
- * SRI-pinned because it is unknown at build time.
+ * Runtime env delivery — the "one image, many envs" contract.
  *
- * The env list, transforms and validation have ONE source of truth:
- * config/client-env-manifest.ts. This plugin only moves the result. Env
- * travels in two inline pieces:
- *
- *  - a DATA element, `<script type="application/json" id="window-env">` —
- *    plain, human-readable JSON carrying the FINAL config shape
- *    (buildClientEnv()), not executable and therefore outside CSP
- *    script-src. Dev serve and IPFS builds get it filled in HERE from the
- *    current process env; the k8s web build instead carries an nginx SSI
- *    include (`<!--#include virtual="/window-env.json" -->`) — the
- *    entrypoint runs the bundled scripts/window-env-cli.ts at boot to
- *    write that file, and nginx splices it into every HTML response
- *    server-side. Env stays atomic with the response (a cached copy is
- *    old-but-consistent) and there is no separately-fetchable artifact;
- *  - a fixed LOADER script (WINDOW_ENV_LOADER below, injected in every
- *    mode) that parses the data element into `window.__env__`. Being
- *    static, its CSP hash is a hardcoded constant — embedded in the IPFS
- *    CSP meta here and in the nginx CSP header by the entrypoint — so
- *    script EXECUTION stays hash-pinned. (Values in the data element are
- *    correspondingly NOT hash-covered — their integrity rests on the
- *    read-only html volume and the response-time include.)
+ * index.html ships the PROD form: a non-executable data element carrying
+ * an nginx SSI include (spliced with JSON at response time — env stays
+ * atomic with the HTML, no separately-cacheable artifact) plus the fixed
+ * loader script that parses it into window.__env__. The web build passes
+ * through UNTOUCHED; this plugin only:
+ *  - dev serve / IPFS build: swaps the SSI include for inline JSON from
+ *    the current process env (same producer as the k8s window-env CLI:
+ *    config/client-env-manifest.ts);
+ *  - web build: validates every emitted HTML still carries exactly one
+ *    data element and one loader (config/dynamics.ts fails closed on a
+ *    broken page — fail the build instead).
  */
 
-// The id pins the exact tag for every substituting party (this plugin, the
-// loader's getElementById) and for humans inspecting a served page.
 const WINDOW_ENV_TAG_OPEN = '<script type="application/json" id="window-env">';
-export const WINDOW_ENV_PLACEHOLDER = `${WINDOW_ENV_TAG_OPEN}__WINDOW_ENV__</script>`;
 
-// What the web build ships instead of the payload — nginx SSI fills it in
-// at response time (ssi on + the internal /window-env.json location, see
-// infra/nginx/default.conf.template).
-const WINDOW_ENV_SSI_ELEMENT = `${WINDOW_ENV_TAG_OPEN}<!--#include virtual="/window-env.json" --></script>`;
+// Must match index.html byte-for-byte — the swap is an exact-string
+// replace on our own authored sentinel (a miss throws, never corrupts).
+export const WINDOW_ENV_SSI_ELEMENT = `${WINDOW_ENV_TAG_OPEN}<!--#include virtual="/window-env.json" --></script>`;
 
-/**
- * The one executable piece — byte-exact source of the CSP hash below.
- * DO NOT change this string without updating BOTH hardcoded hash copies:
- * WINDOW_ENV_LOADER_CSP_HASH here (also embedded in the IPFS CSP meta)
- * and SCRIPT_SRC_EXTRA in infra/nginx/entrypoint.sh — the unit test in
- * config/__tests__/client-env-manifest.test.ts recomputes the hash and
- * fails on any drift. If the data element is missing or unpopulated,
- * JSON.parse throws, window.__env__ stays unset and config/dynamics.ts
- * fails closed.
- */
-export const WINDOW_ENV_LOADER =
-  'window.__env__=JSON.parse(document.getElementById("window-env").textContent)';
-
-const WINDOW_ENV_LOADER_TAG = `<script>${WINDOW_ENV_LOADER}</script>`;
-
-// sha256(WINDOW_ENV_LOADER), base64 — static because the loader is static.
+// sha256 of the loader script's content (inline in index.html). Hardcoded
+// here (→ IPFS CSP meta) and in infra/nginx/entrypoint.sh (→ web CSP
+// header); the unit test recomputes it from index.html and fails on drift.
 export const WINDOW_ENV_LOADER_CSP_HASH =
   'sha256-6ApUdZunJlq8fZcraTYQbcZ6XIB1F85yxMoDe+8WwAY=';
 
-// Payload for the data element (dev/IPFS): the same final-shape JSON the
-// window-env CLI prints in k8s — one producer implementation for all modes.
-const windowEnvPayload = (): string => buildAndSerializeClientEnv();
+const isWindowEnvData = (el: {
+  getAttribute: (n: string) => string | undefined;
+}) => el.getAttribute('id') === 'window-env';
 
-/**
- * Injects the window-env data element and loader script into every index.html for DEV/IPFS
- * For Prod build, injects loader and SSI include for nginx
- */
 export const windowEnvPlugin = (root: string, isIpfs: boolean): Plugin => {
   let isBuild = false;
   return {
@@ -95,37 +60,20 @@ export const windowEnvPlugin = (root: string, isIpfs: boolean): Plugin => {
     transformIndexHtml: {
       order: 'pre',
       handler(html) {
-        if (!html.includes(WINDOW_ENV_PLACEHOLDER)) {
+        if (!html.includes(WINDOW_ENV_SSI_ELEMENT)) {
           throw new Error(
-            `window-env: index.html lost the ${WINDOW_ENV_PLACEHOLDER} placeholder`,
+            `window-env: index.html lost the ${WINDOW_ENV_SSI_ELEMENT} element`,
           );
         }
-        // Loader goes in right after the data element in EVERY mode — the
-        // executable piece has a single source of truth here, next to the
-        // hash derived from it.
-        const withLoader = html.replace(
-          WINDOW_ENV_PLACEHOLDER,
-          `${WINDOW_ENV_PLACEHOLDER}\n    ${WINDOW_ENV_LOADER_TAG}`,
-        );
-        // Web build: swap the placeholder for the SSI include — nginx
-        // fills it per environment at response time.
-        if (isBuild && !isIpfs) {
-          return withLoader.replace(
-            WINDOW_ENV_PLACEHOLDER,
-            WINDOW_ENV_SSI_ELEMENT,
-          );
-        }
-        // Dev serve / IPFS build: fill in the current process env. The
-        // IPFS CSP meta gets the loader hash in ipfs-head-defaults-plugin.
-        return withLoader.replace(
-          WINDOW_ENV_PLACEHOLDER,
-          `${WINDOW_ENV_TAG_OPEN}${windowEnvPayload()}</script>`,
+        // Web build ships the SSI form as-is.
+        if (isBuild && !isIpfs) return html;
+        // Dev serve / IPFS build: inline the current process env.
+        return html.replace(
+          WINDOW_ENV_SSI_ELEMENT,
+          `${WINDOW_ENV_TAG_OPEN}${buildAndSerializeClientEnv()}</script>`,
         );
       },
     },
-    // Web build: an HTML file without exactly one SSI data element + one
-    // loader would be served broken — no env, and config/dynamics.ts fails
-    // closed on that. Fail the build instead.
     async closeBundle() {
       if (!isBuild || isIpfs) return;
       const files = await walkIndexHtml(resolve(root, 'dist'));
@@ -134,16 +82,20 @@ export const windowEnvPlugin = (root: string, isIpfs: boolean): Plugin => {
       }
       for (const file of files) {
         const html = await readFile(file, 'utf-8');
-        for (const [what, needle] of [
-          ['SSI data element', WINDOW_ENV_SSI_ELEMENT],
-          ['loader script', WINDOW_ENV_LOADER_TAG],
-        ] as const) {
-          const count = html.split(needle).length - 1;
-          if (count !== 1) {
-            throw new Error(
-              `window-env: expected exactly one ${what} in ${file}, found ${count}`,
-            );
-          }
+        const scripts = parseHtml(html).querySelectorAll('script');
+        const dataElements = scripts.filter(isWindowEnvData);
+        const loaders = scripts.filter((el) =>
+          el.innerHTML.startsWith('window.__env__='),
+        );
+        if (
+          dataElements.length !== 1 ||
+          dataElements[0].innerHTML.trim() !==
+            '<!--#include virtual="/window-env.json" -->' ||
+          loaders.length !== 1
+        ) {
+          throw new Error(
+            `window-env: ${file} must carry exactly one SSI data element and one loader (got ${dataElements.length}/${loaders.length})`,
+          );
         }
       }
     },

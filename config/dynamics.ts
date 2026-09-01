@@ -18,8 +18,10 @@ if (
 // Determine runtime
 const isProdBrowser = typeof window !== 'undefined' && window.__env__;
 
-// Prod runtime will have window.__env__ injected but dev and IPFS builds will have build time ENVS
-const envSource = isProdBrowser ? window.__env__ : buildAndSerializeClientEnv();
+// Prod runtime will have window.__env__ injected but dev and IPFS builds will have build time ENVS.
+const envSource = isProdBrowser
+  ? window.__env__
+  : JSON.parse(buildAndSerializeClientEnv());
 
 // Parse and validate the runtime env
 const dynamics = parseClientEnv(envSource);

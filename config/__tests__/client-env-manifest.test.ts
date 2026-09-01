@@ -6,24 +6,25 @@ import {
   buildAndSerializeClientEnv,
   parseClientEnv,
 } from '../client-env-manifest';
-import {
-  WINDOW_ENV_LOADER,
-  WINDOW_ENV_LOADER_CSP_HASH,
-  WINDOW_ENV_PLACEHOLDER,
-} from '../../scripts/vite/window-env-plugin';
+import { WINDOW_ENV_LOADER_CSP_HASH } from '../../scripts/vite/window-env-plugin';
+import { parseHtml } from '../../scripts/vite/parse-html';
+
+const repoFile = (rel: string) =>
+  readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
+
+// The loader's source of truth is the inline script in index.html.
+const WINDOW_ENV_LOADER =
+  parseHtml(repoFile('../../index.html'))
+    .querySelectorAll('script')
+    .map((el) => el.innerHTML)
+    .find((code) => code.startsWith('window.__env__=')) ?? '<loader missing>';
 
 /**
  * Tests the runtime-env DELIVERY MECHANISM, deliberately env-independent:
  * no test names a manifest entry, so adding or removing an env var never
- * touches this suite. The properties guarded here:
- *  - the wire format is the final serializable config shape (round-trip),
- *  - no env value can break out of the raw-text script element,
- *  - the fixed loader parses exactly what serializeClientEnv produces,
- *  - the loader's CSP hash tracks its content,
- *  - config invariants fail at the producer, not in browsers.
- *
- * Chain env vars (SUPPORTED_CHAINS/DEFAULT_CHAIN) appear by name only for
- * the invariant tests — they are core semantics, not "an env".
+ * touches this suite. Chain env vars (SUPPORTED_CHAINS/DEFAULT_CHAIN)
+ * appear by name only for the invariant tests — core semantics, not "an
+ * env".
  */
 
 // A value that tries every escape route at once: closing the script
@@ -48,51 +49,33 @@ const hostileEnv = (overrides: Record<string, string> = SANE_CHAINS) => {
   return { env, accessed };
 };
 
-describe('buildClientEnv / serializeClientEnv', () => {
-  it('produces a JSON-serializable final shape that round-trips losslessly', () => {
-    const env = buildAndSerializeClientEnv({});
-    const roundTripped = JSON.parse(buildAndSerializeClientEnv(env));
-    for (const [key, value] of Object.entries(env)) {
-      if (value !== undefined) {
-        expect(roundTripped[key]).toEqual(value);
-      }
+describe('buildAndSerializeClientEnv / parseClientEnv', () => {
+  it('produces wire JSON the consumer guardrail accepts — both ends, same schema', () => {
+    for (const env of [{}, hostileEnv().env]) {
+      const wire = buildAndSerializeClientEnv(env);
+      const parsed = parseClientEnv(JSON.parse(wire));
+      expect(parsed).toEqual(JSON.parse(wire));
     }
   });
 
   it('never emits a literal "<" — nothing can close the script element or arm SSI', () => {
-    const { env } = hostileEnv();
-    const serialized = buildAndSerializeClientEnv(env);
-    expect(serialized).not.toContain('<');
+    const wire = buildAndSerializeClientEnv(hostileEnv().env);
+    expect(wire).not.toContain('<');
     // and the escaping is lossless: hostile values survive the round-trip
-    const values = JSON.stringify(JSON.parse(serialized));
-    expect(values).toContain('alert(1)');
+    expect(JSON.stringify(JSON.parse(wire))).toContain('alert(1)');
   });
 
   it('ships only transformed values — at least one read env var must not appear in the output', () => {
     // The generic form of "presence-style flags never leak their source
-    // value" (e.g. an api-pod file path shipping as true/false): if every
-    // env var this build READ also appeared verbatim in the payload, raw
-    // values would be flowing through untransformed.
+    // value" (e.g. an api-pod file path shipping as true/false).
     const { env, accessed } = hostileEnv();
-    const serialized = buildAndSerializeClientEnv(env);
-    const leaked = [...accessed].filter((name) =>
-      serialized.includes(`(${name})`),
-    );
+    const wire = buildAndSerializeClientEnv(env);
+    const leaked = [...accessed].filter((name) => wire.includes(`(${name})`));
     expect(accessed.size).toBeGreaterThan(0);
     expect(leaked.length).toBeLessThan(accessed.size);
   });
 
-  it('validates the pass-through on both ends with the same schema', () => {
-    // producer output → wire → consumer: what buildClientEnv emits is
-    // accepted verbatim by parseClientEnv after the JSON round-trip
-    const produced = buildAndSerializeClientEnv(hostileEnv().env);
-    const consumed = parseClientEnv(JSON.parse(produced));
-    expect(consumed).toEqual(JSON.parse(JSON.stringify(produced)));
-  });
-
   it('rejects injected payloads that are not the final shape', () => {
-    // consumer guardrail: garbage or shape drift in the data element must
-    // throw (fail closed), never propagate into the app
     expect(() => parseClientEnv('garbage')).toThrow();
     expect(() => parseClientEnv({})).toThrow();
     const valid = JSON.parse(buildAndSerializeClientEnv({}));
@@ -126,9 +109,7 @@ describe('buildClientEnv / serializeClientEnv', () => {
 
 describe('window-env loader contract', () => {
   it('parses the serialized payload from the data element into window.__env__', () => {
-    const payload = serializeClientEnv(
-      buildAndSerializeClientEnv(hostileEnv().env),
-    );
+    const payload = buildAndSerializeClientEnv(hostileEnv().env);
     const window: { __env__?: unknown } = {};
     const document = {
       getElementById: (id: string) =>
@@ -140,26 +121,22 @@ describe('window-env loader contract', () => {
     expect(window.__env__).toEqual(JSON.parse(payload));
   });
 
-  it('queries the same element id the placeholder declares', () => {
-    expect(WINDOW_ENV_PLACEHOLDER).toContain('id="window-env"');
+  it('queries the same element id the data element declares', () => {
     expect(WINDOW_ENV_LOADER).toContain('getElementById("window-env")');
+    expect(repoFile('../../index.html')).toContain('id="window-env"');
   });
 
   it('has its exact content hashed into both hardcoded CSP hash copies', () => {
-    // The hash is hardcoded (the loader is a fixed constant) in two
-    // places: the plugin export (→ IPFS CSP meta) and the nginx
-    // entrypoint (→ web CSP header). This recomputation is the only
-    // thing catching a loader edit that forgets either copy.
+    // Loader lives inline in index.html; its hash is hardcoded in the
+    // plugin (→ IPFS CSP meta) and the nginx entrypoint (→ web CSP
+    // header). This recomputation is the only thing catching a loader
+    // edit — or an index.html reformat — that forgets either copy.
     const expected =
       'sha256-' +
       createHash('sha256').update(WINDOW_ENV_LOADER).digest('base64');
     expect(WINDOW_ENV_LOADER_CSP_HASH).toBe(expected);
-    const entrypoint = readFileSync(
-      fileURLToPath(
-        new URL('../../infra/nginx/entrypoint.sh', import.meta.url),
-      ),
-      'utf8',
+    expect(repoFile('../../infra/nginx/entrypoint.sh')).toContain(
+      `WINDOW_ENV_LOADER_HASH="${expected}"`,
     );
-    expect(entrypoint).toContain(`WINDOW_ENV_LOADER_HASH="${expected}"`);
   });
 });
