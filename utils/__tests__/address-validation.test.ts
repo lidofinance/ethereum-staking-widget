@@ -4,7 +4,7 @@ import { validateAddressLocally } from '../address-validation';
 const BLOCKED = '0x1000000000000000000000000000000000000000' as Address;
 const CLEAN = '0x2000000000000000000000000000000000000002' as Address;
 // sha256 of the lowercased BLOCKED address (what sprig `sha256sum` /
-// scripts/write-window-env.mjs produce)
+// scripts/write-validation-file.mjs produce)
 const BLOCKED_HASH =
   'abf3d7911094951fb587cc7d427b68fdefebb3ea1ee8bc3f9d2272bff6516b36';
 

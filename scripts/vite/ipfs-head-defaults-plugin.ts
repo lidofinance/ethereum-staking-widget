@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 import type { Plugin } from 'vite';
 
 import { metaTagsToHtml, pageMeta } from '../../shared/seo';
+import { parseHtml, requireHead } from './parse-html';
+import { WINDOW_ENV_LOADER_CSP_HASH } from './window-env-plugin';
 
 /**
  * IPFS serves a single `index.html` (no path-based routing), so the
@@ -37,11 +39,9 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data: https://fonts.reown.com",
     "img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com",
-    // The only inline script in the IPFS build is the <base> bootstrap
-    // above. (The legacy lido-ui cookie-theme hash 'sha256-wTvVT3oJ…' is
-    // gone: the SPA initializes theme via initGlobalCookieTheme inside the
-    // bundle, ScriptThemeValue is rendered nowhere.)
-    `script-src 'self' ${IPFS_BASE_SCRIPT_HASH}`,
+    // The only inline scripts in the IPFS build are the <base> bootstrap
+    // above and the window.__env__ loader
+    `script-src 'self' ${IPFS_BASE_SCRIPT_HASH} ${WINDOW_ENV_LOADER_CSP_HASH}`,
     "connect-src 'self' https: wss:",
     "frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com",
     "child-src 'self' https://*.walletconnect.org https://*.walletconnect.com",
@@ -56,12 +56,25 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
   return {
     name: 'ipfs-head-defaults',
     transformIndexHtml(html) {
-      return html.replace(/(href|src)="\//g, '$1="./').replace(
-        '</head>',
+      const doc = parseHtml(html);
+      // Relativize absolute asset URLs (hand-written favicon/manifest hrefs
+      // in index.html — vite's `base: './'` covers everything it emits
+      // itself).
+      for (const el of doc.querySelectorAll('*')) {
+        for (const attr of ['href', 'src'] as const) {
+          const value = el.getAttribute(attr);
+          if (value?.startsWith('/') && !value.startsWith('//')) {
+            el.setAttribute(attr, `.${value}`);
+          }
+        }
+      }
+      requireHead(doc, 'ipfs-head-defaults').insertAdjacentHTML(
+        'beforeend',
         `<script>${IPFS_BASE_SCRIPT_CONTENT}</script>
 <meta http-equiv="Content-Security-Policy" content="${csp}" />
-${metaTagsToHtml(pageMeta(undefined))}\n  </head>`,
+${metaTagsToHtml(pageMeta(undefined))}\n  `,
       );
+      return doc.toString();
     },
   };
 };

@@ -12,6 +12,7 @@ import { injectJsonLdPlugin } from './scripts/vite/inject-json-ld-plugin';
 import { ipfsHeadDefaultsPlugin } from './scripts/vite/ipfs-head-defaults-plugin';
 import { rawMarkdownPlugin } from './scripts/vite/raw-markdown-plugin';
 import { shimUsageReporterPlugin } from './scripts/vite/shim-usage-reporter-plugin';
+import { windowEnvPlugin } from './scripts/vite/window-env-plugin';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const isIpfs = process.env.IPFS_MODE === 'true';
@@ -54,6 +55,10 @@ export default defineConfig({
     reactPlugin(),
     rawMarkdownPlugin(),
     shimUsageReporterPlugin(root),
+    // Runtime env: inlines window.__env__ in dev/IPFS; web builds keep the
+    // index.html placeholder for the nginx entrypoint (see the plugin for
+    // the full contract).
+    windowEnvPlugin(root, isIpfs),
     // SEO. Web build: HEAD-ONLY prerender — per-route <head> emitted into
     // static per-route index.html files, body stays the SPA bootstrap
     // (never hydrated) + sitemap.xml + JSON-LD. IPFS build: single
@@ -141,10 +146,6 @@ export default defineConfig({
       // eval-based JIT (CSP forbids eval). 'zod/mini' etc. stay untouched.
       { find: /^zod$/, replacement: resolve(root, 'utils/zod-setup.ts') },
       // Root-level modules imported with bare specifiers.
-      {
-        find: /^env-dynamics\.mjs$/,
-        replacement: resolve(root, 'env-dynamics.mjs'),
-      },
       { find: /^IPFS\.json$/, replacement: resolve(root, 'IPFS.json') },
       {
         find: /^REMOTE_CONFIG_MANIFEST\.json$/,

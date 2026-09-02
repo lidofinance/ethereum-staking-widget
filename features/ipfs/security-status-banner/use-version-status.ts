@@ -34,12 +34,10 @@ export const useVersionStatus = () => {
       const urlCid = URL_CID_REGEX.exec(window.location.href)?.groups?.cid;
       if (urlCid) return urlCid;
 
-      const response = await fetch(
-        `${config.BASE_PATH_ASSET}/runtime/window-env.js`,
-        {
-          method: 'HEAD',
-        },
-      );
+      // extract X-Ipfs-Roots response header from bundled asset
+      const response = await fetch(`${config.BASE_PATH_ASSET}/manifest.json`, {
+        method: 'HEAD',
+      });
 
       return response.headers.get('X-Ipfs-Roots');
     },

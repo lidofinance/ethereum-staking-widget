@@ -1,5 +1,42 @@
 # Configuration & Environment Variables
 
+## Runtime env delivery ("one image, many envs")
+
+The web image is built env-free. Browsers get runtime env as a
+non-executable JSON data element in the HTML
+(`<script type="application/json" id="window-env">`), read into
+`window.__env__` by a fixed, CSP-hashed loader. No separately fetchable env
+URL → no cache skew against the bundle.
+
+Single source of truth: `config/client-env-manifest.ts` — one entry per env
+var (source, transform, zod shape); `ClientEnv = z.infer<…>`. Adding an env
+= adding one entry. Producers:
+
+- dev / IPFS build: `scripts/vite/window-env-plugin.ts` (reads `.env.local`);
+- k8s web: `infra/nginx/entrypoint.sh` runs the bundled
+  `scripts/window-env-cli.ts` at boot; nginx SSI splices the JSON into
+  every HTML response;
+- no-window runtimes (vitest, api bundle): fallback in `config/dynamics.ts`.
+
+Only post-transform values ship: presence flags serialize as booleans;
+their source values (paths, internal hosts) never reach the browser. The
+same zod schema validates both ends — producer output and injected payload.
+
+### Deploy notes (infra)
+
+- Web pod **fails at boot** on env/config errors (duplicate
+  `SUPPORTED_CHAINS`, `DEFAULT_CHAIN` not first, CLI failure) or a missing
+  `importmap-csp-hash.txt` under enforcing CSP. Crash-loop after deploy ⇒
+  check env, not the image.
+- `IS_PROD=true` required on production — suppresses the test-env banner
+  (previously never delivered to the SPA).
+- The `/runtime` emptyDir for `window-env.js` is obsolete.
+- Env-only redeploys need no CDN purge — env travels inside the HTML.
+
+Tests: `yarn test:unit` (`config/__tests__/client-env-manifest.test.ts`).
+Full stack locally: `docker compose up --build` (README → "Production build
+locally").
+
 ## Config system
 
 - `config/get-config.ts` — main configuration object
@@ -9,7 +46,9 @@
 - `config/groups/` — config sections (web3, cache, ipfs, etc.)
 - `config/feature-flags/` — feature flag definitions
 - `config/networks/` — network/chain configuration
-- `config/csp/` — Content Security Policy config
+- `config/client-env-manifest.ts` — runtime env source of truth (see above)
+- CSP is assembled at container boot by `infra/nginx/entrypoint.sh` (web)
+  and at build time by `scripts/vite/ipfs-head-defaults-plugin.ts` (IPFS)
 
 ## Key env vars
 

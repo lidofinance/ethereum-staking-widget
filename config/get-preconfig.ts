@@ -1,16 +1,10 @@
 import { default as dynamics } from './dynamics';
 
-// Formerly `publicRuntimeConfig` from `next/config` (kept the same shape).
-// Everything else always flowed through `window.__env__` / `env-dynamics.mjs`
-// (see `config/dynamics.ts`).
+// Everything else through config/dynamics.ts
 const publicRuntimeConfig = {
   // BASE_URL is Vite's resolved `base` (from BASE_PATH in vite.config.ts);
-  // '/' → '' matches the empty-basePath convention of the old Next config.
   basePath: import.meta.env.BASE_URL.replace(/\/+$/, '') || undefined,
   developmentMode: import.meta.env.DEV,
-  // Metrics are collected by the Fastify api pod, never by the static web
-  // bundle (the Next server used to host /api/metrics itself).
-  collectMetrics: false,
 };
 
 export type PreConfigType = {

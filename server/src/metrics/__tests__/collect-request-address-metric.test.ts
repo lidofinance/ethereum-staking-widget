@@ -1,5 +1,5 @@
 // Empty map → tests cover the unknown-contract path. Mock also avoids
-// pulling `config/networks` (which reads env-dynamics at import time).
+// pulling `config/networks` (which reads config/client-env-manifest at import time).
 vi.mock('config/networks/rpc-contracts', () => ({
   METRIC_CONTRACT_ADDRESSES: {},
   getMetricContractAbi: () => null,

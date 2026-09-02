@@ -46,12 +46,19 @@
       "next/config": ["../shims/next-config.tsx"],
       "next/dynamic": ["../shims/next-dynamic.tsx"],
       "next": ["../shims/next-types.ts"],
-      "env-dynamics.mjs": ["../env-dynamics.mjs"],
       "IPFS.json": ["../IPFS.json"],
       "REMOTE_CONFIG_MANIFEST.json": ["../REMOTE_CONFIG_MANIFEST.json"],
       "build-info.json": ["../build-info.json"]
     }
   },
-  "include": ["src/**/*", "scripts/**/*", "vitest.config.ts", "../global.d.ts"],
+  "include": [
+    "src/**/*",
+    "scripts/**/*",
+    "vitest.config.ts",
+    "../global.d.ts",
+    // ambient __IPFS_MODE__ (config/dynamics.ts is in the server's type
+    // graph via `config`), plus the ImportMetaEnv merge
+    "../vite-env.d.ts"
+  ],
   "exclude": ["dist", "node_modules"]
 }

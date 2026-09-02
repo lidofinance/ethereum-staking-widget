@@ -4,8 +4,7 @@ import { config } from 'config';
 import { QA_KEYS } from 'consts/qa-keys';
 
 const showTestEnvBanner = overrideWithQAMockBoolean(
-  // prevents showing the banner if envs are stale and missing isProd
-  config.isProd === false,
+  !config.isProd,
   QA_KEYS.testEnvBanner,
 );
 

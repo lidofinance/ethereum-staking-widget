@@ -10,7 +10,12 @@
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon-1080x1080.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/favicon-192x192.png"
+    />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <!--
@@ -23,16 +28,15 @@
     <title>Stake with Lido | Lido</title>
 
     <!--
-      Runtime env script — the "one image, many envs" contract. In k8s the
-      nginx entrypoint rewrites this file from container env at start; in
-      local dev `scripts/build-dynamics.mjs` generates it. Read by
-      config/dynamics.ts via window.__env__; if absent, dynamics falls back
-      to the env-dynamics.mjs build-time defaults.
-
-      Must NOT have defer/async — modules read window.__env__ at module
-      init time, so it has to execute before the main bundle.
+      ENV injection, prod form: nginx SSI splices JSON into the data
+      element at response time; the vite plugin swaps the include for
+      inline JSON in dev/IPFS. The loader below is CSP-hashed — do NOT
+      reformat either line (exact bytes; pinned by unit test + prettier-ignore).
     -->
-    <script src="/runtime/window-env.js"></script>
+    <!-- prettier-ignore -->
+    <script type="application/json" id="window-env"><!--#include virtual="/window-env.json" --></script>
+    <!-- prettier-ignore -->
+    <script>window.__env__=JSON.parse(document.getElementById("window-env").textContent)</script>
   </head>
   <body>
     <div id="root"></div>
