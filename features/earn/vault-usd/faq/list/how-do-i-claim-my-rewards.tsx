@@ -8,7 +8,7 @@ export const HowDoIClaimMyRewards: FC<{ id?: string }> = ({ id }) => {
         Accrued rewards, as well as possible additional rewards, are
         automatically accounted for in the value of the earnUSD token. Rewards
         are automatically included in your earnUSD token balance and are
-        realized upon withdrawal into a USDC-related amount.
+        realized upon withdrawal into the amount of USDC or USDT.
       </p>
     </FaqItem>
   );

@@ -1,19 +1,16 @@
 import type { FC } from 'react';
 
-import {
-  VaultTxInfo,
-  VaultTxInfoRow,
-} from 'features/earn/shared/vault-tx-info';
+import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { VaultWithdrawWarning } from 'features/earn/shared/v2/vault-warning';
-import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
 
 import { UsdVaultWithdrawFormProvider } from './form-context';
 import { UsdVaultWithdrawRequests } from './withdraw-requests';
 import { UsdVaultWithdrawAvailable } from './withdraw-available';
 import { UsdVaultWithdrawInput } from './withdraw-input';
 import { UsdVaultWithdrawWillReceive } from './withdraw-will-receive';
+import { UsdVaultWithdrawWaitingTime } from './withdraw-waiting-time';
 import { UsdVaultWithdrawSubmitButton } from './withdraw-submit-button';
 import { useUsdVaultAvailable } from '../hooks/use-vault-available';
 
@@ -35,13 +32,7 @@ const UsdVaultWithdrawFormContent: FC = () => {
       </VaultFormSection>
       <VaultTxInfo>
         <UsdVaultWithdrawWillReceive />
-        <VaultTxInfoRow
-          title="Waiting time"
-          data-testid="waiting-time"
-          help={WITHDRAWAL_WAITING_TIME_TOOLTIP}
-        >
-          {'Instant or up to 72 hours'}
-        </VaultTxInfoRow>
+        <UsdVaultWithdrawWaitingTime />
       </VaultTxInfo>
       <UsdVaultWithdrawSubmitButton />
     </VaultForm>
