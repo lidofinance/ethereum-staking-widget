@@ -10,11 +10,7 @@ import { Disclaimers } from 'features/earn/shared/v2/disclaimers';
 import { VaultAllocation } from 'features/earn/shared/v2/vault-allocation/vault-allocation';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
-import {
-  ACTIVE_FEES_TOOLTIP,
-  ACTIVE_FEES_VALUE,
-  WITHDRAWAL_WAITING_TIME_TOOLTIP,
-} from 'modules/mellow-meta-vaults';
+import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
 
 import { DrawerRight } from '../shared/drawer-right';
 import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
@@ -34,12 +30,9 @@ import {
 import { ProtectedTooltip } from './protected-tooltip';
 import { EthVaultDrawerProvider, useEthVaultDrawer } from './drawer-context';
 
-const FEES: InfoItem[] = [
-  {
-    label: 'Active fees',
-    value: ACTIVE_FEES_VALUE,
-    tooltip: ACTIVE_FEES_TOOLTIP,
-  },
+const FEES = [
+  { label: 'Performance fee', value: '10%' },
+  { label: 'Platform fee', value: '1%' },
 ];
 
 const GENERAL_INFO_LEFT: InfoItem[] = [

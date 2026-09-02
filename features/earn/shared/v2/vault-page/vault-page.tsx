@@ -172,14 +172,7 @@ export const VaultPage: FC<Props> = (props) => {
               <Metrics>
                 {fees.map((fee, index) => (
                   <InfoRow key={index} data-testid="fee">
-                    <InfoRowLabel>
-                      {fee.label}
-                      {fee.tooltip && (
-                        <Tooltip title={fee.tooltip}>
-                          <Question />
-                        </Tooltip>
-                      )}
-                    </InfoRowLabel>
+                    <InfoRowLabel>{fee.label}</InfoRowLabel>
                     {fee.value != null && (
                       <InfoRowValue>{fee.value}</InfoRowValue>
                     )}

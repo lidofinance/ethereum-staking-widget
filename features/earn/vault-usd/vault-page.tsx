@@ -5,14 +5,9 @@ import { config } from 'config';
 import { PartnerNethermindIconCircle, VaultUsdIcon } from 'assets/earn-v2';
 import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
-import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
-import {
-  ACTIVE_FEES_TOOLTIP,
-  ACTIVE_FEES_VALUE,
-  WITHDRAWAL_WAITING_TIME_TOOLTIP,
-} from 'modules/mellow-meta-vaults';
+import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
 
 import { VaultAllocation } from '../shared/v2/vault-allocation/vault-allocation';
 import { Disclaimers } from '../shared/v2/disclaimers';
@@ -32,12 +27,9 @@ import {
 } from './consts';
 import { ProtectedTooltip } from './protected-tooltip';
 
-const FEES: InfoItem[] = [
-  {
-    label: 'Active fees',
-    value: ACTIVE_FEES_VALUE,
-    tooltip: ACTIVE_FEES_TOOLTIP,
-  },
+const FEES = [
+  { label: 'Performance fee', value: '10%' },
+  { label: 'Platform fee', value: '1%' },
 ];
 
 const GENERAL_INFO_LEFT = [
