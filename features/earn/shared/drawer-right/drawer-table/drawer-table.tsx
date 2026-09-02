@@ -69,8 +69,8 @@ const DATA = [
       {
         cells: [
           'Fees',
-          ['1 % platform (AUM) fee', '10 % performance fee'],
-          ['flexible, capped at:', '0.5 % AUM fee', '20 % performance fee'],
+          ['1 % management fee', '10 % performance fee'],
+          ['1 % management fee', '10 % performance fee'],
         ],
       },
     ],
