@@ -47,6 +47,7 @@ declare module 'next/config' {
       rateLimitTimeFrame: string;
 
       ethAPIBasePath: string;
+      oneInchAPIKey: string | undefined;
       rewardsBackendAPI: string | undefined;
       validationAPI: string | undefined;
       validationFilePath: string | undefined;
