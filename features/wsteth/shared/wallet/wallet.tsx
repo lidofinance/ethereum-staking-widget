@@ -11,7 +11,6 @@ import {
   useWstethBySteth,
   useStETHByWstETH,
   useIsLedgerLive,
-  useIsLedgerHardware,
 } from 'modules/web3';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 
@@ -112,17 +111,14 @@ type WrapWalletProps = {
 
 export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
   const isLedgerLive = useIsLedgerLive();
-  const isLedgerHardware = useIsLedgerHardware();
   const { featureFlags } = useConfig().externalConfig;
   const { isChainIdOnL2, wagmiChain } = useDappStatus();
 
   const isLedgerLiveOnL2 =
     !featureFlags.ledgerLiveL2 && isLedgerLive && isChainIdOnL2;
 
-  const isLedgerHardwareOnL2 = isLedgerHardware && isChainIdOnL2;
-
-  if (isLedgerLiveOnL2 || isLedgerHardwareOnL2) {
-    const error = `${wagmiChain.name} is currently not supported in ${isLedgerLiveOnL2 ? 'Ledger Live' : 'Ledger Hardware'}.`;
+  if (isLedgerLiveOnL2) {
+    const error = `${wagmiChain.name} is currently not supported in Ledger Live.`;
     return <Fallback error={error} />;
   }
 
