@@ -1,5 +1,5 @@
 import { Link } from '@lidofinance/lido-ui';
-import type { FC, ReactNode } from 'react';
+import { useMemo, type FC, type ReactNode } from 'react';
 
 import { config } from 'config';
 import { PartnerNethermindIconCircle, VaultEthIcon } from 'assets/earn-v2';
@@ -12,18 +12,19 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import {
   ACTIVE_FEES_TOOLTIP,
-  ACTIVE_FEES_VALUE,
   WITHDRAWAL_WAITING_TIME_TOOLTIP,
 } from 'modules/mellow-meta-vaults';
 
 import { DrawerRight } from '../shared/drawer-right';
 import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
+import { ActiveFeesValue } from '../shared/v2/active-fees-value';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
 import { EarnEthFaq } from './faq/faq';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';
 import { useEthVaultPosition } from './hooks/use-position';
+import { useEthVaultActiveFees } from './hooks/use-active-fees';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { EthVaultApyHint } from './components/apy-hint';
 import {
@@ -33,14 +34,6 @@ import {
 } from './consts';
 import { ProtectedTooltip } from './protected-tooltip';
 import { EthVaultDrawerProvider, useEthVaultDrawer } from './drawer-context';
-
-const FEES: InfoItem[] = [
-  {
-    label: 'Active fees',
-    value: ACTIVE_FEES_VALUE,
-    tooltip: ACTIVE_FEES_TOOLTIP,
-  },
-];
 
 const GENERAL_INFO_LEFT: InfoItem[] = [
   {
@@ -165,7 +158,6 @@ const DATA = {
   title: ETH_VAULT_TITLE,
   description: ETH_VAULT_DESCRIPTION,
   logo: VaultEthIcon,
-  fees: FEES,
   generalInfoLeft: GENERAL_INFO_LEFT,
   generalInfoRight: GENERAL_INFO_RIGHT,
   riskDisclosure: RISK_DISCLOSURE,
@@ -189,13 +181,32 @@ const EthVaultPageContent: FC<{
     ethAmount,
     usdBalance,
   } = useEthVaultPosition();
+  const { value: activeFeesValue, isLoading: isActiveFeesLoading } =
+    useEthVaultActiveFees();
 
   const sharesBalance = earnethPositionData?.earnethSharesBalance;
+
+  const fees = useMemo<InfoItem[]>(
+    () => [
+      {
+        label: 'Active fees',
+        value: (
+          <ActiveFeesValue
+            value={activeFeesValue}
+            isLoading={isActiveFeesLoading}
+          />
+        ),
+        tooltip: ACTIVE_FEES_TOOLTIP,
+      },
+    ],
+    [activeFeesValue, isActiveFeesLoading],
+  );
 
   return (
     <>
       <VaultPage
         {...DATA}
+        fees={fees}
         apx={apy}
         tvlUsd={tvlUsd}
         isApxLoading={isApyLoading}
