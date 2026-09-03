@@ -192,7 +192,8 @@ export const VaultPageUSD: FC<{
   const fees = useMemo<InfoItem[]>(
     () => [
       {
-        label: 'Active fees',
+        // label: 'Active fees', TEMP – uncomment with useUsdVaultActiveFees restoration
+        label: 'Fees',
         value: <ActiveFeesValue value={FROZEN_ACTIVE_FEES_VALUE} />,
       },
     ],
