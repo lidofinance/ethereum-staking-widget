@@ -11,7 +11,7 @@ import {
 } from 'consts/urls';
 import { useConfig } from 'config';
 import { ManifestConfigPage } from 'config/external-config';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { NavIconEarn } from 'assets/earn';
 
@@ -104,12 +104,12 @@ export const Navigation: FC = memo(() => {
           return (
             <Fragment key={path}>
               {divider && <Divider />}
-              <LocalLink href={path}>
+              <Link href={path}>
                 <NavLink active={isActive} showNew={showNew}>
                   {icon}
                   <span>{name}</span>
                 </NavLink>
-              </LocalLink>
+              </Link>
             </Fragment>
           );
         },

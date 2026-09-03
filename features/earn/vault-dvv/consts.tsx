@@ -3,6 +3,10 @@ import { PartnerMellowIcon, PartnerSteakhouseIcon } from 'assets/earn';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import type { DVVDepositTokens } from './deposit/types';
 
+// Pure (server-importable) values live in consts-data.ts; re-exported here
+// so frontend import sites keep working unchanged.
+export * from './consts-data';
+
 export const DVV_TOKEN_SYMBOL = TOKEN_SYMBOLS.dvsteth;
 
 export const OBOL_TOKEN_SYMBOL = 'OBOL';
@@ -17,9 +21,6 @@ export const SSV_CLAIM_URL = (address: Address) =>
 
 export const OBOL_CLAIM_URL = (address: Address) =>
   `https://launchpad.obol.org/cluster/list/?address=${address.toLowerCase()}/`;
-
-export const DVV_STATS_ORIGIN = 'https://api.mellow.finance';
-export const DVV_APR_ENDPOINT = `${DVV_STATS_ORIGIN}/v1/vaults`;
 
 export const DVV_PARTNERS = [
   {

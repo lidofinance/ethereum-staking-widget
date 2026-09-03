@@ -9,7 +9,7 @@ import {
   useEffect,
 } from 'react';
 import invariant from 'tiny-invariant';
-import { useRouter } from 'next/router';
+import { useLocation } from 'react-router';
 
 import { config } from 'config';
 
@@ -28,14 +28,13 @@ InpageNavigationContext.displayName = 'InpageNavigationContext';
 export const InpageNavigationProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { asPath } = useRouter();
+  const location = useLocation();
   const [hashNav, setHash] = useState('');
 
   useEffect(() => {
     if (config.ipfsMode) return; // Hash is reserved in ipfs mode, ignored here
-    const hash = asPath.split('#')[1];
-    setHash(hash);
-  }, [asPath]);
+    setHash(location.hash.slice(1));
+  }, [location]);
 
   // Handles same-page hash navigation (address bar edits, plain <a href="#…"> clicks,
   // browser back/forward). history.pushState used by navigateInpageAnchor does NOT
@@ -77,10 +76,10 @@ export const InpageNavigationProvider: FC<PropsWithChildren> = ({
   const resetInpageAnchor = useCallback(() => {
     setHash('');
     if (!config.ipfsMode) {
-      const hashTrimmed = asPath.split('#')[0];
+      const hashTrimmed = `${location.pathname}${location.search}`;
       history.pushState({}, '', hashTrimmed);
     }
-  }, [asPath]);
+  }, [location.pathname, location.search]);
 
   const resetSpecificAnchor = useCallback(
     (hash: string) => {

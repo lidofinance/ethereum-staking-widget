@@ -1,0 +1,80 @@
+import { createHash } from 'node:crypto';
+import type { Plugin } from 'vite';
+
+import { metaTagsToHtml, pageMeta } from '../../shared/seo';
+import { parseHtml, requireHead } from './parse-html';
+import { WINDOW_ENV_LOADER_CSP_HASH } from './window-env-plugin';
+
+/**
+ * IPFS serves a single `index.html` (no path-based routing), so the
+ * per-route prerender plugin is off there. Inject the default
+ * og/twitter/description block statically (no canonical — the gateway URL
+ * isn't canonical), the CSP `<meta http-equiv>` (was `_document.tsx` +
+ * next-secure-headers; directives that only work as HTTP headers —
+ * frame-ancestors, report-uri — are omitted per spec), and relativize
+ * absolute asset hrefs so the build works from any gateway path prefix.
+ */
+export const ipfsHeadDefaultsPlugin = (): Plugin => {
+  // IPFS SPA base-path reference:
+  // https://github.com/Velenir/nextjs-ipfs-example
+  //
+  // IPFS gateways serve the build from arbitrary path prefixes
+  // (/ipfs/<CID>/...), so relative asset URLs need a <base> pointing at the
+  // current directory. The script must run before the bundle evaluates.
+  const IPFS_BASE_SCRIPT_CONTENT = `
+(function () {
+  const base = document.createElement('base');
+  base.href = window.location.pathname;
+  document.head.append(base);
+})();
+`;
+
+  const IPFS_BASE_SCRIPT_HASH =
+    'sha256-' +
+    createHash('sha256').update(IPFS_BASE_SCRIPT_CONTENT).digest('base64');
+
+  // Mirrors the non-report parts of the legacy config/csp for IPFS mode.
+  const csp = [
+    "default-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data: https://fonts.reown.com",
+    "img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com",
+    // The only inline scripts in the IPFS build are the <base> bootstrap
+    // above and the window.__env__ loader
+    `script-src 'self' ${IPFS_BASE_SCRIPT_HASH} ${WINDOW_ENV_LOADER_CSP_HASH}`,
+    "connect-src 'self' https: wss:",
+    "frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com",
+    "child-src 'self' https://*.walletconnect.org https://*.walletconnect.com",
+    "worker-src 'none'",
+    "object-src 'none'",
+    "media-src 'self'",
+    "manifest-src 'self'",
+    "form-action 'self'",
+    "script-src-attr 'none'",
+  ].join('; ');
+
+  return {
+    name: 'ipfs-head-defaults',
+    transformIndexHtml(html) {
+      const doc = parseHtml(html);
+      // Relativize absolute asset URLs (hand-written favicon/manifest hrefs
+      // in index.html — vite's `base: './'` covers everything it emits
+      // itself).
+      for (const el of doc.querySelectorAll('*')) {
+        for (const attr of ['href', 'src'] as const) {
+          const value = el.getAttribute(attr);
+          if (value?.startsWith('/') && !value.startsWith('//')) {
+            el.setAttribute(attr, `.${value}`);
+          }
+        }
+      }
+      requireHead(doc, 'ipfs-head-defaults').insertAdjacentHTML(
+        'beforeend',
+        `<script>${IPFS_BASE_SCRIPT_CONTENT}</script>
+<meta http-equiv="Content-Security-Policy" content="${csp}" />
+${metaTagsToHtml(pageMeta(undefined))}\n  `,
+      );
+      return doc.toString();
+    },
+  };
+};

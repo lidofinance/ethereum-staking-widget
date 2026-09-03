@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { config, useConfig } from 'config';
 import { API_ROUTES, getApiPath } from 'consts/api';
 import { GEO_AVAILABILITY, type GeoResponse } from 'consts/geo';
+import { QA_KEYS } from 'consts/qa-keys';
 import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { getGeoAvailability, resolveGeoAvailability } from 'utils/geo';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -12,7 +13,7 @@ import { standardFetcher } from 'utils/standardFetcher';
 // renders the limited experience for everyone.
 const CAN_RESOLVE_REGION = !config.ipfsMode;
 
-const QA_COUNTRY_KEY = 'mock-qa-helpers-geo-country';
+const QA_COUNTRY_KEY = QA_KEYS.geoCountry;
 
 // Pins the country per browser, for stands where the env cannot be changed and
 // for testers behind Cloudflare, who cannot change the country their IP

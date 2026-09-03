@@ -1,7 +1,6 @@
 import { Button, Modal } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
-import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 import {
   WarningIcon,
@@ -124,58 +123,52 @@ export const SecurityStatusBanner = () => {
     (!!content && !(canClose && areConditionsAccepted)) || !isValidAddress;
 
   return (
-    <NoSsrWrapper>
-      <Modal
-        open={showModal}
-        onClose={!isValidAddress ? () => setIsValidAddress(true) : undefined}
-      >
-        <Wrapper>
-          <WarningIcon />
-          {content}
-          {showTwitterLink && (
-            <a
-              href={LIDO_TWITTER_LINK}
-              target="_self"
-              rel="noopener noreferrer"
-            >
-              <Button size="sm" fullwidth variant="filled">
-                Check X for more info
-              </Button>
-            </a>
-          )}
-          {/* We don't want to show this button if the address is not valid */}
-          {isUpdateAvailable && isValidAddress && (
-            <a
-              href={data.remoteCidLink ?? window.location.href}
-              onClick={
-                config.ipfsMode
-                  ? undefined
-                  : (e) => {
-                      e.preventDefault();
-                      window.location.reload();
-                    }
-              }
-              target="_self"
-              rel="noopener noreferrer"
-            >
-              <Button size="sm" fullwidth variant="filled">
-                Click to update to the newest version
-              </Button>
-            </a>
-          )}
-          {canClose && (
-            <Button
-              size="sm"
-              fullwidth
-              color="warning"
-              variant="outlined"
-              onClick={() => setConditionsAccepted(true)}
-            >
-              Accept the possible issues and proceed
+    <Modal
+      open={showModal}
+      onClose={!isValidAddress ? () => setIsValidAddress(true) : undefined}
+    >
+      <Wrapper>
+        <WarningIcon />
+        {content}
+        {showTwitterLink && (
+          <a href={LIDO_TWITTER_LINK} target="_self" rel="noopener noreferrer">
+            <Button size="sm" fullwidth variant="filled">
+              Check X for more info
             </Button>
-          )}
-        </Wrapper>
-      </Modal>
-    </NoSsrWrapper>
+          </a>
+        )}
+        {/* We don't want to show this button if the address is not valid */}
+        {isUpdateAvailable && isValidAddress && (
+          <a
+            href={data.remoteCidLink ?? window.location.href}
+            onClick={
+              config.ipfsMode
+                ? undefined
+                : (e) => {
+                    e.preventDefault();
+                    window.location.reload();
+                  }
+            }
+            target="_self"
+            rel="noopener noreferrer"
+          >
+            <Button size="sm" fullwidth variant="filled">
+              Click to update to the newest version
+            </Button>
+          </a>
+        )}
+        {canClose && (
+          <Button
+            size="sm"
+            fullwidth
+            color="warning"
+            variant="outlined"
+            onClick={() => setConditionsAccepted(true)}
+          >
+            Accept the possible issues and proceed
+          </Button>
+        )}
+      </Wrapper>
+    </Modal>
   );
 };

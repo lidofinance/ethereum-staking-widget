@@ -1,24 +1,24 @@
 import type { Address } from 'viem';
 import invariant from 'tiny-invariant';
-import getConfigNext from 'next/config';
-
-const { serverRuntimeConfig } = getConfigNext();
 
 import {
   CHAINS,
   LIDO_L2_CONTRACT_ADDRESSES,
 } from '@lidofinance/lido-ethereum-sdk/common';
 
+// Framework-neutral env source (browser: window.__env__; Node: process.env
+// via config/client-env-manifest.ts). This module is imported BOTH by the frontend and
+// by the api server (RPC allowlists + earn contracts share this single
+// source of contract addresses)
+import dynamics from 'config/dynamics';
+
 // Main deployments
 import mainnetSet from 'networks/mainnet.json';
 import hoodiSet from 'networks/hoodi.json';
 import sepoliaSet from 'networks/sepolia.json';
-import holeskySet from 'networks/holesky.json';
 
 // Devnet deployments
-import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json';
 import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json';
-import { getPreConfig } from 'config/get-preconfig';
 
 // For future overrides of APIs in devnets
 export const API_NAMES = {};
@@ -122,19 +122,20 @@ export type NetworkConfig = {
   };
 };
 
-const DEVNET_OVERRIDES: Record<number, string> = // Merge client&server values
-  (serverRuntimeConfig.devnetOverrides || getPreConfig().devnetOverrides || '')
-    .split(',')
-    .reduce(
-      (acc, override) => {
-        const [chainId, setName] = override.split(':');
-        if (!isNaN(Number(chainId)) && setName) {
-          acc[Number(chainId)] = setName;
-        }
-        return acc;
-      },
-      {} as Record<number, string>,
-    );
+const DEVNET_OVERRIDES: Record<number, string> = (
+  dynamics.devnetOverrides || ''
+)
+  .split(',')
+  .reduce(
+    (acc, override) => {
+      const [chainId, setName] = override.split(':');
+      if (!isNaN(Number(chainId)) && setName) {
+        acc[Number(chainId)] = setName;
+      }
+      return acc;
+    },
+    {} as Record<number, string>,
+  );
 
 // For now stub L2 deployments,
 // as we don't need L2 devnets and it's easier to add more L2s
@@ -157,15 +158,12 @@ const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.entries(
 const NETWORKS_MAP = {
   ...L2_NETWORK_MAP,
   [CHAINS.Mainnet]: mainnetSet as NetworkConfig,
-  [CHAINS.Holesky]: holeskySet as NetworkConfig,
   [CHAINS.Hoodi]: hoodiSet as NetworkConfig,
   [CHAINS.Sepolia]: sepoliaSet as NetworkConfig,
 } as Record<string, NetworkConfig>;
 
 // keys MUST correlate with the `DEVNET_OVERRIDES` env
 const DEVNETS_MAP = {
-  // TODO: remove
-  'hoodi-devnet-0': hoodiDevnet0Set as NetworkConfig,
   'hoodi-devnet-1': hoodiDevnet1Set as NetworkConfig,
 } as Record<string, NetworkConfig>;
 

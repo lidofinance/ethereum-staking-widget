@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
-import { Button, Link } from '@lidofinance/lido-ui';
-import { LocalLink } from 'shared/components/local-link';
+import { Button, Link as OuterLink } from '@lidofinance/lido-ui';
+import { Link } from 'shared/components/link';
 
 const buttonLinkWrapCss = css`
   display: block;
@@ -14,11 +14,11 @@ const buttonLinkWrapCss = css`
   }
 `;
 
-export const ButtonLinkWrap = styled(Link)`
+export const ButtonLinkWrap = styled(OuterLink)`
   ${buttonLinkWrapCss};
 `;
 
-export const ButtonLinkWrapLocal = styled(LocalLink)`
+export const ButtonLinkWrapLocal = styled(Link)`
   ${buttonLinkWrapCss};
 `;
 

@@ -82,7 +82,7 @@ export const useDappChain = (): UseDappChainValue => {
       // Ethereum example:
       // - Ethereum
       // - or
-      // - Ethereum(Mainnet,Hoodi,Sepolia,Holesky)
+      // - Ethereum(Mainnet,Hoodi,Sepolia)
       return chainNamesForType.length === 1 && chainNamesForType[0] === MAINNET
         ? chainType
         : `${chainType}(${chainNamesForType.join(',')})`;

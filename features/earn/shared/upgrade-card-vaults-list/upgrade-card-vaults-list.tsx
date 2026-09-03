@@ -9,7 +9,7 @@ import {
 } from 'assets/earn-v2';
 import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 import { useUpgradableTokenBalances } from 'features/earn/vault-eth/upgrade-assets/use-upgradable-token-balances';
 import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from 'features/earn/vault-eth/consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -110,7 +110,7 @@ export const UpgradeCardVaultsList: FC<UpgradeCardProps> = ({
         </UpgradeIllustrationSlot>
       </UpgradeContent>
 
-      <LocalLink href={ETH_DEPOSIT_PATH}>
+      <Link href={ETH_DEPOSIT_PATH}>
         <UpgradeButton
           size="lg"
           fullwidth
@@ -123,7 +123,7 @@ export const UpgradeCardVaultsList: FC<UpgradeCardProps> = ({
         >
           Upgrade
         </UpgradeButton>
-      </LocalLink>
+      </Link>
     </UpgradeCardBlock>
   );
 };

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-1080x1080.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/favicon-192x192.png"
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <!--
+      Title is a fallback only. The head-only prerender replaces it per
+      route and injects description/og/twitter tags at build time; the IPFS
+      build injects the defaults statically (see vite.config.ts). Runtime
+      values (currentChain meta, theme CSS vars, fonts) mount from
+      app/router-layout.tsx.
+    -->
+    <title>Stake with Lido | Lido</title>
+
+    <!--
+      ENV injection, prod form: nginx SSI splices JSON into the data
+      element at response time; the vite plugin swaps the include for
+      inline JSON in dev/IPFS. The loader below is CSP-hashed — do NOT
+      reformat either line (exact bytes; pinned by unit test + prettier-ignore).
+    -->
+    <!-- prettier-ignore -->
+    <script type="application/json" id="window-env"><!--#include virtual="/window-env.json" --></script>
+    <!-- prettier-ignore -->
+    <script>window.__env__=JSON.parse(document.getElementById("window-env").textContent)</script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/app/main.tsx"></script>
+  </body>
+</html>

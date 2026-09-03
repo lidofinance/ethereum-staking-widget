@@ -1,5 +1,5 @@
 import type { Hash } from 'viem';
-import { Link, Loader } from '@lidofinance/lido-ui';
+import { Link as OuterLink, Loader } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { WITHDRAWALS_CLAIM_PATH } from 'consts/urls';
@@ -10,7 +10,7 @@ import { useTransactionModal } from 'shared/transaction-modal/transaction-modal'
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic/tx-stage-success';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 
 import { useIsMetamask } from 'modules/web3';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -48,9 +48,9 @@ export const TxRequestStageSuccess = ({
       Withdrawal request for {amountEl} has been sent.
       <br />
       Check{' '}
-      <LocalLink href={WITHDRAWALS_CLAIM_PATH} onClick={closeModal}>
+      <Link href={WITHDRAWALS_CLAIM_PATH} onClick={closeModal}>
         Claim tab
-      </LocalLink>{' '}
+      </Link>{' '}
       to view your withdrawal requests or view your transaction on{' '}
       <TxLinkEtherscan
         txHash={txHash}
@@ -87,7 +87,7 @@ export const TxRequestStageSuccess = ({
           </Title>
           {showAddGuideLink && (
             <AddNftWrapper>
-              <Link
+              <OuterLink
                 href={LINK_ADD_NFT_GUIDE}
                 onClick={() =>
                   trackMatomoEvent(
@@ -96,7 +96,7 @@ export const TxRequestStageSuccess = ({
                 }
               >
                 This guide will help you to do this.
-              </Link>
+              </OuterLink>
             </AddNftWrapper>
           )}
         </NFTBanner>

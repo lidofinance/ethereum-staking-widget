@@ -5,7 +5,19 @@ import {
   InvalidParamsRpcError,
 } from 'viem';
 
-import type { OnResponseFn } from 'viem/_types/clients/transports/fallback';
+// Structural copy of viem's non-exported OnResponseFn
+// (viem/_types/clients/transports/fallback.d.ts) — the `_types` deep path
+// is blocked by viem's package.json `exports` under bundler resolution.
+type OnResponseFn = (
+  args: {
+    method: string;
+    params: unknown[];
+    transport: ReturnType<Transport>;
+  } & (
+    | { error?: undefined; response: unknown; status: 'success' }
+    | { error: Error; response?: undefined; status: 'error' }
+  ),
+) => void;
 
 // We disable those methods so wagmi uses getLogs instead to watch events
 // Filters are not suitable for public rpc and break when changing between fallbacks

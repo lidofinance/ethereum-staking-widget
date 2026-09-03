@@ -6,15 +6,18 @@ import {
   useContext,
   useMemo,
 } from 'react';
+
 import invariant from 'tiny-invariant';
 
 import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
+
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { SETTINGS_PATH } from 'consts/urls';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import type { CHAIN_ID } from 'consts/chains';
 
 import { useDappStatus, useContractAddress } from 'modules/web3';
 import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violation';
@@ -60,7 +63,7 @@ export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
     setDismissStorage(true);
   }, [setDismissStorage]);
 
-  const rpcUrl = useGetRpcUrlByChainId()(chainId);
+  const rpcUrl = useGetRpcUrlByChainId()(chainId as CHAIN_ID);
   const { data: isRPCAvailableRaw, isLoading } = useQuery({
     queryKey: ['rpc-url-check', rpcUrl, chainId, stethAddress],
     ...STRATEGY_LAZY,

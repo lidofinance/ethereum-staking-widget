@@ -1,0 +1,115 @@
+# Rendered at container start by entrypoint.sh (sed): substitutes
+# ${SELF_ORIGIN}, ${CSP_HEADER_NAME}, ${CSP_HEADER_VALUE} and writes the
+# result to /var/cache/nginx/conf.d/default.conf (the default
+# /etc/nginx/conf.d is read-only in the pod).
+
+# Pooled connections to the api Service: without an upstream block nginx
+# sends `Connection: close` and opens a fresh TCP connection per request.
+upstream staking_widget_api {
+  server staking-widget-api:8080;
+  keepalive 16;
+}
+
+server {
+  listen 8080 default_server;
+  server_name _;
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+  # Cache static assets aggressively (immutable in Vite output).
+  location ~* \.(js|css|woff2?|svg|png|jpg|jpeg|gif|webp|ico|mp3)$ {
+    include /var/cache/nginx/security-headers.conf;
+    add_header cache-control "public, max-age=31536000, immutable" always;
+    try_files $uri =404;
+  }
+
+  # CORS-open resources: /manifest.json for Gnosis Safe apps; /token-lists/* for the CoW widget iframe
+  # (swap.cow.fi) to fetch token lists cross-origin as a fallback.
+  location ~ ^/(manifest\.json$|token-lists/) {
+    include /var/cache/nginx/security-headers.conf;
+    add_header access-control-allow-origin "*" always;
+    add_header access-control-allow-methods "GET, HEAD, OPTIONS" always;
+    add_header cross-origin-resource-policy "cross-origin" always;
+    add_header x-robots-tag "noindex" always;
+    add_header cache-control "public, max-age=180, stale-if-error=1200, stale-while-revalidate=60" always;
+    try_files $uri =404;
+  }
+
+  # Address blocklist for the SPA's last-resort validation fallback — served
+  # from THIS pod so the check survives an api-pod outage (same configmap
+  # the api mounts; alias, not the /runtime emptyDir, so configmap updates
+  # propagate live). In dev the same URL is written to public/runtime by
+  # scripts/write-window-env.mjs. Missing mount → 404 → the SPA fails open.
+  location = /runtime/validation.json {
+    include /var/cache/nginx/security-headers.conf;
+    add_header cache-control "public, max-age=60" always;
+    alias /usr/share/nginx/html/runtime-validation/validation.json;
+  }
+
+  # Proxy /api/* to the Fastify api Service inside the cluster.
+  # Cluster policy (Kyverno deny-duplicate-ingress-host) forbids two
+  # Ingress objects for the same hostname, so the api pod is fronted by
+  # this nginx instead of its own Ingress.
+  location /api/ {
+    proxy_pass http://staking_widget_api;
+    proxy_http_version 1.1;
+    # empty Connection header enables upstream keepalive reuse
+    proxy_set_header Connection "";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_connect_timeout 5s;
+    proxy_send_timeout 30s;
+    proxy_read_timeout 30s;
+    proxy_buffering off;
+    # No security-headers include here: the api sets its own (Fastify
+    # security-headers plugin) — duplicating them would double every header.
+  }
+
+  # HTML and SPA fallback.
+  # Prerendered routes are static per-route index.html files; everything
+  # else falls back to /index.html so React Router handles it client-side.
+  # Unknown URLs therefore return 200 with the home shell — deduped for
+  # SEO via each page's <link rel="canonical">.
+  location / {
+    include /var/cache/nginx/security-headers.conf;
+    # `s-maxage` (NOT `s-max-age` — the PoC shipped that typo and shared
+    # caches ignored it). Values match legacy next.config.mjs CACHE_CONTROL_VALUE.
+    add_header cache-control "public, max-age=15, s-maxage=30, stale-if-error=604800, stale-while-revalidate=172800" always;
+    # Replace the build-time `__PUBLIC_ORIGIN__` placeholder in the
+    # prerendered head (og:*, twitter:*, canonical, JSON-LD), sitemap.xml
+    # and robots.txt with the per-env origin. Substituted at response time
+    # because /usr/share/nginx/html is mounted read-only. Source of the
+    # placeholder: shared/seo.ts.
+    sub_filter '__PUBLIC_ORIGIN__' '${SELF_ORIGIN}';
+    sub_filter_once off;
+    # Inline runtime env: the build ships the window-env data element as
+    # `<!--#include virtual="/window-env.json" -->` and SSI splices in the
+    # plain-JSON file written by entrypoint.sh at boot
+    ssi on;
+    # text/html is sub_filter's built-in default (relisting it makes nginx
+    # warn about a duplicate MIME type). sitemap.xml is text/xml (some
+    # setups use application/xml — include both defensively); robots.txt
+    # is text/plain (carries the Sitemap: line).
+    sub_filter_types text/xml application/xml text/plain;
+    try_files $uri $uri.html $uri/index.html /index.html;
+  }
+
+  # Runtime env JSON for the SSI include in location / — written by
+  # entrypoint.sh at container start. `internal`: subrequests only, a
+  # direct client fetch 404s
+  location = /window-env.json {
+    internal;
+    alias /var/cache/nginx/window-env.json;
+  }
+
+  # Health probe. No security-headers include on purpose: plaintext probe
+  # response, not indexed, not attacker-influenced.
+  location = /health {
+    access_log off;
+    default_type text/plain;
+    return 200 'ok';
+  }
+}

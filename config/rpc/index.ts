@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { CHAINS } from 'consts/chains';
+import type { CHAIN_ID } from 'consts/chains';
 
 // Don't use absolute import here!
 // code'''
@@ -21,7 +21,7 @@ export const useGetRpcUrlByChainId = () => {
   const userConfig = useUserConfig();
 
   return useCallback(
-    (chainId: CHAINS) => {
+    (chainId: CHAIN_ID) => {
       if (config.ipfsMode) {
         const rpc =
           userConfig.savedUserConfig.rpcUrls[chainId] ||

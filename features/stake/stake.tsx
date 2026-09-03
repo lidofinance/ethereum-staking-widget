@@ -1,5 +1,4 @@
 import { FaqPlaceholder } from 'features/ipfs';
-import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
 import {
   DisclaimerSection,
@@ -13,9 +12,7 @@ import { StakeForm } from './stake-form';
 export const Stake = () => {
   return (
     <>
-      <NoSSRWrapper>
-        <StakeForm />
-      </NoSSRWrapper>
+      <StakeForm />
       <LidoStats />
       <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
         <StakeFaq />

@@ -5,14 +5,14 @@ import { config } from 'config';
 import { WRAP_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 
 export const HowCanIGetWsteth: FC = () => {
   return (
     <Accordion summary="How can I get wstETH?">
       <p>
         You can wrap your stETH or ETH tokens using{' '}
-        <LocalLink
+        <Link
           href={WRAP_PATH}
           onClick={() =>
             trackMatomoEvent(
@@ -22,7 +22,7 @@ export const HowCanIGetWsteth: FC = () => {
           aria-hidden="true"
         >
           Wrap &amp; Unwrap staking widget
-        </LocalLink>{' '}
+        </Link>{' '}
         or{' '}
         <OuterLink
           href={`${config.rootOrigin}/lido-ecosystem?tokens=wstETH&categories=Get`}

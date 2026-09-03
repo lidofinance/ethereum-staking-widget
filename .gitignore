@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -28,8 +28,11 @@ test/playwright-report
 # generated
 /generated
 
-# next.js
+# build output
+/dist/
+/dist-node/
 /.next/
+/server/dist/
 /out/
 
 # production
@@ -57,3 +60,6 @@ yarn-error.log*
 
 AGENTS.md
 CLAUDE.md
+
+# local agent config
+.claude/

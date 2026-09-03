@@ -21,7 +21,7 @@ import {
   BadgeStyled,
   TitleTextStyled,
 } from './styles';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 import { EARN_PATH } from 'consts/urls';
 import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 import { FormatPercent } from 'shared/formatters/format-percent';
@@ -81,7 +81,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
   return (
     <CardWrapper $variant={variant} data-testid={`${urlSlug}-vault-card`}>
       <CardOverlayLink
-        as={LocalLink}
+        as={Link}
         href={depositHref}
         onClick={depositLinkCallback}
         data-testid="open-vault-btn"
@@ -170,11 +170,11 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
         )}
       </CardStats>
       <CardCta data-testid="vault-button">
-        <LocalLink href={depositHref} onClick={depositLinkCallback}>
+        <Link href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}
           </Button>
-        </LocalLink>
+        </Link>
       </CardCta>
     </CardWrapper>
   );

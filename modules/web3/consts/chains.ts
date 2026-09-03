@@ -1,9 +1,9 @@
 import * as wagmiChains from 'wagmi/chains';
 import { Chain } from 'wagmi/chains';
 
-import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
-import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
-import { ReactComponent as UnichainLogo } from 'assets/icons/chain-toggler/unichain.svg';
+import OptimismLogo from 'assets/icons/chain-toggler/optimism.svg?react';
+import EthereumMainnetLogo from 'assets/icons/chain-toggler/mainnet.svg?react';
+import UnichainLogo from 'assets/icons/chain-toggler/unichain.svg?react';
 
 import { CHAINS } from 'consts/chains';
 
@@ -29,7 +29,6 @@ export type SupportedChainLabels = {
 
 export const ETHEREUM_CHAINS = new Set([
   CHAINS.Mainnet,
-  CHAINS.Holesky,
   CHAINS.Hoodi,
   CHAINS.Sepolia,
 ]);
@@ -46,7 +45,6 @@ export const UNICHAIN_CHAINS = new Set([
 
 export const CHAIN_ICONS_MAP = new Map([
   [CHAINS.Mainnet, EthereumMainnetLogo],
-  [CHAINS.Holesky, EthereumMainnetLogo],
   [CHAINS.Hoodi, EthereumMainnetLogo],
   [CHAINS.Sepolia, EthereumMainnetLogo],
   [CHAINS.Optimism, OptimismLogo],
@@ -63,7 +61,8 @@ export const CHAIN_MAP = new Map<number, DAPP_CHAIN_TYPE>([
 
 export const getChainTypeByChainId = (
   chainId?: number,
-): DAPP_CHAIN_TYPE | null => (chainId ? CHAIN_MAP.get(chainId) ?? null : null);
+): DAPP_CHAIN_TYPE | null =>
+  chainId ? (CHAIN_MAP.get(chainId) ?? null) : null;
 
 // Ethereum example:
 // - Ethereum
@@ -71,8 +70,6 @@ export const getChainTypeByChainId = (
 // - Ethereum(Hoodi)
 // - or
 // - Ethereum(Sepolia)
-// - or
-// - Ethereum(Holesky)
 export const getPrettyChainName = (chainId: number): string => {
   const chainType = getChainTypeByChainId(chainId);
   const chain = wagmiChainMap[chainId];

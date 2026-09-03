@@ -1,4 +1,8 @@
-import { extractErrorMessage } from 'utils';
+// Import the concrete module, NOT the `utils` barrel — the barrel pulls
+// React (formatBalance) and wagmi (getErrorMessage → modules/web3), which
+// must stay out of the api server's bundle (server imports this fetcher's
+// consumers, e.g. features/earn/vault-*/utils.ts).
+import { extractErrorMessage } from './extractErrorMessage';
 import { FetcherError } from './fetcherError';
 
 const DEFAULT_PARAMS = {

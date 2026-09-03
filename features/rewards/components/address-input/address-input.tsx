@@ -4,7 +4,7 @@ import { Input, Loader, Identicon } from '@lidofinance/lido-ui';
 
 import CopyAddressUrl from 'features/rewards/components/CopyAddressUrl';
 import { isValidAnyAddress } from 'features/rewards/utils';
-import { ReactComponent as ErrorTriangle } from 'assets/icons/error-triangle.svg';
+import ErrorTriangle from 'assets/icons/error-triangle.svg?react';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_INPUT_EVENTS_TYPES } from 'consts/matomo';
 

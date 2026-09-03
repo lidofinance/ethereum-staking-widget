@@ -2,17 +2,17 @@ import type { ComponentProps, FC } from 'react';
 
 import { getOwnProperty } from 'utils/get-own-property';
 
-import { ReactComponent as ArbitrumIcon } from 'assets/earn/allocation/chain/arbitrum.svg';
-import { ReactComponent as AvalancheIcon } from 'assets/earn/allocation/chain/avalanche.svg';
-import { ReactComponent as BaseIcon } from 'assets/earn/allocation/chain/base.svg';
-import { ReactComponent as EthereumIcon } from 'assets/earn/allocation/chain/ethereum.svg';
-import { ReactComponent as MantleIcon } from 'assets/earn/allocation/chain/mantle.svg';
-import { ReactComponent as MegaEthIcon } from 'assets/earn/allocation/chain/mega-eth.svg';
-import { ReactComponent as MonadIcon } from 'assets/earn/allocation/chain/monad.svg';
-import { ReactComponent as OptimismIcon } from 'assets/earn/allocation/chain/optimism.svg';
-import { ReactComponent as PlasmaIcon } from 'assets/earn/allocation/chain/plasma.svg';
-import { ReactComponent as RobinhoodIcon } from 'assets/earn/allocation/chain/robinhood.svg';
-import { ReactComponent as FallbackIcon } from 'assets/earn/allocation/chain/fallback.svg';
+import ArbitrumIcon from 'assets/earn/allocation/chain/arbitrum.svg?react';
+import AvalancheIcon from 'assets/earn/allocation/chain/avalanche.svg?react';
+import BaseIcon from 'assets/earn/allocation/chain/base.svg?react';
+import EthereumIcon from 'assets/earn/allocation/chain/ethereum.svg?react';
+import MantleIcon from 'assets/earn/allocation/chain/mantle.svg?react';
+import MegaEthIcon from 'assets/earn/allocation/chain/mega-eth.svg?react';
+import MonadIcon from 'assets/earn/allocation/chain/monad.svg?react';
+import OptimismIcon from 'assets/earn/allocation/chain/optimism.svg?react';
+import PlasmaIcon from 'assets/earn/allocation/chain/plasma.svg?react';
+import RobinhoodIcon from 'assets/earn/allocation/chain/robinhood.svg?react';
+import FallbackIcon from 'assets/earn/allocation/chain/fallback.svg?react';
 
 type ChainIcon = FC<ComponentProps<'svg'>>;
 

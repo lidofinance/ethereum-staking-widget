@@ -7,6 +7,7 @@ import { FormatToken } from 'shared/formatters/format-token';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
+import { QA_KEYS } from 'consts/qa-keys';
 import { overrideWithQAMockBigInt } from 'utils/qa';
 import { useReferralQueryValue } from 'shared/hooks/use-query-values-form';
 import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
@@ -75,7 +76,7 @@ export const UpgradeAssetsBlock: FC = () => {
         const balanceAmount = balancesQuery.data?.[token] ?? 0n;
         const depositAmount = overrideWithQAMockBigInt(
           balanceAmount,
-          'mock-qa-helpers-earn-eth-upgrade-amount',
+          QA_KEYS.earnEthUpgradeAmount,
         );
 
         if (!depositAmount) return;

@@ -1,6 +1,6 @@
 import { Link } from '@lidofinance/lido-ui';
 import type { LinkProps } from '@lidofinance/lido-ui';
-import { useRouter } from 'next/router';
+import { useLocation } from 'react-router';
 
 import { useInpageNavigation } from 'providers/inpage-navigation';
 import { OnlyInfraRender } from './only-infra-render';
@@ -16,7 +16,7 @@ export const LinkInpageAnchor = ({
   children: React.ReactNode;
 } & LinkProps) => {
   const { navigateInpageAnchor } = useInpageNavigation();
-  const router = useRouter();
+  const { pathname, search } = useLocation();
 
   return (
     // IPFS is not compatible with in-page anchor links
@@ -26,7 +26,7 @@ export const LinkInpageAnchor = ({
         onClick={(e) => {
           // trigger smooth-scroll only if we are on the same page
           // or if the pagePath is not provided (then we assume that the link is always in-page)
-          const pathBeforeHash = `${router.asPath.split('#')[0]}`;
+          const pathBeforeHash = `${pathname}${search}`;
           if (!pagePath || pathBeforeHash === pagePath) {
             navigateInpageAnchor(e);
           }

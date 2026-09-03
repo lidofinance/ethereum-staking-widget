@@ -1,15 +1,18 @@
 import { FC, useMemo } from 'react';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'react-router';
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { config } from 'config';
+import {
+  RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
+  useFeatureFlag,
+} from 'config/feature-flags';
 import { useUserConfig } from 'config/user-config';
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { AmountBanner } from 'shared/banners/amount-banners';
 import { useDappStatus } from 'modules/web3';
 import { Button, Connect } from 'shared/wallet';
-import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { getChainColor } from 'utils/get-chain-color';
 
 import {
@@ -24,13 +27,16 @@ import { HeaderSettingsButton } from './header-settings-button';
 import { ThemeTogglerStyled } from './styles';
 
 const HeaderWallet: FC = () => {
-  const router = useRouter();
+  const [searchParams] = useSearchParams();
+  const { rpcSettingsPageOnInfraIsEnabled } = useFeatureFlag(
+    RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
+  );
   const { defaultChain: defaultChainId } = useUserConfig();
   const { isDappActive, address, walletChainId, isTestnet } = useDappStatus();
 
   const chainName = CHAINS[walletChainId || defaultChainId];
   const showNet = isTestnet && isDappActive;
-  const queryTheme = router?.query?.theme;
+  const queryTheme = searchParams.get('theme');
 
   const chainColor = useMemo(
     () => getChainColor(walletChainId || defaultChainId),
@@ -38,7 +44,7 @@ const HeaderWallet: FC = () => {
   );
 
   return (
-    <NoSSRWrapper>
+    <>
       {showNet && (
         <>
           <DotStyle />
@@ -55,7 +61,9 @@ const HeaderWallet: FC = () => {
       ) : (
         <Connect size="sm" />
       )}
-      {config.ipfsMode && <HeaderSettingsButton />}
+      {(config.ipfsMode || rpcSettingsPageOnInfraIsEnabled) && (
+        <HeaderSettingsButton />
+      )}
       {!queryTheme && <ThemeTogglerStyled data-testid="themeToggler" />}
       {config.ipfsMode && (
         <IPFSInfoBoxOnlyDesktopWrapper>
@@ -65,7 +73,7 @@ const HeaderWallet: FC = () => {
       <AmountBannerOnlyDesktopWrapper>
         <AmountBanner isDismissible placement="connect_wallet" />
       </AmountBannerOnlyDesktopWrapper>
-    </NoSSRWrapper>
+    </>
   );
 };
 

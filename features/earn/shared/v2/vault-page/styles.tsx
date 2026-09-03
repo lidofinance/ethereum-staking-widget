@@ -1,6 +1,6 @@
 import { Tabs } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 
 export const Layout = styled.div`
   display: grid;
@@ -123,7 +123,7 @@ export const TableValue = styled.span`
   }
 `;
 
-export const TableLink = styled(LocalLink)`
+export const TableLink = styled(Link)`
   color: var(--lido-color-primary);
 `;
 

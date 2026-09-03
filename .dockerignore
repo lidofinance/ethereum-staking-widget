@@ -50,4 +50,3 @@ yarn-error.log*
 .vscode
 
 public/runtime/
-Dockerfile

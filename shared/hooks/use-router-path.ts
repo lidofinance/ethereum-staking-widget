@@ -1,26 +1,12 @@
-import { useRouter } from 'next/router';
-
-import { config } from 'config';
-import { HOME_PATH } from 'consts/urls';
+import { useLocation } from 'react-router';
 
 export const useRouterPath = () => {
-  const router = useRouter();
+  const { pathname, search } = useLocation();
+  const path = `${pathname}${search}`;
 
-  if (config.ipfsMode) {
-    if (!config.isClientSide) return HOME_PATH;
-    return location.hash.replace('#', '') || HOME_PATH;
-  }
-
-  // We can't' use `router.pathname` and `router.route` 'cause it's a mapping with file structure
-  // example:
-  // - /wrap                  --->  /wrap/[[...mode]]
-  // - /withdrawals/request/  --->  /withdrawals/[mode]
-  // also we need to remove last character because `router.asPath` contain `/` as last character
-  // example:
-  // - /wrap                  ---> - /wrap/
-  // - <empty>                ---> - /
-  if (router.asPath.length > 1 && router.asPath.slice(-1) === '/')
-    return router.asPath.slice(0, -1);
-  // Fix for index page - '/'
-  else return router.asPath;
+  // Both router modes resolve into location.pathname (createHashRouter
+  // included — the fragment never reaches location), so no IPFS special case.
+  // Trailing-slash strip is defensive: only a manually typed URL carries one.
+  if (path.length > 1 && path.slice(-1) === '/') return path.slice(0, -1);
+  return path;
 };

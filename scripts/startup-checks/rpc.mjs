@@ -21,7 +21,8 @@ const checkRPC = async (url, chainId) => {
   try {
     domain = new URL(url).hostname;
   } catch {
-    console.error(`[checkRPC] Invalid URL: ${url}`);
+    // never log the value: RPC URLs embed provider API keys
+    console.error(`[checkRPC] [chainId=${chainId}] Invalid RPC URL`);
     return { domain: BROKEN_URL, chainId, success: false };
   }
 
@@ -42,8 +43,10 @@ const checkRPC = async (url, chainId) => {
       throw new Error(`Expected chainId ${chainId}, but got ${chainIdClient}`);
     }
   } catch (err) {
+    // viem embeds the full request URL (API key included) in err.message
+    const safeMessage = `${err.message}`.replaceAll(url, domain);
     console.error(
-      `[checkRPC] [chainId=${chainId}] Error checking RPC ${domain}: ${err.message}`,
+      `[checkRPC] [chainId=${chainId}] Error checking RPC ${domain}: ${safeMessage}`,
     );
     return { domain, chainId, success: false };
   }

@@ -1,12 +1,10 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { overrideWithQAMockBoolean } from 'utils/qa';
+import { logMatomoEventForQA } from 'features/qa-debug/matomo-log';
 
 import type { AmountBannerABVariant } from './types';
 
 export type AmountBannerPlacement =
-  | 'after_stake'
-  | 'disconnect_wallet'
-  | 'connect_wallet';
+  'after_stake' | 'disconnect_wallet' | 'connect_wallet';
 
 const CATEGORY = 'Ethereum_Staking_Widget_Insti';
 
@@ -49,17 +47,11 @@ export const trackAmountBannerCtaClick = (
   if (!slug) return;
   const action = `Click on "${ctaText}" ${VARIANT_LABELS[variant]} ${PLACEMENT_LABELS[placement]}`;
 
-  const enableLogging = overrideWithQAMockBoolean(
-    false,
-    'mock-qa-helpers-matomo-logging',
-  );
-  if (enableLogging) {
-    console.info(
-      '%cTracking Matomo event:',
-      'background:#3152A0;color:#fff;padding:2px 4px;border-radius:2px',
-      [CATEGORY, action, `eth_widget_${slug}_${placement}`].join(', '),
-    );
-  }
+  logMatomoEventForQA('amountBannerCtaClick', [
+    CATEGORY,
+    action,
+    `eth_widget_${slug}_${placement}`,
+  ]);
 
   trackEvent(CATEGORY, action, `eth_widget_${slug}_${placement}`);
 };

@@ -1,36 +1,36 @@
 import { useCallback } from 'react';
-import { useRouter } from 'next/router';
+import { createSearchParams, useNavigate } from 'react-router';
 
-import { prefixUrl } from 'utils/get-ipfs-base-path';
-
+/**
+ * Historically these hooks prefixed URLs with the IPFS hash-routing base
+ * (`prefixUrl` from utils/get-ipfs-base-path) because the Next.js IPFS
+ * build hand-rolled fragment routing. The SPA uses a real hash router in
+ * IPFS mode (see app/router.tsx), so navigation is uniform now and these
+ * are thin wrappers kept for their call sites.
+ */
 export const usePrefixedPush = () => {
-  const router = useRouter();
-  type Args = Parameters<typeof router.push>;
+  const navigate = useNavigate();
   return useCallback(
-    (
-      url: string,
-      query?: Record<string, string>,
-      a1?: Args[1],
-      a2?: Args[2],
-    ) => {
-      return router.push(prefixUrl(url, query), a1, a2);
-    },
-    [router],
+    (url: string, query?: Record<string, string>) =>
+      navigate({
+        pathname: url,
+        search: query ? createSearchParams(query).toString() : '',
+      }),
+    [navigate],
   );
 };
 
 export const usePrefixedReplace = () => {
-  const router = useRouter();
-  type Args = Parameters<typeof router.replace>;
+  const navigate = useNavigate();
   return useCallback(
-    (
-      url: string,
-      query?: Record<string, string>,
-      a1?: Args[1],
-      a2?: Args[2],
-    ) => {
-      return router.replace(prefixUrl(url, query), a1, a2);
-    },
-    [router],
+    (url: string, query?: Record<string, string>) =>
+      navigate(
+        {
+          pathname: url,
+          search: query ? createSearchParams(query).toString() : '',
+        },
+        { replace: true },
+      ),
+    [navigate],
   );
 };

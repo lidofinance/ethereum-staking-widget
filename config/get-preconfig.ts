@@ -1,7 +1,11 @@
-import getConfigNext from 'next/config';
 import { default as dynamics } from './dynamics';
 
-const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
+// Everything else through config/dynamics.ts
+const publicRuntimeConfig = {
+  // BASE_URL is Vite's resolved `base` (from BASE_PATH in vite.config.ts);
+  basePath: import.meta.env.BASE_URL.replace(/\/+$/, '') || undefined,
+  developmentMode: import.meta.env.DEV,
+};
 
 export type PreConfigType = {
   BASE_PATH_ASSET: string;
@@ -13,8 +17,7 @@ export type PreConfigType = {
 export const getPreConfig = (): PreConfigType => {
   const BASE_PATH_ASSET = dynamics.ipfsMode
     ? '.'
-    : (serverRuntimeConfig.basePath ?? '') ||
-      (publicRuntimeConfig.basePath ?? '');
+    : (publicRuntimeConfig.basePath ?? '');
 
   return {
     BASE_PATH_ASSET,
