@@ -39,12 +39,11 @@ export const useActiveFees = ({ vault }: { vault: VaultContract }) => {
 
       return { protocolFeeD6, performanceFeeD6 };
     },
+    select: formatActiveFees,
   });
 
   return {
     isLoading: query.isLoading,
-    value: query.data ? formatActiveFees(query.data) : undefined,
-    protocolFeeD6: query.data?.protocolFeeD6,
-    performanceFeeD6: query.data?.performanceFeeD6,
+    value: query.data,
   };
 };
