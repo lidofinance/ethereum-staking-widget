@@ -12,6 +12,7 @@ import { injectJsonLdPlugin } from './scripts/vite/inject-json-ld-plugin';
 import { ipfsHeadDefaultsPlugin } from './scripts/vite/ipfs-head-defaults-plugin';
 import { rawMarkdownPlugin } from './scripts/vite/raw-markdown-plugin';
 import { shimUsageReporterPlugin } from './scripts/vite/shim-usage-reporter-plugin';
+import { styledComponentsSeamPlugin } from './scripts/vite/styled-components-seam-plugin';
 import { windowEnvPlugin } from './scripts/vite/window-env-plugin';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -55,6 +56,10 @@ export default defineConfig({
     reactPlugin(),
     rawMarkdownPlugin(),
     shimUsageReporterPlugin(root),
+    // styled-components exit seam: app-code imports of 'styled-components'
+    // resolve to shims/styled-components.ts (a pass-through re-export of the
+    // real package); node_modules (lido-ui, reef-knot) keep the real one.
+    styledComponentsSeamPlugin(root),
     // Runtime env: inlines window.__env__ in dev/IPFS; web builds keep the
     // index.html placeholder for the nginx entrypoint (see the plugin for
     // the full contract).

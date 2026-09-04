@@ -1,50 +1,26 @@
-import styled from 'styled-components';
+// Migrated from styled-components to CSS modules (pilot of the exit plan):
+// exports keep their names and consumer contract; styling lives in
+// styles.module.css.
+import { styledElement } from 'styles/styled-element';
 
-export const SettingsFormWrap = styled.div`
-  margin-top: 42px;
-  margin-bottom: 40px;
-`;
+import styles from './styles.module.css';
 
-export const Actions = styled.div`
-  margin-top: ${({ theme }) => theme.spaceMap.lg}px;
-  display: flex;
-  gap: 10px;
+export const SettingsFormWrap = styledElement(
+  'div',
+  styles.settingsFormWrap,
+  'SettingsFormWrap',
+);
 
-  & > button {
-    flex: 1 1 auto;
-    padding-left: 0;
-    padding-right: 0;
-  }
+export const Actions = styledElement('div', styles.actions, 'Actions');
 
-  @media (max-width: 500px) {
-    flex-direction: column;
-  }
-`;
+export const DescriptionText = styledElement(
+  'div',
+  styles.descriptionText,
+  'DescriptionText',
+);
 
-export const DescriptionText = styled.div`
-  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
-  font-weight: 400;
-  line-height: 1.6em;
-  color: var(--lido-color-textSecondary);
-
-  & p:not(:last-child) {
-    margin-bottom: 10px;
-  }
-
-  & a {
-    text-decoration: none;
-    color: var(--lido-color-primary);
-  }
-`;
-
-export const DescriptionTitle = styled.div`
-  margin-bottom: 30px;
-  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  font-weight: 800;
-  line-height: 1.6em;
-  color: var(--lido-color-text);
-
-  &:not(:first-child) {
-    margin-top: ${({ theme }) => theme.spaceMap.md}px;
-  }
-`;
+export const DescriptionTitle = styledElement(
+  'div',
+  styles.descriptionTitle,
+  'DescriptionTitle',
+);
