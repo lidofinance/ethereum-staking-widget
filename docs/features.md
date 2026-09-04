@@ -1,68 +1,38 @@
 # Features & Pages
 
-## Pages (routes)
+## Routes
 
-| Route          | File                 | Description                          |
-| -------------- | -------------------- | ------------------------------------ |
-| `/`            | `pages/index.tsx`    | Home page (staking or IPFS redirect) |
-| `/earn`        | `pages/earn/`        | Earn vaults                          |
-| `/withdrawals` | `pages/withdrawals/` | Request/claim ETH withdrawal         |
-| `/wrap`        | `pages/wrap/`        | Wrap/Unwrap stETH ↔ wstETH           |
-| `/rewards`     | `pages/rewards.tsx`  | Staking rewards history by address   |
-| `/settings`    | `pages/settings.tsx` | User settings                        |
+Defined in `app/router` (React Router 7, lazy chunks); components are
+`app/routes/*`.
 
-## Features (features/)
+| Route                  | File                | Description                |
+| ---------------------- | ------------------- | -------------------------- |
+| `/`                    | `home`              | Staking / IPFS redirect    |
+| `/wrap(/:mode)`        | `wrap`              | Wrap/Unwrap stETH ↔ wstETH |
+| `/withdrawals(/:mode)` | `withdrawals`       | Request/claim withdrawal   |
+| `/rewards`             | `rewards`           | Rewards history by address |
+| `/earn`                | `earn`              | Vaults list                |
+| `/earn/:vault/:action` | `earn-vault-action` | Vault deposit/withdraw     |
+| `/settings`            | `settings`          | User settings              |
+| `*`                    | `not-found`         | 404                        |
 
-### stake/
+## Features
 
-Core staking flow:
-
-- Input ETH amount
-- Display staking rewards APR
-- Submit transaction to the Lido pool
-- Receive stETH
-
-### withdrawals/
-
-- `request/` — create an ETH withdrawal request (queued)
-- `claim/` — claim withdrawn funds after finalization
-- Displays queue position and estimated wait time
-
-### earn/
-
-Earn vault:
-
-- GGV
-- DVV
-- STG
-- Vault details: APY, TVL, deposit/withdraw
-
-### wsteth/
-
-- Wrap stETH → wstETH (prevents rebase exposure)
-- Unwrap wstETH → stETH
-
-### rewards/
-
-- Staking rewards history by wallet address
-- Real-time calculations
-- Data export
-
-### settings/
-
-- Theme toggle (light/dark)
-- Network settings
-- User preferences
-
-### ipfs/
-
-- IPFS-specific components and overrides
+- **stake/** — input ETH, show APR, submit to Lido, receive stETH
+- **withdrawals/** — `request/` (queued) + `claim/` (after finalization)
+- **dex-withdrawals/** — instant exit via DEX (CowSwap)
+- **earn/** — vaults (GGV, DVV, STG): APY, TVL, deposit/withdraw
+- **wsteth/** — wrap/unwrap stETH ↔ wstETH
+- **rewards/** — rewards history by address, export
+- **referral/** — referral banners/links
+- **settings/** — RPC/network settings, preferences
+- **ipfs/** — IPFS-specific UI (banners, RPC checks, CSP box)
+- **qa-debug/** — QA drawer (see [testing.md](./testing.md))
 
 ## Shared
 
-- `shared/components/` — reusable UI components (banners, buttons, etc.)
-- `shared/hooks/` — common React hooks
+- `shared/components/`, `shared/hooks/` — reusable UI and hooks
 - `shared/wallet/` — wallet connection UI
-- `shared/transaction-modal/` — transaction status modal
-- `shared/hook-form/` — form utilities
-- `shared/formatters/` — data formatting utilities
+- `shared/transaction-modal/` — tx status modal
+- `shared/hook-form/`, `shared/formatters/` — form/formatting utils
+- `shared/seo.ts` — route meta for the head prerender

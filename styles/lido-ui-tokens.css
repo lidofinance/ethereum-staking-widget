@@ -1,0 +1,89 @@
+/**
+ * Non-color design tokens bridged from @lidofinance/lido-ui's
+ * styled-components theme, so CSS-modules code can use `var(--lido-*)`
+ * where styled-components code wrote `${({ theme }) => theme.X}`.
+ *
+ * - Colors are NOT here: lido-ui already injects --lido-color-* itself
+ *   (element-theme-colors, via LidoUIHead).
+ * - These tokens are theme-INdependent: themeLight/themeDark differ only in
+ *   `colors` and `name`, so a single :root block is correct for both themes.
+ *   Asserted, along with every value below, against the installed lido-ui in
+ *   styles/lido-ui-tokens.test.ts — a lido-ui bump that changes a token
+ *   fails unit tests instead of drifting silently.
+ * - Breakpoints cannot be custom properties; migrated CSS hardcodes
+ *   lido-ui's media queries (also drift-guarded by the test):
+ *     sm  @media screen and (max-width: 359px)
+ *     md  @media screen and (max-width: 479px)
+ *     lg  @media screen and (max-width: 767px)
+ *     xl  @media screen and (max-width: 1023px)
+ *
+ * Var name = --lido-<group>-<theme key verbatim> (camelCase kept) so the
+ * drift test stays a mechanical mapping.
+ */
+:root {
+  /* theme.spaceMap.* (px) */
+  --lido-space-xs: 4px;
+  --lido-space-sm: 8px;
+  --lido-space-md: 16px;
+  --lido-space-lg: 20px;
+  --lido-space-xl: 24px;
+  --lido-space-xxl: 32px;
+
+  /* theme.fontSizesMap.* (px) */
+  --lido-font-size-xxxs: 10px;
+  --lido-font-size-xxs: 12px;
+  --lido-font-size-xs: 14px;
+  --lido-font-size-sm: 16px;
+  --lido-font-size-md: 18px;
+  --lido-font-size-lg: 20px;
+  --lido-font-size-xl: 26px;
+  --lido-font-size-xxl: 32px;
+  --lido-font-size-xxxl: 40px;
+  --lido-font-size-xxxxl: 50px;
+
+  /* theme.borderRadiusesMap.* (px) */
+  --lido-border-radius-xs: 4px;
+  --lido-border-radius-sm: 6px;
+  --lido-border-radius-md: 8px;
+  --lido-border-radius-lg: 10px;
+  --lido-border-radius-xl: 20px;
+
+  /* theme.duration.* */
+  --lido-duration-fast: 100ms;
+  --lido-duration-med: 150ms;
+  --lido-duration-norm: 200ms;
+
+  /* theme.boxShadows.* — offsets/blur only, color is appended at use sites */
+  --lido-box-shadow-xs: 0px 4px 8px 0px;
+  --lido-box-shadow-sm: 0px 4px 12px 0px;
+  --lido-box-shadow-md: 0px 4px 16px 0px;
+  --lido-box-shadow-lg: 0px 8px 24px 0px;
+  --lido-box-shadow-xl: 0px 8px 32px 0px;
+  --lido-box-shadow-xxl: 0px 8px 44px 0px;
+
+  /* theme.ease.* */
+  --lido-ease-inSine: cubic-bezier(0.47, 0, 0.745, 0.715);
+  --lido-ease-outSine: cubic-bezier(0.39, 0.575, 0.565, 1);
+  --lido-ease-inOutSine: cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  --lido-ease-inQuad: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  --lido-ease-outQuad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --lido-ease-inOutQuad: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --lido-ease-inCubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --lido-ease-outCubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --lido-ease-inOutCubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --lido-ease-inQuart: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+  --lido-ease-outQuart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --lido-ease-inOutQuart: cubic-bezier(0.77, 0, 0.175, 1);
+  --lido-ease-inQuint: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+  --lido-ease-outQuint: cubic-bezier(0.23, 1, 0.32, 1);
+  --lido-ease-inOutQuint: cubic-bezier(0.86, 0, 0.07, 1);
+  --lido-ease-inExpo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  --lido-ease-outExpo: cubic-bezier(0.19, 1, 0.22, 1);
+  --lido-ease-inOutExpo: cubic-bezier(1, 0, 0, 1);
+  --lido-ease-inCirc: cubic-bezier(0.6, 0.04, 0.98, 0.335);
+  --lido-ease-outCirc: cubic-bezier(0.075, 0.82, 0.165, 1);
+  --lido-ease-inOutCirc: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  --lido-ease-inBack: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  --lido-ease-outBack: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --lido-ease-inOutBack: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}

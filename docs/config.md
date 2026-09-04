@@ -40,8 +40,8 @@ locally").
 ## Config system
 
 - `config/get-config.ts` — main configuration object
-- `config/get-secret-config.ts` — sensitive data (server-only, never sent to browser)
 - `config/get-preconfig.ts` — pre-initialization config
+- `server/src/config.ts` — API-side env/config (server-only)
 - `config/provider.tsx` — ConfigProvider (React Context)
 - `config/groups/` — config sections (web3, cache, ipfs, etc.)
 - `config/feature-flags/` — feature flag definitions
@@ -111,7 +111,7 @@ RATE_LIMIT_TIME_FRAME=60      # Time window in seconds
 ### Deployment
 
 ```
-BASE_PATH=...                 # Next.js basePath
+BASE_PATH=...                 # Vite `base` (web builds; IPFS uses './')
 NODE_ENV=development|production
 PORT=3000                     # Server port
 CONFIG_MANIFEST_PATH=...      # Path to a mounted config manifest file (e.g. k8s configmap);

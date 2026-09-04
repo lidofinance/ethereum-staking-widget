@@ -1,0 +1,48 @@
+.settingsFormWrap {
+  margin-top: 42px;
+  margin-bottom: 40px;
+}
+
+.actions {
+  margin-top: var(--lido-space-lg);
+  display: flex;
+  gap: 10px;
+
+  & > button {
+    flex: 1 1 auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  @media (width <= 500px) {
+    flex-direction: column;
+  }
+}
+
+.descriptionText {
+  font-size: var(--lido-font-size-xxs);
+  font-weight: 400;
+  line-height: 1.6em;
+  color: var(--lido-color-textSecondary);
+
+  & p:not(:last-child) {
+    margin-bottom: 10px;
+  }
+
+  & a {
+    text-decoration: none;
+    color: var(--lido-color-primary);
+  }
+}
+
+.descriptionTitle {
+  margin-bottom: 30px;
+  font-size: var(--lido-font-size-xs);
+  font-weight: 800;
+  line-height: 1.6em;
+  color: var(--lido-color-text);
+
+  &:not(:first-child) {
+    margin-top: var(--lido-space-md);
+  }
+}

@@ -1,0 +1,23 @@
+/**
+ * Breakpoint tokens as @custom-media — the media-query half of the lido-ui
+ * token bridge (styles/lido-ui-tokens.css holds the custom properties).
+ *
+ * Build-time only: @csstools/postcss-global-data (postcss.config.js) injects
+ * these definitions into every CSS file, and postcss-preset-env resolves
+ * `@media (--lido-media-*)` usages and strips the at-rules. Nothing imports
+ * this file at runtime.
+ *
+ * --lido-media-* mirrors lido-ui's theme.mediaQueries keys and is
+ * drift-guarded against the installed lido-ui in styles/lido-ui-tokens.test.ts.
+ * --custom-media-* are app-level breakpoints (same naming split as
+ * --lido-* / --custom-* custom properties).
+ */
+
+@custom-media --lido-media-sm screen and (max-width: 359px);
+@custom-media --lido-media-md screen and (max-width: 479px);
+@custom-media --lido-media-lg screen and (max-width: 767px);
+@custom-media --lido-media-xl screen and (max-width: 1023px);
+
+/* devicesHeaderMedia.mobile — mirror of NAV_MOBILE_MAX_WIDTH
+   (styles/constants.ts) and --nav-mobile-max-width (styles/global.css). */
+@custom-media --custom-media-nav-mobile screen and (max-width: 950px);
