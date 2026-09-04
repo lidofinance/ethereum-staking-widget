@@ -3,17 +3,22 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { themeDark, themeDefault, themeLight } from '@lidofinance/lido-ui';
 
+import { NAV_MOBILE_MAX_WIDTH } from './constants';
+
 /**
- * Drift guard for styles/lido-ui-tokens.css: the bridged custom properties
- * must stay byte-equal to the installed lido-ui theme, and the assumption
- * that non-color tokens don't branch per theme must keep holding. A lido-ui
- * bump that changes either fails here instead of skewing migrated CSS.
+ * Drift guard for the lido-ui token bridge (styles/lido-ui-tokens.css and
+ * styles/lido-ui-media.css): the bridged custom properties and @custom-media
+ * breakpoints must stay byte-equal to the installed lido-ui theme, and the
+ * assumption that non-color tokens don't branch per theme must keep holding.
+ * A lido-ui bump that changes either fails here instead of skewing migrated
+ * CSS.
  */
 
-const css = readFileSync(
-  fileURLToPath(new URL('lido-ui-tokens.css', import.meta.url)),
-  'utf-8',
-);
+const readStyles = (file: string) =>
+  readFileSync(fileURLToPath(new URL(file, import.meta.url)), 'utf-8');
+
+const css = readStyles('lido-ui-tokens.css');
+const mediaCss = readStyles('lido-ui-media.css');
 
 const parseCssVars = (source: string): Record<string, string> => {
   const vars: Record<string, string> = {};
@@ -77,14 +82,22 @@ describe('lido-ui-tokens.css', () => {
     expect(nonColor(themeLight)).toEqual(nonColor(themeDark));
   });
 
-  it('breakpoints match the media queries hardcoded in migrated CSS', () => {
-    // CSS custom properties can't hold media queries, so migrated
-    // *.module.css files write them out; this pins the values they assume.
-    expect(themeDefault.mediaQueries).toEqual({
-      sm: '@media screen and (max-width: 359px)',
-      md: '@media screen and (max-width: 479px)',
-      lg: '@media screen and (max-width: 767px)',
-      xl: '@media screen and (max-width: 1023px)',
+  it('@custom-media breakpoints match lido-ui and app constants', () => {
+    const customMedia: Record<string, string> = {};
+    for (const [, name, query] of mediaCss.matchAll(
+      /@custom-media\s+(--[\w-]+)\s+([^;]+);/g,
+    )) {
+      customMedia[name] = query.trim();
+    }
+
+    expect(customMedia).toEqual({
+      ...Object.fromEntries(
+        Object.entries(themeDefault.mediaQueries).map(([key, value]) => [
+          `--lido-media-${key}`,
+          value.replace(/^@media\s+/, ''),
+        ]),
+      ),
+      '--custom-media-nav-mobile': `screen and (max-width: ${NAV_MOBILE_MAX_WIDTH}px)`,
     });
   });
 });

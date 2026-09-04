@@ -173,6 +173,16 @@ export default defineConfig({
           },
         },
   },
+  dev: {
+    sourcemap: {
+      // not wired by vite yet
+      // css: true,
+      js: true,
+    },
+  },
+  css: {
+    devSourcemap: true,
+  },
   envPrefix: ['VITE_'],
   define: {
     // Replaces webpack-preprocessor-loader's `#!if IPFS_MODE` directives.
