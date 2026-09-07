@@ -174,7 +174,7 @@ export const CowswapFrame = () => {
       },
 
       theme: themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight,
-      disableWindowOpen: true,
+      disableWindowOpen: false, // enables opening explorer and `powered by cowswap` links
       disableSwitchingTokens: true,
       disablePostedOrderConfirmationModal: true,
       disableTokenImport: true,
