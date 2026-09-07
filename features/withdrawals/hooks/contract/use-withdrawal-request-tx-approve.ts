@@ -37,7 +37,7 @@ export const useWithdrawalRequestTxApprove = ({
     hasBytecode,
     isLoading: isSmartAccountLoading,
   } = useIsSmartAccount();
-  const isForceAllowance = useIsForceAllowance();
+  const [isForceAllowance, setIsForceAllowance] = useIsForceAllowance();
 
   const {
     allowance,
@@ -105,6 +105,7 @@ export const useWithdrawalRequestTxApprove = ({
       isTokenLocked,
       hasEnoughAllowance,
       isForceAllowance,
+      setIsForceAllowance,
     }),
     [
       processApproveTx,
@@ -116,6 +117,7 @@ export const useWithdrawalRequestTxApprove = ({
       isTokenLocked,
       hasEnoughAllowance,
       isForceAllowance,
+      setIsForceAllowance,
     ],
   );
 };

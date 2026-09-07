@@ -630,6 +630,35 @@ describe('ManifestSchema', () => {
     });
   });
 
+  describe('geo', () => {
+    const parseGeo = (geo: unknown) =>
+      parseManifest({ '1': { ...validEntry, config: { geo } } })['1']?.config
+        .geo;
+
+    it('defaults to an empty country list when omitted', () => {
+      const result = parseManifest({ '1': validEntry });
+      expect(result['1']?.config.geo).toEqual({ limited: [] });
+    });
+
+    it('uppercases and trims country codes', () => {
+      expect(parseGeo({ limited: ['us', ' de '] })).toEqual({
+        limited: ['US', 'DE'],
+      });
+    });
+
+    it('deduplicates country codes after normalization', () => {
+      expect(parseGeo({ limited: ['US', 'us'] })).toEqual({
+        limited: ['US'],
+      });
+    });
+
+    it('drops entries that are not alpha-2 codes instead of failing', () => {
+      expect(parseGeo({ limited: ['US', 'USA', '', 42, null] })).toEqual({
+        limited: ['US'],
+      });
+    });
+  });
+
   describe('forward compatibility', () => {
     it('ignores unknown keys on config object without throwing', () => {
       expect(() =>

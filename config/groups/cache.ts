@@ -37,4 +37,8 @@ export const CACHE_REWARDS_HEADERS =
   'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
 export const CACHE_VALIDATION_HEADERS =
   'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
+// /api/geo answers differ per visitor IP — a shared cache entry would hand one
+// visitor's country to everyone behind the same edge node
+export const CACHE_GEO_HEADERS = 'private, no-store, must-revalidate';
+
 export const CACHE_DEFAULT_ERROR_HEADERS = 'no-store, must-revalidate';

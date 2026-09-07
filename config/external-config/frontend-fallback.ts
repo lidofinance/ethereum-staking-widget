@@ -20,6 +20,7 @@ export const overrideManifestConfig = (
       ...config.earnAllocation,
       ...override.earnAllocation,
     },
+    geo: { ...config.geo, ...override.geo },
     pages: { ...config.pages, ...override.pages },
     api: { ...config.api, ...override.api },
   };

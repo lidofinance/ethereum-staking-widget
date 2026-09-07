@@ -68,6 +68,7 @@ export const EthVaultCard = () => {
       }}
       protectedBadgeTooltipText={<ProtectedTooltip />}
       warning={<VaultListWarning warningText={listWarningText} />}
+      isGeoGated
     />
   );
 };

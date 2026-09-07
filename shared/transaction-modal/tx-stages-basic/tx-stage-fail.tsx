@@ -7,11 +7,16 @@ import { StageIconFail } from './icons';
 import { ModalFooterButton, LoaderWrapper } from './styles';
 
 type TxStageFailProps = {
-  failedText?: string | null;
+  failedText?: React.ReactNode;
   onRetry?: React.MouseEventHandler<HTMLSpanElement>;
+  footer?: React.ReactNode;
 };
 
-export const TxStageFail = ({ failedText, onRetry }: TxStageFailProps) => {
+export const TxStageFail = ({
+  failedText,
+  onRetry,
+  footer,
+}: TxStageFailProps) => {
   const [isLoading, setLoading] = useState(false);
   const handleRetry = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
@@ -25,6 +30,7 @@ export const TxStageFail = ({ failedText, onRetry }: TxStageFailProps) => {
       title="Transaction Failed"
       icon={<StageIconFail showLedger={false} />}
       description={failedText ?? 'Something went wrong'}
+      footer={footer}
       footerHint={
         failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
         onRetry &&

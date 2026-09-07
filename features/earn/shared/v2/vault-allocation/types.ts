@@ -4,11 +4,11 @@ import type { LineDataWithAllocation } from 'features/earn/shared/vault-allocati
 
 export type { LineDataWithAllocation };
 
+// A subvault holds only real protocol positions; Available / Pending / Others
+// are summed into FlatAllocationItem summary rows at the metavault level.
 export type AllocationSubItem = {
   id: string;
   label: string;
-  isSummary?: boolean;
-  info?: ReactNode;
   chain: string;
   allocation: number;
   tvlUSD: number;

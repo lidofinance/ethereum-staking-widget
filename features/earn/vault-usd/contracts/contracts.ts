@@ -14,7 +14,7 @@ import {
 import { TOKENS } from 'consts/tokens';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 
-import type { UsdDepositToken } from '../types';
+import type { UsdDepositToken, UsdWithdrawToken } from '../types';
 
 export const getVaultContract = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
@@ -64,46 +64,73 @@ export const getVaultWritableContract = <
   });
 };
 
-export const getRedeemQueueContractUSDC = <TPublicClient extends PublicClient>(
-  publicClient: TPublicClient,
-) => {
+export const USD_ASYNC_REDEEM_QUEUE_CONTRACT_NAMES: Record<
+  UsdWithdrawToken,
+  CONTRACT_NAMES
+> = {
+  [TOKENS.usdc]: 'usdRedeemQueueUSDC',
+  [TOKENS.usdt]: 'usdRedeemQueueUSDT',
+};
+
+// USDT is async-only: Mellow provides no sync (instant) redeem queue for it.
+// The absence of a name here is what makes the instant route unreachable for USDT.
+export const USD_SYNC_REDEEM_QUEUE_CONTRACT_NAMES: Partial<
+  Record<UsdWithdrawToken, CONTRACT_NAMES>
+> = {
+  [TOKENS.usdc]: 'usdSyncRedeemQueueUSDC',
+};
+
+export const getRedeemQueueContractAddress = <
+  TPublicClient extends PublicClient,
+>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: UsdWithdrawToken;
+}) => {
   const address = getContractAddress(
     publicClient.chain?.id as number,
-    'usdRedeemQueueUSDC',
+    USD_ASYNC_REDEEM_QUEUE_CONTRACT_NAMES[token],
   );
   invariant(
     address,
-    `no USD Redeem Queue USDC contract address for ${publicClient.chain?.id}`,
+    `no USD Redeem Queue ${token} contract address for ${publicClient.chain?.id}`,
   );
+  return address;
+};
 
+export const getRedeemQueueContract = <TPublicClient extends PublicClient>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: UsdWithdrawToken;
+}) => {
   return getContract({
     abi: ASYNC_REDEEM_QUEUE_ABI,
-    address,
+    address: getRedeemQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
     },
   });
 };
 
-export const getRedeemQueueWritableContractUSDC = <
+export const getRedeemQueueWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
->(
-  publicClient: TPublicClient,
-  walletClient: TWalletClient,
-) => {
-  const address = getContractAddress(
-    publicClient.chain?.id as number,
-    'usdRedeemQueueUSDC',
-  );
-  invariant(
-    address,
-    `no USD Redeem Queue USDC contract address for ${publicClient.chain?.id}`,
-  );
-
+>({
+  publicClient,
+  walletClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  walletClient: TWalletClient;
+  token: UsdWithdrawToken;
+}) => {
   return getContract({
     abi: ASYNC_REDEEM_QUEUE_ABI,
-    address,
+    address: getRedeemQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
       wallet: walletClient,
@@ -111,21 +138,62 @@ export const getRedeemQueueWritableContractUSDC = <
   });
 };
 
-export const getSyncRedeemQueueWritableContractUSDC = <
-  TPublicClient extends PublicClient,
-  TWalletClient extends WalletClient = WalletClient,
->(
-  publicClient: TPublicClient,
-  walletClient: TWalletClient,
-) => {
+// Returns undefined when the token has no sync queue (USDT) — "no instant route"
+// is a valid state that callers branch on, not an error.
+const getSyncRedeemQueueContractAddress = <TPublicClient extends PublicClient>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: UsdWithdrawToken;
+}) => {
+  const contractName = USD_SYNC_REDEEM_QUEUE_CONTRACT_NAMES[token];
+  if (!contractName) return undefined;
+
   const address = getContractAddress(
     publicClient.chain?.id as number,
-    'usdSyncRedeemQueueUSDC',
+    contractName,
   );
   invariant(
     address,
-    `no USD Sync Redeem Queue USDC contract address for ${publicClient.chain?.id}`,
+    `no USD Sync Redeem Queue ${token} contract address for ${publicClient.chain?.id}`,
   );
+  return address;
+};
+
+export const getSyncRedeemQueueContract = <TPublicClient extends PublicClient>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: UsdWithdrawToken;
+}) => {
+  const address = getSyncRedeemQueueContractAddress({ publicClient, token });
+  if (!address) return undefined;
+
+  return getContract({
+    abi: SYNC_REDEEM_QUEUE_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getSyncRedeemQueueWritableContract = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>({
+  publicClient,
+  walletClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  walletClient: TWalletClient;
+  token: UsdWithdrawToken;
+}) => {
+  const address = getSyncRedeemQueueContractAddress({ publicClient, token });
+  if (!address) return undefined;
 
   return getContract({
     abi: SYNC_REDEEM_QUEUE_ABI,
@@ -133,29 +201,6 @@ export const getSyncRedeemQueueWritableContractUSDC = <
     client: {
       public: publicClient,
       wallet: walletClient,
-    },
-  });
-};
-
-export const getSyncRedeemQueueContractUSDC = <
-  TPublicClient extends PublicClient,
->(
-  publicClient: TPublicClient,
-) => {
-  const address = getContractAddress(
-    publicClient.chain?.id as number,
-    'usdSyncRedeemQueueUSDC',
-  );
-  invariant(
-    address,
-    `no USD Sync Redeem Queue USDC contract address for ${publicClient.chain?.id}`,
-  );
-
-  return getContract({
-    abi: SYNC_REDEEM_QUEUE_ABI,
-    address,
-    client: {
-      public: publicClient,
     },
   });
 };

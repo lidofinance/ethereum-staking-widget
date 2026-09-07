@@ -5,6 +5,7 @@ import { VaultForm } from 'features/earn/shared/vault-form';
 import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
 import { VaultDepositWarning } from 'features/earn/shared/v2/vault-warning/vault-deposit-warning';
+import { GeoNotice } from 'features/earn/shared/v2/geo-notice';
 
 import { EthDepositFormProvider } from './form-context';
 import { EthVaultDepositInputGroup } from './deposit-input-group';
@@ -24,6 +25,7 @@ export const EthVaultDepositForm: FC = () => {
     <EthDepositFormProvider>
       <UpgradeAssetsBlock />
       <BlockSidePanel>
+        <GeoNotice />
         <ActionSwitch />
         <VaultForm data-testid="deposit-form">
           <VaultDepositWarning

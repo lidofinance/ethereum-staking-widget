@@ -14,6 +14,7 @@ import { useUpgradableTokenBalances } from 'features/earn/vault-eth/upgrade-asse
 import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from 'features/earn/vault-eth/consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
 
 import {
   UpgradeCardBlock,
@@ -37,6 +38,11 @@ export const UpgradeCardVaultsList: FC<UpgradeCardProps> = ({
 }) => {
   const { isWalletConnected } = useDappStatus();
   const { balances } = useUpgradableTokenBalances();
+  const { isDepositGeoAvailable } = useEarnGeoGate();
+
+  // upgrading is a deposit into EarnETH, so the whole funnel stays hidden
+  // until the region positively answers `full`
+  if (!isDepositGeoAvailable) return null;
 
   if (!isWalletConnected) return null;
 

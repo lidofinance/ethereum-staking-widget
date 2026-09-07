@@ -1,13 +1,16 @@
 import { TokenSymbols } from 'consts/tokens';
+import type { UsdWithdrawTokenSymbol } from '../../types';
 
 type WITHDRAW_TOKENS = TokenSymbols['earnusd'];
 
 export type UsdVaultWithdrawFormValues = {
   amount: null | bigint;
+  token: UsdWithdrawTokenSymbol;
 };
 
 export type UsdVaultWithdrawFormValidatedValues = {
   amount: bigint;
+  token: UsdWithdrawTokenSymbol;
 };
 
 export type UsdVaultWithdrawFormValidationContext = {

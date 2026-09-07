@@ -41,7 +41,7 @@ export const useWithdraw = ({
   matomoEventSuccess,
 }: {
   asyncRedeemQueue: AsyncRedeemQueueWritableContract;
-  syncRedeemQueue: SyncRedeemQueueWritableContract;
+  syncRedeemQueue?: SyncRedeemQueueWritableContract; // Omit for async-only queues
   collector: CollectorContract;
   txModalStages: TxModalStages;
   onRetry?: () => void;
@@ -57,9 +57,11 @@ export const useWithdraw = ({
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
 
-      const checkSyncWithdrawAvailability = async () => {
+      const checkSyncWithdrawAvailability = async (
+        syncQueue: SyncRedeemQueueWritableContract,
+      ) => {
         const [, actualRemainingDailyLimit] =
-          await syncRedeemQueue.read.remainingDailyLimit();
+          await syncQueue.read.remainingDailyLimit();
         const remainingDailyLimit = overrideWithQAMockBigInt(
           actualRemainingDailyLimit,
           QA_REMAINING_DAILY_LIMIT_KEY,
@@ -71,10 +73,10 @@ export const useWithdraw = ({
         const [{ assets }, actualLiquidAssets] = await Promise.all([
           collector.read.getWithdrawalParams([
             amount,
-            syncRedeemQueue.address,
+            syncQueue.address,
             COLLECTOR_CONFIG,
           ]) as Promise<{ assets: bigint }>,
-          syncRedeemQueue.read.getLiquidAssets(),
+          syncQueue.read.getLiquidAssets(),
         ]);
         const liquidAssets = overrideWithQAMockBigInt(
           actualLiquidAssets,
@@ -91,8 +93,11 @@ export const useWithdraw = ({
 
       const getSyncWithdrawAvailability =
         async (): Promise<SyncWithdrawAvailability> => {
+          // Async-only queue: there is no instant route to check.
+          if (!syncRedeemQueue) return { status: 'unavailable' };
+
           try {
-            return (await checkSyncWithdrawAvailability())
+            return (await checkSyncWithdrawAvailability(syncRedeemQueue))
               ? { status: 'available' }
               : { status: 'unavailable' };
           } catch (error) {
@@ -109,8 +114,12 @@ export const useWithdraw = ({
         );
       }
 
-      const isSyncWithdrawRoute =
-        syncWithdrawAvailability.status === 'available';
+      // Narrowed once so the tx branches below don't need assertions.
+      const syncQueue =
+        syncWithdrawAvailability.status === 'available'
+          ? syncRedeemQueue
+          : undefined;
+      const isSyncWithdrawRoute = !!syncQueue;
 
       const asyncWithdrawArgs = [amount] as const;
       const syncWithdrawArgs = [amount, address] as const;
@@ -118,11 +127,11 @@ export const useWithdraw = ({
       try {
         await txFlow({
           callsFn: async () => {
-            const call: AACall = isSyncWithdrawRoute
+            const call: AACall = syncQueue
               ? {
-                  to: syncRedeemQueue.address,
+                  to: syncQueue.address,
                   data: encodeFunctionData({
-                    abi: syncRedeemQueue.abi,
+                    abi: syncQueue.abi,
                     functionName: 'redeem',
                     args: syncWithdrawArgs,
                   }),
@@ -139,16 +148,16 @@ export const useWithdraw = ({
             return [call];
           },
           sendTransaction: async (txStagesCallback) => {
-            if (isSyncWithdrawRoute) {
+            if (syncQueue) {
               await core.performTransaction({
                 getGasLimit: async (opts) =>
                   applyRoundUpTxParameter(
-                    await syncRedeemQueue.estimateGas.redeem(syncWithdrawArgs, {
+                    await syncQueue.estimateGas.redeem(syncWithdrawArgs, {
                       ...opts,
                     }),
                   ),
                 sendTransaction: (opts) => {
-                  return syncRedeemQueue.write.redeem(syncWithdrawArgs, {
+                  return syncQueue.write.redeem(syncWithdrawArgs, {
                     ...opts,
                   });
                 },
@@ -234,11 +243,7 @@ export const useWithdraw = ({
       matomoEventStart,
       matomoEventSuccess,
       onRetry,
-      syncRedeemQueue.abi,
-      syncRedeemQueue.address,
-      syncRedeemQueue.estimateGas,
-      syncRedeemQueue.read,
-      syncRedeemQueue.write,
+      syncRedeemQueue,
       txFlow,
       txModalStages,
     ],

@@ -8,7 +8,16 @@ export const enum API_ROUTES {
   CONFIG_MANIFEST = 'api/config-manifest',
   EARN_VAULTS_APR = 'api/earn/vaults-apr',
   EARN_VAULTS_TVL = 'api/earn/vaults-tvl',
+  GEO = 'api/geo',
 }
+
+/**
+ * Absolute path to an own API route. Built from `basePath` instead of a bare
+ * relative string so the URL does not depend on the depth of the page the
+ * request is made from.
+ */
+export const getApiPath = (route: API_ROUTES): string =>
+  `${config.basePath ?? ''}/${route}`;
 
 export const enum ETH_API_ROUTES {
   ETH_APR = '/v1/protocol/eth/apr/last',

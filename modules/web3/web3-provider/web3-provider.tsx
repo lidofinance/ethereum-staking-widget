@@ -35,7 +35,7 @@ import { useGetRpcUrlByChainId } from 'config/rpc';
 import { walletMetricProps } from 'consts/matomo';
 
 import { SupportL1Chains } from './dapp-chain';
-import { useWeb3Transport } from './use-web3-transport';
+import { useWeb3Transport } from './web3-transport';
 import { wagmiChainMap } from '../consts';
 import { useExternalConfigContext } from 'config/external-config';
 

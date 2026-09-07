@@ -64,7 +64,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       referral: null,
     },
     context: validationContextPromise,
-    criteriaMode: 'firstError',
+    criteriaMode: 'all',
     mode: 'onChange',
     resolver: WrapFormValidationResolver,
   });

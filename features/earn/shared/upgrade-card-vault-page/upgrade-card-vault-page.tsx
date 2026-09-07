@@ -12,6 +12,7 @@ import { LocalLink } from 'shared/components/local-link';
 import { useUpgradableTokenBalances } from 'features/earn/vault-eth/upgrade-assets/use-upgradable-token-balances';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
 
 import {
   UpgradeCardBlock,
@@ -38,6 +39,11 @@ export const UpgradeCardVaultPage: FC<UpgradeCardProps> = ({
   vaultToken,
 }) => {
   const { balances, isLoading } = useUpgradableTokenBalances();
+  const { isDepositGeoAvailable } = useEarnGeoGate();
+
+  // upgrading is a deposit into EarnETH, so the whole funnel stays hidden
+  // until the region positively answers `full`
+  if (!isDepositGeoAvailable) return null;
 
   // prevents flashing the card content while loading the balances while pre-fetching the data (isLoading: false, balances undefined)
   if (Object.values(balances).some((b) => b === undefined) || isLoading)
