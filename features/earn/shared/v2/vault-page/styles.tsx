@@ -58,6 +58,9 @@ export const InfoRow = styled.div`
 export const InfoRowLabel = styled.span`
   color: var(--lido-color-textSecondary);
   font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spaceMap.xs}px;
 `;
 
 export const InfoRowValue = styled.span`

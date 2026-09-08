@@ -63,14 +63,10 @@ type DiagnosticAllocationData = {
 };
 
 // Entries that match these categories are accumulated into the
-// Available / Pending / Others rows shown in the allocation table.
-const NESTED_ALLOCATION_SUMMARY_KEYS = ['pending', 'others'] as const;
-const FLAT_ALLOCATION_SUMMARY_KEYS = [
-  'pending',
-  'others',
-  'available',
-] as const;
-type AllocationSummaryKey = (typeof FLAT_ALLOCATION_SUMMARY_KEYS)[number];
+// Available / Pending / Others rows shown at the metavault level. Subvaults
+// never carry summary rows of their own; their contributions are merged here.
+const ALLOCATION_SUMMARY_KEYS = ['pending', 'others', 'available'] as const;
+type AllocationSummaryKey = (typeof ALLOCATION_SUMMARY_KEYS)[number];
 type AllocationSummaryRows = Record<
   AllocationSummaryKey,
   { allocation: number; tvlUSD: number }
@@ -102,16 +98,25 @@ const addToAllocationSummaryRow = (
   summaryRows[key].tvlUSD += tvlUSD;
 };
 
+const logAllocationMovedToOthers = (
+  id: string,
+  reason: DiagnosticAllocationReason,
+): void => {
+  console.debug('[Vault allocation] Allocation moved to Others', {
+    reason,
+    id,
+  });
+};
+
+// Takes an already whole-vault share; nested allocations must be rescaled
+// first, so they roll up through `parseNestedGroup` instead of this helper.
 const moveAllocationToOthers = (
   summaryRows: AllocationSummaryRows,
   allocation: DiagnosticAllocationData,
   tvlUSD: number,
   reason: DiagnosticAllocationReason,
 ): void => {
-  console.debug('[Vault allocation] Allocation moved to Others', {
-    reason,
-    id: allocation.id,
-  });
+  logAllocationMovedToOthers(allocation.id, reason);
 
   if (allocation.sharePercent <= 0) return;
 
@@ -123,29 +128,17 @@ const moveAllocationToOthers = (
   );
 };
 
+// Splits the displayable positions from the overflow. The caller rolls up the
+// overflow, since only it knows how to rescale a nested share.
 const limitNestedItems = (
   items: AllocationSubItem[],
-  summaryRows: AllocationSummaryRows,
-): AllocationSubItem[] => {
+): { items: AllocationSubItem[]; overflow: AllocationSubItem[] } => {
   items.sort(sortByAllocationDescending);
 
-  if (items.length <= MAX_SUBVAULT_POSITIONS) {
-    return items;
-  }
-
-  for (const item of items.slice(MAX_SUBVAULT_POSITIONS)) {
-    moveAllocationToOthers(
-      summaryRows,
-      {
-        id: item.id,
-        sharePercent: item.allocation,
-      },
-      item.tvlUSD,
-      'max-subvault-positions',
-    );
-  }
-
-  return items.slice(0, MAX_SUBVAULT_POSITIONS);
+  return {
+    items: items.slice(0, MAX_SUBVAULT_POSITIONS),
+    overflow: items.slice(MAX_SUBVAULT_POSITIONS),
+  };
 };
 
 const ALLOCATION_SUMMARY_KEY_BY_CATEGORY = {
@@ -209,35 +202,11 @@ const classifyAllocation = (
   return { type: 'ignored' };
 };
 
-const appendNestedSummaryRows = (
-  items: AllocationSubItem[],
-  summaryRows: AllocationSummaryRows,
-): void => {
-  for (const key of NESTED_ALLOCATION_SUMMARY_KEYS) {
-    const summary = summaryRows[key];
-
-    if (summary.allocation > 0) {
-      const meta = ALLOCATION_SUMMARY_META[key];
-
-      items.push({
-        label: meta.label,
-        id: meta.id,
-        isSummary: true,
-        icon: undefined,
-        info: meta.info,
-        chain: '',
-        allocation: summary.allocation,
-        tvlUSD: summary.tvlUSD,
-      });
-    }
-  }
-};
-
-const appendFlatSummaryRows = (
+const appendSummaryRows = (
   items: FlatAllocationItem[],
   summaryRows: AllocationSummaryRows,
 ): void => {
-  for (const key of FLAT_ALLOCATION_SUMMARY_KEYS) {
+  for (const key of ALLOCATION_SUMMARY_KEYS) {
     const summary = summaryRows[key];
 
     if (summary.allocation > 0) {
@@ -261,10 +230,29 @@ const parseNestedGroup = (
   hiddenAllocationIds: ReadonlySet<string>,
   topLevelSummaryRows: AllocationSummaryRows,
 ): AllocationGroup => {
-  const summaryRows = createAllocationSummaryRows();
   const knownItems: AllocationSubItem[] = [];
-  let availableAllocation = 0;
-  let availableTvlUSD = 0;
+  let rolledUpAllocation = 0;
+  let rolledUpTvlUSD = 0;
+
+  // Summary rows exist only at the metavault level, so every nested Available /
+  // Pending / Others contribution is merged there instead of into the subvault.
+  // Assumes a subvault's children sum to 100%, which the API schema does not
+  // enforce; see NESTED_ALLOCATION_SCHEMA in ../apy-data/metavaults-allocation.
+  const rollUpToMetavault = (
+    key: AllocationSummaryKey,
+    subSharePercent: number,
+    subTvl: number,
+  ): void => {
+    if (subSharePercent <= 0) return;
+
+    // A nested share is relative to its parent subvault. Convert it to the
+    // whole-vault share before merging it into the metavault-level row.
+    const topLevelShare = alloc.sharePercent * (subSharePercent / 100);
+
+    addToAllocationSummaryRow(topLevelSummaryRows, key, topLevelShare, subTvl);
+    rolledUpAllocation += topLevelShare;
+    rolledUpTvlUSD += subTvl;
+  };
 
   for (const sub of alloc.allocations) {
     // Nested sub-allocations only carry a share, so derive their TVL from the
@@ -277,29 +265,10 @@ const parseNestedGroup = (
     );
 
     if (disposition.type === 'summary') {
-      if (disposition.key === 'available') {
-        // A nested share is relative to its parent subvault. Convert it to the
-        // whole-vault share before moving it to the flat Available row.
-        const topLevelShare = alloc.sharePercent * (sub.sharePercent / 100);
-
-        addToAllocationSummaryRow(
-          topLevelSummaryRows,
-          'available',
-          topLevelShare,
-          subTvl,
-        );
-        availableAllocation += topLevelShare;
-        availableTvlUSD += subTvl;
-      } else {
-        addToAllocationSummaryRow(
-          summaryRows,
-          disposition.key,
-          sub.sharePercent,
-          subTvl,
-        );
-      }
+      rollUpToMetavault(disposition.key, sub.sharePercent, subTvl);
     } else if (disposition.type === 'others') {
-      moveAllocationToOthers(summaryRows, sub, subTvl, disposition.reason);
+      logAllocationMovedToOthers(sub.id, disposition.reason);
+      rollUpToMetavault('others', sub.sharePercent, subTvl);
     } else if (disposition.type === 'visible') {
       knownItems.push({
         label: sub.label,
@@ -312,14 +281,18 @@ const parseNestedGroup = (
     }
   }
 
-  const limitedItems = limitNestedItems(knownItems, summaryRows);
-  appendNestedSummaryRows(limitedItems, summaryRows);
+  const { items, overflow } = limitNestedItems(knownItems);
+
+  for (const item of overflow) {
+    logAllocationMovedToOthers(item.id, 'max-subvault-positions');
+    rollUpToMetavault('others', item.allocation, item.tvlUSD);
+  }
 
   return {
     name: alloc.label,
-    allocation: alloc.sharePercent - availableAllocation,
-    tvlUSD: tvlUSD - availableTvlUSD,
-    items: limitedItems,
+    allocation: alloc.sharePercent - rolledUpAllocation,
+    tvlUSD: tvlUSD - rolledUpTvlUSD,
+    items,
     info: getOwnProperty(SUBVAULTS_TIP_BY_ID, alloc.id),
   };
 };
@@ -361,7 +334,7 @@ const parseFlatItems = (
   }
 
   items.sort(sortByAllocationDescending);
-  appendFlatSummaryRows(items, summaryRows);
+  appendSummaryRows(items, summaryRows);
 
   return items;
 };
@@ -448,9 +421,11 @@ export const useAllocationData = (
         if (isVisible(group.allocation)) {
           groups.push(group);
         } else if (group.allocation > 0) {
+          // Only the share left after the roll-up, since the rolled-up part is
+          // already counted in the metavault-level summary rows.
           moveAllocationToOthers(
             topLevelSummaryRows,
-            alloc,
+            { id: alloc.id, sharePercent: group.allocation },
             group.tvlUSD,
             'below-min-display-percent',
           );

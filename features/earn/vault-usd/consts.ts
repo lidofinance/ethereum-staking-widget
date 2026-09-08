@@ -26,6 +26,13 @@ export const USD_VAULT_DEPOSIT_TOKENS = [
   TOKENS.usde,
 ] as const;
 
+export const USD_VAULT_WITHDRAW_TOKEN_SYMBOLS = {
+  usdc,
+  usdt,
+} as const;
+
+export const USD_VAULT_WITHDRAW_TOKENS = [TOKENS.usdc, TOKENS.usdt] as const;
+
 export const USDE_DECIMALS = 18;
 
 export const USDT_DECIMALS = 6;

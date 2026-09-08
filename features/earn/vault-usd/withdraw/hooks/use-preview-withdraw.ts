@@ -2,16 +2,15 @@ import invariant from 'tiny-invariant';
 import { useMemo } from 'react';
 import { usePreviewWithdraw } from 'modules/mellow-meta-vaults/hooks/use-preview-withdraw';
 import { useMainnetOnlyWagmi } from 'modules/web3';
-import { TOKENS } from 'consts/tokens';
-import {
-  getCollectorContract,
-  getRedeemQueueContractUSDC,
-} from '../../contracts';
+import { getCollectorContract, getRedeemQueueContract } from '../../contracts';
+import type { UsdWithdrawToken } from '../../types';
 
 export const useUsdVaultPreviewWithdraw = ({
   shares: usdShares,
+  token,
 }: {
   shares: bigint | null | undefined;
+  token: UsdWithdrawToken;
 }) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');
@@ -21,14 +20,14 @@ export const useUsdVaultPreviewWithdraw = ({
     [publicClientMainnet],
   );
   const redeemQueue = useMemo(
-    () => getRedeemQueueContractUSDC(publicClientMainnet),
-    [publicClientMainnet],
+    () => getRedeemQueueContract({ publicClient: publicClientMainnet, token }),
+    [publicClientMainnet, token],
   );
 
   return usePreviewWithdraw({
     collector,
     redeemQueue,
-    redeemQueueToken: TOKENS.usdc,
+    redeemQueueToken: token,
     shares: usdShares,
   });
 };

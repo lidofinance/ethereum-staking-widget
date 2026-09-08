@@ -95,6 +95,7 @@ export const CONTRACT_NAMES = {
   ethSyncDepositQueueSTRETH: 'ethSyncDepositQueueSTRETH',
   ethSyncDepositQueueDVSTETH: 'ethSyncDepositQueueDVSTETH',
   ethShareManagerEARNETH: 'ethShareManagerEARNETH',
+  ethFeeManager: 'ethFeeManager',
   ethRedeemQueueWSTETH: 'ethRedeemQueueWSTETH',
   ethSyncRedeemQueueWSTETH: 'ethSyncRedeemQueueWSTETH',
   ethCollector: 'ethCollector',
@@ -106,7 +107,9 @@ export const CONTRACT_NAMES = {
   usdSyncDepositQueueUSDC: 'usdSyncDepositQueueUSDC',
   usdSyncDepositQueueUSDT: 'usdSyncDepositQueueUSDT',
   usdShareManagerEARNUSD: 'usdShareManagerEARNUSD',
+  usdFeeManager: 'usdFeeManager',
   usdRedeemQueueUSDC: 'usdRedeemQueueUSDC',
+  usdRedeemQueueUSDT: 'usdRedeemQueueUSDT',
   usdSyncRedeemQueueUSDC: 'usdSyncRedeemQueueUSDC',
   usdCollector: 'usdCollector',
 } as const;

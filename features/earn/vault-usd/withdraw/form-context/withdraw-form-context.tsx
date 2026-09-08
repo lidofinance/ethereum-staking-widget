@@ -8,10 +8,12 @@ import {
 } from 'shared/hook-form/form-controller';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { useUsdVaultWithdraw } from '../hooks/use-withdraw';
 import { useUsdVaultWithdrawFormData } from '../hooks/use-withdraw-form-data';
 import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { USD_VAULT_TOKEN_SYMBOL } from '../../consts';
+import { asUsdWithdrawToken } from '../../utils';
 import { UsdVaultWithdrawFormValidationResolver } from './validation';
 import type {
   UsdVaultWithdrawFormDataContextValue,
@@ -45,10 +47,9 @@ export const UsdVaultWithdrawFormProvider: React.FC<{
   } = useUsdVaultWithdrawFormData();
 
   const { retryEvent } = useFormControllerRetry();
-  const { withdraw } = useUsdVaultWithdraw(retryEvent.fire);
 
   const formObject = useForm({
-    defaultValues: { amount: null },
+    defaultValues: { amount: null, token: TOKEN_SYMBOLS.usdc },
     disabled:
       (isWalletConnected && !isDappActive) ||
       (isUsdVaultAvailable && !isWithdrawEnabled),
@@ -58,21 +59,34 @@ export const UsdVaultWithdrawFormProvider: React.FC<{
     resolver: UsdVaultWithdrawFormValidationResolver,
   });
 
+  // The selected payout token decides which redeem queue the withdrawal goes to.
+  const tokenSymbol = formObject.watch('token');
+  const { withdraw } = useUsdVaultWithdraw(
+    retryEvent.fire,
+    asUsdWithdrawToken(tokenSymbol),
+  );
+
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({
       onSubmit: async (values: UsdVaultWithdrawFormValidatedValues) => {
+        // Guards against submitting to a queue other than the selected token's.
+        invariant(
+          values.token === tokenSymbol,
+          '[UsdVaultWithdrawForm] withdraw token and redeem queue are out of sync',
+        );
         const result = await withdraw(values);
         if (result) {
           await refetchData();
         }
         return result;
       },
-      onReset: () => {
-        formObject.reset({ amount: null });
+      // Keep the chosen payout token, reset only the amount.
+      onReset: (values: UsdVaultWithdrawFormValidatedValues) => {
+        formObject.reset({ amount: null, token: values.token });
       },
       retryEvent,
     }),
-    [retryEvent, withdraw, refetchData, formObject],
+    [retryEvent, withdraw, refetchData, formObject, tokenSymbol],
   );
 
   const contextValue = useMemo<UsdVaultWithdrawFormDataContextValue>(() => {

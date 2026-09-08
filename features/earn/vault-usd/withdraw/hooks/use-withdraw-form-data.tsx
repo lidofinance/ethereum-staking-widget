@@ -17,8 +17,7 @@ export const useUsdVaultWithdrawFormData = () => {
   const { earnusdSharesBalance, isLoading } = useUsdVaultPosition();
 
   const asyncValidationContextValue:
-    | UsdVaultWithdrawFormAsyncValidationContext
-    | undefined = useMemo(() => {
+    UsdVaultWithdrawFormAsyncValidationContext | undefined = useMemo(() => {
     if (earnusdSharesBalance == undefined) {
       return undefined;
     }
