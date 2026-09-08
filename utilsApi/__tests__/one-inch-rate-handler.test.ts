@@ -1,10 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { LRUCache } from 'lru-cache';
+import { randomUUID } from 'node:crypto';
 
 import {
   createOneInchRateHandler,
   type OneInchRateResponse,
 } from '../one-inch-rate-handler';
+
+// Generated fixture used only with the mocked fetcher.
+const testApiKey = randomUUID();
 
 type MockRes = NextApiResponse & {
   _status: number;
@@ -56,7 +60,7 @@ const callHandler = async (
 ) => {
   const res = makeRes();
   const handler = createOneInchRateHandler({
-    apiKey: 'test-api-key',
+    apiKey: testApiKey,
     fetcher,
     cache,
   });
@@ -97,7 +101,7 @@ describe('createOneInchRateHandler', () => {
       '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
     );
     expect(options?.headers).toMatchObject({
-      Authorization: 'Bearer test-api-key',
+      Authorization: `Bearer ${testApiKey}`,
     });
   });
 
@@ -123,7 +127,7 @@ describe('createOneInchRateHandler', () => {
     const fetcher = makeFetcher({ toTokenAmount: '1000000000000000000' });
     const cache = new LRUCache<string, OneInchRateResponse>({ max: 10 });
     const handler = createOneInchRateHandler({
-      apiKey: 'test-api-key',
+      apiKey: testApiKey,
       fetcher,
       cache,
     });
