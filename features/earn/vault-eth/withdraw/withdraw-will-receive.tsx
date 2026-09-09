@@ -10,7 +10,10 @@ import { TOKENS } from 'consts/tokens';
 export const EthVaultWithdrawWillReceive = () => {
   const { amount } = useWatch<EthVaultWithdrawFormValues>();
 
-  const { data, isLoading } = useEthVaultPreviewWithdraw({ shares: amount });
+  const { data, isLoading } = useEthVaultPreviewWithdraw({
+    shares: amount,
+    includeInstantRoute: true,
+  });
   const wsteth = data.assets;
   const { data: eth, isLoading: isLoadingEth } = useStETHByWstETH(wsteth);
 

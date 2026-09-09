@@ -1,4 +1,5 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   encodeFunctionData,
   getContract,
@@ -13,15 +14,24 @@ import {
   Erc20AllowanceAbi,
   useDappStatus,
   useLidoSDK,
+  useMainnetOnlyWagmi,
   useTxFlow,
 } from 'modules/web3';
+import {
+  getDepositQuoteQueryOptions,
+  isDepositQuoteWorse,
+  verifyQuote,
+} from 'modules/mellow-meta-vaults/quotes';
 import { getTokenAddress } from 'config/networks/token-address';
 import { getReferralAddress } from 'utils/get-referral-address';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
-import { getSyncDepositQueueWritableContract } from '../../contracts';
+import {
+  getCollectorContract,
+  getSyncDepositQueueWritableContract,
+} from '../../contracts';
 import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 
@@ -47,6 +57,14 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
   const { address } = useDappStatus();
   const { core, wrap } = useLidoSDK();
   const txFlow = useTxFlow();
+  const queryClient = useQueryClient();
+
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
+  const collector = useMemo(
+    () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
+  );
 
   const deposit = useCallback(
     async ({ amount, referral }: DepositStethArgs) => {
@@ -59,8 +77,8 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
 
       try {
         const depositQueue = getSyncDepositQueueWritableContract({
-          publicClient: core.rpcProvider,
-          walletClient: core.web3Provider as WalletClient,
+          publicClient: core.publicClient,
+          walletClient: core.walletClient as WalletClient,
           token: TOKENS.wsteth,
         });
 
@@ -68,8 +86,8 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
           address: stethAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
@@ -77,18 +95,34 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
           address: wstethAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
         const referralAddress = await getReferralAddress(
           referral,
-          core.rpcProvider,
+          core.publicClient,
         );
 
         // Pre-calculate expected wstETH amount for allowance check and deposit call
         const wstethAmount = await wrap.convertStethToWsteth(amount);
+
+        // Last async step before the deposit call is handed to the wallet. The
+        // preview quoted the wstETH leg (same queue, same converted amount);
+        // re-quote and stop if fewer shares would be minted. Runs after the
+        // approve and wrap steps so their wallet round-trips can't widen the gap.
+        const verifyDepositQuote = () =>
+          verifyQuote({
+            queryClient,
+            options: getDepositQuoteQueryOptions({
+              collector,
+              depositQueue,
+              amount: wstethAmount,
+              account: address,
+            }),
+            isWorse: isDepositQuoteWorse,
+          });
 
         const [stethAllowance, wstethAllowance] = await Promise.all([
           stethContract.read.allowance([address, wstethAddress]),
@@ -147,6 +181,8 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
             needsWstethApprove = false;
             currentStage = 'deposit';
 
+            await verifyDepositQuote();
+
             return calls;
           },
           sendTransaction: async (txStagesCallback) => {
@@ -181,6 +217,8 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
             }
 
             // Step 4: Deposit wstETH into queue
+            await verifyDepositQuote();
+
             await core.performTransaction({
               getGasLimit: async (opts) =>
                 applyRoundUpTxParameter(
@@ -237,7 +275,7 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
             let receivedShares: bigint | undefined;
             if (txHash) {
               try {
-                const receipt = await core.rpcProvider.getTransactionReceipt({
+                const receipt = await core.publicClient.getTransactionReceipt({
                   hash: txHash,
                 });
                 const claimedLog = parseEventLogs({
@@ -274,7 +312,16 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
         return false;
       }
     },
-    [address, core, onRetry, txFlow, txModalStages, wrap],
+    [
+      address,
+      collector,
+      core,
+      onRetry,
+      queryClient,
+      txFlow,
+      txModalStages,
+      wrap,
+    ],
   );
 
   return { deposit };

@@ -20,6 +20,7 @@ export enum ErrorMessage {
   SITE_BLOCKED = 'Your wallet has temporarily blocked requests from this site.\nUnblock this site in your wallet or try again later.',
   PROVIDER_DISCONNECTED = 'Your wallet is disconnected.\nReconnect your wallet and try again.',
   CHAIN_DISCONNECTED = 'Your wallet is not connected to the selected network.\nSwitch to the selected network in your wallet and try again.',
+  QUOTE_CHANGED = 'The amount you would receive has changed since it was shown.\nReview the updated amount and try again.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -68,6 +69,8 @@ export const getError = (error: unknown): ErrorMessage | string => {
       return ErrorMessage.PROVIDER_DISCONNECTED;
     case 4901:
       return ErrorMessage.CHAIN_DISCONNECTED;
+    case 'QUOTE_CHANGED':
+      return ErrorMessage.QUOTE_CHANGED;
     default:
       return ErrorMessage.SOMETHING_WRONG;
   }
@@ -326,6 +329,7 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
     MATOMO_ERROR_EVENTS_TYPES.PROVIDER_DISCONNECTED,
   [ErrorMessage.CHAIN_DISCONNECTED]:
     MATOMO_ERROR_EVENTS_TYPES.CHAIN_DISCONNECTED,
+  [ErrorMessage.QUOTE_CHANGED]: MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED,
 };
 
 const trackErrorDebounced = debounce((errorMessage: string) => {

@@ -6,13 +6,20 @@ import { TOKENS } from 'consts/tokens';
 import {
   getCollectorContract,
   getRedeemQueueContractWSTETH,
+  getSyncRedeemQueueContractWSTETH,
 } from '../../contracts';
+
+type UseEthVaultPreviewWithdrawArgs = {
+  shares: bigint | null | undefined;
+  // True for the withdrawal form: quote the route the tx will take (instant when
+  // limits allow). Leave false to value shares already queued for async redemption.
+  includeInstantRoute?: boolean;
+};
 
 export const useEthVaultPreviewWithdraw = ({
   shares: earnethShares,
-}: {
-  shares: bigint | null | undefined;
-}) => {
+  includeInstantRoute = false,
+}: UseEthVaultPreviewWithdrawArgs) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');
 
@@ -24,10 +31,18 @@ export const useEthVaultPreviewWithdraw = ({
     () => getRedeemQueueContractWSTETH(publicClientMainnet),
     [publicClientMainnet],
   );
+  const syncRedeemQueue = useMemo(
+    () =>
+      includeInstantRoute
+        ? getSyncRedeemQueueContractWSTETH(publicClientMainnet)
+        : undefined,
+    [publicClientMainnet, includeInstantRoute],
+  );
 
   return usePreviewWithdraw({
     collector,
     redeemQueue,
+    syncRedeemQueue,
     redeemQueueToken: TOKENS.wsteth,
     shares: earnethShares,
   });

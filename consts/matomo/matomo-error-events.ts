@@ -15,6 +15,7 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   SITE_BLOCKED = 'SITE_BLOCKED',
   PROVIDER_DISCONNECTED = 'PROVIDER_DISCONNECTED',
   CHAIN_DISCONNECTED = 'CHAIN_DISCONNECTED',
+  QUOTE_CHANGED = 'QUOTE_CHANGED',
   SOMETHING_WRONG = 'SOMETHING_WRONG',
 }
 
@@ -91,6 +92,11 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'Your wallet is not connected to the selected network.',
     'eth_widget_errors_chain_disconnected',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'The amount to receive changed between preview and submission.',
+    'eth_widget_errors_quote_changed',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG]: [
     'Ethereum_Staking_Widget_Errors',

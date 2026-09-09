@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { encodeFunctionData } from 'viem';
 import invariant from 'tiny-invariant';
 
@@ -12,24 +13,31 @@ import {
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { ErrorMessage, getError } from 'utils';
-import { overrideWithQAMockBigInt } from 'utils/qa';
 import {
   CollectorContract,
   AsyncRedeemQueueWritableContract,
   SyncRedeemQueueWritableContract,
 } from '../types/contracts';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { COLLECTOR_CONFIG } from '../consts';
-import { meetsSyncRedeemRequirements } from '../utils/sync-redeem-requirements';
+import {
+  getWithdrawQuoteQueryOptions,
+  isWithdrawQuoteWorse,
+} from '../quotes/withdraw-quote';
+import { verifyQuote } from '../quotes/verify-quote';
 
-const QA_REMAINING_DAILY_LIMIT_KEY =
-  'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit';
-const QA_LIQUID_ASSETS_KEY = 'mock-qa-helpers-mellow-sync-redeem-liquid-assets';
+type UseWithdrawArgs = {
+  asyncRedeemQueue: AsyncRedeemQueueWritableContract;
+  syncRedeemQueue?: SyncRedeemQueueWritableContract; // Omit for async-only queues
+  collector: CollectorContract;
+  txModalStages: TxModalStages;
+  onRetry?: () => void;
+  matomoEventStart?: MATOMO_EVENT_TYPE;
+  matomoEventSuccess?: MATOMO_EVENT_TYPE;
+};
 
-type SyncWithdrawAvailability =
-  | { status: 'available' }
-  | { status: 'unavailable' }
-  | { status: 'unknown'; error: unknown };
+type WithdrawArgs = {
+  amount: bigint;
+};
 
 export const useWithdraw = ({
   asyncRedeemQueue,
@@ -39,87 +47,41 @@ export const useWithdraw = ({
   onRetry,
   matomoEventStart,
   matomoEventSuccess,
-}: {
-  asyncRedeemQueue: AsyncRedeemQueueWritableContract;
-  syncRedeemQueue?: SyncRedeemQueueWritableContract; // Omit for async-only queues
-  collector: CollectorContract;
-  txModalStages: TxModalStages;
-  onRetry?: () => void;
-  matomoEventStart?: MATOMO_EVENT_TYPE;
-  matomoEventSuccess?: MATOMO_EVENT_TYPE;
-}) => {
+}: UseWithdrawArgs) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const txFlow = useTxFlow();
+  const queryClient = useQueryClient();
 
   const withdraw = useCallback(
-    async ({ amount }: { amount: bigint }): Promise<boolean> => {
+    async ({ amount }: WithdrawArgs): Promise<boolean> => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
 
-      const checkSyncWithdrawAvailability = async (
-        syncQueue: SyncRedeemQueueWritableContract,
-      ) => {
-        const [, actualRemainingDailyLimit] =
-          await syncQueue.read.remainingDailyLimit();
-        const remainingDailyLimit = overrideWithQAMockBigInt(
-          actualRemainingDailyLimit,
-          QA_REMAINING_DAILY_LIMIT_KEY,
-        );
+      const quoteOptions = getWithdrawQuoteQueryOptions({
+        collector,
+        asyncRedeemQueue,
+        syncRedeemQueue,
+        shares: amount,
+      });
 
-        // Eager return to save rpc calls, duplicates predicate from meetsSyncRedeemRequirements
-        if (amount > remainingDailyLimit) return false;
+      let isSyncWithdrawRoute = false;
 
-        const [{ assets }, actualLiquidAssets] = await Promise.all([
-          collector.read.getWithdrawalParams([
-            amount,
-            syncQueue.address,
-            COLLECTOR_CONFIG,
-          ]) as Promise<{ assets: bigint }>,
-          syncQueue.read.getLiquidAssets(),
-        ]);
-        const liquidAssets = overrideWithQAMockBigInt(
-          actualLiquidAssets,
-          QA_LIQUID_ASSETS_KEY,
-        );
-
-        return meetsSyncRedeemRequirements({
-          requestedShares: amount,
-          requestedAssets: assets,
-          remainingDailyLimit,
-          liquidAssets,
+      // Last async step before the redeem call is handed to the wallet. Picks
+      // the route exactly like the form preview did and refuses to proceed if
+      // the payout dropped below what the user saw (e.g. a sync penalty
+      // configured since the preview). Returns the queue to redeem through,
+      // narrowed once so the tx branches don't need assertions.
+      const resolveRedeemQueue = async () => {
+        const quote = await verifyQuote({
+          queryClient,
+          options: quoteOptions,
+          isWorse: isWithdrawQuoteWorse,
         });
+        const syncQueue = quote.route === 'sync' ? syncRedeemQueue : undefined;
+        isSyncWithdrawRoute = !!syncQueue;
+        return syncQueue;
       };
-
-      const getSyncWithdrawAvailability =
-        async (): Promise<SyncWithdrawAvailability> => {
-          // Async-only queue: there is no instant route to check.
-          if (!syncRedeemQueue) return { status: 'unavailable' };
-
-          try {
-            return (await checkSyncWithdrawAvailability(syncRedeemQueue))
-              ? { status: 'available' }
-              : { status: 'unavailable' };
-          } catch (error) {
-            return { status: 'unknown', error };
-          }
-        };
-
-      const syncWithdrawAvailability = await getSyncWithdrawAvailability();
-
-      if (syncWithdrawAvailability.status === 'unknown') {
-        console.error(
-          'Failed to check instant withdrawal availability, falling back to the async redeem queue',
-          syncWithdrawAvailability.error,
-        );
-      }
-
-      // Narrowed once so the tx branches below don't need assertions.
-      const syncQueue =
-        syncWithdrawAvailability.status === 'available'
-          ? syncRedeemQueue
-          : undefined;
-      const isSyncWithdrawRoute = !!syncQueue;
 
       const asyncWithdrawArgs = [amount] as const;
       const syncWithdrawArgs = [amount, address] as const;
@@ -127,6 +89,8 @@ export const useWithdraw = ({
       try {
         await txFlow({
           callsFn: async () => {
+            const syncQueue = await resolveRedeemQueue();
+
             const call: AACall = syncQueue
               ? {
                   to: syncQueue.address,
@@ -148,6 +112,8 @@ export const useWithdraw = ({
             return [call];
           },
           sendTransaction: async (txStagesCallback) => {
+            const syncQueue = await resolveRedeemQueue();
+
             if (syncQueue) {
               await core.performTransaction({
                 getGasLimit: async (opts) =>
@@ -210,17 +176,18 @@ export const useWithdraw = ({
         let isInstantWithdrawalUnavailable = false;
 
         if (isSyncWithdrawRoute && !isUserActionError) {
-          const syncWithdrawAvailability = await getSyncWithdrawAvailability();
-
-          if (syncWithdrawAvailability.status === 'unknown') {
+          try {
+            const recheck = await queryClient.fetchQuery({
+              ...quoteOptions,
+              staleTime: 0,
+            });
+            isInstantWithdrawalUnavailable = recheck.isInstantUnavailable;
+          } catch (recheckError) {
             console.error(
               'Failed to recheck instant withdrawal availability after the transaction error',
-              syncWithdrawAvailability.error,
+              recheckError,
             );
           }
-
-          isInstantWithdrawalUnavailable =
-            syncWithdrawAvailability.status === 'unavailable';
         }
 
         if (isInstantWithdrawalUnavailable) {
@@ -234,15 +201,13 @@ export const useWithdraw = ({
     },
     [
       address,
-      asyncRedeemQueue.abi,
-      asyncRedeemQueue.address,
-      asyncRedeemQueue.estimateGas,
-      asyncRedeemQueue.write,
-      collector.read,
+      asyncRedeemQueue,
+      collector,
       core,
       matomoEventStart,
       matomoEventSuccess,
       onRetry,
+      queryClient,
       syncRedeemQueue,
       txFlow,
       txModalStages,

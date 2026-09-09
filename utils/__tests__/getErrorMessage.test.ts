@@ -1,6 +1,7 @@
 import type { TransactionReceipt } from 'viem';
 
 import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
+import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import {
   getErrorMessage,
   ErrorMessage,
@@ -48,6 +49,12 @@ describe('getErrorMessage', () => {
       status: 'reverted',
     } as TransactionReceipt);
     expect(getErrorMessage(error)).toBe(ErrorMessage.TRANSACTION_REVERTED);
+  });
+
+  it('should return QUOTE_CHANGED error message for QuoteMismatchError', () => {
+    expect(getErrorMessage(new QuoteMismatchError())).toBe(
+      ErrorMessage.QUOTE_CHANGED,
+    );
   });
 });
 

@@ -52,10 +52,12 @@ export const UsdVaultWithdrawWillReceiveSelect = () => {
   const usdcPreview = useUsdVaultPreviewWithdraw({
     shares: amount,
     token: TOKENS.usdc,
+    includeInstantRoute: true,
   });
   const usdtPreview = useUsdVaultPreviewWithdraw({
     shares: amount,
     token: TOKENS.usdt,
+    includeInstantRoute: true,
   });
 
   const assetsByToken: Record<UsdWithdrawToken, bigint | undefined> = {

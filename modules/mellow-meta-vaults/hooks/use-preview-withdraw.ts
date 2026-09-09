@@ -1,67 +1,49 @@
 import { useQuery } from '@tanstack/react-query';
-import invariant from 'tiny-invariant';
 
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
-import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
+import { getWithdrawQuoteQueryOptions } from '../quotes/withdraw-quote';
 import {
   CollectorContract,
   AsyncRedeemQueueContract,
+  SyncRedeemQueueContract,
 } from '../types/contracts';
 import { TOKENS, type Token } from 'consts/tokens';
 
-export type WithdrawParams = {
-  assets: bigint; // e.g. wstETH or USDC amount to receive from redeeming the shares
+export type { WithdrawParams } from '../quotes/withdraw-quote';
+
+type UsePreviewWithdrawArgs = {
+  redeemQueue: AsyncRedeemQueueContract;
+  syncRedeemQueue?: SyncRedeemQueueContract;
+  redeemQueueToken: Token;
+  collector: CollectorContract;
+  shares: bigint | null | undefined;
 };
 
 export const usePreviewWithdraw = ({
   redeemQueue,
+  syncRedeemQueue,
   redeemQueueToken,
   collector,
   shares,
-}: {
-  redeemQueue: AsyncRedeemQueueContract;
-  redeemQueueToken: Token;
-  collector: CollectorContract;
-  shares: bigint | null | undefined;
-}) => {
-  const { isDappActive, address: userAddress } = useDappStatus();
+}: UsePreviewWithdrawArgs) => {
+  const { isDappActive } = useDappStatus();
 
   const isEnabled = isDappActive && shares != null;
 
   const debouncedStrethShares = useDebouncedValue(shares, 500);
   const isDebounced = isEnabled && shares !== debouncedStrethShares;
 
+  // Same query options as the withdraw hook re-fetches before signing (see verifyQuote)
   const query = useQuery({
-    queryKey: [
-      MELLOW_VAULTS_QUERY_SCOPE,
-      'preview-widthdraw',
-      collector.address,
-      redeemQueue.address,
-      {
-        amount: isEnabled ? debouncedStrethShares?.toString() : null,
-      },
-    ] as const,
+    ...getWithdrawQuoteQueryOptions({
+      collector,
+      asyncRedeemQueue: redeemQueue,
+      syncRedeemQueue,
+      shares: debouncedStrethShares,
+    }),
     enabled: isEnabled,
-    queryFn: async () => {
-      invariant(userAddress, 'User address is not available');
-
-      if (!debouncedStrethShares)
-        return {
-          assets: 0n,
-        };
-
-      const { assets } = (await collector.read.getWithdrawalParams([
-        debouncedStrethShares,
-        redeemQueue.address,
-        COLLECTOR_CONFIG,
-      ])) as WithdrawParams;
-
-      return {
-        assets,
-      };
-    },
   });
 
   // Actual if redeeming wstETH
@@ -74,6 +56,8 @@ export const usePreviewWithdraw = ({
     isLoading: isDebounced || query.isLoading || wstethUsdQuery.isLoading,
     data: {
       assets: query.data?.assets,
+      route: query.data?.route,
+      penaltyD6: query.data?.penaltyD6,
       usd,
     },
   };

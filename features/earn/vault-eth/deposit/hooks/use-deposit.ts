@@ -1,8 +1,13 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import invariant from 'tiny-invariant';
 
+import { useMainnetOnlyWagmi } from 'modules/web3';
 import { useDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit';
 import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
-import { getSyncDepositQueueWritableContract } from '../../contracts';
+import {
+  getCollectorContract,
+  getSyncDepositQueueWritableContract,
+} from '../../contracts';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { EthDepositToken } from '../../types';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
@@ -21,8 +26,16 @@ export const useEthVaultDeposit = (onRetry?: () => void) => {
     },
   });
 
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
+  const collector = useMemo(
+    () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
+  );
+
   const { deposit: depositNormal } = useDeposit<EthDepositToken>({
     depositQueueGetter: getSyncDepositQueueWritableContract,
+    collector,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnEthDepositingStart,

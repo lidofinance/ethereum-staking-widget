@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   encodeFunctionData,
   getContract,
@@ -23,7 +24,15 @@ import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { SYNC_DEPOSIT_QUEUE_ABI } from '../abi';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { DepositQueueGetter } from '../types/deposit-queue-getter';
-import { SyncDepositQueueWritableContract } from '../types/contracts';
+import {
+  CollectorContract,
+  SyncDepositQueueWritableContract,
+} from '../types/contracts';
+import {
+  getDepositQuoteQueryOptions,
+  isDepositQuoteWorse,
+} from '../quotes/deposit-quote';
+import { verifyQuote } from '../quotes/verify-quote';
 
 type DepositArgs = {
   amount: bigint;
@@ -31,22 +40,27 @@ type DepositArgs = {
   referral: string | null;
 };
 
-export const useDeposit = <DepositQueueToken extends string>({
-  depositQueueGetter,
-  txModalStages,
-  onRetry,
-  matomoEventStart,
-  matomoEventSuccess,
-}: {
+type UseDepositArgs<DepositQueueToken extends string> = {
   depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
+  collector: CollectorContract;
   txModalStages: TxModalStages;
   onRetry?: () => void;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
-}) => {
+};
+
+export const useDeposit = <DepositQueueToken extends string>({
+  depositQueueGetter,
+  collector,
+  txModalStages,
+  onRetry,
+  matomoEventStart,
+  matomoEventSuccess,
+}: UseDepositArgs<DepositQueueToken>) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const txFlow = useTxFlow();
+  const queryClient = useQueryClient();
 
   const deposit = useCallback(
     async ({ amount, token, referral }: DepositArgs) => {
@@ -57,8 +71,8 @@ export const useDeposit = <DepositQueueToken extends string>({
 
       try {
         const depositQueue = depositQueueGetter({
-          publicClient: core.rpcProvider,
-          walletClient: core.web3Provider as WalletClient,
+          publicClient: core.publicClient,
+          walletClient: core.walletClient as WalletClient,
           token: token as DepositQueueToken,
         });
         // Both async and sync deposit queue ABIs expose an identical `deposit(assets, referral, merkleProof)`
@@ -72,14 +86,14 @@ export const useDeposit = <DepositQueueToken extends string>({
           address: tokenAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
         const referralAddress = await getReferralAddress(
           referral,
-          core.rpcProvider,
+          core.publicClient,
         );
 
         let needsApprove = false;
@@ -102,6 +116,22 @@ export const useDeposit = <DepositQueueToken extends string>({
         const resetApproveArgs = [depositQueue.address, 0n] as const;
         const depositArgs = [amount, referralAddress, []] as const;
         const msgValue = token === TOKENS.eth ? amount : 0n;
+
+        // Last async step before the deposit call is handed to the wallet:
+        // re-quote and refuse to proceed if fewer shares would be minted than
+        // the form preview showed (e.g. a sync penalty configured since).
+        // Runs after approvals so their wallet round-trips can't widen the gap.
+        const verifyDepositQuote = () =>
+          verifyQuote({
+            queryClient,
+            options: getDepositQuoteQueryOptions({
+              collector,
+              depositQueue,
+              amount,
+              account: address,
+            }),
+            isWorse: isDepositQuoteWorse,
+          });
 
         await txFlow({
           callsFn: async () => {
@@ -140,6 +170,8 @@ export const useDeposit = <DepositQueueToken extends string>({
 
             needsApprove = false;
 
+            await verifyDepositQuote();
+
             return calls;
           },
           sendTransaction: async (txStagesCallback) => {
@@ -172,6 +204,9 @@ export const useDeposit = <DepositQueueToken extends string>({
               });
             }
             needsApprove = false;
+
+            await verifyDepositQuote();
+
             await core.performTransaction({
               getGasLimit: async (opts) =>
                 applyRoundUpTxParameter(
@@ -210,7 +245,7 @@ export const useDeposit = <DepositQueueToken extends string>({
             let receivedShares: bigint | undefined;
             if (txHash) {
               try {
-                const receipt = await core.rpcProvider.getTransactionReceipt({
+                const receipt = await core.publicClient.getTransactionReceipt({
                   hash: txHash,
                 });
                 // `Deposited` is only emitted by sync deposits (USDC/USDT). For async deposits
@@ -246,11 +281,13 @@ export const useDeposit = <DepositQueueToken extends string>({
     },
     [
       address,
+      collector,
       core,
       depositQueueGetter,
       matomoEventStart,
       matomoEventSuccess,
       onRetry,
+      queryClient,
       txFlow,
       txModalStages,
     ],
