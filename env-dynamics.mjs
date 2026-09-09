@@ -94,6 +94,7 @@ export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
  */
 export const qaGeoCountry = process.env.QA_GEO_COUNTRY;
 
+/** @type string */
 export const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
 
 /** @type string */
@@ -104,6 +105,9 @@ export const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 /** @type string */
 export const wqAPIBasePath = process.env.WQ_API_BASE_PATH;
+
+/** @type string */
+export const cowswapWidgetBaseUrl = process.env.COWSWAP_WIDGET_BASE_URL;
 
 /** @type string */
 export const rewardsBackendBasePath = process.env.REWARDS_BACKEND_BASE_PATH;
