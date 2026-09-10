@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Hash } from 'viem';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { useAddressValidation } from 'providers/address-validation-provider';
@@ -27,6 +27,16 @@ export const useTxFlow = () => {
   // Is used to memoize txHash to keep track of it across stages.
   const txHash = useRef<Hash | undefined>(undefined);
 
+  // Increase counter when operation ended by UI unmount
+  // this invalidates any ongoing operation
+  const operationRef = useRef(0);
+  useEffect(() => {
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      operationRef.current++;
+    };
+  }, []);
+
   return useCallback(
     async ({
       callsFn,
@@ -40,6 +50,9 @@ export const useTxFlow = () => {
       onFailure,
       onMultisigDone,
     }: TxFlowArgs) => {
+      const operation = ++operationRef.current;
+      const isCurrent = () => operationRef.current === operation;
+
       /**
        * Callback function to handle different stages of the transaction flow.
        * It calls the appropriate callback based on the stage of the transaction.
@@ -47,6 +60,7 @@ export const useTxFlow = () => {
        * @param args - The arguments for the current stage of the transaction.
        */
       const txStagesCallback = async (txArgs: TxCallbackProps) => {
+        if (!isCurrent()) return;
         const args = { ...txArgs, isAA };
         switch (args.stage) {
           case TransactionCallbackStage.SIGN:
@@ -99,12 +113,15 @@ export const useTxFlow = () => {
       };
 
       const result = await validateAddress(address);
-      // if address is not valid, don't send the transaction
-      if (!result) return;
+      // if address is not valid, or the operation went stale while validating,
+      // don't send the transaction
+      if (!result || !isCurrent()) return;
 
       // callsFn must be defined for AA transactions. If it's not defined, the transaction will be sent to yourself instead of the smart account.
       if (isAA && callsFn) {
         const calls = await callsFn();
+        // building calls can take a while, check again before reaching the wallet
+        if (!isCurrent()) return;
         await sendAACalls(calls, async (props) => {
           await txStagesCallback(props);
         });
