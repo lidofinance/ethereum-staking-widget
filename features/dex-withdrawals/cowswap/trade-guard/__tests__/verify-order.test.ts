@@ -84,6 +84,14 @@ describe('verifyOrderAmounts', () => {
     expect(verifyOrderAmounts(makeOrder(), snapshot)).toBeDefined();
   });
 
+  it.each(['.5', '1.', '1.0000000000000000001'])(
+    'rejects lenient decimal formats parseUnits would accept (%p)',
+    (units) => {
+      const snapshot = makeSnapshot({ buyAmountMinUnits: units });
+      expect(verifyOrderAmounts(makeOrder(), snapshot)).toBeDefined();
+    },
+  );
+
   describe('USDC (6 decimals)', () => {
     const usdcOrder = makeOrder({
       sellToken: STETH,
