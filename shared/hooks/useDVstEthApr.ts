@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
 
 type VaultDataPartial = {
@@ -14,7 +14,7 @@ const API_ENDPOINT = 'https://api.mellow.finance/v1/vaults';
 export const useDVstEthApr = () => {
   const result = useQuery<RequestResponseData, Error, string>({
     queryKey: ['dvsteth-apr'],
-    ...STRATEGY_LAZY,
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       return await standardFetcher<RequestResponseData>(API_ENDPOINT);
     },

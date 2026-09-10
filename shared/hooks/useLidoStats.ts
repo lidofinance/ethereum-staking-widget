@@ -4,7 +4,7 @@ import { LOCALE } from 'config/groups/locale';
 
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 import { DATA_UNAVAILABLE } from 'consts/text';
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
 
 type RequestResponseData = {
@@ -48,6 +48,6 @@ export const useLidoStats = (): {
           : DATA_UNAVAILABLE,
       };
     },
-    ...STRATEGY_LAZY,
+    ...STRATEGY_CONSTANT,
   });
 };

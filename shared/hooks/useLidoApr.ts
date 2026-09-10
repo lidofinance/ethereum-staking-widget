@@ -4,7 +4,7 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useLidoSDK } from 'modules/web3';
 
@@ -32,7 +32,7 @@ export const useLidoApr = (): UseLidoAprResult => {
 
   const result = useQuery<SMA_APR_RESPONSE>({
     queryKey: ['lido-apr', url],
-    ...STRATEGY_LAZY,
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       try {
         invariant(url, 'Missing URL for fetching the SMA APR');

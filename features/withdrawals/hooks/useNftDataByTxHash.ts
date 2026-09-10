@@ -4,7 +4,7 @@ import { usePublicClient } from 'wagmi';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
 import { useQuery } from '@tanstack/react-query';
 
-import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -24,7 +24,7 @@ export const useNftDataByTxHash = (txHash?: Hash) => {
   return useQuery<NFTApiData[] | null>({
     queryKey: ['nft-data-by-tx-hash', txHash, address],
     enabled: !!(txHash && address && publicClient),
-    ...STRATEGY_CONSTANT,
+    ...STRATEGY_IMMUTABLE,
     queryFn: async () => {
       if (!txHash || !address || !publicClient) return null;
 

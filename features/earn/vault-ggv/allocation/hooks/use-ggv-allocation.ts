@@ -1,5 +1,6 @@
 import { type Address, getContract } from 'viem';
 import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -18,6 +19,7 @@ export const useGGVAllocation = () => {
 
   const allocation = useQuery({
     queryKey: ['ggv', 'stats', 'allocation'],
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       const vault = getGGVVaultContract(publicClientMainnet);
       const contract = getContract({
