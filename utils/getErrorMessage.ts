@@ -1,4 +1,5 @@
 import { SendCallsError } from 'modules/web3';
+import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
 import { UnknownBundleIdError, UserRejectedRequestError } from 'viem';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import debounce from 'lodash/debounce';
@@ -20,6 +21,7 @@ export enum ErrorMessage {
   SITE_BLOCKED = 'Your wallet has temporarily blocked requests from this site.\nUnblock this site in your wallet or try again later.',
   PROVIDER_DISCONNECTED = 'Your wallet is disconnected.\nReconnect your wallet and try again.',
   CHAIN_DISCONNECTED = 'Your wallet is not connected to the selected network.\nSwitch to the selected network in your wallet and try again.',
+  TX_SETTLED_DATA_UNAVAILABLE = 'Your transaction was completed, but the updated data could not be loaded. Refresh the page to see the latest state.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -181,6 +183,10 @@ const describeCauseChain = (
 
 // extracts message from Errors made by us
 const extractHumaneMessage = (error: unknown) => {
+  // Checked first: the wrapped cause may carry a provider code of its own
+  if (error instanceof TxSettledError) {
+    return ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE;
+  }
   if (error instanceof SendCallsError) {
     return error.message;
   }
@@ -326,6 +332,8 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
     MATOMO_ERROR_EVENTS_TYPES.PROVIDER_DISCONNECTED,
   [ErrorMessage.CHAIN_DISCONNECTED]:
     MATOMO_ERROR_EVENTS_TYPES.CHAIN_DISCONNECTED,
+  [ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE]:
+    MATOMO_ERROR_EVENTS_TYPES.TX_SETTLED_DATA_UNAVAILABLE,
 };
 
 const trackErrorDebounced = debounce((errorMessage: string) => {

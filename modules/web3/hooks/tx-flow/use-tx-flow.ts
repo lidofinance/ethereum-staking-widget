@@ -7,6 +7,7 @@ import { useDappStatus } from 'modules/web3';
 import { useAA } from '../use-aa';
 import { useSendAACalls } from './use-send-aa-calls';
 import { TransactionRevertedError } from '../../utils/transaction-reverted-error';
+import { TxSettledError } from '../../utils/tx-settled-error';
 import { TxCallbackProps, TxFlowArgs } from './types';
 
 export type TxStagesCallback = (args: TxCallbackProps) => Promise<void>;
@@ -53,6 +54,17 @@ export const useTxFlow = () => {
       const operation = ++operationRef.current;
       const isCurrent = () => operationRef.current === operation;
 
+      // Set once a successful receipt is known and cleared when its DONE stage
+      // completes. In between, the transaction is done: a failing confirmations
+      // read or balance refresh must not be presented as a failed transaction,
+      // and never with a Retry. Clearing matters for flows that chain several
+      // transactions (approve, then deposit) through one stage callback: the
+      // approval settling must not mask a failure of the deposit that follows
+      let isSettled = false;
+      let isFailureReported = false;
+      const toFlowError = (error: unknown) =>
+        isSettled ? new TxSettledError(error, txHash.current) : error;
+
       /**
        * Callback function to handle different stages of the transaction flow.
        * It calls the appropriate callback based on the stage of the transaction.
@@ -77,19 +89,35 @@ export const useTxFlow = () => {
             });
             break;
           case TransactionCallbackStage.DONE:
-            await onSuccess?.({
-              ...args,
-              txHash: 'txHash' in args ? args.txHash : txHash.current,
-            });
+            isSettled = true;
+            try {
+              await onSuccess?.({
+                ...args,
+                txHash: 'txHash' in args ? args.txHash : txHash.current,
+              });
+            } catch (error) {
+              // Report here rather than relying on the SDK rejecting: the L2
+              // wrap path fires the SDK call without awaiting it
+              isFailureReported = true;
+              await onFailure?.({
+                ...args,
+                stage: TransactionCallbackStage.ERROR,
+                error: toFlowError(error),
+              });
+              throw error;
+            }
+            isSettled = false;
             txHash.current = undefined; // Reset txHash after success
             break;
           case TransactionCallbackStage.MULTISIG_DONE:
             await onMultisigDone?.(args);
             break;
           case TransactionCallbackStage.ERROR:
+            if (isFailureReported) break;
+            isFailureReported = true;
             await onFailure?.({
               ...args,
-              error: 'error' in args ? args.error : args.payload,
+              error: toFlowError('error' in args ? args.error : args.payload),
             });
             break;
           case TransactionCallbackStage.PERMIT:
@@ -105,6 +133,7 @@ export const useTxFlow = () => {
             if (args.payload?.status === 'reverted') {
               throw new TransactionRevertedError(args.payload);
             }
+            isSettled = true;
             await onConfirmation?.(args);
             break;
           default:
@@ -117,16 +146,30 @@ export const useTxFlow = () => {
       // don't send the transaction
       if (!result || !isCurrent()) return;
 
-      // callsFn must be defined for AA transactions. If it's not defined, the transaction will be sent to yourself instead of the smart account.
-      if (isAA && callsFn) {
-        const calls = await callsFn();
-        // building calls can take a while, check again before reaching the wallet
-        if (!isCurrent()) return;
-        await sendAACalls(calls, async (props) => {
-          await txStagesCallback(props);
-        });
-      } else {
-        await sendTransaction(txStagesCallback);
+      try {
+        // callsFn must be defined for AA transactions. If it's not defined, the transaction will be sent to yourself instead of the smart account.
+        if (isAA && callsFn) {
+          const calls = await callsFn();
+          // building calls can take a while, check again before reaching the wallet
+          if (!isCurrent()) return;
+          await sendAACalls(calls, async (props) => {
+            await txStagesCallback(props);
+          });
+        } else {
+          await sendTransaction(txStagesCallback);
+        }
+      } catch (error) {
+        if (!isSettled) throw error;
+        // The SDK emits no ERROR stage for legacy transactions, so report the
+        // settled failure here; swallowing it lets the caller finish as a
+        // success (reset form, track completion) since the tx did complete
+        if (!isFailureReported) {
+          await onFailure?.({
+            stage: TransactionCallbackStage.ERROR,
+            error: toFlowError(error),
+            isAA,
+          });
+        }
       }
     },
     [isAA, sendAACalls, validateAddress, address],
