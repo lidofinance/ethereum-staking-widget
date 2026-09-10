@@ -15,6 +15,7 @@ export {
   getManifestKey,
   getLocalFallbackManifest,
   shouldRedirectToRoot,
+  isDisabledPath,
 } from './utils';
 export {
   ManifestSchema,
