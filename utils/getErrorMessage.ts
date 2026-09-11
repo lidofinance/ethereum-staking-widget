@@ -96,6 +96,14 @@ export const getErrorMessage = (error: unknown): ErrorMessage | string => {
 // Depth cap doubles as a cycle guard: `cause` chains are occasionally circular
 const MAX_CAUSE_DEPTH = 5;
 
+const isUserRejection = (error: unknown, depth = MAX_CAUSE_DEPTH): boolean => {
+  if (depth <= 0 || !error || typeof error !== 'object') return false;
+
+  if (error instanceof UserRejectedRequestError) return true;
+
+  return 'cause' in error && isUserRejection(error.cause, depth - 1);
+};
+
 // EIP-1193 provider errors we can explain to the user. They never arrive bare:
 // the SDK wraps every failure into SDKError and stamps its own bucket code
 // (TRANSACTION_ERROR) on top, so the actionable code survives only in `cause`.
@@ -200,7 +208,7 @@ export const extractCodeFromError = (
     return 'BUNDLE_NOT_FOUND';
   }
 
-  if (error instanceof UserRejectedRequestError) {
+  if (isUserRejection(error)) {
     return 'ACTION_REJECTED';
   }
 

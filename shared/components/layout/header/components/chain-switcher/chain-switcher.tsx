@@ -89,27 +89,27 @@ export const ChainSwitcher: FC = () => {
             opened={opened}
             options={iconsMap}
           />
-          {!isDappActive && (
-            <SelectIconTooltip showArrow>
-              This network doesn’t match your wallet’s network.{' '}
-              {canSwitchChain && (
-                <>
-                  <br />
-                  <Link
-                    href="#"
-                    aria-disabled={isSwitchChainPending}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (!isSwitchChainPending) requestChangeChain(chainId);
-                    }}
-                  >
-                    Switch to {getPrettyChainName(chainId)}.
-                  </Link>
-                </>
-              )}
-            </SelectIconTooltip>
-          )}
         </>
+      )}
+      {!isDappActive && (
+        <SelectIconTooltip showArrow>
+          This network doesn’t match your wallet’s network.{' '}
+          {canSwitchChain && (
+            <>
+              <br />
+              <Link
+                href="#"
+                aria-disabled={isSwitchChainPending}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isSwitchChainPending) requestChangeChain(chainId);
+                }}
+              >
+                Switch to {getPrettyChainName(chainId)}.
+              </Link>
+            </>
+          )}
+        </SelectIconTooltip>
       )}
     </ChainSwitcherWrapperStyled>
   );
