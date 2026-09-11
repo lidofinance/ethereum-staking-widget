@@ -262,8 +262,10 @@ describe('extractCodeFromError: user rejection nested in cause', () => {
     expect(getErrorMessage(sdkError)).toBe(ErrorMessage.DENIED_SIG);
   });
 
-  test('stops walking after three levels', () => {
-    const deep = { cause: { cause: { cause: rejection() } } };
+  test('stops walking after 5 levels', () => {
+    const deep = {
+      cause: { cause: { cause: { cause: { cause: rejection() } } } },
+    };
     expect(extractCodeFromError(deep)).not.toBe('ACTION_REJECTED');
   });
 
