@@ -3,7 +3,16 @@ import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { TransactionRevertedError } from '../../utils/transaction-reverted-error';
 import { TxSettledError } from '../../utils/tx-settled-error';
+import { TxStaleError } from '../../utils/tx-stale-error';
 import type { TxCallbackProps, TxFlowArgs, TxFlowDeps } from './types';
+
+// Stages the SDK awaits before it reaches the wallet: throwing from them
+// aborts the request. Later stages only report on a transaction already sent.
+const PRE_SEND_STAGES = new Set<TxCallbackProps['stage']>([
+  TransactionCallbackStage.GAS_LIMIT,
+  TransactionCallbackStage.PERMIT,
+  TransactionCallbackStage.SIGN,
+]);
 
 /**
  * The transaction state machine behind {@link useTxFlow}, kept free of React
@@ -39,6 +48,8 @@ export const runTxFlow = async (
   // approval settling must not mask a failure of the deposit that follows
   let isSettled = false;
   let isFailureReported = false;
+  // Kept because the SDK rewraps thrown errors and loses the instance
+  let staleError: TxStaleError | undefined;
   const toFlowError = (error: unknown) =>
     isSettled ? new TxSettledError(error, txHash.current) : error;
 
@@ -49,7 +60,11 @@ export const runTxFlow = async (
    * @param args - The arguments for the current stage of the transaction.
    */
   const txStagesCallback = async (txArgs: TxCallbackProps) => {
-    if (!isCurrent()) return;
+    if (!isCurrent()) {
+      if (PRE_SEND_STAGES.has(txArgs.stage))
+        throw (staleError = new TxStaleError());
+      return;
+    }
     const args = { ...txArgs, isAA };
     switch (args.stage) {
       case TransactionCallbackStage.SIGN:
@@ -136,6 +151,7 @@ export const runTxFlow = async (
       await sendTransaction(txStagesCallback);
     }
   } catch (error) {
+    if (staleError) throw staleError;
     if (!isSettled) throw error;
     // The SDK emits no ERROR stage for legacy transactions, so report the
     // settled failure here; swallowing it lets the caller finish as a

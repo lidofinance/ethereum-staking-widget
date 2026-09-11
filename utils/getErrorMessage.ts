@@ -1,5 +1,6 @@
 import { SendCallsError } from 'modules/web3';
 import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { TxStaleError } from 'modules/web3/utils/tx-stale-error';
 import { UnknownBundleIdError, UserRejectedRequestError } from 'viem';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import debounce from 'lodash/debounce';
@@ -76,6 +77,8 @@ export const getError = (error: unknown): ErrorMessage | string => {
 };
 
 export const getErrorMessage = (error: unknown): ErrorMessage | string => {
+  // the UI that would show this is gone; nothing to log or track
+  if (error instanceof TxStaleError) return ErrorMessage.SOMETHING_WRONG;
   try {
     console.error('TX_ERROR:', {
       error,

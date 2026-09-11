@@ -6,8 +6,9 @@ import {
 
 import { TransactionRevertedError } from '../../utils/transaction-reverted-error';
 import { TxSettledError } from '../../utils/tx-settled-error';
-import { runTxFlow, type TxFlowDeps } from './run-tx-flow';
-import type { AACall, TxCallbackProps, TxFlowArgs } from './types';
+import { TxStaleError } from '../../utils/tx-stale-error';
+import { runTxFlow } from './run-tx-flow';
+import type { AACall, TxCallbackProps, TxFlowArgs, TxFlowDeps } from './types';
 
 const ADDRESS: Address = '0x0000000000000000000000000000000000000001';
 const TX_HASH =
@@ -401,6 +402,60 @@ describe('runTxFlow', () => {
         { isAA: true, sendAACalls, isCurrent: () => current },
       );
       expect(sendAACalls).not.toHaveBeenCalled();
+    });
+
+    it('aborts a legacy transaction that went stale before signing', async () => {
+      let current = true;
+      const send = vi.fn();
+      const cb = createCallbacks();
+      await expect(
+        run(
+          {
+            ...cb,
+            sendTransaction: legacySdk(
+              { stage: TransactionCallbackStage.GAS_LIMIT },
+              () => {
+                current = false;
+              },
+              { stage: TransactionCallbackStage.SIGN },
+              send,
+            ),
+          },
+          { isCurrent: () => current },
+        ),
+      ).rejects.toBeInstanceOf(TxStaleError);
+      expect(send).not.toHaveBeenCalled();
+      expect(cb.onSign).not.toHaveBeenCalled();
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('aborts an AA transaction that went stale before signing', async () => {
+      let current = true;
+      const send = vi.fn();
+      const cb = createCallbacks();
+      // mirrors useSendAACalls: SIGN is awaited before sendCalls, errors are
+      // reported as ERROR and rethrown
+      const sendAACalls = async (
+        _calls: unknown,
+        callback: (props: TxCallbackProps) => Promise<void>,
+      ) => {
+        current = false;
+        try {
+          await callback({ stage: TransactionCallbackStage.SIGN });
+          send();
+        } catch (error) {
+          await callback({ stage: TransactionCallbackStage.ERROR, error });
+          throw error;
+        }
+      };
+      await expect(
+        run(
+          { ...cb, callsFn: async () => [] },
+          { isAA: true, sendAACalls, isCurrent: () => current },
+        ),
+      ).rejects.toBeInstanceOf(TxStaleError);
+      expect(send).not.toHaveBeenCalled();
+      expect(cb.onFailure).not.toHaveBeenCalled();
     });
 
     it('ignores stages reported after the flow went stale', async () => {
