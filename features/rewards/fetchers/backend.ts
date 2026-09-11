@@ -1,6 +1,7 @@
 import { config } from 'config';
 import { z } from 'zod';
 import type { Backend } from 'features/rewards/types';
+import { NUMERIC_SCHEMA } from 'utils/zod';
 
 export type BackendQuery = {
   address: string;
@@ -23,7 +24,11 @@ export const BACKEND_SCHEMA = z.object({
       transactionHash: z.string(),
     }),
   ),
-  totals: z.object({ ethRewards: z.number(), currencyRewards: z.number() }),
+  // The backend serializes both totals as numeric strings
+  totals: z.object({
+    ethRewards: NUMERIC_SCHEMA,
+    currencyRewards: NUMERIC_SCHEMA,
+  }),
   averageApr: z.string(),
   ethToStEthRatio: z.number(),
   stETHCurrencyPrice: z.record(z.string(), z.number()),
