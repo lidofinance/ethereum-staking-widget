@@ -16,6 +16,8 @@ export const CACHE_ETH_PRICE_HEADERS =
 
 export const CACHE_ONE_INCH_RATE_KEY = 'oneinch-rate';
 export const CACHE_ONE_INCH_RATE_TTL = ms('5m');
+export const CACHE_ONE_INCH_RATE_HEADERS =
+  'public, max-age=60, stale-if-error=1200, stale-while-revalidate=60';
 
 export const CACHE_TOTAL_SUPPLY_KEY = 'cache-total-supply';
 export const CACHE_TOTAL_SUPPLY_TTL = ms('1m');
