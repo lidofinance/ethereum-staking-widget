@@ -9,7 +9,7 @@ import {
 import { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import { useQuery } from '@tanstack/react-query';
 
-import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 const fetchTokenAddress = async (
@@ -42,7 +42,7 @@ export const useTokenAddress = (token: string): Address | undefined => {
   const { data: address } = useQuery({
     queryKey: ['tokenAddress', token, core, chainId, isL2],
     enabled: !!token,
-    ...STRATEGY_CONSTANT,
+    ...STRATEGY_IMMUTABLE,
     queryFn: () => fetchTokenAddress(token, core, chainId, isL2),
   });
 

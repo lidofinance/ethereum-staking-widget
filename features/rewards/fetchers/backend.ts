@@ -1,4 +1,7 @@
 import { config } from 'config';
+import { z } from 'zod';
+import type { Backend } from 'features/rewards/types';
+import { NUMERIC_SCHEMA } from 'utils/zod';
 
 export type BackendQuery = {
   address: string;
@@ -8,6 +11,29 @@ export type BackendQuery = {
   archiveRate?: boolean;
   onlyRewards?: boolean;
 };
+
+// Validates the shape the table relies on; event rows carry many optional
+// fields that pass through untouched
+export const BACKEND_SCHEMA = z.object({
+  events: z.array(
+    z.looseObject({
+      type: z.string(),
+      change: z.string(),
+      balance: z.string(),
+      blockTime: z.string(),
+      transactionHash: z.string(),
+    }),
+  ),
+  // The backend serializes both totals as numeric strings
+  totals: z.object({
+    ethRewards: NUMERIC_SCHEMA,
+    currencyRewards: NUMERIC_SCHEMA,
+  }),
+  averageApr: z.string(),
+  ethToStEthRatio: z.number(),
+  stETHCurrencyPrice: z.record(z.string(), z.number()),
+  totalItems: z.number(),
+});
 
 export const backendRequest = async (query: BackendQuery) => {
   const params = new URLSearchParams();
@@ -28,5 +54,5 @@ export const backendRequest = async (query: BackendQuery) => {
     throw new Error(responded?.message ?? requested.statusText);
   }
 
-  return await requested.json();
+  return BACKEND_SCHEMA.parse(await requested.json()) as Backend;
 };
