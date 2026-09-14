@@ -9,7 +9,11 @@ import {
 } from 'wagmi';
 
 import { LidoSDKStake } from '@lidofinance/lido-ethereum-sdk/stake';
-import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
+import {
+  CHAINS,
+  LidoSDKCore,
+  LidoSDKCoreProps,
+} from '@lidofinance/lido-ethereum-sdk/core';
 import {
   LidoSDKstETH,
   LidoSDKwstETH,
@@ -36,6 +40,25 @@ type LidoSDKContextValue = {
   statistics: LidoSDKStatistics;
   dualGovernance: LidoSDKDualGovernance;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
+};
+
+const createContractAddressManifest = (
+  chainId: CHAINS,
+): NonNullable<LidoSDKCoreProps['contractAddressManifest']> => {
+  return {
+    lido: getContractAddress(chainId, CONTRACT_NAMES.lido),
+    wsteth: getContractAddress(chainId, CONTRACT_NAMES.wsteth),
+    stakingRouter: getContractAddress(chainId, CONTRACT_NAMES.stakingRouter),
+    withdrawalQueue: getContractAddress(
+      chainId,
+      CONTRACT_NAMES.withdrawalQueue,
+    ),
+    wstethReferralStaker: getContractAddress(
+      chainId,
+      CONTRACT_NAMES.wstethReferralStaker,
+    ),
+    // Add other contract addresses as needed
+  };
 };
 
 const LidoSDKContext = createContext<LidoSDKContextValue | null>(null);
@@ -95,6 +118,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
         sdkChainId,
         CONTRACT_NAMES.lidoLocator,
       ),
+      contractAddressManifest: createContractAddressManifest(sdkChainId),
     });
 
     const stake = new LidoSDKStake({ core });
