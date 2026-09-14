@@ -3126,9 +3126,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/lido-ethereum-sdk@npm:4.8.0-alpha.2":
-  version: 4.8.0-alpha.2
-  resolution: "@lidofinance/lido-ethereum-sdk@npm:4.8.0-alpha.2"
+"@lidofinance/lido-ethereum-sdk@npm:4.9.0":
+  version: 4.9.0
+  resolution: "@lidofinance/lido-ethereum-sdk@npm:4.9.0"
   dependencies:
     "@openzeppelin/merkle-tree": "npm:^1.0.8"
     blockstore-core: "npm:^5.0.4"
@@ -3138,7 +3138,7 @@ __metadata:
     multiformats: "npm:^13.4.0"
   peerDependencies:
     viem: ^2.45.0
-  checksum: 10c0/f68b9a5b607fcf00cc52f752837ab04d773ae6a79aa8a3445f55f4a8674614c392ec9cfc5ec4f7e4449105954367e656d5ea66745be908a35e6a3a1328aaaf78
+  checksum: 10c0/0b83aaf668fc636455b73d010a04799978382e3abf3f1f9b0d2b9285fbd0906a46fdbe3299da9fff385780ea6795f4ec73d90073e6d0f1e310ab815d69a2ae3e
   languageName: node
   linkType: hard
 
@@ -3844,53 +3844,53 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reef-knot/connect-wallet-modal@npm:8.3.1-alpha.4":
-  version: 8.3.1-alpha.4
-  resolution: "@reef-knot/connect-wallet-modal@npm:8.3.1-alpha.4"
+"@reef-knot/connect-wallet-modal@npm:8.3.1-alpha.5":
+  version: 8.3.1-alpha.5
+  resolution: "@reef-knot/connect-wallet-modal@npm:8.3.1-alpha.5"
   dependencies:
     "@ledgerhq/hw-app-eth": "npm:7.8.12"
     "@ledgerhq/hw-transport": "npm:6.35.7"
     "@ledgerhq/hw-transport-webhid": "npm:6.36.0"
     "@lidofinance/lido-ui": "npm:^3.18.0"
-    "@reef-knot/wallets-list": "npm:5.2.1-alpha.4"
+    "@reef-knot/wallets-list": "npm:5.2.1-alpha.5"
     "@types/react": "npm:18.2.45"
     "@types/react-dom": "npm:18.2.17"
   peerDependencies:
     "@lidofinance/lido-ui": ^3.18.0
-    "@reef-knot/core-react": 7.2.1-alpha.4
-    "@reef-knot/ledger-connector": 5.2.0-alpha.4
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/core-react": 7.2.1-alpha.5
+    "@reef-knot/ledger-connector": 5.2.0-alpha.5
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/ui-react": 3.2.0
     "@reef-knot/wallets-helpers": 3.1.0
-    "@reef-knot/web3-react": 7.1.1-alpha.4
+    "@reef-knot/web3-react": 7.1.1-alpha.5
     "@tanstack/react-query": ^5.29.0
     react: ">=18"
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/217d8a0bb1e787bc00f2660700b268bcdf47e6de009f035b6d20fc89c3d5bc39ea7313bf160eaac91fc26a97fdc3a4d3650f966e2bf4b1fb140673e64e994bb2
+  checksum: 10c0/5e02600a65230a3a42801169b187eca65c5389a0cf5f48a7985754f855c5c562260bee049a77ec9473a10090bd14590514fc4077bd98238599e80bb2d3b27f3b
   languageName: node
   linkType: hard
 
-"@reef-knot/core-react@npm:7.2.1-alpha.4":
-  version: 7.2.1-alpha.4
-  resolution: "@reef-knot/core-react@npm:7.2.1-alpha.4"
+"@reef-knot/core-react@npm:7.2.1-alpha.5":
+  version: 7.2.1-alpha.5
+  resolution: "@reef-knot/core-react@npm:7.2.1-alpha.5"
   peerDependencies:
-    "@reef-knot/ledger-connector": 5.2.0-alpha.4
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/ledger-connector": 5.2.0-alpha.5
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/ui-react": 3.2.0
     "@reef-knot/wallets-helpers": 3.1.0
-    "@reef-knot/wallets-list": 5.2.1-alpha.4
+    "@reef-knot/wallets-list": 5.2.1-alpha.5
     "@tanstack/react-query": ^5.29.0
     react: ">=18"
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/e7d973db4570911a71235ae032cf595d3292fac21b7745721a051e8eaeaa85d8eb2ff00c4ab2037df8cb799b624e33069df4f201f8296a4a31c9e6c82f0bf9da
+  checksum: 10c0/22ac247979591fa1c348cf06d686a6745ada195b794832aae2da2d3b4ba828fe48e850177577e87ed9286a84d8b5a8fdd209ac1e914b5af93899f34a4a6ce077
   languageName: node
   linkType: hard
 
-"@reef-knot/ledger-connector@npm:5.2.0-alpha.4":
-  version: 5.2.0-alpha.4
-  resolution: "@reef-knot/ledger-connector@npm:5.2.0-alpha.4"
+"@reef-knot/ledger-connector@npm:5.2.0-alpha.5":
+  version: 5.2.0-alpha.5
+  resolution: "@reef-knot/ledger-connector@npm:5.2.0-alpha.5"
   dependencies:
     "@ledgerhq/hw-app-eth": "npm:7.8.12"
     "@ledgerhq/hw-transport": "npm:6.35.7"
@@ -3900,20 +3900,20 @@ __metadata:
     "@tanstack/react-query": ^5.29.0
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/1bfe3360a55006a902f69b986eff237e3942e9059ba691c2c42363f37ad79659997bbe871f54b72268fb206243b128c9da7c9041234734420439cb3bc435ec3f
+  checksum: 10c0/edf83c393173b2aa237fc73266fc75e67177003de79b4aa6add449cfb1d0ad51358c0ebf8231f43bf886fdb2f19f91b942fe175c01bb3f8264ed937d7627e940
   languageName: node
   linkType: hard
 
-"@reef-knot/types@npm:5.2.0":
-  version: 5.2.0
-  resolution: "@reef-knot/types@npm:5.2.0"
+"@reef-knot/types@npm:5.2.1-alpha.1":
+  version: 5.2.1-alpha.1
+  resolution: "@reef-knot/types@npm:5.2.1-alpha.1"
   peerDependencies:
     "@reef-knot/ui-react": 3.2.0
     "@tanstack/react-query": ^5.29.0
     react: ">=18"
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/e1941db5c1f6ca07bd98118f4dd81ca50818557e89dfc3f16a804f95a25c42a777fc5921f7095db25d92bde5b2dfdfd32cc113f3098029a43b2a7974bae8028a
+  checksum: 10c0/5bd98fded0ff0619d233f699f4dae38f67a0fb0e70b6f31e006805d20159c83d2a34fb4bea962dede0deaf2e9aa1ab6950c19df9aa1b74ec6f2f975307d3575e
   languageName: node
   linkType: hard
 
@@ -3933,161 +3933,161 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-ambire@npm:6.2.0":
-  version: 6.2.0
-  resolution: "@reef-knot/wallet-adapter-ambire@npm:6.2.0"
+"@reef-knot/wallet-adapter-ambire@npm:6.2.1-alpha.1":
+  version: 6.2.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-ambire@npm:6.2.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/wallets-helpers": 3.1.0
     "@tanstack/react-query": ^5.29.0
     wagmi: ">=3.6"
-  checksum: 10c0/d72016718041e0dff118148001298be7d577f1c58f358cabb2368d3b70dbaa80ca66af20848329ded772a9fe49774c1e9c3e69ee194a7133aece4c333676f4b8
+  checksum: 10c0/5ba117b56810903f5a46d9ce2a06ac5cb1bb06e5c73990fa1667d70fc861016a3ee2554a94295d1ceb756866f20bb68d2cf59eb711cf567be1c18d3647fe3a1e
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-anchorage-digital@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reef-knot/wallet-adapter-anchorage-digital@npm:1.2.0"
+"@reef-knot/wallet-adapter-anchorage-digital@npm:1.2.1-alpha.1":
+  version: 1.2.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-anchorage-digital@npm:1.2.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/wallets-helpers": 3.1.0
     wagmi: ">=3.6"
-  checksum: 10c0/7ab14427a0ffd7e0796b4af9f58f5c34dd717e9538c3e2020bb161cfb90148d5dc0427a60e543fe415114c342960870bb1e27ca05e2159758abeaf3e51662a35
+  checksum: 10c0/526d66742355deebea52675046af097366b4d2d46657149e353d08cbea63716f0d291360bf13eede23efc72e5eafcbd6a8d97000d88960eeb671e7d6d48b44f4
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-bitkeep@npm:5.2.0":
-  version: 5.2.0
-  resolution: "@reef-knot/wallet-adapter-bitkeep@npm:5.2.0"
+"@reef-knot/wallet-adapter-bitkeep@npm:5.2.1-alpha.1":
+  version: 5.2.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-bitkeep@npm:5.2.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/wallets-helpers": 3.1.0
     "@tanstack/react-query": ^5.29.0
     wagmi: ">=3.6"
-  checksum: 10c0/cc256d7ac1a4221b828cc0252c7c308255c5a7045eb915787ea92e138971038e50b2f87c334789e84f1c279c90870867dbad9d86f3464869838ddc6d56389cf6
+  checksum: 10c0/6e4fc330bea43d5aac2160c51290ba5e7d01990d6661ebd5e09f08b94ee3f40541cda94de50e6c991468b1b3ae0e4d0b7abca83acf549fe2a8cc785ca7fb710d
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-browser-extension@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@reef-knot/wallet-adapter-browser-extension@npm:5.1.0"
+"@reef-knot/wallet-adapter-browser-extension@npm:5.1.1-alpha.1":
+  version: 5.1.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-browser-extension@npm:5.1.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@tanstack/react-query": ^5.29.0
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/9323e7f35145e7d845cd8c7c83680cca90ba61acc2f0a52910503f35337faec4a620fd87df90ba7731b3adeda92dc19fde732417bc28a529baa7d051bbde4b75
+  checksum: 10c0/6bafd7f231b8eac24baf320037cf2948112d76a1938ddf710d1c4b4af9f58925e258fab901f09d03b299343a549f806463856e155ae9baf96b48599c7d7a66a3
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-coinbase-smart-wallet@npm:4.2.0":
-  version: 4.2.0
-  resolution: "@reef-knot/wallet-adapter-coinbase-smart-wallet@npm:4.2.0"
+"@reef-knot/wallet-adapter-coinbase-smart-wallet@npm:4.2.1-alpha.1":
+  version: 4.2.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-coinbase-smart-wallet@npm:4.2.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/wallets-helpers": 3.1.0
     "@tanstack/react-query": ^5.29.0
     wagmi: ">=3.6"
-  checksum: 10c0/361149b88a04a25ad259e7d9c26159b1fb974a886878d646872d95660802a8d524d483db79f96d507488fd5742a83bb8f84ed7805a8f82602865fda34d10d050
+  checksum: 10c0/4aae80189fe0a02dabb8700b705ae8a185763a83e630414739956fd0c1979b75fc8daf50b08cdaca59522c5bff43c8b25b4a6f0c5b297bb9af7e836c7f28b71e
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-dapp-browser-injected@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@reef-knot/wallet-adapter-dapp-browser-injected@npm:5.1.0"
+"@reef-knot/wallet-adapter-dapp-browser-injected@npm:5.1.1-alpha.1":
+  version: 5.1.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-dapp-browser-injected@npm:5.1.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/wallets-helpers": 3.1.0
     "@tanstack/react-query": ^5.29.0
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/2907b940e03bd8b451d52ff1dee0207e85dc0be270392a2887ed0e7378191698485b8673e93b8b1c0f046af42d10c6a20c64dff8f2efede2950e16c1678753ac
+  checksum: 10c0/9c816c9ff2f7397c5a8b279607d31ab49f489fcac44302ec614bcc517672d33bdf1ddd8c69a86993ee1a5117662864547d936131cbcfa59aed9834ff124ccbe2
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-imtoken@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@reef-knot/wallet-adapter-imtoken@npm:5.1.0"
+"@reef-knot/wallet-adapter-imtoken@npm:5.1.1-alpha.1":
+  version: 5.1.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-imtoken@npm:5.1.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@tanstack/react-query": ^5.29.0
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/117ffea041413cbbd4a8ab5d78abb9f92274ed63b7580332dee16c9379bfdda1236681b24415e534ecba0a8a85c7ab1975ce46e4289b1e59692ccac106bd8799
+  checksum: 10c0/c641f3c2a437185b26da099f81a47e62530250f09f9da73bfd355f4c4de45e61b57523430e7964e645092d08822584b881240a54345ec7b605b5243f8fc54def
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-ledger-hid@npm:6.1.1-alpha.4":
-  version: 6.1.1-alpha.4
-  resolution: "@reef-knot/wallet-adapter-ledger-hid@npm:6.1.1-alpha.4"
+"@reef-knot/wallet-adapter-ledger-hid@npm:6.1.1-alpha.5":
+  version: 6.1.1-alpha.5
+  resolution: "@reef-knot/wallet-adapter-ledger-hid@npm:6.1.1-alpha.5"
   peerDependencies:
-    "@reef-knot/ledger-connector": 5.2.0-alpha.4
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/ledger-connector": 5.2.0-alpha.5
+    "@reef-knot/types": 5.2.1-alpha.1
     "@tanstack/react-query": ^5.29.0
     wagmi: ">=3.6"
-  checksum: 10c0/d7bf13fe0ad80aff1b2cb19081c783dcd41412da5c9f8fd8e5b216139c69f445cb92d7ad4309600de95e51f29234abc1e22680a40ef032008c4a71920a180bf4
+  checksum: 10c0/027673ce75179a0374bb5c14989da753ffec565bc52e2c8389c0861e65b09449eb84f82a7558dc81b2255c66272f3668614e4173ad901492db8027c175a5ae68
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-ledger-live@npm:6.1.1-alpha.4":
-  version: 6.1.1-alpha.4
-  resolution: "@reef-knot/wallet-adapter-ledger-live@npm:6.1.1-alpha.4"
+"@reef-knot/wallet-adapter-ledger-live@npm:6.1.1-alpha.5":
+  version: 6.1.1-alpha.5
+  resolution: "@reef-knot/wallet-adapter-ledger-live@npm:6.1.1-alpha.5"
   peerDependencies:
-    "@reef-knot/ledger-connector": 5.2.0-alpha.4
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/ledger-connector": 5.2.0-alpha.5
+    "@reef-knot/types": 5.2.1-alpha.1
     "@tanstack/react-query": ^5.29.0
     wagmi: ">=3.6"
-  checksum: 10c0/ed3385ed7608e2e03a7db34e35778a70f74b50dad6084c006fcb0e983717fb0c2c51b82c764d20ee3a1ff611a73975e647858d3d1ffdf123b2a08ef3c2f8e20a
+  checksum: 10c0/d3dfde11de4970e08e5191f649024d4e45530a2bfb0f947c782249193017ee3c33d5b7cc86f6d85c702c78744718838c4498899939ae38058d16bb8a546491c5
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-metamask@npm:5.2.0":
-  version: 5.2.0
-  resolution: "@reef-knot/wallet-adapter-metamask@npm:5.2.0"
+"@reef-knot/wallet-adapter-metamask@npm:5.2.1-alpha.1":
+  version: 5.2.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-metamask@npm:5.2.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/wallets-helpers": 3.1.0
     "@tanstack/react-query": ^5.29.0
     wagmi: ">=3.6"
-  checksum: 10c0/1ff84b2515591740df4da73d9acfd7b94f39b537bb2925fdc4ac52257cc24e611dd53af506df6a82d32f10751a83a4e1fddb0c28f1aec3b1efc1344c89bc8b40
+  checksum: 10c0/9d396b7d744f19ed8240c934ef75851d0e090cf88d5692a37cd31237bce37ca1fee6b62b4a8cf43c09ff4556fb14a393cad86a71abd802f68abb160e5f60b454
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-okx@npm:5.2.0":
-  version: 5.2.0
-  resolution: "@reef-knot/wallet-adapter-okx@npm:5.2.0"
+"@reef-knot/wallet-adapter-okx@npm:5.2.1-alpha.1":
+  version: 5.2.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-okx@npm:5.2.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/wallets-helpers": 3.1.0
     "@tanstack/react-query": ^5.29.0
     wagmi: ">=3.6"
-  checksum: 10c0/2c979f92cf518f40f20dc16ed71fd2224be4834506b85898840412807ccc7c265b317f1aa30feb36f6869ceca4a5d509cb0d371e6603ed65ce69a9868fae87fa
+  checksum: 10c0/6a6817738db23e30164a923b2c7f5104b55c48c40e44aa5b830ad9e2fac5103bb0ee5f34ee7646b07f5247fe80b80ca0c85b90d7cdb4237ee71613745b269c8c
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-safe@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@reef-knot/wallet-adapter-safe@npm:5.1.0"
+"@reef-knot/wallet-adapter-safe@npm:5.1.1-alpha.1":
+  version: 5.1.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-safe@npm:5.1.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@safe-global/safe-apps-provider": ^0.18.6
     "@safe-global/safe-apps-sdk": ^9.1.0
     "@tanstack/react-query": ^5.29.0
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/eab39f5762bced297c341c41d57a44f38b0cde557c6f8e95e406a3148fb45160c0ed35ac9468b137e2cb5290195566760eaceb8a7c334098c5c5bbb8c72697f3
+  checksum: 10c0/f3e9a944ecfb86bdc5f8c9a984a7ad90739e9ab5521ef52fa78f3fb40b121e9e8dd5f629739e7cc246c580177d1ede3e6fae047ad04218b98d020625bd0c2df2
   languageName: node
   linkType: hard
 
-"@reef-knot/wallet-adapter-walletconnect@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@reef-knot/wallet-adapter-walletconnect@npm:5.1.0"
+"@reef-knot/wallet-adapter-walletconnect@npm:5.1.1-alpha.1":
+  version: 5.1.1-alpha.1
+  resolution: "@reef-knot/wallet-adapter-walletconnect@npm:5.1.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@reef-knot/wallets-helpers": 3.1.0
     "@tanstack/react-query": ^5.29.0
     wagmi: ">=3.6"
-  checksum: 10c0/224177beeac2dd65aa1f38f557119572b34aaeb3ea44682cf697f6941ad7d10272aa51d98be36aa4740e72933a436090e2404571f49ad8de6bf575a74e9272de
+  checksum: 10c0/3f34c6ca57f6eaa73ca5513cb0880a3e8e7176e9b641cb40e664170f425a06a2b2295f21b975ed84f8c0955856aad58e2a735d98cd21afbaa203c72059eef9d2
   languageName: node
   linkType: hard
 
@@ -4105,46 +4105,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reef-knot/wallets-list@npm:5.2.1-alpha.4":
-  version: 5.2.1-alpha.4
-  resolution: "@reef-knot/wallets-list@npm:5.2.1-alpha.4"
+"@reef-knot/wallets-list@npm:5.2.1-alpha.5":
+  version: 5.2.1-alpha.5
+  resolution: "@reef-knot/wallets-list@npm:5.2.1-alpha.5"
   dependencies:
-    "@reef-knot/wallet-adapter-ambire": "npm:6.2.0"
-    "@reef-knot/wallet-adapter-anchorage-digital": "npm:1.2.0"
-    "@reef-knot/wallet-adapter-bitkeep": "npm:5.2.0"
-    "@reef-knot/wallet-adapter-browser-extension": "npm:5.1.0"
-    "@reef-knot/wallet-adapter-coinbase-smart-wallet": "npm:4.2.0"
-    "@reef-knot/wallet-adapter-dapp-browser-injected": "npm:5.1.0"
-    "@reef-knot/wallet-adapter-imtoken": "npm:5.1.0"
-    "@reef-knot/wallet-adapter-ledger-hid": "npm:6.1.1-alpha.4"
-    "@reef-knot/wallet-adapter-ledger-live": "npm:6.1.1-alpha.4"
-    "@reef-knot/wallet-adapter-metamask": "npm:5.2.0"
-    "@reef-knot/wallet-adapter-okx": "npm:5.2.0"
-    "@reef-knot/wallet-adapter-safe": "npm:5.1.0"
-    "@reef-knot/wallet-adapter-walletconnect": "npm:5.1.0"
+    "@reef-knot/wallet-adapter-ambire": "npm:6.2.1-alpha.1"
+    "@reef-knot/wallet-adapter-anchorage-digital": "npm:1.2.1-alpha.1"
+    "@reef-knot/wallet-adapter-bitkeep": "npm:5.2.1-alpha.1"
+    "@reef-knot/wallet-adapter-browser-extension": "npm:5.1.1-alpha.1"
+    "@reef-knot/wallet-adapter-coinbase-smart-wallet": "npm:4.2.1-alpha.1"
+    "@reef-knot/wallet-adapter-dapp-browser-injected": "npm:5.1.1-alpha.1"
+    "@reef-knot/wallet-adapter-imtoken": "npm:5.1.1-alpha.1"
+    "@reef-knot/wallet-adapter-ledger-hid": "npm:6.1.1-alpha.5"
+    "@reef-knot/wallet-adapter-ledger-live": "npm:6.1.1-alpha.5"
+    "@reef-knot/wallet-adapter-metamask": "npm:5.2.1-alpha.1"
+    "@reef-knot/wallet-adapter-okx": "npm:5.2.1-alpha.1"
+    "@reef-knot/wallet-adapter-safe": "npm:5.1.1-alpha.1"
+    "@reef-knot/wallet-adapter-walletconnect": "npm:5.1.1-alpha.1"
   peerDependencies:
-    "@reef-knot/types": 5.2.0
+    "@reef-knot/types": 5.2.1-alpha.1
     "@tanstack/react-query": ^5.29.0
     react: ">=18"
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/1c9f51b0061044a8d621a3dd6968ff795cac186494ca8ac0998e58be3599034aaf9d049b2a8b9455f903ef9852ba7cb45da59f008b2c8c422b3456619d5c4243
+  checksum: 10c0/17f967d2bdf1fc70495b972990241bb7d0afc4f45f3b1ef667c35fcc29a2616132ca44ab8fa3ac31f94a3832739edf6b49d8e3ac3c830f618e5570d5a333e598
   languageName: node
   linkType: hard
 
-"@reef-knot/web3-react@npm:7.1.1-alpha.4":
-  version: 7.1.1-alpha.4
-  resolution: "@reef-knot/web3-react@npm:7.1.1-alpha.4"
+"@reef-knot/web3-react@npm:7.1.1-alpha.5":
+  version: 7.1.1-alpha.5
+  resolution: "@reef-knot/web3-react@npm:7.1.1-alpha.5"
   dependencies:
     tiny-invariant: "npm:^1.1.0"
   peerDependencies:
-    "@reef-knot/core-react": 7.2.1-alpha.4
-    "@reef-knot/ledger-connector": 5.2.0-alpha.4
+    "@reef-knot/core-react": 7.2.1-alpha.5
+    "@reef-knot/ledger-connector": 5.2.0-alpha.5
     "@reef-knot/wallets-helpers": 3.1.0
     "@tanstack/react-query": ^5.29.0
     react: ">=18"
     wagmi: ">=3.6"
-  checksum: 10c0/8f9737470c86d0551fa7e2cc973cec012f3e51d39a9b2baf63fb052251047b162bc75c431c4c592fbc2c3741b9c4585ef4ce41ea48dc2da527269ac8afa5949a
+  checksum: 10c0/b72d62bb8d40bf8bc1d564589c075cdc588995737a3c3e0d1cfa8830a8db2e542888f7097b1fd7bc62d27ae051c87cd8122716158a78886632b265c7ad00e1f9
   languageName: node
   linkType: hard
 
@@ -10983,7 +10983,7 @@ __metadata:
     "@lidofinance/eth-api-providers": "npm:^0.48.0"
     "@lidofinance/eth-providers": "npm:^0.48.0"
     "@lidofinance/lido-app-ui": "npm:^1.1.2"
-    "@lidofinance/lido-ethereum-sdk": "npm:4.8.0-alpha.2"
+    "@lidofinance/lido-ethereum-sdk": "npm:4.9.0"
     "@lidofinance/lido-ui": "npm:^3.42.1"
     "@lidofinance/next-api-wrapper": "npm:^0.48.0"
     "@lidofinance/next-ip-rate-limit": "npm:^0.60.0"
@@ -11050,7 +11050,7 @@ __metadata:
     react-error-boundary: "npm:^4.0.13"
     react-hook-form: "npm:^7.45.2"
     react-is: "npm:^18.2.0"
-    reef-knot: "npm:8.3.1-alpha.4"
+    reef-knot: "npm:8.4.0-alpha.1"
     string-replace-loader: "npm:3.3.0"
     styled-components: "npm:^5.3.5"
     tiny-invariant: "npm:^1.1.0"
@@ -13051,18 +13051,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reef-knot@npm:8.3.1-alpha.4":
-  version: 8.3.1-alpha.4
-  resolution: "reef-knot@npm:8.3.1-alpha.4"
+"reef-knot@npm:8.4.0-alpha.1":
+  version: 8.4.0-alpha.1
+  resolution: "reef-knot@npm:8.4.0-alpha.1"
   dependencies:
-    "@reef-knot/connect-wallet-modal": "npm:8.3.1-alpha.4"
-    "@reef-knot/core-react": "npm:7.2.1-alpha.4"
-    "@reef-knot/ledger-connector": "npm:5.2.0-alpha.4"
-    "@reef-knot/types": "npm:5.2.0"
+    "@reef-knot/connect-wallet-modal": "npm:8.3.1-alpha.5"
+    "@reef-knot/core-react": "npm:7.2.1-alpha.5"
+    "@reef-knot/ledger-connector": "npm:5.2.0-alpha.5"
+    "@reef-knot/types": "npm:5.2.1-alpha.1"
     "@reef-knot/ui-react": "npm:3.2.0"
     "@reef-knot/wallets-helpers": "npm:3.1.0"
-    "@reef-knot/wallets-list": "npm:5.2.1-alpha.4"
-    "@reef-knot/web3-react": "npm:7.1.1-alpha.4"
+    "@reef-knot/wallets-list": "npm:5.2.1-alpha.5"
+    "@reef-knot/web3-react": "npm:7.1.1-alpha.5"
   peerDependencies:
     "@lidofinance/lido-ui": ^3.18.0
     "@tanstack/react-query": ^5.51.1
@@ -13071,7 +13071,7 @@ __metadata:
     styled-components: ^5.3.5
     viem: ">=2.50"
     wagmi: ">=3.6"
-  checksum: 10c0/1a7a5a090398accd71c70cf267936a92d49f6c4fd4f341503aa6f9091778085dc39dd440de253e88895648298a8796bfbd0572057ce5590196c74eda6af02f6e
+  checksum: 10c0/408435dc981e404cc888c7c72cd14ef663c5bc69bf10899b325798ede9d8d24adb90f7f7d330ff1f8df642f6d3b5dade39b4e2a0adf62c56ba8ab5a429b4cfe7
   languageName: node
   linkType: hard
 
