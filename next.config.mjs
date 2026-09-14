@@ -62,6 +62,12 @@ export default withBundleAnalyzer({
   basePath,
   generateBuildId,
 
+  // Disable the built-in Next.js Image Optimization endpoint to prevent
+  // requests from reaching the image optimizer. This app does not use `next/image`.
+  images: {
+    loader: 'custom',
+  },
+
   // IPFS next.js configuration reference:
   // https://github.com/Velenir/nextjs-ipfs-example
   trailingSlash: !!isIPFSMode,
