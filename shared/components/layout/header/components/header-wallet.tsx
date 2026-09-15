@@ -23,7 +23,7 @@ import { ChainSwitcher } from './chain-switcher/chain-switcher';
 import { HeaderSettingsButton } from './header-settings-button';
 import { ThemeTogglerStyled } from './styles';
 
-const HeaderWallet: FC = () => {
+export const HeaderWallet: FC = () => {
   const router = useRouter();
   const { defaultChain: defaultChainId } = useUserConfig();
   const { isDappActive, address, walletChainId, isTestnet } = useDappStatus();
@@ -68,5 +68,3 @@ const HeaderWallet: FC = () => {
     </NoSSRWrapper>
   );
 };
-
-export default HeaderWallet;

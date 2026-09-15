@@ -1,5 +1,7 @@
+import { LocalLink } from 'shared/components/local-link';
 import styled, { css } from 'styled-components';
 import { devicesHeaderMedia } from 'styles/global';
+import { POPUP_MENU_Z_INDEX, PopupStyled } from '../popup';
 
 export const desktopCss = css`
   margin: 0 ${({ theme }) => theme.spaceMap.xxl}px 0 var(--nav-desktop-gutter-x);
@@ -33,31 +35,13 @@ const mobileCss = css`
   }
 `;
 
-export const Nav = styled.div`
+export const Nav = styled.nav`
   ${desktopCss}
   // mobile kicks in on a bit higher width for nav
   @media ${devicesHeaderMedia.mobile} {
     ${mobileCss}
   }
   z-index: 60;
-`;
-
-export const Divider = styled.div`
-  width: 1px;
-  height: 12px;
-  align-self: center;
-  background-color: var(--lido-color-textSecondary);
-
-  ${({ theme }) =>
-    theme.name == 'dark' &&
-    css`
-      background-color: #fff;
-      opacity: 0.8;
-    `}
-
-  @media ${devicesHeaderMedia.mobile} {
-    display: none;
-  }
 `;
 
 // Not wrapping <a> inside <a> in IPFS mode
@@ -73,9 +57,10 @@ export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  text-transform: uppercase;
   text-decoration: none !important;
   letter-spacing: 0.04em;
+  text-transform: uppercase;
+  user-select: none;
 
   & > svg {
     opacity: ${(props) => (props.active ? 1 : 0.8)};
@@ -127,6 +112,164 @@ export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
 
     span::after {
       margin-left: ${({ theme }) => theme.spaceMap.xs}px;
+    }
+  }
+`;
+
+/**
+ * Nested Navigation styles
+ */
+
+export const NavigationDropDownButton = styled.div`
+  z-index: ${POPUP_MENU_Z_INDEX + 1};
+  position: relative;
+`;
+
+export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
+  display: flex;
+  padding: 12px 16px;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
+
+  color: var(--lido-color-secondary);
+  font-size: 12px;
+  line-height: 20px;
+  text-transform: initial;
+
+  &:visited {
+    color: var(--lido-color-secondary);
+  }
+
+  // Fix the highlight by click
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+
+  // Backgrounds
+  background: var(--lido-color-controlBg);
+
+  ${({ theme, $active }) =>
+    $active &&
+    css`
+      background: ${theme.name === 'dark' ? '#34343D' : '#000A3D08'};
+    `}
+
+  &:not(:disabled):hover {
+    ${({ theme }) => css`
+      background: ${theme.name === 'dark' ? '#34343D' : '#000A3D08'};
+    `}
+  }
+`;
+
+export const NavigationDropDownArrow = styled.div<{ $opened: boolean }>`
+  border: 3px solid #7a8aa0;
+  border-bottom-width: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+
+  margin: 9px;
+  height: 4px;
+
+  transform: rotate(${({ $opened }) => ($opened ? 180 : 0)}deg);
+  transition: transform ${({ theme }) => theme.duration.norm} ease;
+
+  @media ${devicesHeaderMedia.mobile} {
+    display: none;
+  }
+`;
+
+export const NavigationDropDownMenu = styled(PopupStyled)`
+  top: calc(100% + 9px);
+  @media ${devicesHeaderMedia.mobile} {
+    display: none;
+  }
+`;
+
+/**
+ * Mobile Nested Navigation styles
+ */
+
+/**
+ * Sizes the container so it's always aligns with main content
+ */
+export const MobileOnlySubNavigationSizer = styled.div`
+  margin: 0 auto;
+  max-width: 560px;
+  // Padding to align with main content
+  padding-inline: ${({ theme }) => theme.spaceMap.xxl}px;
+  ${({ theme }) => theme.mediaQueries.xl} {
+    padding-inline: ${({ theme }) => theme.spaceMap.lg}px;
+  }
+`;
+
+/**
+ * Main container for links, horizontally scrollable and contains active bar indicator
+ */
+export const MobileOnlySubNavigationWrapper = styled.nav`
+  display: none;
+  @media ${devicesHeaderMedia.mobile} {
+    display: flex;
+  }
+  position: relative;
+
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  max-height: 40px;
+  height: 40px;
+  gap: 10px;
+  margin: 0 auto;
+
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  border-bottom: 1px solid rgba(0, 10, 61, 0.12);
+`;
+
+/**
+ * Positioned via inline transform/width measured from the active link,
+ * see MobileSubNavigation
+ */
+export const MobileOnlySubNavigationActiveBar = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0px;
+  background-color: var(--lido-color-accentText);
+  pointer-events: none;
+
+  &[data-ready='true'] {
+    transition:
+      transform ${({ theme }) => theme.duration.norm} ease,
+      width ${({ theme }) => theme.duration.norm} ease;
+  }
+`;
+
+export const MobileOnlySubNavigationLink = styled(LocalLink)<{
+  $active?: boolean;
+}>`
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spaceMap.sm}px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  font-weight: 700;
+  line-height: ${({ theme }) => theme.spaceMap.xl}px;
+
+  color: var(--lido-color-textSecondary);
+  &:visited {
+    color: var(--lido-color-textSecondary);
+  }
+  &[data-active='true'] {
+    color: var(--lido-color-text);
+    &:visited {
+      color: var(--lido-color-text);
     }
   }
 `;

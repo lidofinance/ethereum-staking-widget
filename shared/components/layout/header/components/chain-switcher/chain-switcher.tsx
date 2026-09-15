@@ -10,8 +10,8 @@ import {
 import {
   ChainSwitcherOptions,
   ChainOption,
-} from './components/chain-switcher-options/chain-switcher-options';
-import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
+} from './components/chain-switcher-options';
+import { SelectIconTooltip } from './components/select-icon-tooltip';
 import {
   ChainSwitcherWrapperStyled,
   ChainSwitcherStyled,

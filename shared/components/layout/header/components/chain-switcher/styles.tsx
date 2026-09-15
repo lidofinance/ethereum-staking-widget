@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { POPUP_MENU_Z_INDEX } from '../popup';
 
 export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
@@ -8,7 +9,7 @@ export const ChainSwitcherStyled = styled.div<{
   $disabled: boolean;
   $loading?: boolean;
 }>`
-  z-index: 202;
+  z-index: ${POPUP_MENU_Z_INDEX + 1};
 
   display: inline-flex;
   flex-grow: 1;
@@ -39,14 +40,7 @@ export const ChainSwitcherStyled = styled.div<{
   background: var(--lido-color-controlBg);
 
   &:not(:disabled):hover {
-    ${({ theme, $disabled }) =>
-      theme.name === 'dark'
-        ? css`
-            background: ${!$disabled && '#34343D'};
-          `
-        : css`
-            background: ${!$disabled && '#000A3D08'};
-          `}
+    background: ${({ theme, $disabled }) => !$disabled && (theme.name === 'dark' ? '#34343D' : '#000A3D08')};
   }
 `;
 
