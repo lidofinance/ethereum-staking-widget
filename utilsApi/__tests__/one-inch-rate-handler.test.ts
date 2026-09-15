@@ -123,6 +123,19 @@ describe('createOneInchRateHandler', () => {
     );
   });
 
+  it('accepts the maximum supported amount', async () => {
+    const maxAmount = '1000000000000000000000000000';
+    const fetcher = makeFetcher({ toTokenAmount: maxAmount });
+    const res = await callHandler(
+      { token: 'STETH', amount: maxAmount },
+      fetcher,
+    );
+
+    expect(res._status).toBe(200);
+    const [url] = vi.mocked(fetcher).mock.calls[0];
+    expect(new URL(url as string).searchParams.get('amount')).toBe(maxAmount);
+  });
+
   it('caches equal quotes', async () => {
     const fetcher = makeFetcher({ toTokenAmount: '1000000000000000000' });
     const cache = new LRUCache<string, OneInchRateResponse>({ max: 10 });
@@ -148,6 +161,10 @@ describe('createOneInchRateHandler', () => {
     [{ token: 'STETH', amount: '-1' }, 'Invalid amount'],
     [{ token: 'STETH', amount: '0' }, 'Amount must be positive'],
     [{ token: 'STETH', amount: '1' }, 'Amount too small'],
+    [
+      { token: 'STETH', amount: '1000000000000000000000000001' },
+      'Amount too large',
+    ],
   ])('rejects invalid query %#', async (query, message) => {
     const fetcher = makeFetcher({ toTokenAmount: '1' });
     const res = await callHandler(query, fetcher);
@@ -175,5 +192,43 @@ describe('createOneInchRateHandler', () => {
 
     expect(res._status).toBe(502);
     expect(res._sent).toEqual({ message: 'Failed to fetch 1inch rate' });
+  });
+
+  it('returns a client error when 1inch cannot quote the amount', async () => {
+    const fetcher = makeFetcher({ message: 'insufficient amount' }, 400);
+    const res = await callHandler(
+      { token: 'STETH', amount: '1000000000000000000' },
+      fetcher,
+    );
+
+    expect(res._status).toBe(422);
+    expect(res._sent).toEqual({
+      message: '1inch cannot quote the requested amount',
+    });
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
+  it('returns service unavailable when 1inch rate-limits requests', async () => {
+    const fetcher = makeFetcher({ message: 'too many requests' }, 429);
+    const res = await callHandler({ token: 'ETH' }, fetcher);
+
+    expect(res._status).toBe(503);
+    expect(res._sent).toEqual({
+      message: '1inch rate is temporarily unavailable',
+    });
+    expect(errorSpy).toHaveBeenCalledOnce();
+  });
+
+  it('returns gateway timeout when the 1inch request times out', async () => {
+    const timeoutError = new Error('request timed out');
+    timeoutError.name = 'TimeoutError';
+    const fetcher = vi.fn(async () => {
+      throw timeoutError;
+    }) as unknown as typeof fetch;
+    const res = await callHandler({ token: 'ETH' }, fetcher);
+
+    expect(res._status).toBe(504);
+    expect(res._sent).toEqual({ message: '1inch rate request timed out' });
+    expect(errorSpy).toHaveBeenCalledOnce();
   });
 });

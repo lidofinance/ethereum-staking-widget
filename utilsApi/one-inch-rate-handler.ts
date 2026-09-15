@@ -22,10 +22,8 @@ type SwapToken = (typeof SWAP_TOKENS)[number];
 
 const DEFAULT_AMOUNT = parseEther('1');
 const MIN_AMOUNT = parseEther('0.0003');
-// Amounts larger than this made the 1inch API return 500 in eth-api.
-const MAX_AMOUNT = parseEther(
-  '10000000000000000000000000000000000000000000000000',
-);
+// High enough for real users, but rejects nonsensical quotes locally.
+const MAX_AMOUNT = parseEther('1000000000');
 const RATE_PRECISION = 1_000_000n;
 const REQUEST_TIMEOUT_MS = 10_000;
 
@@ -53,6 +51,42 @@ class RequestError extends Error {
     super(message);
   }
 }
+
+class OneInchHttpError extends Error {
+  constructor(readonly status: number) {
+    super(`1inch quote request failed with status ${status}`);
+  }
+}
+
+const getPublicError = (error: unknown) => {
+  if (error instanceof RequestError) {
+    return { status: error.status, message: error.message };
+  }
+
+  if (error instanceof OneInchHttpError) {
+    // The request is valid, but 1inch cannot quote this amount.
+    if (error.status === 400 || error.status === 422) {
+      return {
+        status: 422,
+        message: '1inch cannot quote the requested amount',
+      };
+    }
+    // A shared upstream limit means temporary service unavailability.
+    if (error.status === 429) {
+      return {
+        status: 503,
+        message: '1inch rate is temporarily unavailable',
+      };
+    }
+  }
+
+  if (error instanceof Error && error.name === 'TimeoutError') {
+    return { status: 504, message: '1inch rate request timed out' };
+  }
+
+  // fallback error
+  return { status: 502, message: 'Failed to fetch 1inch rate' };
+};
 
 const getQueryValue = (value: string | string[] | undefined, name: string) => {
   if (typeof value !== 'string' || !value) {
@@ -131,9 +165,7 @@ const fetchQuote = async (
   });
 
   if (!response.ok) {
-    throw new Error(
-      `1inch quote request failed with status ${response.status}`,
-    );
+    throw new OneInchHttpError(response.status);
   }
 
   const quote: unknown = await response.json();
@@ -180,11 +212,7 @@ export const createOneInchRateHandler = ({
       cache.set(cacheKey, result);
       res.status(200).json(result);
     } catch (error) {
-      const status = error instanceof RequestError ? error.status : 502;
-      const message =
-        error instanceof RequestError
-          ? error.message
-          : 'Failed to fetch 1inch rate';
+      const { status, message } = getPublicError(error);
       if (status >= 500) console.error('[one-inch-rate]', error);
       res.setHeader('Cache-Control', config.CACHE_DEFAULT_ERROR_HEADERS);
       res.status(status).json({ message });
