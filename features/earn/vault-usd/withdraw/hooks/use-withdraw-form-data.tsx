@@ -11,7 +11,7 @@ import {
 } from '../form-context/types';
 import { USD_VAULT_QUERY_SCOPE, USD_VAULT_TOKEN_SYMBOL } from '../../consts';
 
-export const useUsdVaultWithdrawFormData = () => {
+export const useUsdVaultWithdrawFormData = (throwOnRefetchError = false) => {
   const queryClient = useQueryClient();
   const { isAccountActive } = useDappStatus();
   const { earnusdSharesBalance, isLoading } = useUsdVaultPosition();
@@ -37,7 +37,7 @@ export const useUsdVaultWithdrawFormData = () => {
   };
 
   const refetchData = useCallback(() => {
-    const options = { cancelRefetch: true, throwOnError: false };
+    const options = { cancelRefetch: true, throwOnError: throwOnRefetchError };
 
     return Promise.all([
       // refetch all vault related queries
@@ -52,7 +52,7 @@ export const useUsdVaultWithdrawFormData = () => {
         options,
       ),
     ]);
-  }, [queryClient]);
+  }, [queryClient, throwOnRefetchError]);
 
   return {
     asyncValidationContextValue,

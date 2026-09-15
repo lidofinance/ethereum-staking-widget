@@ -3,6 +3,7 @@ import invariant from 'tiny-invariant';
 import { useConnection } from 'wagmi';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { config } from 'config';
+import type { GetCallsStatusReturnType } from 'viem';
 import { useLidoSDK, useLidoSDKL2 } from '../../web3-provider';
 import { AACall, TxCallbackProps } from './types';
 
@@ -20,6 +21,8 @@ export const useSendAACalls = () => {
       calls: (AACall | null | undefined | false)[],
       callback: (props: TxCallbackProps) => Promise<void> = async () => {},
     ) => {
+      let callStatus: GetCallsStatusReturnType | undefined;
+
       try {
         const walletClient = core.web3Provider;
         invariant(walletClient, 'Wallet client is undefined');
@@ -45,7 +48,7 @@ export const useSendAACalls = () => {
           callId: callData.id,
         });
 
-        const callStatus = await walletClient.waitForCallsStatus({
+        callStatus = await walletClient.waitForCallsStatus({
           id: callData.id,
           pollingInterval: config.PROVIDER_POLLING_INTERVAL,
           timeout: config.AA_TX_POLLING_TIMEOUT,
@@ -80,6 +83,7 @@ export const useSendAACalls = () => {
         await callback({
           stage: TransactionCallbackStage.DONE,
           txHash,
+          callStatus,
         });
 
         return { callStatus, txHash };
@@ -87,6 +91,7 @@ export const useSendAACalls = () => {
         await callback({
           stage: TransactionCallbackStage.ERROR,
           error,
+          callStatus,
         });
         throw error;
       }

@@ -1,6 +1,6 @@
 import type { Hash } from 'viem';
-import { useCallback } from 'react';
-
+import { useShowCallsStatus } from 'wagmi';
+import { Link, type TextColors } from '@lidofinance/lido-ui';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import {
   type TransactionModalTransitStage,
@@ -9,55 +9,153 @@ import {
 import {
   TxStagePending,
   TxStageSign,
-  TxStageSuccess,
 } from 'shared/transaction-modal/tx-stages-basic';
+import {
+  StageIconSuccess,
+  StageIconFail,
+  StageIconLimit,
+} from 'shared/transaction-modal/tx-stages-basic/icons';
+import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
+import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { ClaimAmounts } from '../../components/withdraw-claim-amounts';
-import type { UsdVaultWithdrawClaimAmount } from '../claim-all-utils';
+import {
+  ClaimDescription,
+  ClaimResultItem,
+  ClaimDetail,
+  ClaimStatus,
+  ClaimStatusLabel,
+} from '../../components/withdraw-claim-amounts/styles';
+import type { ClaimResult } from '../claim-all-utils';
 
-const getTxModalStages = (
-  transitStage: TransactionModalTransitStage,
-  amounts: UsdVaultWithdrawClaimAmount[],
-) => ({
+const statuses: Record<
+  ClaimResult['status'],
+  { label: string; color: TextColors }
+> = {
+  'not-started': { label: 'Not started', color: 'secondary' },
+  signing: { label: 'Not submitted', color: 'secondary' },
+  rejected: { label: 'Rejected in wallet', color: 'secondary' }, // reject is a deliberate choice, not a fault to flag in red
+  pending: { label: 'Confirmation pending', color: 'warning' },
+  unknown: { label: 'Confirmation unknown', color: 'warning' },
+  claimed: { label: 'Claimed', color: 'success' },
+  failed: { label: 'Failed', color: 'error' },
+};
+
+const BatchLink = ({ callId }: { callId: string }) => {
+  const { mutate: showCallsStatus, isPending } = useShowCallsStatus();
+  return (
+    <Link
+      aria-disabled={isPending}
+      onClick={() => {
+        if (!isPending) showCallsStatus({ id: callId });
+      }}
+    >
+      Show transactions in wallet
+    </Link>
+  );
+};
+
+const getStages = (transitStage: TransactionModalTransitStage) => ({
   ...getGeneralTransactionModalStages(transitStage),
-
-  sign: () =>
+  sign: (results: ClaimResult[], step?: string) =>
     transitStage(
       <TxStageSign
-        title="Claim withdrawals"
-        description={<ClaimAmounts amounts={amounts} />}
+        title={`Claim ${results.length === 1 ? results[0].token + ' ' : ''}withdrawals`}
+        description={
+          <ClaimDescription>
+            <ClaimAmounts amounts={results} />
+            {step && <ClaimDetail>{step}</ClaimDetail>}
+          </ClaimDescription>
+        }
       />,
     ),
-
-  pending: (txHash?: Hash, isAA?: boolean) =>
+  pending: (
+    results: ClaimResult[],
+    txHash?: Hash,
+    isAA?: boolean,
+    step?: string,
+  ) =>
     transitStage(
       <TxStagePending
-        title="Claiming withdrawals"
-        description={<ClaimAmounts amounts={amounts} />}
+        title={`Claiming ${results.length === 1 ? results[0].token + ' ' : ''}withdrawals`}
+        description={
+          <ClaimDescription>
+            <ClaimAmounts amounts={results} />
+            {step && <ClaimDetail>{step}</ClaimDetail>}
+          </ClaimDescription>
+        }
         txHash={txHash}
         isAA={isAA}
       />,
     ),
-
-  success: (txHash?: Hash) =>
+  result: (
+    results: ClaimResult[],
+    options: { callId?: string; error?: string; refreshFailed?: boolean } = {},
+  ) => {
+    const allClaimed = results.every(({ status }) => status === 'claimed');
+    const someClaimed = results.some(({ status }) => status === 'claimed');
+    const unknown = results.some(
+      ({ status }) => status === 'unknown' || status === 'pending',
+    );
     transitStage(
-      <TxStageSuccess
-        txHash={txHash}
-        title="Withdrawals have been claimed."
-        description={<ClaimAmounts amounts={amounts} />}
-        showEtherscan
+      <TransactionModalContent
+        icon={
+          allClaimed ? (
+            <StageIconSuccess />
+          ) : someClaimed || unknown ? (
+            <StageIconLimit />
+          ) : (
+            <StageIconFail />
+          )
+        }
+        title={
+          allClaimed
+            ? 'Withdrawals have been claimed.'
+            : someClaimed
+              ? 'Some withdrawals have been claimed.'
+              : unknown
+                ? 'Claim confirmation is unavailable.'
+                : 'Withdrawals have not been claimed.'
+        }
+        description={
+          <ClaimDescription>
+            {results.map((result) => (
+              <ClaimResultItem key={result.token}>
+                <ClaimAmounts amounts={[result]} />
+                <ClaimStatus>
+                  <ClaimStatusLabel color={statuses[result.status].color}>
+                    {statuses[result.status].label}
+                  </ClaimStatusLabel>
+                  {result.txHash && (
+                    <span>
+                      <span aria-hidden="true">· </span>
+                      <TxLinkEtherscan
+                        txHash={result.txHash}
+                        text="View on Etherscan"
+                      />
+                    </span>
+                  )}
+                </ClaimStatus>
+              </ClaimResultItem>
+            ))}
+            {options.error && <ClaimDetail>{options.error}</ClaimDetail>}
+            {options.refreshFailed && (
+              <ClaimDetail>
+                Could not refresh withdrawal requests. Refresh the page before
+                claiming again.
+              </ClaimDetail>
+            )}
+          </ClaimDescription>
+        }
+        footerHint={
+          options.callId && !allClaimed ? (
+            <BatchLink callId={options.callId} />
+          ) : undefined
+        }
       />,
       { isClosableOnLedger: true },
-    ),
+    );
+  },
 });
 
-export const useUsdVaultWithdrawClaimAllTxModal = (
-  amounts: UsdVaultWithdrawClaimAmount[],
-) => {
-  const getStages = useCallback(
-    (transitStage: TransactionModalTransitStage) =>
-      getTxModalStages(transitStage, amounts),
-    [amounts],
-  );
-
-  return useTransactionModalStage(getStages);
-};
+export const useUsdVaultWithdrawClaimAllTxModal = () =>
+  useTransactionModalStage(getStages);

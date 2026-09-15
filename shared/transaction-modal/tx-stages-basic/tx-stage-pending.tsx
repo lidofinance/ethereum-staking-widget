@@ -15,7 +15,8 @@ type TxStagePendingProps = {
 type AAFooterLinkProps = { callId: string };
 
 const AAFooterLink = ({ callId }: AAFooterLinkProps) => {
-  const { showCallsStatus, isPending } = useShowCallsStatus();
+  // `showCallsStatus` on the hook's result is a deprecated alias for `mutate`.
+  const { mutate: showCallsStatus, isPending } = useShowCallsStatus();
   return (
     <Link
       onClick={(event) => {
