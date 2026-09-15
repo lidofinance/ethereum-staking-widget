@@ -1,3 +1,4 @@
+export * from './use-active-fees';
 export * from './use-deposit-cancel';
 export * from './use-deposit-claim';
 export * from './use-deposit-eth-gas-limit';

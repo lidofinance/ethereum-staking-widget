@@ -4,11 +4,7 @@ import { useSwitchChain as useWagmiSwitchChain } from 'wagmi';
 import { CHAIN_SWITCH_TIMEOUT } from '../consts';
 import { UserRejectedRequestError } from 'viem';
 import { ToastError } from '@lidofinance/lido-ui';
-import {
-  useIsLedgerHardware,
-  useIsLedgerLive,
-  useIsSafeWallet,
-} from '../hooks';
+import { useIsLedgerLive, useIsSafeWallet } from '../hooks';
 import { useConfig } from 'config';
 
 export class SwitchChainTimeoutError extends Error {
@@ -20,15 +16,12 @@ export class SwitchChainTimeoutError extends Error {
 export const useSwitchChain = () => {
   const isSafeWallet = useIsSafeWallet();
   const isLedgerLive = useIsLedgerLive();
-  const isLedgerHardware = useIsLedgerHardware();
   const { featureFlags } = useConfig().externalConfig;
   const { mutateAsync, reset, ...rest } = useWagmiSwitchChain({
     mutation: { retry: false },
   });
   const canSwitchChain = Boolean(
-    !isSafeWallet &&
-    (!isLedgerLive || featureFlags.ledgerLiveL2) &&
-    !isLedgerHardware,
+    !isSafeWallet && (!isLedgerLive || featureFlags.ledgerLiveL2),
   );
 
   const trySwitchChain = useCallback(
