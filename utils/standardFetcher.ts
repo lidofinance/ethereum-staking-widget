@@ -1,14 +1,13 @@
-import buildInfo from 'build-info.json';
-
+// direct group import, not the `config` barrel: the barrel reaches this module
+// back through provider -> external-config
+import { USER_AGENT } from 'config/groups/app';
 import { extractErrorMessage } from 'utils';
 import { FetcherError } from './fetcherError';
 
 // User-Agent is a forbidden header in browsers, so only set it server-side —
 // in the browser fetch would strip it anyway.
 const USER_AGENT_HEADER: Record<string, string> =
-  typeof window === 'undefined'
-    ? { 'User-Agent': `lido-staking-widget/${buildInfo.version}` }
-    : {};
+  typeof window === 'undefined' ? { 'User-Agent': USER_AGENT } : {};
 
 const DEFAULT_PARAMS = {
   method: 'GET',

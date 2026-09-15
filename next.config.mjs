@@ -13,6 +13,8 @@ logEnvironmentVariables();
 buildDynamics();
 
 if (process.env.RUN_STARTUP_CHECKS === 'true') {
+  // next.config is plain ESM loaded before the build, so it cannot import the
+  // TS config — keep this in sync with USER_AGENT in config/groups/app.ts
   void startupCheckRPCs({
     userAgent: `lido-staking-widget/${require('./build-info.json').version}`,
   });

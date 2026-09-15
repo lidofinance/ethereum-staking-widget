@@ -1,7 +1,7 @@
 import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
 import type { TrackedFetchRPC } from '@lidofinance/api-rpc';
 
-import buildInfo from 'build-info.json';
+import { USER_AGENT } from 'config/groups/app';
 import { METRICS_PREFIX } from 'consts/metrics';
 import Metrics from 'utilsApi/metrics';
 
@@ -21,8 +21,6 @@ const trackedFetch: TrackedFetchRPC =
 if (!g.__trackedFetchRpcSingleton__) {
   g.__trackedFetchRpcSingleton__ = trackedFetch;
 }
-
-const USER_AGENT = `lido-staking-widget/${buildInfo.version}`;
 
 // fetchRpc only sets Content-Type, so without this providers see undici's
 // default `node`. Normalised to a plain record because fetchRpc spreads it,
