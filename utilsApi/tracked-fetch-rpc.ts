@@ -1,5 +1,7 @@
 import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
+import type { TrackedFetchRPC } from '@lidofinance/api-rpc';
 
+import buildInfo from 'build-info.json';
 import { METRICS_PREFIX } from 'consts/metrics';
 import Metrics from 'utilsApi/metrics';
 
@@ -9,7 +11,7 @@ import Metrics from 'utilsApi/metrics';
 // same pattern as the metrics registry itself.
 const g = globalThis as any;
 
-export const trackedFetchRpc =
+const trackedFetch: TrackedFetchRPC =
   g.__trackedFetchRpcSingleton__ ??
   trackedFetchRpcFactory({
     registry: Metrics.registry,
@@ -17,5 +19,26 @@ export const trackedFetchRpc =
   });
 
 if (!g.__trackedFetchRpcSingleton__) {
-  g.__trackedFetchRpcSingleton__ = trackedFetchRpc;
+  g.__trackedFetchRpcSingleton__ = trackedFetch;
 }
+
+const USER_AGENT = `lido-staking-widget/${buildInfo.version}`;
+
+// fetchRpc only sets Content-Type, so without this providers see undici's
+// default `node`. Normalised to a plain record because fetchRpc spreads it,
+// and spreading a Headers instance yields nothing.
+const withUserAgent = (headers: HeadersInit | undefined) => {
+  const merged: Record<string, string> = {};
+  new Headers(headers).forEach((value, key) => {
+    merged[key] = value;
+  });
+  merged['User-Agent'] = USER_AGENT;
+  return merged;
+};
+
+export const trackedFetchRpc: TrackedFetchRPC = (url, init, extension) =>
+  trackedFetch(
+    url,
+    { ...init, headers: withUserAgent(init.headers) },
+    extension,
+  );

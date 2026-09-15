@@ -7,11 +7,15 @@ import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 import { startupCheckValidationFile } from './scripts/startup-checks/validation-file.mjs';
 import { startupCheckManifestFile } from './scripts/startup-checks/config-manifest.mjs';
 
+const require = createRequire(import.meta.url);
+
 logEnvironmentVariables();
 buildDynamics();
 
 if (process.env.RUN_STARTUP_CHECKS === 'true') {
-  void startupCheckRPCs();
+  void startupCheckRPCs({
+    userAgent: `lido-staking-widget/${require('./build-info.json').version}`,
+  });
   void startupCheckValidationFile();
   void startupCheckManifestFile();
 }
@@ -62,7 +66,7 @@ export const CACHE_CONTROL_VALUE =
 // Required lazily: @next/bundle-analyzer is a devDependency and the production
 // image ships prod deps only, but next.config.mjs is also loaded at runtime.
 const withBundleAnalyzer = process.env.ANALYZE_BUNDLE
-  ? createRequire(import.meta.url)('@next/bundle-analyzer')({ enabled: true })
+  ? require('@next/bundle-analyzer')({ enabled: true })
   : (nextConfig) => nextConfig;
 
 export default withBundleAnalyzer({
