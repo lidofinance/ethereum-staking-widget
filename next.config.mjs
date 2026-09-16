@@ -1,4 +1,4 @@
-import NextBundleAnalyzer from '@next/bundle-analyzer';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'url';
 import buildDynamics from './scripts/build-dynamics.mjs';
 import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs';
@@ -7,11 +7,17 @@ import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 import { startupCheckValidationFile } from './scripts/startup-checks/validation-file.mjs';
 import { startupCheckManifestFile } from './scripts/startup-checks/config-manifest.mjs';
 
+const require = createRequire(import.meta.url);
+
 logEnvironmentVariables();
 buildDynamics();
 
 if (process.env.RUN_STARTUP_CHECKS === 'true') {
-  void startupCheckRPCs();
+  // next.config is plain ESM loaded before the build, so it cannot import the
+  // TS config — keep this in sync with USER_AGENT in config/groups/app.ts
+  void startupCheckRPCs({
+    userAgent: `lido-staking-widget/${require('./build-info.json').version}`,
+  });
   void startupCheckValidationFile();
   void startupCheckManifestFile();
 }
@@ -50,13 +56,20 @@ export const CACHE_CONTROL_PAGES = [
   '/manifest.json',
   '/favicon:size*',
   '/runtime/window-env.js',
+  // unhashed public assets referenced from _document and feature code
+  '/apple-touch-icon.png',
+  '/lido-preview.png',
+  '/bells.mp3',
+  '/honk.mp3',
 ];
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
-const withBundleAnalyzer = NextBundleAnalyzer({
-  enabled: process.env.ANALYZE_BUNDLE ?? false,
-});
+// Required lazily: @next/bundle-analyzer is a devDependency and the production
+// image ships prod deps only, but next.config.mjs is also loaded at runtime.
+const withBundleAnalyzer = process.env.ANALYZE_BUNDLE
+  ? require('@next/bundle-analyzer')({ enabled: true })
+  : (nextConfig) => nextConfig;
 
 export default withBundleAnalyzer({
   basePath,

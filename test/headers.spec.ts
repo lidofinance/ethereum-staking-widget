@@ -43,7 +43,8 @@ test.describe('Page Headers', () => {
             'camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=(), encrypted-media=(), serial=(), xr-spatial-tracking=(), browsing-topics=(), usb=(self), bluetooth=(self), hid=(self), autoplay=(self), fullscreen=(self), picture-in-picture=(self)',
           );
 
-        // except "/manifest.json", "/favicon:size*", "/runtime/window-env.js" urls and preview-stand deploying
+        // only pages carry CSP; static assets in CACHE_CONTROL_PAGES do not.
+        // Also skipped on preview stands.
         if (WIDGET_PAGES.includes(route) && isPreview)
           expect
             .soft(headers['content-security-policy'])
