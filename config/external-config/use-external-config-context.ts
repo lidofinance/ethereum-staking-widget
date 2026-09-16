@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { STRATEGY_MANIFEST } from 'consts/react-query-strategies';
 import { REMOTE_CONFIG_MANIFEST_URL } from 'consts/external-links';
 import { API_ROUTES } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -48,7 +48,7 @@ export const useExternalConfigContext = (
       'external-config',
       { defaultChain, manifestOverride, manifestUrl },
     ],
-    ...STRATEGY_LAZY,
+    ...STRATEGY_MANIFEST,
     enabled: !!defaultChain,
     queryFn: async () => {
       try {

@@ -1,7 +1,7 @@
 import { Address } from 'viem';
 import { useQuery } from '@tanstack/react-query';
 
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 
 import { fetchMetavaultsAllocationData } from '../apy-data/metavaults-allocation';
 
@@ -10,7 +10,7 @@ export const useMetavaultAllocation = (vaultAddress?: Address) => {
     queryKey: ['metavault-allocation', vaultAddress],
     queryFn: () => fetchMetavaultsAllocationData(vaultAddress),
     enabled: !!vaultAddress,
-    ...STRATEGY_LAZY,
+    ...STRATEGY_CONSTANT,
   });
 
   return { data, isLoading, isError };

@@ -4,6 +4,7 @@ import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { Backend } from 'features/rewards/types';
 
 import { standardFetcher } from 'utils/standardFetcher';
+import { BACKEND_SCHEMA } from 'features/rewards/fetchers/backend';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 
 type UseRewardsDataLoad = (props: {
@@ -58,11 +59,13 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     queryKey: ['rewards-data', address, apiRewardsUrl],
     enabled: !!address && !featureFlags.rewardsMaintenance,
     ...STRATEGY_LAZY,
-    queryFn: ({ signal }) =>
+    queryFn: async ({ signal }) =>
       // The 'react-query' has AbortController support built in,
       // and it automatically cancels requests when
       // the component is unmounted or the queryKey changes.
-      standardFetcher(apiRewardsUrl, { signal }),
+      BACKEND_SCHEMA.parse(
+        await standardFetcher<unknown>(apiRewardsUrl, { signal }),
+      ) as Backend,
   });
 
   const { isLagging, dataOrLaggyData } = useLaggyDataWrapper(data);

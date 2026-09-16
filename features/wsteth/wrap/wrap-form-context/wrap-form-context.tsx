@@ -6,6 +6,7 @@ import {
   createContext,
   useContext,
   useCallback,
+  useEffect,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
@@ -77,6 +78,15 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   } = formObject;
   useQueryParamsReferralForm<WrapFormInputType>({ setValue });
   const [token, amount] = watch(['token', 'amount']);
+
+  // L2 only wraps stETH. The selector is hidden there, so a token picked before
+  // connecting (or before switching chains) must be normalized here, not just
+  // in the connection-change reset which skips the initial connect
+  useEffect(() => {
+    if (isL2 && token !== TOKENS_TO_WRAP.stETH) {
+      setValue('token', TOKENS_TO_WRAP.stETH, { shouldValidate: true });
+    }
+  }, [isL2, token, setValue]);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
   const approvalDataOnL1 = useWrapTxOnL1Approve({
@@ -128,14 +138,11 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     (): FormControllerContextValueType<WrapFormInputType> => ({
       onSubmit,
       onReset: ({ token }: WrapFormInputType) => {
-        reset({
-          ...defaultValues,
-          token: isL2 ? TOKENS_TO_WRAP.stETH : token,
-        });
+        reset({ ...defaultValues, token });
       },
       retryEvent,
     }),
-    [onSubmit, retryEvent, reset, defaultValues, isL2],
+    [onSubmit, retryEvent, reset, defaultValues],
   );
 
   return (

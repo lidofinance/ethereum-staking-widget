@@ -9,6 +9,7 @@ import { useConfig } from 'config';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 
 import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import {
   getGGVAccountantContract,
   getGGVLensContract,
@@ -21,6 +22,7 @@ const useGGVTvl = () => {
 
   return useQuery({
     queryKey: ['ggv', 'stats', 'tvl'],
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       const lens = getGGVLensContract(publicClientMainnet);
       const vault = getGGVVaultContract(publicClientMainnet);
@@ -65,6 +67,7 @@ export const useGGVApy = () => {
 
   return useQuery({
     queryKey: ['ggv', 'stats', 'apy', ggvAPYType],
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       const lens = getGGVLensContract(publicClientMainnet);
       const vault = getGGVVaultContract(publicClientMainnet);

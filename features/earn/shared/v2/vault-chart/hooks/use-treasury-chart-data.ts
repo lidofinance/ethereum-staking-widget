@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 
 import { fetchTreasuryChartData } from '../apy-data/treasury-apy';
 import { TREASURY_CHART_QUERY_SCOPE } from '../consts';
@@ -9,6 +10,7 @@ export const useTreasuryChartData = (
 ) => {
   const result = useQuery({
     queryKey: [TREASURY_CHART_QUERY_SCOPE, 'chart-data', fromTimestamp],
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       const data = await fetchTreasuryChartData(fromTimestamp);
       return data;

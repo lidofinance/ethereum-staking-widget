@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { z } from 'zod';
 
 import { config, useConfig } from 'config';
 import { API_ROUTES, getApiPath } from 'consts/api';
@@ -11,6 +12,11 @@ import { standardFetcher } from 'utils/standardFetcher';
 // and with no region to trust, the fail-closed default applies: that build
 // renders the limited experience for everyone.
 const CAN_RESOLVE_REGION = !config.ipfsMode;
+
+const GEO_RESPONSE_SCHEMA = z.object({
+  country: z.string().nullable(),
+  availability: z.enum([GEO_AVAILABILITY.full, GEO_AVAILABILITY.limited]),
+});
 
 const QA_COUNTRY_KEY = 'mock-qa-helpers-geo-country';
 
@@ -90,7 +96,9 @@ export const useGeoAvailability = (): UseGeoAvailabilityResult => {
         return { country: null, availability: GEO_AVAILABILITY.limited };
       }
 
-      return standardFetcher<GeoResponse>(getApiPath(API_ROUTES.GEO));
+      return GEO_RESPONSE_SCHEMA.parse(
+        await standardFetcher<unknown>(getApiPath(API_ROUTES.GEO)),
+      );
     },
   });
 

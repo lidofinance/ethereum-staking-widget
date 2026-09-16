@@ -1,60 +1,56 @@
+import { z } from 'zod';
 import type { GGVWithdrawalRequestsResponse } from './hooks/use-ggv-withdrawal-requests';
+import { ADDRESS_SCHEMA, BIGINT_STRING_SCHEMA, HASH_SCHEMA } from 'utils/zod';
 
 export type { GGVWithdrawalRequestsResponse } from './hooks/use-ggv-withdrawal-requests';
 
 export type GGVWithdrawalRequest =
   GGVWithdrawalRequestsResponse['openRequests'][number];
 
-type Cancellation = {
-  block_number: string;
-  timestamp: string;
-  transaction_hash: string;
-};
+// SevenSeas boring queue API. Numeric strings go through BigInt/Number in the
+// hook, addresses through isAddressEqual — validate them before they get there
+const QUEUE_EVENT_SCHEMA = z.object({
+  block_number: BIGINT_STRING_SCHEMA,
+  timestamp: BIGINT_STRING_SCHEMA,
+  transaction_hash: HASH_SCHEMA,
+});
 
-type Fulfillment = {
-  block_number: string;
-  timestamp: string;
-  transaction_hash: string;
-};
+const REQUEST_SCHEMA = z.looseObject({
+  amount: BIGINT_STRING_SCHEMA,
+  blockNumber: BIGINT_STRING_SCHEMA,
+  offerToken: ADDRESS_SCHEMA,
+  timestamp: BIGINT_STRING_SCHEMA,
+  transaction_hash: HASH_SCHEMA,
+  user: ADDRESS_SCHEMA,
+  wantToken: ADDRESS_SCHEMA,
+  wantTokenDecimals: BIGINT_STRING_SCHEMA,
+  wantTokenSymbol: z.string(),
+  metadata: z.looseObject({
+    amountOfAssets: BIGINT_STRING_SCHEMA,
+    amountOfShares: BIGINT_STRING_SCHEMA,
+    assetOut: ADDRESS_SCHEMA,
+    creationTime: BIGINT_STRING_SCHEMA,
+    nonce: BIGINT_STRING_SCHEMA,
+    secondsToDeadline: BIGINT_STRING_SCHEMA,
+    secondsToMaturity: BIGINT_STRING_SCHEMA,
+    user: ADDRESS_SCHEMA,
+  }),
+});
 
-type RequestMetadata = {
-  amountOfAssets: string;
-  amountOfShares: string;
-  assetOut: string;
-  creationTime: string;
-  nonce: string;
-  secondsToDeadline: string;
-  secondsToMaturity: string;
-  user: string;
-};
+export const WQ_API_RESPONSE_SCHEMA = z.object({
+  Response: z.object({
+    cancelled_requests: z.array(
+      z.object({ Cancellation: QUEUE_EVENT_SCHEMA, Request: REQUEST_SCHEMA }),
+    ),
+    expired_requests: z.array(REQUEST_SCHEMA),
+    fulfilled_requests: z.array(
+      z.object({ Fulfillment: QUEUE_EVENT_SCHEMA, Request: REQUEST_SCHEMA }),
+    ),
+    open_requests: z.array(REQUEST_SCHEMA),
+  }),
+});
 
-type Request = {
-  amount: string;
-  blockNumber: string;
-  metadata: RequestMetadata;
-  offerToken: string;
-  timestamp: string;
-  transaction_hash: string;
-  user: string;
-  wantToken: string;
-  wantTokenDecimals: string;
-  wantTokenSymbol: string;
-};
-
-export type WQApiResponse = {
-  Response: {
-    cancelled_requests: {
-      Cancellation: Cancellation;
-      Request: Request;
-    }[];
-    expired_requests: Request[];
-    fulfilled_requests: {
-      Fulfillment: Fulfillment;
-      Request: Request;
-    }[];
-    open_requests: Request[];
-  };
-};
+export type WQApiResponse = z.infer<typeof WQ_API_RESPONSE_SCHEMA>;
 
 export type GGVWithdrawalFormValues = {
   amount: bigint | null;
