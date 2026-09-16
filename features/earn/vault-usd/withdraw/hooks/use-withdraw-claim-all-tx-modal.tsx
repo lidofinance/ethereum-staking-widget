@@ -32,14 +32,11 @@ const statuses: Record<
   { label: string; color: TextColors }
 > = {
   'not-started': { label: 'Not started', color: 'secondary' },
-  signing: { label: 'Not submitted', color: 'secondary' },
   rejected: { label: 'Rejected in wallet', color: 'secondary' }, // reject is a deliberate choice, not a fault to flag in red
-  pending: { label: 'Confirmation pending', color: 'warning' },
-  unknown: { label: 'Confirmation unknown', color: 'warning' },
+  submitted: { label: 'Awaiting multisig approval', color: 'secondary' },
   claimed: { label: 'Claimed', color: 'success' },
   failed: { label: 'Failed', color: 'error' },
 };
-
 const BatchLink = ({ callId }: { callId: string }) => {
   const { mutate: showCallsStatus, isPending } = useShowCallsStatus();
   return (
@@ -89,19 +86,16 @@ const getStages = (transitStage: TransactionModalTransitStage) => ({
     ),
   result: (
     results: ClaimResult[],
-    options: { callId?: string; error?: string; refreshFailed?: boolean } = {},
+    options: { callId?: string; error?: string } = {},
   ) => {
     const allClaimed = results.every(({ status }) => status === 'claimed');
     const someClaimed = results.some(({ status }) => status === 'claimed');
-    const unknown = results.some(
-      ({ status }) => status === 'unknown' || status === 'pending',
-    );
     transitStage(
       <TransactionModalContent
         icon={
           allClaimed ? (
             <StageIconSuccess />
-          ) : someClaimed || unknown ? (
+          ) : someClaimed ? (
             <StageIconLimit />
           ) : (
             <StageIconFail />
@@ -112,9 +106,7 @@ const getStages = (transitStage: TransactionModalTransitStage) => ({
             ? 'Withdrawals have been claimed.'
             : someClaimed
               ? 'Some withdrawals have been claimed.'
-              : unknown
-                ? 'Claim confirmation is unavailable.'
-                : 'Withdrawals have not been claimed.'
+              : 'Withdrawals have not been claimed.'
         }
         description={
           <ClaimDescription>
@@ -138,12 +130,6 @@ const getStages = (transitStage: TransactionModalTransitStage) => ({
               </ClaimResultItem>
             ))}
             {options.error && <ClaimDetail>{options.error}</ClaimDetail>}
-            {options.refreshFailed && (
-              <ClaimDetail>
-                Could not refresh withdrawal requests. Refresh the page before
-                claiming again.
-              </ClaimDetail>
-            )}
           </ClaimDescription>
         }
         footerHint={

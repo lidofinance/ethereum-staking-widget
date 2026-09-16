@@ -30,9 +30,6 @@ export type onSuccessCallbackProps = {
   stage: TransactionCallbackStage.DONE;
   payload?: bigint;
   txHash?: Hash;
-  // EIP-5792 only: the resolved batch, including a receipt per call. Saves
-  // consumers a second getCallsStatus round-trip to learn what each call did.
-  callStatus?: GetCallsStatusReturnType;
 };
 export type onMultisigDoneCallbackProps = {
   stage: TransactionCallbackStage.MULTISIG_DONE;
@@ -41,9 +38,6 @@ export type onFailureCallbackProps = {
   stage: TransactionCallbackStage.ERROR;
   payload?: unknown; // defined in SDK and is meant to contain error, but not actually used anywhere
   error?: unknown;
-  // EIP-5792 only, and absent when the batch never resolved. A partly failed
-  // batch still reports a receipt per call, so this says which calls landed.
-  callStatus?: GetCallsStatusReturnType;
 };
 export type onPermitCallbackProps = {
   stage: TransactionCallbackStage.PERMIT;
