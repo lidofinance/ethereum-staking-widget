@@ -14,22 +14,18 @@ import {
 import { isRouteActive } from './utils';
 import type { PageRoute } from './types';
 
-type ActiveBarState = {
-  left: number;
-  width: number;
-  scrollLeft: number;
-};
-
 type SubNavigationProps = {
   route: PageRoute;
   currentPath: string;
 };
 
 // Layout is rendered per page, so this component remounts on every route change.
-// Keeping the last position at module level lets the bar animate from where it
-// was instead of appearing at the new position.
-// Only needed because next.js structure remounts the layout on every route change
-let lastActiveBarState: ActiveBarState | null = null;
+// The bar position lives as CSS variables on <html>, which outlives the layout,
+// so on remount the bar is already at its previous position at first paint and
+// only needs to animate to the new one. Scroll offset is kept alongside as a data attribute.
+const BAR_LEFT_VAR = '--sub-nav-bar-left';
+const BAR_WIDTH_VAR = '--sub-nav-bar-width';
+const SCROLL_LEFT_KEY = 'subNavScrollLeft';
 
 export const MobileSubNavigation: FC<Omit<SubNavigationProps, 'isActive'>> = ({
   route,
@@ -46,9 +42,11 @@ export const MobileSubNavigation: FC<Omit<SubNavigationProps, 'isActive'>> = ({
     const bar = barRef.current;
     invariant(wrapper && bar, 'MobileSubNavigation refs must be attached');
 
-    const applyBar = (left: number, width: number) => {
-      bar.style.transform = `translateX(${left}px)`;
-      bar.style.width = `${width}px`;
+    const root = document.documentElement;
+
+    const setBar = ({ left, width }: { left: number; width: number }) => {
+      root.style.setProperty(BAR_LEFT_VAR, `${left}px`);
+      root.style.setProperty(BAR_WIDTH_VAR, `${width}px`);
     };
 
     // offsetLeft is relative to the wrapper (position: relative) and is
@@ -62,19 +60,17 @@ export const MobileSubNavigation: FC<Omit<SubNavigationProps, 'isActive'>> = ({
     const centerOf = ({ left, width }: { left: number; width: number }) =>
       left - (wrapper.clientWidth - width) / 2;
 
-    const save = (position: { left: number; width: number }) => {
-      lastActiveBarState = { ...position, scrollLeft: wrapper.scrollLeft };
-    };
-
     const target = measure();
-    const previous = lastActiveBarState;
+    const hasPrevious = root.style.getPropertyValue(BAR_LEFT_VAR) !== '';
 
-    // Before first paint: restore previous position (or snap to target)
-    if (previous) {
-      applyBar(previous.left, previous.width);
-      wrapper.scrollLeft = previous.scrollLeft;
+    // Before first paint: the bar already reads its previous position from CSS,
+    // only the scroll offset needs restoring. Without previous state snap to target.
+    if (hasPrevious) {
+      const previousScroll = root.dataset[SCROLL_LEFT_KEY];
+      if (previousScroll !== undefined)
+        wrapper.scrollLeft = Number(previousScroll);
     } else if (target) {
-      applyBar(target.left, target.width);
+      setBar(target);
       wrapper.scrollLeft = centerOf(target);
     }
 
@@ -82,21 +78,19 @@ export const MobileSubNavigation: FC<Omit<SubNavigationProps, 'isActive'>> = ({
     const frame = requestAnimationFrame(() => {
       bar.dataset.ready = 'true';
       if (!target) {
-        bar.style.width = '0px';
+        root.style.setProperty(BAR_WIDTH_VAR, '0px');
         return;
       }
-      applyBar(target.left, target.width);
-      save(target);
+      setBar(target);
       // scrolling the wrapper only, unlike scrollIntoView this never scrolls the page
       wrapper.scrollTo({
         left: centerOf(target),
-        behavior: previous ? 'smooth' : 'auto',
+        behavior: hasPrevious ? 'smooth' : 'auto',
       });
     });
 
     const onScroll = () => {
-      if (lastActiveBarState)
-        lastActiveBarState.scrollLeft = wrapper.scrollLeft;
+      root.dataset[SCROLL_LEFT_KEY] = String(wrapper.scrollLeft);
     };
     wrapper.addEventListener('scroll', onScroll, { passive: true });
 
@@ -104,9 +98,7 @@ export const MobileSubNavigation: FC<Omit<SubNavigationProps, 'isActive'>> = ({
     const observer = new ResizeObserver(() => {
       if (bar.dataset.ready !== 'true') return;
       const position = measure();
-      if (!position) return;
-      applyBar(position.left, position.width);
-      save(position);
+      if (position) setBar(position);
     });
     observer.observe(wrapper);
     for (const child of wrapper.children) observer.observe(child);

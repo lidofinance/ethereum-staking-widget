@@ -24,7 +24,7 @@ import type { PageRoute } from './types';
 
 const routes: PageRoute[] = [
   {
-    name: 'Staking',
+    name: 'Stake',
     icon: <Stake data-testid="navStake" />,
     subRoutes: [
       {

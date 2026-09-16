@@ -10,6 +10,7 @@ import {
   NavigationDropDownButton,
   NavigationDropDownLink,
   NavLink,
+  MobileOnlySubNavigationLinkBackdrop,
 } from './styles';
 
 type SubNavigationProps = {
@@ -31,6 +32,9 @@ export const SubNavigation: FC<SubNavigationProps> = ({
   const popupRef = useRef<HTMLDivElement>(null);
   useClickOutside(popupRef, () => setOpened(false));
 
+  const primaryPath = route.subRoutes[0]?.path;
+  invariant(primaryPath, 'SubNavigation requires a primary path');
+
   return (
     <>
       <PopoverNoClickBackdrop $backdrop={opened} />
@@ -42,6 +46,7 @@ export const SubNavigation: FC<SubNavigationProps> = ({
             data-testid="nav-canExpanded"
             $opened={opened}
           />
+          <MobileOnlySubNavigationLinkBackdrop href={primaryPath} />
         </NavLink>
         <NavigationDropDownMenu data-testid="chainList" $opened={opened}>
           {route.subRoutes.map((subRoute) => {

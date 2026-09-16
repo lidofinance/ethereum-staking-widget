@@ -49,6 +49,7 @@ export const Nav = styled.nav`
 // see: https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration#link-component
 export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
   cursor: pointer;
+  position: relative;
   color: color-mix(in srgb, var(--lido-color-secondary) 80%, transparent);
   font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;
   line-height: 1.7em;
@@ -231,7 +232,7 @@ export const MobileOnlySubNavigationWrapper = styled.nav`
 `;
 
 /**
- * Positioned via inline transform/width measured from the active link,
+ * Positioned via CSS variables measured from the active link,
  * see MobileSubNavigation
  */
 export const MobileOnlySubNavigationActiveBar = styled.div`
@@ -239,7 +240,9 @@ export const MobileOnlySubNavigationActiveBar = styled.div`
   bottom: 0;
   left: 0;
   height: 2px;
-  width: 0px;
+  // position is persisted on <html> across page remounts, see MobileSubNavigation
+  transform: translateX(var(--sub-nav-bar-left, 0px));
+  width: var(--sub-nav-bar-width, 0px);
   background-color: var(--lido-color-accentText);
   pointer-events: none;
 
@@ -250,9 +253,21 @@ export const MobileOnlySubNavigationActiveBar = styled.div`
   }
 `;
 
-export const MobileOnlySubNavigationLink = styled(LocalLink)<{
-  $active?: boolean;
-}>`
+export const MobileOnlySubNavigationLinkBackdrop = styled(LocalLink)`
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: none;
+  @media ${devicesHeaderMedia.mobile} {
+    display: block;
+  }
+`;
+
+export const MobileOnlySubNavigationLink = styled(LocalLink)`
   display: flex;
   flex: 1 0 auto;
   align-items: center;
