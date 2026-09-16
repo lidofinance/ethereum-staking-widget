@@ -107,7 +107,7 @@ export const Navigation: FC = () => {
         const isActive = isRouteActive(route, pathnameWithoutQuery);
 
         return (
-          <Fragment key={route.path}>
+          <Fragment key={route.path ?? route.name}>
             {'subRoutes' in route ? (
               <SubNavigation
                 route={route}

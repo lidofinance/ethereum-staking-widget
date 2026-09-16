@@ -4,8 +4,8 @@ import { ButtonProps, useBreakpoint } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 import { useDappStatus, useEthereumBalance } from 'modules/web3';
 
-import { AddressBadge } from '../components/address-badge/address-badge';
-import { useWalletModal } from '../wallet-modal/use-wallet-modal';
+import { AddressBadge } from '../../../../../wallet/components/address-badge/address-badge';
+import { useWalletModal } from '../../../../../wallet/wallet-modal/use-wallet-modal';
 
 import {
   WalledButtonStyle,
@@ -14,7 +14,7 @@ import {
   WalledButtonLoaderStyle,
 } from './styles';
 
-export const Button: FC<ButtonProps> = (props) => {
+export const WalletInfoButton: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
 
   const isMobile = useBreakpoint('md');

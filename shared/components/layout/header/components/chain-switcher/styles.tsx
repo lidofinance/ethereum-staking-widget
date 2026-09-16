@@ -22,7 +22,6 @@ export const ChainSwitcherStyled = styled.div<{
 
   width: ${({ $disabled, $loading }) => ($disabled && !$loading ? '44px' : '68px')};
   height: 44px;
-  margin-right: 12px;
   padding: 9px 8px;
 
   font-weight: 400;

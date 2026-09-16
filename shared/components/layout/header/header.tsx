@@ -3,20 +3,18 @@ import { LogoLido } from 'shared/components/logos/logos';
 import { HolidaysDecorHeader } from 'shared/components/holiday-decor';
 
 import { MobileSliderNavigation, Navigation } from './components/navigation';
-import { HeaderWallet } from './components/header-wallet';
+import { HeaderActions } from './components/header-actions';
 
-import { HeaderStyle, HeaderActionsStyle } from './styles';
+import { HeaderStyled } from './styles';
 
 export const Header: FC = () => (
   <>
-    <HeaderStyle size="full" forwardedAs="header">
+    <HeaderStyled size="full" forwardedAs="header">
       <LogoLido />
       <Navigation />
-      <HeaderActionsStyle>
-        <HeaderWallet />
-      </HeaderActionsStyle>
+      <HeaderActions />
       <HolidaysDecorHeader />
-    </HeaderStyle>
+    </HeaderStyled>
     <MobileSliderNavigation />
   </>
 );
