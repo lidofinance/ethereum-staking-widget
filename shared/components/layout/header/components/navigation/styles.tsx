@@ -194,11 +194,12 @@ export const NavigationDropDownMenu = styled(PopupStyled)`
  * Sizes the container so it's always aligns with main content
  */
 export const MobileOnlySubNavigationSizer = styled.div`
-  margin: 0 auto;
+  margin: 0 auto 20px;
   max-width: 560px;
-  // Padding to align with main content
+  // Padding to align with main content, it changes padding on lg breakpoint
+  // but mobile navigation appears on separate breakpoint
   padding-inline: ${({ theme }) => theme.spaceMap.xxl}px;
-  ${({ theme }) => theme.mediaQueries.xl} {
+  ${({ theme }) => theme.mediaQueries.lg} {
     padding-inline: ${({ theme }) => theme.spaceMap.lg}px;
   }
 `;
