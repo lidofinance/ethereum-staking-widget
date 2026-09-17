@@ -8,6 +8,7 @@ import {
   registerSecretsRotationRestart,
   registerShutdownSignals,
 } from './scripts/shutdown.mjs';
+import { markReady } from './scripts/readiness.mjs';
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -63,6 +64,7 @@ app.prepare().then(async () => {
       process.exit(1);
     })
     .listen(port, () => {
+      markReady();
       console.debug(`> Ready on http://${hostname}:${port}`);
     });
   // prevents malicious client from slowly sending headers and rest of request
