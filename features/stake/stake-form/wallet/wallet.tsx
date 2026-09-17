@@ -7,7 +7,7 @@ import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
 import { useTokenAddress } from 'shared/hooks/use-token-address';
-import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
+import { CardNetwork, CardBalance, CardRow, Fallback } from 'shared/wallet';
 
 import { useStakeFormData } from '../stake-form-context';
 
@@ -39,7 +39,7 @@ const WalletComponent = () => {
             />
           }
         />
-        <CardAccount />
+        <CardNetwork />
       </CardRow>
       <Divider />
       <CardRow>

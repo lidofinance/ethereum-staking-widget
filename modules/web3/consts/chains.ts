@@ -63,7 +63,13 @@ export const CHAIN_MAP = new Map<number, DAPP_CHAIN_TYPE>([
 
 export const getChainTypeByChainId = (
   chainId?: number,
-): DAPP_CHAIN_TYPE | null => (chainId ? CHAIN_MAP.get(chainId) ?? null : null);
+): DAPP_CHAIN_TYPE | null =>
+  chainId ? (CHAIN_MAP.get(chainId) ?? null) : null;
+
+export const CHAIN_NAME_OVERRIDE: Record<number, string> = {
+  10: 'Optimism',
+  130: 'Unichain',
+};
 
 // Ethereum example:
 // - Ethereum
@@ -78,6 +84,8 @@ export const getPrettyChainName = (chainId: number): string => {
   const chain = wagmiChainMap[chainId];
 
   if (!chainType) return chain.name;
+
+  if (CHAIN_NAME_OVERRIDE[chainId]) return CHAIN_NAME_OVERRIDE[chainId];
 
   return chain.testnet ? `${chainType}(${chain.name})` : chainType;
 };

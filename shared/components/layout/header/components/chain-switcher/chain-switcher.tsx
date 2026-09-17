@@ -2,6 +2,7 @@ import { FC, useState, useMemo, createElement, ComponentType } from 'react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 import {
   CHAIN_ICONS_MAP,
+  CHAIN_NAME_OVERRIDE,
   getPrettyChainName,
   useDappStatus,
   wagmiChainMap,
@@ -20,11 +21,6 @@ import {
 } from './styles';
 
 type IconsMapType = Record<number, ChainOption>;
-
-const overriddenChainNames: Record<number, string> = {
-  10: 'Optimism',
-  130: 'Unichain',
-};
 
 export const ChainSwitcher: FC = () => {
   const {
@@ -46,7 +42,7 @@ export const ChainSwitcher: FC = () => {
     () =>
       supportedChainIds.reduce((acc: IconsMapType, chainId: number) => {
         acc[chainId] = {
-          name: overriddenChainNames[chainId] ?? wagmiChainMap[chainId].name,
+          name: CHAIN_NAME_OVERRIDE[chainId] ?? wagmiChainMap[chainId].name,
           iconComponent: CHAIN_ICONS_MAP.has(Number(chainId))
             ? createElement(
                 CHAIN_ICONS_MAP.get(Number(chainId)) as ComponentType,

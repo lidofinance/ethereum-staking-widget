@@ -11,13 +11,18 @@ import {
   WalletCardAccountStyle,
   WalletCardContentStyle,
   InlineLoaderStyled,
+  WalletCardNetworkStyle,
 } from './styles';
 import {
   WalletCardBalanceComponent,
   WalletCardComponent,
   WalletCardRowComponent,
 } from './types';
-import { useDappStatus } from 'modules/web3';
+import {
+  CHAIN_ICONS_MAP,
+  getPrettyChainName,
+  useDappStatus,
+} from 'modules/web3';
 
 export const Card: WalletCardComponent = (props) => {
   return <WalletCardStyle color="accent" {...props} />;
@@ -74,5 +79,19 @@ export const CardAccount: Component<'div'> = (props) => {
         color="accent"
       />
     </WalletCardAccountStyle>
+  );
+};
+
+export const CardNetwork: Component<'div'> = (props) => {
+  const { chainId } = useDappStatus();
+  const ChainIcon = CHAIN_ICONS_MAP.get(chainId);
+  return (
+    <WalletCardBalanceStyle {...props}>
+      <WalletCardTitleStyle>Network</WalletCardTitleStyle>
+      <WalletCardNetworkStyle>
+        {ChainIcon && <ChainIcon width={20} height={20} viewBox="0 0 28 28" />}{' '}
+        {getPrettyChainName(chainId)}
+      </WalletCardNetworkStyle>
+    </WalletCardBalanceStyle>
   );
 };
