@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { TransactionCallbackStage as Stage } from '@lidofinance/lido-ethereum-sdk/core';
 import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
 import type { Hash, TransactionReceipt } from 'viem';
-import type { ClaimResult } from '../claim-all-utils';
+import type { TokenClaim } from '../claim-all-utils';
 
 const mocks = vi.hoisted(() => ({
   result: vi.fn(),
@@ -182,10 +182,17 @@ const rejects = async ({ callback }: Callback) => {
   throw new Error('rejected');
 };
 
-const results = () => mocks.result.mock.calls[0][0] as ClaimResult[];
+// What the final screen was handed. `claims` above is the fake wallet.
+const reported = () => mocks.result.mock.calls[0][0] as TokenClaim[];
 const resultOptions = () => mocks.result.mock.calls[0][1];
-const statuses = () => results().map(({ status }) => status);
-const hashes = () => results().map(({ txHash }) => txHash);
+const statuses = () => reported().map(({ status }) => status);
+const hashes = () => reported().map(({ txHash }) => txHash);
+
+// Which tokens each call of a stage put on screen, in order.
+const tokensShown = (stage: Mock) =>
+  stage.mock.calls.map((call) =>
+    (call[0] as TokenClaim[]).map(({ token }) => token),
+  );
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -217,6 +224,15 @@ describe('sequential claims', () => {
       'Transaction 1 of 2',
       'Transaction 2 of 2',
     ]);
+  });
+
+  it('shows only the token being claimed while a transaction is in flight', async () => {
+    await useUsdVaultWithdrawClaimAll().withdrawClaimAll();
+
+    // The wallet is asked for one queue at a time, so the screens standing next
+    // to it must not claim to cover the token still waiting its turn.
+    expect(tokensShown(mocks.sign)).toEqual([['USDC'], ['USDT']]);
+    expect(tokensShown(mocks.pending)).toEqual([['USDC'], ['USDT']]);
   });
 
   it('leaves the second token untouched when the first signature is rejected', async () => {
@@ -300,7 +316,10 @@ describe('batch claims', () => {
     expect(statuses()).toEqual(['claimed', 'claimed']);
     expect(hashes()).toEqual([batchHash, batchHash]);
     expect(resultOptions()).toMatchObject({ callId, error: undefined });
-    // A batch is one signature, so there is no "transaction N of M" to show.
+    // A batch is one signature covering both tokens, so it shows both and has
+    // no "transaction N of M" to add.
+    expect(tokensShown(mocks.sign)).toEqual([['USDC', 'USDT']]);
+    expect(tokensShown(mocks.pending)).toEqual([['USDC', 'USDT']]);
     expect(mocks.sign).toHaveBeenCalledWith(expect.anything(), undefined);
     expect(mocks.perform).not.toHaveBeenCalled();
   });

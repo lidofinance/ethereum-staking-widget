@@ -25,10 +25,10 @@ import {
   ClaimStatus,
   ClaimStatusLabel,
 } from '../../components/withdraw-claim-amounts/styles';
-import type { ClaimResult } from '../claim-all-utils';
+import type { TokenClaim } from '../claim-all-utils';
 
 const statuses: Record<
-  ClaimResult['status'],
+  TokenClaim['status'],
   { label: string; color: TextColors }
 > = {
   'not-started': { label: 'Not started', color: 'secondary' },
@@ -53,30 +53,30 @@ const BatchLink = ({ callId }: { callId: string }) => {
 
 const getStages = (transitStage: TransactionModalTransitStage) => ({
   ...getGeneralTransactionModalStages(transitStage),
-  sign: (results: ClaimResult[], step?: string) =>
+  sign: (claims: TokenClaim[], step?: string) =>
     transitStage(
       <TxStageSign
-        title={`Claim ${results.length === 1 ? results[0].token + ' ' : ''}withdrawals`}
+        title={`Claim ${claims.length === 1 ? claims[0].token + ' ' : ''}withdrawals`}
         description={
           <ClaimDescription>
-            <ClaimAmounts amounts={results} />
+            <ClaimAmounts amounts={claims} />
             {step && <ClaimDetail>{step}</ClaimDetail>}
           </ClaimDescription>
         }
       />,
     ),
   pending: (
-    results: ClaimResult[],
+    claims: TokenClaim[],
     txHash?: Hash,
     isAA?: boolean,
     step?: string,
   ) =>
     transitStage(
       <TxStagePending
-        title={`Claiming ${results.length === 1 ? results[0].token + ' ' : ''}withdrawals`}
+        title={`Claiming ${claims.length === 1 ? claims[0].token + ' ' : ''}withdrawals`}
         description={
           <ClaimDescription>
-            <ClaimAmounts amounts={results} />
+            <ClaimAmounts amounts={claims} />
             {step && <ClaimDetail>{step}</ClaimDetail>}
           </ClaimDescription>
         }
@@ -85,11 +85,11 @@ const getStages = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
   result: (
-    results: ClaimResult[],
+    claims: TokenClaim[],
     options: { callId?: string; error?: string } = {},
   ) => {
-    const allClaimed = results.every(({ status }) => status === 'claimed');
-    const someClaimed = results.some(({ status }) => status === 'claimed');
+    const allClaimed = claims.every(({ status }) => status === 'claimed');
+    const someClaimed = claims.some(({ status }) => status === 'claimed');
     transitStage(
       <TransactionModalContent
         icon={
@@ -110,18 +110,18 @@ const getStages = (transitStage: TransactionModalTransitStage) => ({
         }
         description={
           <ClaimDescription>
-            {results.map((result) => (
-              <ClaimResultItem key={result.token}>
-                <ClaimAmounts amounts={[result]} />
+            {claims.map((claim) => (
+              <ClaimResultItem key={claim.token}>
+                <ClaimAmounts amounts={[claim]} />
                 <ClaimStatus>
-                  <ClaimStatusLabel color={statuses[result.status].color}>
-                    {statuses[result.status].label}
+                  <ClaimStatusLabel color={statuses[claim.status].color}>
+                    {statuses[claim.status].label}
                   </ClaimStatusLabel>
-                  {result.txHash && (
+                  {claim.txHash && (
                     <span>
                       <span aria-hidden="true">· </span>
                       <TxLinkEtherscan
-                        txHash={result.txHash}
+                        txHash={claim.txHash}
                         text="View on Etherscan"
                       />
                     </span>

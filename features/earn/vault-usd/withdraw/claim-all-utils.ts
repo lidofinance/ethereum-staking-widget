@@ -30,7 +30,7 @@ export const getUsdVaultWithdrawClaimCalls = (
 export type ClaimStatus =
   'not-started' | 'claimed' | 'submitted' | 'failed' | 'rejected';
 
-export type ClaimResult = UsdVaultWithdrawClaimAmount & {
+export type TokenClaim = UsdVaultWithdrawClaimAmount & {
   status: ClaimStatus;
   txHash?: Hash;
 };

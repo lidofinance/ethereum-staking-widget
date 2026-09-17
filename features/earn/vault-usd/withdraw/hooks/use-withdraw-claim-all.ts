@@ -22,7 +22,7 @@ import type { AsyncRedeemQueueWritableContract } from 'modules/mellow-meta-vault
 import { getRedeemQueueWritableContract } from '../../contracts';
 import {
   getUsdVaultWithdrawClaimCalls,
-  type ClaimResult,
+  type TokenClaim,
   type UsdVaultWithdrawClaimAmount,
 } from '../claim-all-utils';
 import { groupUsdWithdrawRequestsByToken } from '../utils';
@@ -102,7 +102,7 @@ export const useUsdVaultWithdrawClaimAll = () => {
 
     setIsClaiming(true);
 
-    const results: ClaimResult[] = claimOperations.map(({ token, amount }) => ({
+    const claims: TokenClaim[] = claimOperations.map(({ token, amount }) => ({
       token,
       amount,
       status: 'not-started',
@@ -113,26 +113,26 @@ export const useUsdVaultWithdrawClaimAll = () => {
 
     // What the wallet is working on right now: every token in a batch, one of
     // them otherwise.
-    const activeResults = () => (isBatch ? results : [results[currentIndex]]);
+    const activeClaims = () => (isBatch ? claims : [claims[currentIndex]]);
 
     let callId: string | undefined;
     let errorText: string | undefined;
 
     // The step that ends the run, and so the one that reports it: a batch is
     // always it, a loop only on its last transaction.
-    const isFinalStep = () => isBatch || currentIndex === results.length - 1;
+    const isFinalStep = () => isBatch || currentIndex === claims.length - 1;
 
     // Only sequential claims have a "transaction N of M" to report.
     const stepLabel = () =>
-      !isBatch && results.length > 1
-        ? `Transaction ${currentIndex + 1} of ${results.length}`
+      !isBatch && claims.length > 1
+        ? `Transaction ${currentIndex + 1} of ${claims.length}`
         : undefined;
 
     // The final word on the run: everything learned along the way, shown at
     // once.
     const reportResult = () => {
-      const isAllClaimed = results.every(({ status }) => status === 'claimed');
-      txModalStages.result(results, {
+      const isAllClaimed = claims.every(({ status }) => status === 'claimed');
+      txModalStages.result(claims, {
         callId,
         error: isAllClaimed ? undefined : errorText,
       });
@@ -162,7 +162,7 @@ export const useUsdVaultWithdrawClaimAll = () => {
           // before the callback — a revert makes that throw, and the failed
           // transaction still needs its link.
           if (tx.stage === TransactionCallbackStage.CONFIRMATION && tx.payload)
-            results[currentIndex].txHash = tx.payload.transactionHash;
+            claims[currentIndex].txHash = tx.payload.transactionHash;
           await txStagesCallback(tx);
         },
       });
@@ -180,23 +180,28 @@ export const useUsdVaultWithdrawClaimAll = () => {
           }
         },
         onSign: () => {
-          txModalStages.sign(results, stepLabel());
+          txModalStages.sign(activeClaims(), stepLabel());
         },
         onReceipt: ({ txHashOrCallId, isAA }) => {
           if (isAA) callId = txHashOrCallId;
-          else results[currentIndex].txHash = txHashOrCallId;
-          txModalStages.pending(results, txHashOrCallId, isAA, stepLabel());
+          else claims[currentIndex].txHash = txHashOrCallId;
+          txModalStages.pending(
+            activeClaims(),
+            txHashOrCallId,
+            isAA,
+            stepLabel(),
+          );
         },
         onMultisigDone: () => {
-          for (const result of activeResults()) result.status = 'submitted';
+          for (const claim of activeClaims()) claim.status = 'submitted';
           txModalStages.successMultisig();
         },
         onSuccess: async ({ txHash }) => {
-          for (const result of activeResults()) {
-            result.status = 'claimed';
+          for (const claim of activeClaims()) {
+            claim.status = 'claimed';
             // Sequential claims already have their mined hash from above;
             // a batch learns its only hash here.
-            result.txHash = result.txHash ?? txHash;
+            claim.txHash = claim.txHash ?? txHash;
           }
           if (isFinalStep()) reportResult();
           // A settled claim makes the page behind the modal stale, so refresh
@@ -211,7 +216,7 @@ export const useUsdVaultWithdrawClaimAll = () => {
       // that got here failed — the flow throws on a revert.
       const status =
         errorText === ErrorMessage.DENIED_SIG ? 'rejected' : 'failed';
-      for (const result of activeResults()) result.status = status;
+      for (const claim of activeClaims()) claim.status = status;
       reportResult();
     } finally {
       setIsClaiming(false);
