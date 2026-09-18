@@ -59,8 +59,7 @@ export type sendCallsCallbackProps =
   | onFailureCallbackProps;
 
 export type TxCallbackProps =
-  | sendTransactionCallbackProps
-  | sendCallsCallbackProps;
+  sendTransactionCallbackProps | sendCallsCallbackProps;
 
 export type StageCallback<TArgs, TReturn = void> = (
   args: TArgs & CommonCallbackProps,
