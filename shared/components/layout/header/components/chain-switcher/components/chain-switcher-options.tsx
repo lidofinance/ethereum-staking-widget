@@ -1,18 +1,21 @@
 import { FC, ReactNode, useRef } from 'react';
 
-import { useClickOutside } from '../../hooks/use-click-outside';
-
-import { PopoverWrapperStyled, PopupStyled, OptionStyled } from './styles';
+import {
+  PopoverNoClickBackdrop,
+  PopupStyled,
+  OptionStyled,
+  useClickOutside,
+} from 'shared/components/layout/header/components/popup';
 
 export type ChainOption = { name: string; iconComponent: ReactNode };
 
-interface ChainSwitcherOptionsProps {
+type ChainSwitcherOptionsProps = {
   currentChainId: number;
   onSelect: (chainId: number) => void;
   opened: boolean;
   setOpened: (opened: boolean) => void;
   options: Record<number, ChainOption>;
-}
+};
 
 export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
   currentChainId,
@@ -25,10 +28,9 @@ export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
   useClickOutside(popupRef, () => setOpened(false));
 
   return (
-    // We need the 'PopoverWrapperStyled' for block any events as if you had set 'pointer-events: none' on the body
-    // while the 'PopupStyled' is opened
+    // We need the 'PopoverNoClickBackdrop' to block any events as if you had set 'pointer-events: none' on the body
     <>
-      <PopoverWrapperStyled $backdrop={opened} />
+      <PopoverNoClickBackdrop $backdrop={opened} />
       <PopupStyled data-testid="chainList" $opened={opened} ref={popupRef}>
         {Object.entries(options).map(([chainId, chainOption]) => (
           <OptionStyled

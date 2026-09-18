@@ -12,7 +12,6 @@ const GlobalStyle = createGlobalStyle`
     --nav-mobile-max-width: ${NAV_MOBILE_MAX_WIDTH}px;
     --nav-desktop-gutter-x: 46px;
 
-    --header-padding-y: 18px;
     --dot-size: 6px;
 
     --footer-max-width: 1424px;

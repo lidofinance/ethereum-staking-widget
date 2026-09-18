@@ -1,7 +1,10 @@
 import styled, { css } from 'styled-components';
 
-export const PopoverWrapperStyled = styled.div<{ $backdrop: boolean }>`
-  z-index: 200;
+export const POPUP_BASE_Z_INDEX = 200;
+export const POPUP_MENU_Z_INDEX = POPUP_BASE_Z_INDEX + 1;
+
+export const PopoverNoClickBackdrop = styled.div<{ $backdrop: boolean }>`
+  z-index: ${POPUP_BASE_Z_INDEX};
   position: fixed;
   top: 0;
   left: 0;
@@ -45,7 +48,7 @@ const hiddenCSS = css`
 `;
 
 export const PopupStyled = styled.div<PopupMenuProps>`
-  z-index: 201;
+  z-index: ${POPUP_MENU_Z_INDEX};
   min-width: 115px;
 
   position: absolute;

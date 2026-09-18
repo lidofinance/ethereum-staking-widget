@@ -9,7 +9,7 @@ export class WidgetPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.title = this.page.locator('h1', { hasText: 'Stake Ether' });
+    this.title = this.page.locator('h1', { hasText: 'Stake Ethereum' });
     this.stakeFormButton = this.page.locator('main button', {
       hasText: /^(Connect wallet|Unsupported chain)$/,
     });
