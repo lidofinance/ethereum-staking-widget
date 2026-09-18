@@ -37,6 +37,12 @@ export const WIDGET_PAGES = [
   '/withdrawals/request',
   '/withdrawals/claim',
   '/earn',
+  // redirect stubs from pages/earn/[vault] — keep in sync with EARN_VAULTS
+  '/earn/strategy',
+  '/earn/dvv',
+  '/earn/ggv',
+  '/earn/usd',
+  '/earn/eth',
   '/earn/strategy/deposit',
   '/earn/strategy/withdraw',
   '/earn/dvv/deposit',
