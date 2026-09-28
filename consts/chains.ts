@@ -25,9 +25,3 @@ export const isSDKSupportedChain = (chainId?: CHAINS) => {
 export const isSDKSupportedL2Chain = (chainId?: CHAINS) => {
   return Boolean(chainId && LIDO_L2_CONTRACT_ADDRESSES[chainId]);
 };
-
-export const isSDKSupportedChainAndChainIsL1 = (chainId?: CHAINS) => {
-  return Boolean(
-    chainId && isSDKSupportedChain(chainId) && !isSDKSupportedL2Chain(chainId),
-  );
-};

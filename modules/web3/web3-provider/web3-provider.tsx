@@ -35,7 +35,7 @@ import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { walletMetricProps } from 'consts/matomo';
 
-import { SupportL1Chains } from './dapp-chain';
+import { SupportOnlyL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './web3-transport';
 import { wagmiChainMap } from '../consts';
 import { useExternalConfigContext } from 'config/external-config';
@@ -241,7 +241,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
             config={walletsModalConfig}
             darkThemeEnabled={themeName === 'dark'}
           />
-          <SupportL1Chains>{children}</SupportL1Chains>
+          <SupportOnlyL1Chains>{children}</SupportOnlyL1Chains>
         </ReefKnotProvider>
       </WagmiProvider>
     </Web3ProviderContext.Provider>
