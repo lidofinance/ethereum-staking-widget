@@ -1,14 +1,25 @@
 import { readFileSync, unwatchFile, watchFile } from 'node:fs';
 import { sanitizeError } from './utils/sanitize-error.mjs';
+import { markNotReady } from './readiness.mjs';
 
 const FORCE_EXIT_TIMEOUT_MS = 10_000;
 const DEFAULT_SECRETS_FILE = '/vault/secrets/app';
 const POLL_INTERVAL_MS = 10_000;
+// server.close() stops accepting new connections immediately, so a readiness
+// probe on a fresh connection sees connection-refused rather than the 503.
+// Holding the socket open for one or two probe periods after failing readiness
+// lets the endpoints controller pull this pod before it stops listening.
+// 0 (default) keeps the previous close-immediately behaviour.
+const DRAIN_MS = Number(process.env.SHUTDOWN_DRAIN_MS) || 0;
 
 const noop = () => undefined;
 
 const closeServerAndExit = ({ server, reason, forceExitMs, exit }) => {
   let exited = false;
+
+  // flip /api/readiness to 503 before closing, so the endpoints controller
+  // stops sending new requests here while in-flight ones drain
+  markNotReady(reason);
 
   const exitOnce = (code) => {
     if (exited) return;
@@ -18,26 +29,37 @@ const closeServerAndExit = ({ server, reason, forceExitMs, exit }) => {
 
   console.info(reason);
 
-  const forceExitTimer = setTimeout(() => {
-    console.error(`Graceful close timed out after ${forceExitMs}ms, forcing exit`);
-    exitOnce(0);
-  }, forceExitMs);
-  forceExitTimer.unref();
-
-  try {
-    server.close((error) => {
-      clearTimeout(forceExitTimer);
-
-      if (error) {
-        console.error('Graceful server close failed', sanitizeError(error));
-      }
-
+  const close = () => {
+    // armed here, not before the drain wait, so forceExitMs bounds the close
+    // itself rather than the drain + close together
+    const forceExitTimer = setTimeout(() => {
+      console.error(`Graceful close timed out after ${forceExitMs}ms, forcing exit`);
       exitOnce(0);
-    });
-  } catch (error) {
-    clearTimeout(forceExitTimer);
-    console.error('Graceful server close failed', sanitizeError(error));
-    exitOnce(0);
+    }, forceExitMs);
+    forceExitTimer.unref();
+
+    try {
+      server.close((error) => {
+        clearTimeout(forceExitTimer);
+
+        if (error) {
+          console.error('Graceful server close failed', sanitizeError(error));
+        }
+
+        exitOnce(0);
+      });
+    } catch (error) {
+      clearTimeout(forceExitTimer);
+      console.error('Graceful server close failed', sanitizeError(error));
+      exitOnce(0);
+    }
+  };
+
+  if (DRAIN_MS > 0) {
+    console.info(`Draining for ${DRAIN_MS}ms before closing the server`);
+    setTimeout(close, DRAIN_MS).unref();
+  } else {
+    close();
   }
 };
 

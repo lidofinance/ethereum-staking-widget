@@ -1,5 +1,4 @@
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
-import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
 import { rpcFactory } from '@lidofinance/next-pages';
 
 // Aliased: `config` is reserved below for Next's route config export.
@@ -16,6 +15,7 @@ import {
   HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
+import { trackedFetchRpc } from 'utilsApi/tracked-fetch-rpc';
 import {
   METRIC_CONTRACT_ADDRESSES,
   METRIC_CONTRACT_EVENT_ADDRESSES,
@@ -66,10 +66,7 @@ const g = globalThis as any;
 const rpc =
   g.__rpcSingleton__ ??
   rpcFactory({
-    fetchRPC: trackedFetchRpcFactory({
-      registry: Metrics.registry,
-      prefix: METRICS_PREFIX,
-    }),
+    fetchRPC: trackedFetchRpc,
     metrics: {
       prefix: METRICS_PREFIX,
       registry: Metrics.registry,

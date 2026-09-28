@@ -11,6 +11,7 @@ import { http, type PublicClient } from 'viem';
 import {
   WagmiProvider,
   createConfig,
+  useConnection,
   useConnections,
   usePublicClient,
   fallback,
@@ -209,10 +210,24 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     stableWalletsDisabled,
   ]);
 
-  const [activeConnection] = useConnections({ config: wagmiConfig });
+  // wagmi can retain several connections while tracking the current one
+  // separately; the first `useConnections` entry may belong to an obsolete
+  // wallet, so wallet-first reads must follow the current connection only
+  const connections = useConnections({ config: wagmiConfig });
+  const { connector: currentConnector, status } = useConnection({
+    config: wagmiConfig,
+  });
+  const activeConnection = useMemo(() => {
+    if (status !== 'connected' || !currentConnector) return null;
+    return (
+      connections.find(
+        (connection) => connection.connector.uid === currentConnector.uid,
+      ) ?? null
+    );
+  }, [connections, currentConnector, status]);
 
   useEffect(() => {
-    void onActiveConnection(activeConnection ?? null);
+    void onActiveConnection(activeConnection);
   }, [activeConnection, onActiveConnection]);
 
   return (

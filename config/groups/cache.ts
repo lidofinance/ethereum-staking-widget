@@ -15,7 +15,9 @@ export const CACHE_ETH_PRICE_HEADERS =
   'public, max-age=60, stale-if-error=1200, stale-while-revalidate=30';
 
 export const CACHE_ONE_INCH_RATE_KEY = 'oneinch-rate';
-export const CACHE_ONE_INCH_RATE_TTL = ms('5m');
+export const CACHE_ONE_INCH_RATE_TTL = ms('1m');
+export const CACHE_ONE_INCH_RATE_HEADERS =
+  'public, max-age=60, stale-if-error=1200, stale-while-revalidate=60';
 
 export const CACHE_TOTAL_SUPPLY_KEY = 'cache-total-supply';
 export const CACHE_TOTAL_SUPPLY_TTL = ms('1m');
@@ -42,3 +44,7 @@ export const CACHE_VALIDATION_HEADERS =
 export const CACHE_GEO_HEADERS = 'private, no-store, must-revalidate';
 
 export const CACHE_DEFAULT_ERROR_HEADERS = 'no-store, must-revalidate';
+
+// Prometheus scrapes /api/metrics directly every 15s; a cached body would just
+// replay the previous sample, and there is nothing to revalidate against
+export const CACHE_METRICS_HEADERS = 'no-store, must-revalidate';

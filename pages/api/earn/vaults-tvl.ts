@@ -23,6 +23,7 @@ import {
   fetchWithCache,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
+import { trackedFetchRpc } from 'utilsApi/tracked-fetch-rpc';
 import { CHAINS } from 'consts/chains';
 
 import {
@@ -47,6 +48,31 @@ export type VaultsTvlResponse = {
 
 const DEFAULT_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
+// viem hands `fetchFn` a JSON string body; trackedFetchRpc reads `.method` off
+// the parsed payload to label metrics and re-serializes it itself.
+const trackedHttp = (url: string, chainId: number) =>
+  http(url, {
+    fetchFn: (input, init) =>
+      trackedFetchRpc(
+        String(input),
+        {
+          ...init,
+          method: 'POST',
+          body: JSON.parse(String(init?.body ?? 'null')),
+        },
+        { chainId },
+      ),
+  });
+
+// One client per process: createPublicClient inside a fetcher rebuilt the
+// transport on every cache miss.
+const publicClientMainnet = createPublicClient({
+  chain: mainnet,
+  transport: fallback(
+    secretConfig.rpcUrls_1.map((url) => trackedHttp(url, mainnet.id)),
+  ),
+});
+
 const LocalManifest = getLocalFallbackManifest();
 const vaultsFromLocalManifest =
   LocalManifest[`${CHAINS.Mainnet}`]?.config.earnVaults || [];
@@ -67,11 +93,6 @@ const fetchers: {
 } = {
   dvv: async () => {
     const chain = mainnet;
-    const publicClientMainnet = createPublicClient({
-      chain,
-      transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
-    });
-
     const vault = getDVVVaultContract(publicClientMainnet);
 
     const tvlWsteth = await vault.read.totalAssets();
@@ -89,11 +110,6 @@ const fetchers: {
     };
   },
   ggv: async () => {
-    const publicClientMainnet = createPublicClient({
-      chain: mainnet,
-      transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
-    });
-
     const lens = getGGVLensContract(publicClientMainnet);
     const vault = getGGVVaultContract(publicClientMainnet);
     const accountant = getGGVAccountantContract(publicClientMainnet);
@@ -108,11 +124,6 @@ const fetchers: {
     };
   },
   strategy: async () => {
-    const publicClientMainnet = createPublicClient({
-      chain: mainnet,
-      transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
-    });
-
     const collector = getSTGCollectorContract(publicClientMainnet);
     const vaultContract = getSTGVaultContract(publicClientMainnet);
 

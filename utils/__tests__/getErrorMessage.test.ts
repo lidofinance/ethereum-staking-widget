@@ -1,4 +1,9 @@
-import type { TransactionReceipt } from 'viem';
+import {
+  TransactionExecutionError,
+  UserRejectedRequestError,
+  type BaseError,
+  type TransactionReceipt,
+} from 'viem';
 
 import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
 import {
@@ -227,5 +232,46 @@ describe('extractCodeFromError: provider errors nested in cause', () => {
     expect(getErrorMessage({ code: 4100 })).toBe(
       ErrorMessage.UNAUTHORIZED_PROVIDER,
     );
+  });
+});
+
+// A rejected `wallet_sendCalls` reaches us as TransactionExecutionError with the
+// UserRejectedRequestError in `cause`; the SDK adds one more layer on top.
+describe('extractCodeFromError: user rejection nested in cause', () => {
+  const rejection = () =>
+    new UserRejectedRequestError(new Error('Wallet-specific text'));
+
+  const wrapped = (cause: BaseError) =>
+    new TransactionExecutionError(cause, {
+      account: null,
+      chain: undefined,
+    });
+
+  test('detects a bare UserRejectedRequestError', () => {
+    expect(getErrorMessage(rejection())).toBe(ErrorMessage.DENIED_SIG);
+  });
+
+  test('detects the rejection one level down', () => {
+    expect(getErrorMessage(wrapped(rejection()))).toBe(ErrorMessage.DENIED_SIG);
+  });
+
+  test('detects the rejection two levels down', () => {
+    const sdkError = new Error('something went wrong', {
+      cause: wrapped(rejection()),
+    });
+    expect(getErrorMessage(sdkError)).toBe(ErrorMessage.DENIED_SIG);
+  });
+
+  test('stops walking after 5 levels', () => {
+    const deep = {
+      cause: { cause: { cause: { cause: { cause: rejection() } } } },
+    };
+    expect(extractCodeFromError(deep)).not.toBe('ACTION_REJECTED');
+  });
+
+  test('survives a circular cause chain', () => {
+    const error: { cause?: unknown } = {};
+    error.cause = error;
+    expect(getErrorMessage(error)).toBe(ErrorMessage.SOMETHING_WRONG);
   });
 });
