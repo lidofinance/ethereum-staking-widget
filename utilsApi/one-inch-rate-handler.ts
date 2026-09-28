@@ -3,6 +3,7 @@ import { LRUCache } from 'lru-cache';
 import { parseEther } from 'viem';
 
 import { config } from 'config';
+import { USER_AGENT } from 'config/groups/app';
 
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 
@@ -160,6 +161,8 @@ const fetchQuote = async (
     headers: {
       Accept: 'application/json',
       Authorization: `Bearer ${apiKey}`,
+      // server-only handler, so no browser forbidden-header guard needed
+      'User-Agent': USER_AGENT,
     },
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
