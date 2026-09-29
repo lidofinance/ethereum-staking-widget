@@ -3,13 +3,16 @@ import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { Card } from 'shared/wallet';
 import styled, { css } from 'styled-components';
 
-type WrapProps = React.ComponentProps<typeof Card> & {
-  chainId: LIDO_MULTICHAIN_CHAINS;
+type WalletCardBackdropProps = React.ComponentProps<typeof Card> & {
+  multiChainId?: LIDO_MULTICHAIN_CHAINS;
 };
-export const Wrap = styled((props) => <Card {...props} />)<WrapProps>`
+export const WalletCardBackdrop = styled(({ multiChainId, ...props }) => (
+  <Card {...props} />
+))<WalletCardBackdropProps>`
   text-align: center;
-  ${({ chainId }: WrapProps) => {
-    switch (chainId) {
+  ${({ multiChainId }) => {
+    if (!multiChainId) return '';
+    switch (multiChainId) {
       case LIDO_MULTICHAIN_CHAINS.Optimism:
         return css`
           background: linear-gradient(

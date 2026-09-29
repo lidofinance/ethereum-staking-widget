@@ -4,10 +4,7 @@ import getConfigNext from 'next/config';
 
 const { serverRuntimeConfig } = getConfigNext();
 
-import {
-  CHAINS,
-  LIDO_L2_CONTRACT_ADDRESSES as LIDO_L2_WRAP_CONTRACT_ADDRESSES,
-} from '@lidofinance/lido-ethereum-sdk/common';
+import { LIDO_L2_CONTRACT_ADDRESSES as LIDO_L2_WRAP_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 // Main deployments
 import mainnetSet from 'networks/mainnet.json';
@@ -20,6 +17,7 @@ import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json';
 import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json';
 import { getPreConfig } from 'config/get-preconfig';
 import { LIDO_L2_STAKING_CONTRACT_MAP } from 'modules/l2-staking';
+import { CHAINS } from 'config/chains';
 
 // For future overrides of APIs in devnets
 export const API_NAMES = {};

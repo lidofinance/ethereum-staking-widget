@@ -1,9 +1,9 @@
 import { ethAddress, getAddress, type Address } from 'viem';
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { CONTRACT_NAMES, getNetworkConfigMapByChain } from './networks-map';
 import { Token, TOKENS, type TokenSymbol } from 'consts/tokens';
 import { asToken } from 'utils/as-token';
+import { CHAINS, isSupportedL2Chain } from 'consts/chains';
 
 const TOKENS_TO_CONTRACTS: Record<
   Token,
@@ -32,7 +32,18 @@ export const getTokenAddress = (
   // 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   if (token === TOKENS.eth) return getAddress(ethAddress);
 
-  return TOKENS_TO_CONTRACTS[token]
-    ? getNetworkConfigMapByChain(chain)?.contracts[TOKENS_TO_CONTRACTS[token]]
+  let contractKey = TOKENS_TO_CONTRACTS[token];
+
+  if (isSupportedL2Chain(chain)) {
+    if (token === TOKENS.wsteth) {
+      contractKey = CONTRACT_NAMES.L2wstETH;
+    }
+    if (token === TOKENS.steth) {
+      contractKey = CONTRACT_NAMES.L2wstETH;
+    }
+  }
+
+  return contractKey
+    ? getNetworkConfigMapByChain(chain)?.contracts[contractKey]
     : undefined;
 };

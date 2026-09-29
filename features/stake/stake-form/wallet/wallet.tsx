@@ -1,27 +1,30 @@
 import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
-import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
-
-import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
+import { Divider } from '@lidofinance/lido-ui';
 
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
-import { useLidoApr } from 'shared/hooks';
 import { useTokenAddress } from 'shared/hooks/use-token-address';
 import { CardNetwork, CardBalance, CardRow, Fallback } from 'shared/wallet';
+import { useDappStatus } from 'modules/web3';
 
 import { useStakeFormData } from '../stake-form-context';
 
 import { LimitMeter } from './limit-meter';
-import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
+import { FlexCenter, StyledCard } from './styles';
+
+import { WalletLidoApr } from 'features/stake/shared/wallet-lido-apr';
 
 const WalletComponent = () => {
+  const { chainId, isChainIdOnL2 } = useDappStatus();
   const { stakeableEther, stethBalance, loading } = useStakeFormData();
 
   const stethAddress = useTokenAddress(LIDO_TOKENS.steth);
-  const lidoApr = useLidoApr();
 
   return (
-    <StyledCard data-testid="stakeCardSection">
+    <StyledCard
+      data-testid="stakeCardSection"
+      multiChainId={isChainIdOnL2 ? chainId : undefined}
+    >
       <CardRow>
         <CardBalance
           title={
@@ -61,25 +64,7 @@ const WalletComponent = () => {
             </>
           }
         />
-        <CardBalance
-          small
-          title={
-            <>
-              Lido APR *{' '}
-              {lidoApr.data && (
-                <Tooltip placement="bottom" title={LIDO_APR_TOOLTIP_TEXT}>
-                  <Question />
-                </Tooltip>
-              )}
-            </>
-          }
-          loading={lidoApr.isLoading}
-          value={
-            <LidoAprStyled data-testid="lidoAprHeader">
-              {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
-            </LidoAprStyled>
-          }
-        />
+        <WalletLidoApr />
       </CardRow>
     </StyledCard>
   );

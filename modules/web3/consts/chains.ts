@@ -85,8 +85,11 @@ export const getChainTypeByChainId = (
   chainId ? (CHAIN_MAP.get(chainId) ?? null) : null;
 
 export const CHAIN_NAME_OVERRIDE: Record<number, string> = {
-  10: 'Optimism',
-  130: 'Unichain',
+  [CHAINS.Optimism]: 'Optimism',
+  [CHAINS.Unichain]: 'Unichain',
+  [CHAINS.Base]: 'Base',
+  [CHAINS.Arbitrum]: 'Arbitrum',
+  [CHAINS.Linea]: 'Linea',
 };
 
 // Ethereum example:

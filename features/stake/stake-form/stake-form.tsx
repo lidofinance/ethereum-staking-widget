@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC } from 'react';
 
 import { EarnUpToBanner } from 'shared/banners/earn-up-to-banner';
 import { DualGovernanceBanner } from 'shared/banners/dual-governance-banner';
@@ -12,7 +12,7 @@ import { StakeFormInfo } from './stake-form-info';
 import { SwapDiscountBanner } from '../swap-discount-banner';
 import { StakeBlock, FormControllerStyled } from './styles';
 
-export const StakeForm: FC = memo(() => {
+export const StakeForm: FC = () => {
   return (
     <StakeFormProvider>
       <Wallet />
@@ -33,4 +33,4 @@ export const StakeForm: FC = memo(() => {
       </StakeBlock>
     </StakeFormProvider>
   );
-});
+};

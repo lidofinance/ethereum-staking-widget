@@ -60,11 +60,15 @@ export const WalletCardValueStyle = styled.div<{ $small?: boolean }>`
   line-height: 1.4em;
   font-weight: 800;
   white-space: nowrap;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 `;
 
 export const WalletCardExtraStyle = styled.div`
   margin-top: 2px;
   opacity: 0.5;
+  display: flex;
 `;
 
 export const WalletCardContentStyle = styled.div<{ $hidden?: boolean }>`
