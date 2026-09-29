@@ -2,6 +2,7 @@ export const STRATEGY_IMMUTABLE = {
   staleTime: Infinity,
   refetchOnWindowFocus: false,
   refetchOnReconnect: false,
+  refetchInterval: false,
 };
 
 export const STRATEGY_CONSTANT = {
