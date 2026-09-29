@@ -6,7 +6,7 @@ const { serverRuntimeConfig } = getConfigNext();
 
 import {
   CHAINS,
-  LIDO_L2_CONTRACT_ADDRESSES,
+  LIDO_L2_CONTRACT_ADDRESSES as LIDO_L2_WRAP_CONTRACT_ADDRESSES,
 } from '@lidofinance/lido-ethereum-sdk/common';
 
 // Main deployments
@@ -19,6 +19,7 @@ import holeskySet from 'networks/holesky.json';
 import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json';
 import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json';
 import { getPreConfig } from 'config/get-preconfig';
+import { LIDO_L2_STAKING_CONTRACT_MAP } from 'modules/l2-staking';
 
 // For future overrides of APIs in devnets
 export const API_NAMES = {};
@@ -41,6 +42,7 @@ export const CONTRACT_NAMES = {
   // l2 contracts
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
+  L2stakingReceiver: 'L2stakingReceiver',
   // 3rd party contracts
   aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
@@ -138,17 +140,30 @@ const DEVNET_OVERRIDES: Record<number, string> = // Merge client&server values
       {} as Record<number, string>,
     );
 
-// For now stub L2 deployments,
-// as we don't need L2 devnets and it's easier to add more L2s
-const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.entries(
-  LIDO_L2_CONTRACT_ADDRESSES,
-).reduce(
-  (acc, [chainId, { wsteth, steth }]) => {
+/**
+ * Merges L2 wrap and staking contract addresses into a single network map.
+ * L2 stake and L2 wrap can overlap for the same network.
+ */
+const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.keys({
+  ...LIDO_L2_WRAP_CONTRACT_ADDRESSES,
+  ...LIDO_L2_STAKING_CONTRACT_MAP,
+}).reduce(
+  (acc, chainId) => {
+    const wrapContract =
+      LIDO_L2_WRAP_CONTRACT_ADDRESSES[
+        chainId as unknown as keyof typeof LIDO_L2_WRAP_CONTRACT_ADDRESSES
+      ];
+    const stakeContracts =
+      LIDO_L2_STAKING_CONTRACT_MAP[
+        chainId as unknown as keyof typeof LIDO_L2_STAKING_CONTRACT_MAP
+      ];
     acc[chainId] = {
       api: {},
       contracts: {
-        [CONTRACT_NAMES.L2stETH]: steth,
-        [CONTRACT_NAMES.L2wstETH]: wsteth,
+        [CONTRACT_NAMES.L2stETH]: wrapContract?.steth,
+        [CONTRACT_NAMES.L2wstETH]:
+          wrapContract?.wsteth ?? stakeContracts?.L2wstETH,
+        [CONTRACT_NAMES.L2stakingReceiver]: stakeContracts?.L2stakingReceiver,
       },
     };
     return acc;

@@ -12,6 +12,8 @@ import { getContractAddress } from 'config/networks/contract-address';
 
 import { useDappChain } from './dapp-chain';
 
+import { LIDO_L2_STAKING_CHAINS } from 'modules/l2-staking';
+
 type LidoSDKL2ContextValue = {
   chainId: CHAINS;
   core: LidoSDKCore;
@@ -57,6 +59,7 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
         sdkChainId,
         CONTRACT_NAMES.lidoLocator,
       ),
+      customSupportedChains: LIDO_L2_STAKING_CHAINS,
     });
 
     return {

@@ -6,5 +6,6 @@ export {
   useMainnetOnlyWagmi,
   useLidoSDK,
   useLidoSDKL2,
-  SupportL2Chains,
+  SupportL1AndL2WrapChains,
+  SupportL1andL2StakingChains,
 } from './web3-provider';

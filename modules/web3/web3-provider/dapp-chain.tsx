@@ -11,7 +11,12 @@ import invariant from 'tiny-invariant';
 import { useConnection } from 'wagmi';
 import type { Chain } from 'wagmi/chains';
 
-import { isSDKSupportedL2Chain, isSDKSupportedChain } from 'consts/chains';
+import {
+  isSupportedL2Chain,
+  isSupportedL2StakingChain,
+  isSupportedL1Chain,
+  isSupportedL2WrapChain,
+} from 'consts/chains';
 import { config } from 'config';
 import { ModalProvider } from 'providers/modal-provider';
 
@@ -75,10 +80,7 @@ export const useDappChain = (): UseDappChainValue => {
         .map((id) => wagmiChainMap[id])
         .map((chain) => (chain.testnet ? chain.name : MAINNET));
 
-      // Ethereum example:
-      // - Ethereum
-      // - or
-      // - Ethereum(Mainnet,Hoodi,Sepolia,Holesky)
+      // Example: Ethereum or Ethereum(Mainnet,Hoodi,Sepolia,Holesky)
       return chainNamesForType.length === 1 && chainNamesForType[0] === MAINNET
         ? chainType
         : `${chainType}(${chainNamesForType.join(',')})`;
@@ -96,8 +98,7 @@ export const useDappChain = (): UseDappChainValue => {
       ...context,
       isChainMatched: walletChain ? context.chainId === walletChain : true,
       isSupportedChain: walletChain
-        ? context.supportedChainIds.includes(walletChain) &&
-          isSDKSupportedChain(walletChain)
+        ? context.supportedChainIds.includes(walletChain)
         : true,
       supportedChainLabels,
     };
@@ -110,13 +111,21 @@ export const useDappChain = (): UseDappChainValue => {
 const useSupportedChainLogic = (
   isChainSupported: (chainId: number) => boolean,
 ): DappChainContextValue => {
+  // State for current chain ID as source of truth over wagmi state
+  // wagmi state will enable all supported chains but our local state will override it
+  const [chainId, setChainId] = useState<number>(config.defaultChain);
+
+  // wagmi state for the connected wallet
   const { chainId: walletChainId, isConnected } = useConnection();
+
+  // hook for switching chain state in wagmi/wallet state
   const {
     trySwitchChain,
     isPending: isSwitchChainPending,
     canSwitchChain,
   } = useSwitchChain();
-  const [chainId, setChainId] = useState<number>(config.defaultChain);
+
+  // callback that requests a chain change, soft syncing on edge-cases
   const requestChangeChain = useCallback(
     async (newChainId: number) => {
       if (!canSwitchChain) {
@@ -128,10 +137,12 @@ const useSupportedChainLogic = (
       if (!success) {
         return setChainId(newChainId);
       }
+      // success is no-op, wagmi changes the state and we sync in effect below
     },
     [trySwitchChain, canSwitchChain],
   );
 
+  // smart sync wagmi state to local state
   useEffect(() => {
     if (
       !walletChainId ||
@@ -164,7 +175,7 @@ const useSupportedChainLogic = (
         ? wagmiChainMap[walletChainId]
         : undefined,
 
-      isChainIdOnL2: isSDKSupportedL2Chain(chainId),
+      isChainIdOnL2: isSupportedL2Chain(chainId),
       supportedChainIds: config.supportedChains.filter((chain) =>
         isChainSupported(chain),
       ),
@@ -181,13 +192,37 @@ const useSupportedChainLogic = (
 };
 
 /**
- * Enables L1 and L2 chains with L2 Wrap Functionality
+ * Enables L1 and L2 chains with wrap Functionality
  */
 export const SupportL1AndL2WrapChains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const isChainSupported = useCallback(
-    (chainId: number) => isSDKSupportedChain(chainId),
+    (chainId: number) =>
+      isSupportedL1Chain(chainId) || isSupportedL2WrapChain(chainId),
+    [],
+  );
+  const contextValue = useSupportedChainLogic(isChainSupported);
+
+  return (
+    <DappChainContext.Provider value={contextValue}>
+      <LidoSDKL2Provider>
+        {/* Some modals depend on the LidoSDKL2Provider */}
+        <ModalProvider>{children}</ModalProvider>
+      </LidoSDKL2Provider>
+    </DappChainContext.Provider>
+  );
+};
+
+/**
+ * Enables L1 and L2 chains with staking functionality
+ */
+export const SupportL1andL2StakingChains: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const isChainSupported = useCallback(
+    (chainId: number) =>
+      isSupportedL1Chain(chainId) || isSupportedL2StakingChain(chainId),
     [],
   );
   const contextValue = useSupportedChainLogic(isChainSupported);
@@ -214,8 +249,7 @@ export const SupportOnlyL1Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const isOnlyL1Chain = useCallback(
-    (chainId: number) =>
-      isSDKSupportedChain(chainId) && !isSDKSupportedL2Chain(chainId),
+    (chainId: number) => isSupportedL1Chain(chainId),
     [],
   );
   const contextValue = useSupportedChainLogic(isOnlyL1Chain);
