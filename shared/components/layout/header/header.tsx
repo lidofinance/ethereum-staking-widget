@@ -2,7 +2,11 @@ import { FC } from 'react';
 import { LogoLido } from 'shared/components/logos/logos';
 import { HolidaysDecorHeader } from 'shared/components/holiday-decor';
 
-import { MobileNavigation, Navigation } from './components/navigation';
+import {
+  DesktopSubNavigationReserve,
+  MobileNavigation,
+  Navigation,
+} from './components/navigation';
 import { HeaderActions } from './components/header-actions';
 
 import { HeaderStyled } from './styles';
@@ -15,6 +19,7 @@ export const Header: FC = () => (
       <HeaderActions />
       <HolidaysDecorHeader />
     </HeaderStyled>
+    <DesktopSubNavigationReserve />
     <MobileNavigation />
   </>
 );

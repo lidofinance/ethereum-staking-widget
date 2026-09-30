@@ -24,7 +24,8 @@ import { SubNavigation } from './sub-navigation';
 
 import { MobileNavigationBar } from './mobile-navigation-bar';
 import { NavigationLink } from './navigation-link';
-import { Nav } from './styles';
+import { DesktopSubNavigationSpacer, Nav } from './styles';
+import { createRemountTransition } from './use-remount-transition';
 
 import { filterAvailableRoutes, sanitizePath, isRouteActive } from './utils';
 import type { PageRoute } from './types';
@@ -96,6 +97,18 @@ export const MobileNavigation: FC = () => {
       currentPath={pathnameWithoutQuery}
     />
   );
+};
+
+const useSpacerExpanded = createRemountTransition<boolean>();
+
+export const DesktopSubNavigationReserve: FC = () => {
+  const { availableRoutes, pathnameWithoutQuery } = useNavigation();
+  const isSectionActive = availableRoutes.some(
+    (route) => route.subRoutes && isRouteActive(route, pathnameWithoutQuery),
+  );
+  const isExpanded = useSpacerExpanded(isSectionActive) === true;
+
+  return <DesktopSubNavigationSpacer $expanded={isExpanded} aria-hidden />;
 };
 
 export const Navigation: FC = () => {

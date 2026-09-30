@@ -95,3 +95,6 @@ export const isRouteActive = (route: PageRoute, pathName: string): boolean => {
   }
   return false;
 };
+
+export const getAriaCurrent = (isActive: boolean) =>
+  isActive ? ('page' as const) : undefined;

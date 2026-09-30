@@ -1,7 +1,6 @@
 import { LocalLink } from 'shared/components/local-link';
 import styled, { css } from 'styled-components';
 import { devicesHeaderMedia } from 'styles/global';
-import { POPUP_MENU_Z_INDEX, PopupStyled } from '../popup';
 
 export const desktopCss = css`
   margin: 0 ${({ theme }) => theme.spaceMap.xxl}px 0 var(--nav-desktop-gutter-x);
@@ -82,31 +81,83 @@ export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
 `;
 
 /**
- * Nested Navigation styles
+ * Desktop sub-navigation: a row anchored under the section link with an L-connector
  */
 
-export const NavigationDropDownButton = styled.div`
-  z-index: ${POPUP_MENU_Z_INDEX + 1};
+const SUB_NAV_OFFSET_X = 46;
+const SUB_NAV_GAP_Y = 26;
+const SUB_NAV_HEIGHT = 48;
+// the section link icon is 24px wide
+const SECTION_ICON_CENTER_X = 12;
+const subNavTransitionCss = css`
+  transition:
+    opacity 180ms ease,
+    transform 220ms ease,
+    visibility 0s var(--sub-nav-visibility-delay);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+`;
+
+export const SubNavigationAnchor = styled.div`
   position: relative;
 `;
 
-// above the press backdrop so a press on STAKE reaches the trigger itself
-export const NavigationDropDownTrigger = styled(LocalLink)`
-  position: relative;
-  z-index: ${POPUP_MENU_Z_INDEX};
-`;
-
-export const NavigationDropDownIcon = styled.span`
+export const SubNavigationRow = styled.nav<{ $expanded: boolean }>`
+  position: absolute;
+  top: calc(100% + ${SUB_NAV_GAP_Y}px);
+  left: ${SUB_NAV_OFFSET_X}px;
   display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
+  gap: 4px;
+  height: ${SUB_NAV_HEIGHT}px;
+  padding: 6px;
 
-  background: var(--lido-color-background);
-  color: var(--lido-color-textSecondary);
+  background: var(--lido-color-foreground);
+  border-radius: 12px;
+  white-space: nowrap;
+
+  opacity: ${({ $expanded }) => ($expanded ? 1 : 0)};
+  transform: translateY(${({ $expanded }) => ($expanded ? 0 : -6)}px);
+  // hidden only after fading out, so hidden links are out of focus order
+  visibility: ${({ $expanded }) => ($expanded ? 'visible' : 'hidden')};
+  --sub-nav-visibility-delay: ${({ $expanded }) => ($expanded ? '0s' : '180ms')};
+  ${subNavTransitionCss}
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: ${-(SUB_NAV_OFFSET_X - SECTION_ICON_CENTER_X)}px;
+    top: ${-(SUB_NAV_GAP_Y - 6)}px;
+    width: ${SUB_NAV_OFFSET_X - SECTION_ICON_CENTER_X - 2}px;
+    height: ${SUB_NAV_GAP_Y - 6 + SUB_NAV_HEIGHT / 2}px;
+
+    border-left: 1.5px solid var(--lido-color-border);
+    border-bottom: 1.5px solid var(--lido-color-border);
+    border-bottom-left-radius: 8px;
+  }
+`;
+
+export const SubNavigationLink = styled(LocalLink)`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.md}px;
+
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  font-weight: 500;
+  line-height: 20px;
+
+  &,
+  &:visited {
+    color: var(--lido-color-textSecondary);
+  }
+
+  &:hover {
+    color: var(--lido-color-text);
+  }
 
   // overrides the nav-wide svg margin
   && svg {
@@ -115,66 +166,34 @@ export const NavigationDropDownIcon = styled.span`
     margin: 0;
     fill: currentColor;
   }
-`;
 
-export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
-  display: flex;
-  // 8px keeps the original 44px row height with the 28px icon
-  padding: 8px 16px;
-  align-items: center;
-  gap: 8px;
-  align-self: stretch;
+  &[aria-current='page'] {
+    color: var(--lido-color-text);
+    font-weight: 700;
 
-  color: var(--lido-color-secondary);
-  font-size: 12px;
-  line-height: 20px;
-  text-transform: initial;
-
-  &:visited {
-    color: var(--lido-color-secondary);
+    svg {
+      color: var(--lido-color-primary);
+    }
   }
 
-  // Fix the highlight by click
-  -webkit-tap-highlight-color: transparent;
   outline: none;
-
-  // Backgrounds
-  background: var(--lido-color-controlBg);
-
-  ${({ theme, $active }) =>
-    $active &&
-    css`
-      background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
-
-      ${NavigationDropDownIcon} {
-        background: var(--lido-color-primary);
-        color: var(--lido-color-primaryContrast);
-      }
-    `}
-
-  &:not(:disabled):hover,
   &:focus-visible {
-    ${({ theme }) => css`
-      background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
-    `}
+    outline: 2px solid var(--lido-color-primary);
   }
 `;
 
-export const NavigationDropDownArrow = styled.div<{ $opened: boolean }>`
-  border: 3px solid #7a8aa0;
-  border-bottom-width: 0;
-  border-left-color: transparent;
-  border-right-color: transparent;
+// reserves the space the absolutely positioned row takes under the header
+export const DesktopSubNavigationSpacer = styled.div<{ $expanded: boolean }>`
+  height: ${({ $expanded }) => ($expanded ? SUB_NAV_HEIGHT + 12 : 0)}px;
+  transition: height 220ms ease;
 
-  margin: 9px;
-  height: 4px;
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 
-  transform: rotate(${({ $opened }) => ($opened ? 180 : 0)}deg);
-  transition: transform ${({ theme }) => theme.duration.norm} ease;
-`;
-
-export const NavigationDropDownMenu = styled(PopupStyled)`
-  top: calc(100% + 9px);
+  @media ${devicesHeaderMedia.mobile} {
+    display: none;
+  }
 `;
 
 /**

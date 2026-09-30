@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from 'react';
+import type { FC } from 'react';
 import invariant from 'tiny-invariant';
 
 import {
@@ -12,7 +12,8 @@ import {
   MobileTrackLink,
   MobileTrackPill,
 } from './styles';
-import { isRouteActive } from './utils';
+import { getAriaCurrent, isRouteActive } from './utils';
+import { createRemountTransition } from './use-remount-transition';
 import type { PageRoute } from './types';
 
 type MobileNavigationBarProps = {
@@ -20,29 +21,8 @@ type MobileNavigationBarProps = {
   currentPath: string;
 };
 
-// Layout remounts per page: a value starts from the last mount and animates to the new one.
-// undefined means "no value": nothing to animate from, and the rendered value is kept.
-const createRemountTransition = <T,>() => {
-  let last: T | undefined;
-
-  return function useRemountTransition(value: T | undefined) {
-    const [rendered, setRendered] = useState(() => last ?? value);
-
-    useEffect(() => {
-      last = value;
-      if (value === undefined) return;
-      const frame = requestAnimationFrame(() => setRendered(value));
-      return () => cancelAnimationFrame(frame);
-    }, [value]);
-
-    return rendered;
-  };
-};
-
 const useTrackExpanded = createRemountTransition<boolean>();
 const usePillIndex = createRemountTransition<number>();
-
-const ariaCurrent = (isActive: boolean) => (isActive ? 'page' : undefined);
 
 export const MobileNavigationBar: FC<MobileNavigationBarProps> = ({
   routes,
@@ -82,7 +62,7 @@ export const MobileNavigationBar: FC<MobileNavigationBarProps> = ({
                   <MobileTrackLink
                     key={subRoute.path}
                     href={subRoute.path}
-                    aria-current={ariaCurrent(
+                    aria-current={getAriaCurrent(
                       isRouteActive(subRoute, currentPath),
                     )}
                     tabIndex={isSectionActive ? undefined : -1}
@@ -103,7 +83,7 @@ export const MobileNavigationBar: FC<MobileNavigationBarProps> = ({
             <MobileTabLink
               key={href}
               href={href}
-              aria-current={ariaCurrent(isRouteActive(route, currentPath))}
+              aria-current={getAriaCurrent(isRouteActive(route, currentPath))}
               $showNew={route.showNew}
             >
               <MobileTabIcon>{route.icon}</MobileTabIcon>
