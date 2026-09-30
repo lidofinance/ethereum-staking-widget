@@ -1,8 +1,6 @@
 import type { FC } from 'react';
 import invariant from 'tiny-invariant';
 
-import { devicesHeaderMedia } from 'styles/global';
-
 import { PopoverNoClickBackdrop, usePopupMenu } from '../popup';
 import type { PageRoute } from './types';
 import { isRouteActive } from './utils';
@@ -22,10 +20,6 @@ type SubNavigationProps = {
   currentPath: string;
 };
 
-// mobile layout has no dropdown, the trigger is a plain link there
-const isDesktopHeader = () =>
-  !window.matchMedia(devicesHeaderMedia.mobile).matches;
-
 /**
  * SubNavigation component renders a dropdown menu for sub-routes of a given route.
  */
@@ -44,7 +38,6 @@ export const SubNavigation: FC<SubNavigationProps> = ({
     backdropProps,
   } = usePopupMenu({
     mode: 'link',
-    canOpen: isDesktopHeader,
     persistKey: route.name,
   });
 

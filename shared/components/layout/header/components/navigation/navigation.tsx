@@ -13,14 +13,16 @@ import {
   WITHDRAWALS_REQUEST_PATH,
   REWARDS_PATH,
   WITHDRAWALS_PATH,
+  SWAP_PATH,
 } from 'consts/urls';
 import { useConfig } from 'config';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { NavIconEarn } from 'assets/earn';
+import { ReactComponent as NavIconSwap } from 'assets/icons/nav-icon-swap.svg';
 
 import { SubNavigation } from './sub-navigation';
 
-import { MobileSubNavigation } from './mobile-sub-navigation';
+import { MobileNavigationBar } from './mobile-navigation-bar';
 import { NavigationLink } from './navigation-link';
 import { Nav } from './styles';
 
@@ -60,6 +62,11 @@ const routes: PageRoute[] = [
     path: '/earn',
     icon: <NavIconEarn data-testid="navEarn" />,
   },
+  {
+    name: 'Swap',
+    path: SWAP_PATH,
+    icon: <NavIconSwap data-testid="navSwap" />,
+  },
 ];
 
 const useNavigation = () => {
@@ -74,30 +81,18 @@ const useNavigation = () => {
 
   const pathnameWithoutQuery = sanitizePath(pathname);
 
-  const activeNestedRoute = useMemo(() => {
-    return availableRoutes.find(
-      (route) =>
-        isRouteActive(route, pathnameWithoutQuery) && 'subRoutes' in route,
-    );
-  }, [availableRoutes, pathnameWithoutQuery]);
-
   return {
     availableRoutes,
-    activeNestedRoute,
     pathnameWithoutQuery,
   };
 };
 
-export const MobileSliderNavigation: FC = () => {
-  const { activeNestedRoute, pathnameWithoutQuery } = useNavigation();
-
-  if (!activeNestedRoute) {
-    return null;
-  }
+export const MobileNavigation: FC = () => {
+  const { availableRoutes, pathnameWithoutQuery } = useNavigation();
 
   return (
-    <MobileSubNavigation
-      route={activeNestedRoute}
+    <MobileNavigationBar
+      routes={availableRoutes}
       currentPath={pathnameWithoutQuery}
     />
   );

@@ -9,6 +9,7 @@ export const devicesHeaderMedia = {
 const GlobalStyle = createGlobalStyle`
   :root {
     --nav-mobile-height: ${NAV_MOBILE_HEIGHT}px;
+    --nav-mobile-bottom-inset: max(8px, env(safe-area-inset-bottom));
     --nav-mobile-max-width: ${NAV_MOBILE_MAX_WIDTH}px;
     --nav-desktop-gutter-x: 46px;
 
@@ -20,7 +21,7 @@ const GlobalStyle = createGlobalStyle`
 
     --footer-mobile-padding-x: 20px;
     --footer-mobile-padding-y: 18px;
-    --footer-mobile-margin-bottom: 60px;
+    --footer-mobile-margin-bottom: calc(var(--nav-mobile-height) + var(--nav-mobile-bottom-inset));
     
     --custom-background-dark: #28282f;
   }

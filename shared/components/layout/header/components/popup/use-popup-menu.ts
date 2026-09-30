@@ -25,13 +25,9 @@ type OpenedBy = 'hover' | 'press' | 'keyboard';
 type UsePopupMenuOptions = {
   mode: PopupTriggerMode;
   disabled?: boolean;
-  // must be stable, checked on every open attempt
-  canOpen?: () => boolean;
   // keeps a hover-opened menu open when the page remounts the header
   persistKey?: string;
 };
-
-const alwaysCanOpen = () => true;
 
 const getMenuItems = (menu: HTMLElement | null) =>
   Array.from(menu?.querySelectorAll<HTMLElement>(MENU_ITEM_SELECTOR) ?? []);
@@ -70,13 +66,10 @@ const usePersistHoverOpened = (
 export const usePopupMenu = ({
   mode,
   disabled = false,
-  canOpen = alwaysCanOpen,
   persistKey,
 }: UsePopupMenuOptions) => {
   const [openedBy, setOpenedBy] = useState<OpenedBy | null>(() =>
-    isHoverOpenedPersisted(persistKey) && !disabled && canOpen()
-      ? 'hover'
-      : null,
+    isHoverOpenedPersisted(persistKey) && !disabled ? 'hover' : null,
   );
   const opened = openedBy !== null;
   const menuId = useId();
@@ -93,9 +86,9 @@ export const usePopupMenu = ({
   const open = useCallback(
     (by: OpenedBy) => {
       clearHoverTimer();
-      if (!disabled && canOpen()) setOpenedBy(by);
+      if (!disabled) setOpenedBy(by);
     },
-    [clearHoverTimer, disabled, canOpen],
+    [clearHoverTimer, disabled],
   );
 
   const close = useCallback(() => {
@@ -183,7 +176,7 @@ export const usePopupMenu = ({
         mode,
         pointerType: pointerTypeRef.current,
         isKeyboard,
-        canOpen: !disabled && canOpen(),
+        canOpen: !disabled,
       });
 
       pointerTypeRef.current = undefined;
@@ -196,7 +189,7 @@ export const usePopupMenu = ({
       else open(isKeyboard ? 'keyboard' : 'press');
     },
     onKeyDown: (event: KeyboardEvent) => {
-      if (event.key !== 'ArrowDown' || disabled || !canOpen()) return;
+      if (event.key !== 'ArrowDown' || disabled) return;
       event.preventDefault();
       // promotes a hover-opened menu so the cursor leaving won't close it
       if (openedBy === 'keyboard') getMenuItems(menuRef.current)[0]?.focus();
