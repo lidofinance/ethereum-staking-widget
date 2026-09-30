@@ -14,3 +14,4 @@ export * from './pending-withdrawal-rewards';
 export * from './how-many-withdrawal-requests';
 export * from './can-i-cancel-withdrawal-request';
 export * from './how-do-i-claim-my-rewards';
+export * from './how-does-loss-protection-work';
