@@ -9,5 +9,6 @@ export type TotalReward = {
   block: string;
   blockTime: string;
   logIndex: string;
-  transactionHash: string;
+  // Oracle-report rewards are not tied to a user transaction
+  transactionHash?: string;
 };

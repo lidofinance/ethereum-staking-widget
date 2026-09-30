@@ -1,4 +1,3 @@
-import { parseEther } from 'viem';
 import { useDappStatus } from 'modules/web3';
 
 import { VaultPosition } from '../../../shared/vault-position';
@@ -79,8 +78,6 @@ export const DVVPosition = () => {
 
   if (!isDappActive || !address) return null;
 
-  // convert mellow points to the wei at 18 decimals for easier compatibility with components
-  const mellowPointsBalance = parseEther(data?.mellowPoints.toFixed(4) ?? '0');
   return (
     <VaultPosition
       position={{
@@ -128,7 +125,7 @@ export const DVVPosition = () => {
       points={[
         {
           symbol: MELLOW_POINT_SYMBOL,
-          balance: mellowPointsBalance,
+          balance: data?.mellowPoints,
           usdAmount: null,
           isLoading: isLoadingPoints,
           icon: <TokenMellowIcon />,

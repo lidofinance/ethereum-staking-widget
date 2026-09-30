@@ -5,7 +5,7 @@ import { getEtherscanTxLink } from 'utils/etherscan';
 
 // TODO: move to separate folders
 type Props = {
-  transactionHash: string;
+  transactionHash?: string;
 };
 
 const IndexerLink = ({ transactionHash }: Props) => {

@@ -6,7 +6,7 @@ import type {
 } from '@lidofinance/lido-ethereum-sdk/common';
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
-import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 export const useContractAddress = (
@@ -18,7 +18,7 @@ export const useContractAddress = (
   return useQuery<Address | null>({
     queryKey: ['use-contract-address', core.chainId, isL2, contractName],
     enabled: !!core && !!core.chainId,
-    ...STRATEGY_CONSTANT,
+    ...STRATEGY_IMMUTABLE,
     queryFn: () => {
       if (isL2) {
         // LIDO_L2_CONTRACT_ADDRESSES[core.chainId] have only 'wsteth' and 'steth' contract names
