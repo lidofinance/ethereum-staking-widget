@@ -15,6 +15,7 @@ import {
 import { WalletCardBackdrop } from 'shared/wallet/fallback/lido-multichain-fallback';
 
 import { WalletLidoApr } from '../shared/wallet-lido-apr';
+import { useL2StakeFormData } from './l2-stake-form-context';
 
 const WalletComponent = () => {
   const { chainId, isChainIdOnL2 } = useDappStatus();
@@ -25,7 +26,7 @@ const WalletComponent = () => {
   } = useWstethBalance();
   const { data: stethByWsteth, isLoading: stethByWstethLoading } =
     useStETHByWstETH(wstethBalance, CHAINS.Mainnet);
-  // const { stakeableEther, stethBalance, loading } = useStakeFormData();
+  const { stakeableEther, loading } = useL2StakeFormData();
 
   return (
     <WalletCardBackdrop
@@ -35,11 +36,11 @@ const WalletComponent = () => {
       <CardRow>
         <CardBalance
           title={'Available to stake'}
-          loading={false}
+          loading={loading.isStakeableEtherLoading}
           value={
             <FormatToken
               data-testid="ethAvailableToStake"
-              amount={0n}
+              amount={stakeableEther}
               symbol="ETH"
             />
           }

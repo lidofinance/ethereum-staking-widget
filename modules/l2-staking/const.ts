@@ -9,6 +9,8 @@ export const LIDO_L2_STAKING_CHAIN_IDS = LIDO_L2_STAKING_CHAINS.map(
   (chain) => chain.id,
 ) as CHAINS[];
 
+export const LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK = 145_000n;
+
 export const LIDO_L2_STAKING_CONTRACT_MAP = {
   [CHAINS.Base]: {
     L2stakingReceiver: '0x328de900860816d29D1367F6903a24D8ed40C997',

@@ -4,43 +4,45 @@ import {
   useMemo,
   createContext,
   useContext,
+  useCallback,
 } from 'react';
+import { useFastStakeGasLimit } from './hooks/use-fast-stake-gas-limit';
 import { useForm, FormProvider } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
-// import {
-//   useEthereumBalance,
-//   useIsSmartAccount,
-//   //   BALANCE_PADDING,
-//   useWstethBalance,
-// } from 'modules/web3';
+import {
+  useEthereumBalance,
+  useIsSmartAccount,
+  useWstethBalance,
+  useMaxGasPrice,
+  BALANCE_PADDING_L2,
+} from 'modules/web3';
 
 import {
   FormControllerContext,
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
-// import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
-// import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
-// import { useIsSmartAccount, useMaxGasPrice } from 'modules/web3';
+import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-// import {
-//   type StakeFormDataContextValue,
-//   type StakeFormInput,
-//   type StakeFormNetworkData,
-// } from './types';
 // import {
 //   stakeFormValidationResolver,
 //   useStakeFormValidationContext,
 // } from './validation';
 
 // import { useStake } from '../use-stake';
-// import { useStethSubmitGasLimit } from '../hooks';
+
 import {
   useQueryParamsAmountForm,
   useQueryParamsReferralForm,
 } from 'shared/hooks/use-query-values-form';
-import { L2StakeFormDataContextValue, L2StakeFormInputType } from './types';
+import type {
+  L2StakeFormDataContextValue,
+  L2StakeFormInputType,
+  L2StakeFormNetworkData,
+} from './types';
+import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
+import { minBN } from 'utils/bn';
 
 //
 // Data context
@@ -58,97 +60,91 @@ export const useL2StakeFormData = () => {
   return value;
 };
 
-// const useL2StakeFormNetworkData = ():  => {
-//   const {
-//     data: wstethBalance,
-//     refetch: updateWstethBalance,
-//     isLoading: isWstethBalanceLoading,
-//   } = useWstethBalance();
-//   const { isSmartAccount, isLoading: isSmartAccountLoading } =
-//     useIsSmartAccount();
-//   //const gasLimit = useStethSubmitGasLimit();
-//   const { maxGasPrice, isLoading: isMaxGasPriceLoading } = useMaxGasPrice();
+const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
+  const {
+    data: wstethBalance,
+    refetch: updateWstethBalance,
+    isLoading: isWstethBalanceLoading,
+  } = useWstethBalance();
+  const { isSmartAccount, isLoading: isSmartAccountLoading } =
+    useIsSmartAccount();
+  const gasLimit = useFastStakeGasLimit();
+  const {
+    data: fastStakeLiquidity,
+    isLoading: isFastStakeLiquidityLoading,
+    refetch: refetchFastStakeLiquidity,
+  } = useFastStakeLiquidity();
+  const { maxGasPrice, isLoading: isMaxGasPriceLoading } = useMaxGasPrice();
 
-//   const gasCost = useMemo(
-//     () => (gasLimit && maxGasPrice ? gasLimit * maxGasPrice : undefined),
-//     [gasLimit, maxGasPrice],
-//   );
+  const gasCost = useMemo(
+    () => (gasLimit && maxGasPrice ? gasLimit * maxGasPrice : undefined),
+    [gasLimit, maxGasPrice],
+  );
+  const {
+    data: etherBalance,
+    refetch: updateEtherBalance,
+    isLoading: isEtherBalanceLoading,
+  } = useEthereumBalance();
 
-//   const {
-//     data: etherBalance,
-//     refetch: updateEtherBalance,
-//     isLoading: isEtherBalanceLoading,
-//   } = useEthereumBalance();
+  const stakeableEther = useMemo(() => {
+    if (etherBalance === undefined) return undefined;
 
-//   const {
-//     data: stakingLimitInfo,
-//     refetch: refetchStakeLimit,
-//     isLoading: isStakingLimitIsLoading,
-//   } = useStakingLimitInfo();
+    return minBN(etherBalance, fastStakeLiquidity?.eth);
+  }, [etherBalance, fastStakeLiquidity?.eth]);
 
-//   const stakeableEther = useMemo(() => {
-//     if (etherBalance === undefined || !stakingLimitInfo) return undefined;
-//     if (etherBalance && stakingLimitInfo.isStakingLimitSet) {
-//       return etherBalance < stakingLimitInfo.currentStakeLimit
-//         ? etherBalance
-//         : stakingLimitInfo.currentStakeLimit;
-//     }
-//     return etherBalance;
-//   }, [etherBalance, stakingLimitInfo]);
+  const maxAmount = useTokenMaxAmount({
+    balance: etherBalance,
+    limit: fastStakeLiquidity?.eth,
+    isPadded: !isSmartAccount,
+    padding: BALANCE_PADDING_L2,
+    gasLimit: gasLimit,
+    isLoading: isSmartAccountLoading,
+  });
 
-//   const maxAmount = useTokenMaxAmount({
-//     balance: etherBalance,
-//     limit: stakingLimitInfo?.currentStakeLimit,
-//     isPadded: !isSmartAccount,
-//     gasLimit: gasLimit,
-//     padding: BALANCE_PADDING,
-//     isLoading: isSmartAccountLoading,
-//   });
+  const revalidate = useCallback(async () => {
+    await Promise.allSettled([
+      updateWstethBalance(),
+      updateEtherBalance(),
+      refetchFastStakeLiquidity(),
+    ]);
+  }, [updateWstethBalance, updateEtherBalance, refetchFastStakeLiquidity]);
 
-//   const revalidate = useCallback(async () => {
-//     await Promise.allSettled([
-//       updateWstethBalance(),
-//       updateEtherBalance(),
-//       refetchStakeLimit(),
-//     ]);
-//   }, [updateWstethBalance, updateEtherBalance, refetchStakeLimit]);
+  const loading = useMemo(
+    () => ({
+      isWstethBalanceLoading,
+      isSmartAccountLoading,
+      isMaxGasPriceLoading,
+      isEtherBalanceLoading,
+      isStakeableEtherLoading:
+        isFastStakeLiquidityLoading || isEtherBalanceLoading,
+    }),
+    [
+      isWstethBalanceLoading,
+      isSmartAccountLoading,
+      isMaxGasPriceLoading,
+      isEtherBalanceLoading,
+      isFastStakeLiquidityLoading,
+    ],
+  );
 
-//   const loading = useMemo(
-//     () => ({
-//       isWstethBalanceLoading,
-//       isSmartAccountLoading,
-//       isMaxGasPriceLoading,
-//       isEtherBalanceLoading,
-//       isStakeableEtherLoading: isStakingLimitIsLoading || isEtherBalanceLoading,
-//     }),
-//     [
-//       isWstethBalanceLoading,
-//       isSmartAccountLoading,
-//       isMaxGasPriceLoading,
-//       isEtherBalanceLoading,
-//       isStakingLimitIsLoading,
-//     ],
-//   );
-
-//   return {
-//     wstethBalance,
-//     etherBalance,
-//     isSmartAccount,
-//     stakeableEther,
-//     stakingLimitInfo,
-//     gasCost,
-//     gasLimit,
-//     maxAmount,
-//     loading,
-//     revalidate,
-//   };
-// };
+  return {
+    wstethBalance,
+    etherBalance,
+    isSmartAccount,
+    stakeableEther,
+    gasCost,
+    gasLimit,
+    maxAmount,
+    loading,
+    revalidate,
+  };
+};
 
 //
 // Data provider
 //
 export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
-  //   const networkData = useStakeFormNetworkData();
+  const networkData = useL2StakeFormNetworkData();
   //   const validationContextPromise = useStakeFormValidationContext(networkData);
 
   const formObject = useForm<L2StakeFormInputType>({
@@ -187,9 +183,17 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const l2StakeFormDataContextValue: L2StakeFormDataContextValue = useMemo(
     () => ({
-      stakeableEther: undefined,
+      stakeableEther: networkData.stakeableEther,
+      maxAmount: networkData.maxAmount,
+      gasCost: networkData.gasCost,
+      loading: networkData.loading,
     }),
-    [],
+    [
+      networkData.maxAmount,
+      networkData.stakeableEther,
+      networkData.gasCost,
+      networkData.loading,
+    ],
   );
 
   return (

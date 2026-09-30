@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-import { Address, getContract } from 'viem';
+import { Address, getContract, zeroAddress } from 'viem';
 import {
   ERROR_CODE,
   LidoSDKModule,
   Cache,
   getEncodableContract,
   invariant,
+  NOOP,
 } from '@lidofinance/lido-ethereum-sdk/common';
 import { bridgedWstethAbi } from '@lidofinance/lido-ethereum-sdk/l2';
 
@@ -20,8 +21,13 @@ import type {
   L2StakingReceiverContractType,
   L2StakingOracleFeedContractType,
   L2StakingOraclePoolContractType,
+  L2FastStakeProps,
+  ParsedL2FastStakeProps,
 } from './types';
-
+import {
+  CommonTransactionProps,
+  TransactionOptions,
+} from '@lidofinance/lido-ethereum-sdk';
 const L2_ORACLE_POOL_PRECISION = BigInt(1e18);
 
 export const calcFastStakeWstethByEth = (
@@ -55,6 +61,7 @@ const CACHE_TIME_DYNAMIC = 5 * 60 * 1000; // 5 minutes
 
 export class L2StakeModule extends LidoSDKModule {
   public L2_ORACLE_POOL_PRECISION = L2_ORACLE_POOL_PRECISION;
+  public ETH_TOKEN_ADDRESS = zeroAddress;
 
   @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
   public async getL2StakingReceiverContractAddress(): Promise<Address> {
@@ -133,6 +140,36 @@ export class L2StakeModule extends LidoSDKModule {
     );
   }
 
+  //   @Logger('Contracts:')
+  @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
+  public async getReceiverConstants(): Promise<{
+    TOKEN: Address;
+    WNATIVE: Address;
+    MIN_PROCESS_MESSAGE_GAS: bigint;
+    LINK_TOKEN: Address;
+    CCIP_ROUTER: Address;
+  }> {
+    const receiverContract = await this.getL2StakingReceiverContract();
+
+    const [TOKEN, WNATIVE, MIN_PROCESS_MESSAGE_GAS, LINK_TOKEN, CCIP_ROUTER] =
+      await Promise.all([
+        receiverContract.read.TOKEN(),
+        receiverContract.read.WNATIVE(),
+        receiverContract.read.MIN_PROCESS_MESSAGE_GAS(),
+        receiverContract.read.LINK_TOKEN(),
+        receiverContract.read.CCIP_ROUTER(),
+      ]);
+    return {
+      TOKEN,
+      WNATIVE,
+      MIN_PROCESS_MESSAGE_GAS: BigInt(MIN_PROCESS_MESSAGE_GAS),
+      LINK_TOKEN,
+      CCIP_ROUTER,
+    };
+  }
+
+  //   @Logger('Contracts:')
+
   @Cache(CACHE_TIME_DYNAMIC, ['core.chain.id'])
   public async getFastStakeFee(): Promise<bigint> {
     const oraclePool = await this.getL2StakingReceiverOraclePoolContract();
@@ -181,5 +218,48 @@ export class L2StakeModule extends LidoSDKModule {
     const wstethLiquidity = await wstethContract.read.balanceOf([poolAddress]);
     const ethLiquidity = await this.getFastStakeEthByWsteth(wstethLiquidity);
     return { wsteth: wstethLiquidity, eth: ethLiquidity };
+  }
+
+  @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
+  public async fastStakeEthEstimateGas(
+    props: Omit<L2FastStakeProps, 'callback' | ''>,
+    options?: TransactionOptions,
+  ): Promise<bigint> {
+    const { referral, amount, token, minReceiveAmount, account } =
+      await this.parseProps(props);
+    const contract = await this.getL2StakingReceiverContract();
+
+    let tokenAddress;
+    if (token === 'ETH') {
+      tokenAddress = this.ETH_TOKEN_ADDRESS;
+    } else {
+      const { WNATIVE } = await this.getReceiverConstants();
+      tokenAddress = WNATIVE;
+    }
+
+    const gasLimit = await contract.estimateGas.fastStakeReferral(
+      [tokenAddress, amount, minReceiveAmount, referral],
+      {
+        account,
+        ...options,
+        value: token === 'ETH' ? amount : 0n,
+      },
+    );
+
+    return gasLimit;
+  }
+
+  private async parseProps<
+    TProps extends CommonTransactionProps & L2FastStakeProps,
+  >(props: TProps): Promise<ParsedL2FastStakeProps> {
+    return {
+      ...props,
+      referral: props.referral ?? zeroAddress,
+      account: await this.core.useAccount(props.account),
+      // TODO: use parseValue for SDK
+      amount: BigInt(props.amount),
+      minReceiveAmount: BigInt(props.minReceiveAmount),
+      callback: props.callback ?? NOOP,
+    };
   }
 }

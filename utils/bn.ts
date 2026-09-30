@@ -29,7 +29,7 @@ export const maxBN = (
 export const bnAmountToNumber = (
   amount?: bigint | null,
   decimals?: number,
-  precision = 4,
+  precision = 10,
 ): number => {
   if (amount == null || amount === 0n) return 0;
 

@@ -1,22 +1,25 @@
-// import { useWatch } from 'react-hook-form';
-
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
+import { useWatch } from 'react-hook-form';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
-// import { FormatPrice, FormatToken } from 'shared/formatters';
-// import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
-import { useFastStakeConversion } from './hooks/use-conversion';
-import { useWatch } from 'react-hook-form';
-import { L2StakeFormInputType } from './types';
-import { FormatToken } from 'shared/formatters';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { ONE_stETH } from 'modules/web3';
+import { useFastStakeConversion } from './hooks/use-conversion';
+
+import { useL2StakeFormData } from './l2-stake-form-context';
+import { FormatPrice, FormatToken } from 'shared/formatters';
+
 import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
 
+import type { L2StakeFormInputType } from './types';
+
 export const L2StakeFormInfo = () => {
-  // const { gasCost, loading } = useStakeFormData();
+  const { gasCost, loading } = useL2StakeFormData();
   const amount = useWatch<L2StakeFormInputType, 'amount'>({ name: 'amount' });
-  // const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(gasCost);
+  const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(gasCost);
+  // This will use Lido SDK default chain for fetching the protocol fee
+  // so it can be eth testnet value for mainnet L2 if env is misconfigured
   const protocolFee = useProtocolFee();
   const { data: conversion, isLoading: isConversionLoading } =
     useFastStakeConversion();
@@ -65,13 +68,14 @@ export const L2StakeFormInfo = () => {
           symbol={'wstETH'}
         />
       </DataTableRow>
-      {/* <DataTableRow
+      <DataTableRow
         title="Max transaction cost"
         data-testid="maxTxCost"
         loading={loading.isMaxGasPriceLoading || isEthUsdLoading}
       >
-        <FormatPrice amount={usdAmount} />
-      </DataTableRow> */}
+        {/* Max transaction cost in USD for L2 can be quite small, so we adjust rounding */}
+        <FormatPrice amount={usdAmount} maximumFractionDigits={4} />
+      </DataTableRow>
       <DataTableRow
         title="Reward fee"
         data-testid="lidoFee"
