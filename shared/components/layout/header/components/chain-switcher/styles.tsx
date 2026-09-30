@@ -1,14 +1,15 @@
 import styled, { css } from 'styled-components';
+import { POPUP_MENU_Z_INDEX } from '../popup';
 
 export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
 `;
 
-export const ChainSwitcherStyled = styled.div<{
+export const ChainSwitcherStyled = styled.button<{
   $disabled: boolean;
   $loading?: boolean;
 }>`
-  z-index: 202;
+  z-index: ${POPUP_MENU_Z_INDEX + 1};
 
   display: inline-flex;
   flex-grow: 1;
@@ -21,8 +22,10 @@ export const ChainSwitcherStyled = styled.div<{
 
   width: ${({ $disabled, $loading }) => ($disabled && !$loading ? '44px' : '68px')};
   height: 44px;
-  margin-right: 12px;
+  margin: 0;
   padding: 9px 8px;
+  border: none;
+  font-family: inherit;
 
   font-weight: 400;
   font-size: 14px;
@@ -38,15 +41,9 @@ export const ChainSwitcherStyled = styled.div<{
 
   background: var(--lido-color-controlBg);
 
-  &:not(:disabled):hover {
-    ${({ theme, $disabled }) =>
-      theme.name === 'dark'
-        ? css`
-            background: ${!$disabled && '#34343D'};
-          `
-        : css`
-            background: ${!$disabled && '#000A3D08'};
-          `}
+  &:not(:disabled):hover,
+  &:focus-visible {
+    background: ${({ theme, $disabled }) => !$disabled && (theme.name === 'dark' ? '#34343D' : '#000A3D08')};
   }
 `;
 

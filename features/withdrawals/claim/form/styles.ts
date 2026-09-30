@@ -113,7 +113,7 @@ export const ClaimFormFooterWrapper = styled.div<{ isSticked: boolean }>`
       bottom: 0;
 
       @media ${devicesHeaderMedia.mobile} {
-        bottom: ${NAV_MOBILE_HEIGHT}px;
+        bottom: calc(${NAV_MOBILE_HEIGHT}px + var(--nav-mobile-bottom-inset));
       }
     `};
 `;

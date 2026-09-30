@@ -22,7 +22,7 @@ export const WalledButtonBalanceStyle = styled.span`
   margin-left: 4px;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
 
-  ${({ theme }) => theme.mediaQueries.md} {
+  ${({ theme }) => theme.mediaQueries.lg} {
     display: none;
   }
 `;

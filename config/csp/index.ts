@@ -10,7 +10,8 @@ import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules'
 // otherwise you will get something like a cyclic error!
 import { config } from '../get-config';
 import { secretConfig } from '../get-secret-config';
-import { IPFS_BASE_SCRIPT_HASH } from 'features/ipfs';
+// global import breaks HMR
+import { IPFS_BASE_SCRIPT_HASH } from 'features/ipfs/ipfs-base-script';
 import { COWSWAP_BASE_URL } from 'features/dex-withdrawals/cowswap/consts';
 
 const trustedHosts = secretConfig.cspTrustedHosts
