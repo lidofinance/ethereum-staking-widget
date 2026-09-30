@@ -152,12 +152,12 @@ export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
   ${({ theme, $active }) =>
     $active &&
     css`
-      background: ${theme.name === 'dark' ? '#34343D' : '#000A3D08'};
+      background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
     `}
 
   &:not(:disabled):hover {
     ${({ theme }) => css`
-      background: ${theme.name === 'dark' ? '#34343D' : '#000A3D08'};
+      background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
     `}
   }
 `;

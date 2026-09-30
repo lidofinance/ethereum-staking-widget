@@ -48,7 +48,7 @@ export const SubNavigation: FC<SubNavigationProps> = ({
           />
           <MobileOnlySubNavigationLinkBackdrop href={primaryPath} />
         </NavLink>
-        <NavigationDropDownMenu data-testid="chainList" $opened={opened}>
+        <NavigationDropDownMenu data-testid="stakeNavList" $opened={opened}>
           {route.subRoutes.map((subRoute) => {
             const isSubRouteActive = isRouteActive(subRoute, currentPath);
             invariant(subRoute.path, 'SubRoute requires a path');

@@ -1,4 +1,11 @@
-import { FC, useState, useMemo, createElement, ComponentType } from 'react';
+import {
+  FC,
+  useState,
+  useMemo,
+  createElement,
+  ComponentType,
+  useRef,
+} from 'react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 import {
   CHAIN_ICONS_MAP,
@@ -6,6 +13,7 @@ import {
   useDappStatus,
   wagmiChainMap,
 } from 'modules/web3';
+import { useClickOutside } from 'shared/components/layout/header/components/popup';
 
 import {
   ChainSwitcherOptions,
@@ -35,6 +43,8 @@ export const ChainSwitcher: FC = () => {
     supportedChainIds,
     requestChangeChain,
   } = useDappStatus();
+  const popupRef = useRef<HTMLDivElement>(null);
+  useClickOutside(popupRef, () => setOpened(false));
 
   const [opened, setOpened] = useState(false);
   const isLocked = useMemo(
@@ -61,6 +71,7 @@ export const ChainSwitcher: FC = () => {
   return (
     <ChainSwitcherWrapperStyled data-testid="chainSwitcher">
       <ChainSwitcherStyled
+        ref={popupRef}
         data-testid={`currentChain=${chainId}`}
         $disabled={isLocked}
         $loading={isSwitchChainPending}
@@ -85,7 +96,6 @@ export const ChainSwitcher: FC = () => {
               setOpened(false);
               requestChangeChain(chainId);
             }}
-            setOpened={setOpened}
             opened={opened}
             options={iconsMap}
           />

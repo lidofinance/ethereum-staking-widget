@@ -67,8 +67,7 @@ export const PopupStyled = styled.div<PopupMenuProps>`
   font-weight: 400;
 
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-  box-shadow: ${({ theme }) => theme.boxShadows.xs}
-    var(--lido-color-shadowLight);
+  box-shadow: ${({ theme }) => theme.boxShadows.md} rgba(0, 10, 61, 0.16);
 
   transition: opacity 150ms ease;
   transition-property: opacity, transform;
@@ -110,7 +109,7 @@ export const OptionStyled = styled.div<PopupMenuOptionProps>`
           background: ${$active && '#34343D'};
         `
       : css`
-          background: ${$active && '#000A3D08'};
+          background: ${$active && 'rgba(0, 10, 61, 0.04)'};
         `}
 
   &:not(:disabled):hover {
