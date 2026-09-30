@@ -37,6 +37,15 @@ describe('BACKEND_SCHEMA', () => {
     expect(parsed.totals).toEqual({ ethRewards: 5, currencyRewards: 0 });
   });
 
+  it('accepts reward events without a transactionHash', () => {
+    const { transactionHash: _, ...rewardEvent } = validResponse.events[0];
+    const parsed = BACKEND_SCHEMA.parse({
+      ...validResponse,
+      events: [rewardEvent],
+    });
+    expect(parsed.events[0].transactionHash).toBeUndefined();
+  });
+
   it('keeps extra event fields', () => {
     const parsed = BACKEND_SCHEMA.parse(validResponse);
     expect(parsed.events[0]).toMatchObject({ apr: '3.1' });

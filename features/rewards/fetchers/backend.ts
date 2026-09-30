@@ -21,7 +21,8 @@ export const BACKEND_SCHEMA = z.object({
       change: z.string(),
       balance: z.string(),
       blockTime: z.string(),
-      transactionHash: z.string(),
+      // Absent on oracle-report reward events, present on transfers
+      transactionHash: z.string().optional(),
     }),
   ),
   // The backend serializes both totals as numeric strings
