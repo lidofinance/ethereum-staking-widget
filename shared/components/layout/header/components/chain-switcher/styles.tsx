@@ -5,7 +5,7 @@ export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
 `;
 
-export const ChainSwitcherStyled = styled.div<{
+export const ChainSwitcherStyled = styled.button<{
   $disabled: boolean;
   $loading?: boolean;
 }>`
@@ -22,7 +22,10 @@ export const ChainSwitcherStyled = styled.div<{
 
   width: ${({ $disabled, $loading }) => ($disabled && !$loading ? '44px' : '68px')};
   height: 44px;
+  margin: 0;
   padding: 9px 8px;
+  border: none;
+  font-family: inherit;
 
   font-weight: 400;
   font-size: 14px;
@@ -38,7 +41,8 @@ export const ChainSwitcherStyled = styled.div<{
 
   background: var(--lido-color-controlBg);
 
-  &:not(:disabled):hover {
+  &:not(:disabled):hover,
+  &:focus-visible {
     background: ${({ theme, $disabled }) => !$disabled && (theme.name === 'dark' ? '#34343D' : '#000A3D08')};
   }
 `;

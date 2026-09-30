@@ -79,7 +79,7 @@ type PopupMenuOptionProps = {
   $active: boolean;
 };
 
-export const OptionStyled = styled.div<PopupMenuOptionProps>`
+export const OptionStyled = styled.button<PopupMenuOptionProps>`
   display: flex;
   align-items: center;
 
@@ -88,7 +88,9 @@ export const OptionStyled = styled.div<PopupMenuOptionProps>`
 
   padding: 0 8px;
   margin: 0;
+  border: none;
   box-sizing: border-box;
+  font: inherit;
 
   text-align: left;
   color: var(--lido-color-text);
@@ -112,7 +114,8 @@ export const OptionStyled = styled.div<PopupMenuOptionProps>`
           background: ${$active && 'rgba(0, 10, 61, 0.04)'};
         `}
 
-  &:not(:disabled):hover {
+  &:not(:disabled):hover,
+  &:focus-visible {
     ${({ theme }) =>
       theme.name === 'dark'
         ? css`

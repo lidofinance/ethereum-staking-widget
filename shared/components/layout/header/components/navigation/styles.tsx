@@ -126,9 +126,37 @@ export const NavigationDropDownButton = styled.div`
   position: relative;
 `;
 
+// above the press backdrop so a press on STAKE reaches the trigger itself
+export const NavigationDropDownTrigger = styled(LocalLink)`
+  position: relative;
+  z-index: ${POPUP_MENU_Z_INDEX};
+`;
+
+export const NavigationDropDownIcon = styled.span`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
+
+  background: var(--lido-color-background);
+  color: var(--lido-color-textSecondary);
+
+  // overrides the nav-wide svg margin
+  && svg {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    fill: currentColor;
+  }
+`;
+
 export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
   display: flex;
-  padding: 12px 16px;
+  // 8px keeps the original 44px row height with the 28px icon
+  padding: 8px 16px;
   align-items: center;
   gap: 8px;
   align-self: stretch;
@@ -153,9 +181,15 @@ export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
     $active &&
     css`
       background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
+
+      ${NavigationDropDownIcon} {
+        background: var(--lido-color-primary);
+        color: var(--lido-color-primaryContrast);
+      }
     `}
 
-  &:not(:disabled):hover {
+  &:not(:disabled):hover,
+  &:focus-visible {
     ${({ theme }) => css`
       background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
     `}
@@ -251,20 +285,6 @@ export const MobileOnlySubNavigationActiveBar = styled.div`
     transition:
       transform ${({ theme }) => theme.duration.norm} ease,
       width ${({ theme }) => theme.duration.norm} ease;
-  }
-`;
-
-export const MobileOnlySubNavigationLinkBackdrop = styled(LocalLink)`
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  display: none;
-  @media ${devicesHeaderMedia.mobile} {
-    display: block;
   }
 `;
 

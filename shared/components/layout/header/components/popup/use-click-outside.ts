@@ -5,22 +5,17 @@ export const useClickOutside = (
   onClickOutside: () => void,
 ) => {
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+    // pointerdown covers mouse, touch and pen per press, not per device
+    const handlePointerDown = (event: PointerEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
         onClickOutside();
       }
     };
 
-    // Preventing double execution on mobile devices
-    if ('ontouchstart' in window) {
-      document.addEventListener('touchstart', handleClickOutside);
-    } else {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener('pointerdown', handlePointerDown);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('pointerdown', handlePointerDown);
     };
   }, [ref, onClickOutside]);
 };
