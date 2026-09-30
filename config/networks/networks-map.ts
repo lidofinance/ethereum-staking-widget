@@ -185,7 +185,7 @@ const DEVNETS_MAP = {
 } as Record<string, NetworkConfig>;
 
 export const getNetworkConfigMapByChain = (
-  chain: CHAINS,
+  chain: number,
 ): NetworkConfig | undefined => {
   const overridedSetName = DEVNET_OVERRIDES[chain];
 

@@ -3,7 +3,7 @@ import { ethAddress, getAddress, type Address } from 'viem';
 import { CONTRACT_NAMES, getNetworkConfigMapByChain } from './networks-map';
 import { Token, TOKENS, type TokenSymbol } from 'consts/tokens';
 import { asToken } from 'utils/as-token';
-import { CHAINS, isSupportedL2Chain } from 'consts/chains';
+import { isSupportedL2Chain } from 'consts/chains';
 
 const TOKENS_TO_CONTRACTS: Record<
   Token,
@@ -25,7 +25,7 @@ const TOKENS_TO_CONTRACTS: Record<
 } as const;
 
 export const getTokenAddress = (
-  chain: CHAINS,
+  chain: number,
   _token: TokenSymbol | Token,
 ): Address | undefined => {
   const token = asToken(_token);
