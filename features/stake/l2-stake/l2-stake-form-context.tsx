@@ -25,10 +25,10 @@ import {
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-// import {
-//   stakeFormValidationResolver,
-//   useStakeFormValidationContext,
-// } from './validation';
+import {
+  L2StakeFormValidationResolver,
+  useL2StakeFormValidationContext,
+} from './validation';
 
 // import { useStake } from '../use-stake';
 
@@ -40,6 +40,7 @@ import type {
   L2StakeFormDataContextValue,
   L2StakeFormInputType,
   L2StakeFormNetworkData,
+  L2StakeFormValidationContext,
 } from './types';
 import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
 import { minBN } from 'utils/bn';
@@ -92,6 +93,8 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
     return minBN(etherBalance, fastStakeLiquidity?.eth);
   }, [etherBalance, fastStakeLiquidity?.eth]);
 
+  const fastStakeLiquidityEth = fastStakeLiquidity?.eth;
+
   const maxAmount = useTokenMaxAmount({
     balance: etherBalance,
     limit: fastStakeLiquidity?.eth,
@@ -115,6 +118,7 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
       isSmartAccountLoading,
       isMaxGasPriceLoading,
       isEtherBalanceLoading,
+      isFastStakeLiquidityLoading,
       isStakeableEtherLoading:
         isFastStakeLiquidityLoading || isEtherBalanceLoading,
     }),
@@ -130,8 +134,9 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
   return {
     wstethBalance,
     etherBalance,
-    isSmartAccount,
+    fastStakeLiquidityEth,
     stakeableEther,
+    isSmartAccount,
     gasCost,
     gasLimit,
     maxAmount,
@@ -145,15 +150,18 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
 //
 export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const networkData = useL2StakeFormNetworkData();
-  //   const validationContextPromise = useStakeFormValidationContext(networkData);
+  const validationContextPromise = useL2StakeFormValidationContext(networkData);
 
-  const formObject = useForm<L2StakeFormInputType>({
+  const formObject = useForm<
+    L2StakeFormInputType,
+    Promise<L2StakeFormValidationContext>
+  >({
     defaultValues: {
       amount: null,
       referral: null,
     },
-    //context: validationContextPromise,
-    // resolver: null,
+    context: validationContextPromise,
+    resolver: L2StakeFormValidationResolver,
     mode: 'onChange',
   });
   const { setValue } = formObject;

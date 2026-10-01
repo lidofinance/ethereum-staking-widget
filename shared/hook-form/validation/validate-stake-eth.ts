@@ -8,8 +8,8 @@ import { validateStakeLimit } from './validate-stake-limit';
 export type validateStakeEthParams = {
   formField: string;
   amount: bigint;
-  stakingLimitLevel: LIMIT_LEVEL;
-  currentStakeLimit: bigint;
+  stakingLimitLevel?: LIMIT_LEVEL;
+  currentStakeLimit?: bigint;
   shouldValidateEtherBalance: boolean;
   gasCost: bigint;
 } & (
@@ -23,7 +23,8 @@ export type validateStakeEthParams = {
 
 // Runs validation pipeline common between stake and wrapEth
 export const validateStakeEth = (params: validateStakeEthParams) => {
-  validateStakeLimit('amount', params.stakingLimitLevel);
+  params.stakingLimitLevel &&
+    validateStakeLimit('amount', params.stakingLimitLevel);
 
   if (params.isWalletActive) {
     const {
@@ -36,14 +37,15 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       isSmartAccount,
     } = params;
 
-    validateBigintMax(
-      formField,
-      amount,
-      currentStakeLimit,
-      `Entered ETH amount exceeds current staking limit of ${formatEther(
+    currentStakeLimit !== undefined &&
+      validateBigintMax(
+        formField,
+        amount,
         currentStakeLimit,
-      )}`,
-    );
+        `Entered ETH amount exceeds current staking limit of ${formatEther(
+          currentStakeLimit,
+        )}`,
+      );
 
     // allow Smart Account(AA) to have zero balance as they can be sponsored with ETH
     if (shouldValidateEtherBalance) {
@@ -60,6 +62,7 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
     if (!isSmartAccount) {
       const gasPaddedBalance = etherBalance - gasCost;
 
+      // Essentially a check that balance - gas > 0
       validateBigintMax(
         formField,
         0n,

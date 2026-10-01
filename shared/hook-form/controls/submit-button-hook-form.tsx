@@ -4,8 +4,6 @@ import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
 import { useDappStatus } from 'modules/web3';
 import { Connect, DisabledButton } from 'shared/wallet';
 
-import { isValidationErrorTypeValidate } from '../validation/validation-error';
-
 type SubmitButtonHookFormProps = Partial<
   React.ComponentProps<typeof ButtonIcon>
 > & {
@@ -21,8 +19,11 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   ...props
 }) => {
   const { isDappActive, isSupportedChain, isWalletConnected } = useDappStatus();
-  const { isValidating, isSubmitting } = useFormState();
-  const { errors } = useFormState<Record<string, unknown>>();
+  const {
+    isValidating,
+    isSubmitting,
+    disabled: disabledFormState,
+  } = useFormState();
 
   if (!isWalletConnected) {
     return <Connect fullwidth />;
@@ -31,11 +32,7 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   if (!isSupportedChain || !isDappActive) {
     return <DisabledButton>{props.children}</DisabledButton>;
   }
-  const disabled =
-    (errorField &&
-      !!errors[errorField] &&
-      isValidationErrorTypeValidate(errors[errorField]?.type)) ||
-    disabledProp;
+  const disabled = disabledFormState || disabledProp;
 
   return (
     <ButtonIcon
