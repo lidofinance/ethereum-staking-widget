@@ -7,6 +7,7 @@ import {
   getEncodableContract,
   invariant,
   NOOP,
+  LIDO_L2_CONTRACT_ADDRESSES,
 } from '@lidofinance/lido-ethereum-sdk/common';
 import { bridgedWstethAbi } from '@lidofinance/lido-ethereum-sdk/l2';
 
@@ -15,7 +16,6 @@ import {
   L2_STAKING_RECEIVER_ABI,
   L2_STAKING_ORACLE_FEED_ABI,
 } from './l2-staking-abi';
-import { LIDO_L2_STAKING_CONTRACT_MAP } from './const';
 
 import type {
   L2StakingReceiverContractType,
@@ -24,10 +24,14 @@ import type {
   L2FastStakeProps,
   ParsedL2FastStakeProps,
 } from './types';
-import {
+
+import type {
+  CHAINS,
   CommonTransactionProps,
+  PopulatedTransaction,
   TransactionOptions,
-} from '@lidofinance/lido-ethereum-sdk';
+  TransactionResult,
+} from '@lidofinance/lido-ethereum-sdk/core';
 const L2_ORACLE_POOL_PRECISION = BigInt(1e18);
 
 export const calcFastStakeWstethByEth = (
@@ -65,36 +69,32 @@ export class L2StakeModule extends LidoSDKModule {
 
   @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
   public async getL2StakingReceiverContractAddress(): Promise<Address> {
-    const chainId = this.core.chain.id;
-    const contractMap =
-      chainId in LIDO_L2_STAKING_CONTRACT_MAP
-        ? LIDO_L2_STAKING_CONTRACT_MAP[
-            chainId as keyof typeof LIDO_L2_STAKING_CONTRACT_MAP
-          ]
+    const chainId = this.core.chain.id as CHAINS;
+    const receiver =
+      chainId in LIDO_L2_CONTRACT_ADDRESSES
+        ? LIDO_L2_CONTRACT_ADDRESSES[chainId]?.stakeReceiver
         : undefined;
     invariant(
-      contractMap,
-      `L2 Staking contract not found for chainId: ${chainId}`,
+      receiver,
+      `L2 Staking receiver contract not found for chainId: ${chainId}`,
       ERROR_CODE.NOT_SUPPORTED,
     );
-    return contractMap.L2stakingReceiver;
+    return receiver;
   }
 
   @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
   public async getL2StakingWstethContractAddress(): Promise<Address> {
-    const chainId = this.core.chain.id;
-    const contractMap =
-      chainId in LIDO_L2_STAKING_CONTRACT_MAP
-        ? LIDO_L2_STAKING_CONTRACT_MAP[
-            chainId as keyof typeof LIDO_L2_STAKING_CONTRACT_MAP
-          ]
+    const chainId = this.core.chain.id as CHAINS;
+    const wsteth =
+      chainId in LIDO_L2_CONTRACT_ADDRESSES
+        ? LIDO_L2_CONTRACT_ADDRESSES[chainId]?.wsteth
         : undefined;
     invariant(
-      contractMap,
-      `L2 Staking contract not found for chainId: ${chainId}`,
+      wsteth,
+      `L2 wsteth contract not found for chainId: ${chainId}`,
       ERROR_CODE.NOT_SUPPORTED,
     );
-    return contractMap.L2wstETH;
+    return wsteth;
   }
 
   //   @Logger('Contracts:')
@@ -222,7 +222,10 @@ export class L2StakeModule extends LidoSDKModule {
 
   @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
   public async fastStakeEthEstimateGas(
-    props: Omit<L2FastStakeProps, 'callback' | ''>,
+    props: Omit<
+      L2FastStakeProps,
+      'callback' | 'waitForTransactionReceiptParameters'
+    >,
     options?: TransactionOptions,
   ): Promise<bigint> {
     const { referral, amount, token, minReceiveAmount, account } =
@@ -247,6 +250,76 @@ export class L2StakeModule extends LidoSDKModule {
     );
 
     return gasLimit;
+  }
+
+  public async fastStakeEthPopulateTx(
+    props: Omit<
+      L2FastStakeProps,
+      'callback' | 'waitForTransactionReceiptParameters'
+    >,
+    options?: TransactionOptions,
+  ): Promise<PopulatedTransaction> {
+    const { referral, amount, token, minReceiveAmount, account } =
+      await this.parseProps(props);
+    const contract = await this.getL2StakingReceiverContract();
+
+    let tokenAddress;
+    if (token === 'ETH') {
+      tokenAddress = this.ETH_TOKEN_ADDRESS;
+    } else {
+      const { WNATIVE } = await this.getReceiverConstants();
+      tokenAddress = WNATIVE;
+    }
+
+    const encodedTx = contract.encode.fastStakeReferral(
+      [tokenAddress, amount, minReceiveAmount, referral],
+      {
+        account,
+        ...options,
+        value: token === 'ETH' ? amount : 0n,
+      },
+    );
+    return { ...encodedTx, from: account.address };
+  }
+
+  public async fastStakeEth(
+    props: L2FastStakeProps,
+    options?: TransactionOptions,
+  ): Promise<TransactionResult> {
+    this.core.useWalletClient();
+    const {
+      account,
+      callback,
+      token,
+      amount,
+      minReceiveAmount,
+      referral,
+      ...rest
+    } = await this.parseProps(props);
+    const contract = await this.getL2StakingReceiverContract();
+    const params = [
+      token === 'ETH'
+        ? this.ETH_TOKEN_ADDRESS
+        : (await this.getReceiverConstants()).WNATIVE,
+      amount,
+      minReceiveAmount,
+      referral,
+    ] as const;
+
+    const value = token === 'ETH' ? amount : 0n;
+
+    return this.core.performTransaction({
+      ...rest,
+      ...options,
+      account,
+      callback,
+      getGasLimit: (options) =>
+        contract.estimateGas.fastStakeReferral(params, { ...options, value }),
+      sendTransaction: (options) =>
+        contract.write.fastStakeReferral(params, { ...options, value }),
+      // decodeResult: (receipt) =>
+      //   this.unwrapParseEvents(receipt, account.address),
+    });
   }
 
   private async parseProps<

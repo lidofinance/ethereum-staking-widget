@@ -41,6 +41,8 @@ export const CONTRACT_NAMES = {
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
   L2stakingReceiver: 'L2stakingReceiver',
+  L2FastStakeOraclePool: 'L2FastStakeOraclePool',
+  L2FastStakeOracleFeed: 'L2FastStakeOracleFeed',
   // 3rd party contracts
   aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',

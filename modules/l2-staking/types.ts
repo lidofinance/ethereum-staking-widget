@@ -1,5 +1,5 @@
 import type { EncodableContract } from '@lidofinance/lido-ethereum-sdk/common';
-import type { GetContractReturnType, Address } from 'viem';
+import type { GetContractReturnType, Address, JsonRpcAccount } from 'viem';
 import type {
   L2StakingReceiverAbiType,
   L2StakingOracleFeedAbiType,
@@ -35,4 +35,5 @@ export type ParsedL2FastStakeProps = L2FastStakeProps & {
   amount: bigint;
   minReceiveAmount: bigint;
   referral: Address;
+  account: JsonRpcAccount;
 };

@@ -3,7 +3,9 @@
 
 import { parseEther } from 'viem';
 
-// how much to leave out on user balance when max is pressed
+//
+export const ESTIMATE_AMOUNT_L2 = parseEther('0.0001');
+
 export const ESTIMATE_AMOUNT = parseEther('0.001');
 
 // this is the padding to leave on user balance for safety during eth value transactions

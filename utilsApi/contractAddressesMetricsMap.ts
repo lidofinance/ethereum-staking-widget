@@ -78,7 +78,11 @@ import {
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
-import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking';
+import {
+  L2_STAKING_ORACLE_FEED_ABI,
+  L2_STAKING_ORACLE_POOL_ABI,
+  L2_STAKING_RECEIVER_ABI,
+} from 'modules/l2-staking';
 
 export const METRIC_CONTRACT_ABIS = {
   // Lido
@@ -91,6 +95,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.L2stETH]: rebasableL2StethAbi,
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
   [CONTRACT_NAMES.L2stakingReceiver]: L2_STAKING_RECEIVER_ABI,
+  [CONTRACT_NAMES.L2FastStakeOraclePool]: L2_STAKING_ORACLE_POOL_ABI,
+  [CONTRACT_NAMES.L2FastStakeOracleFeed]: L2_STAKING_ORACLE_FEED_ABI,
   // SI contracts
   [CONTRACT_NAMES.wstethReferralStaker]: WstethReferralStakerABI,
   // Dual Governance

@@ -24,26 +24,26 @@ import {
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
+import {
+  useQueryParamsAmountForm,
+  useQueryParamsReferralForm,
+} from 'shared/hooks/use-query-values-form';
+import { minBN } from 'utils/bn';
+
+import { useL2FastStake } from './hooks/use-fast-stake';
+import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
 
 import {
   L2StakeFormValidationResolver,
   useL2StakeFormValidationContext,
 } from './validation';
 
-// import { useStake } from '../use-stake';
-
-import {
-  useQueryParamsAmountForm,
-  useQueryParamsReferralForm,
-} from 'shared/hooks/use-query-values-form';
 import type {
   L2StakeFormDataContextValue,
   L2StakeFormInputType,
   L2StakeFormNetworkData,
   L2StakeFormValidationContext,
 } from './types';
-import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
-import { minBN } from 'utils/bn';
 
 //
 // Data context
@@ -168,25 +168,20 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   useQueryParamsReferralForm<L2StakeFormInputType>({ setValue });
   useQueryParamsAmountForm<L2StakeFormInputType>({ setValue });
 
-  const {
-    retryEvent,
-    //retryFire
-  } = useFormControllerRetry();
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
-  //   const stake = useStake({
-  //     //onConfirm: networkData.revalidate,
-  //     onRetry: retryFire,
-  //   });
+  const stake = useL2FastStake({
+    onConfirm: networkData.revalidate,
+    onRetry: retryFire,
+  });
 
   const formControllerValue: FormControllerContextValueType<L2StakeFormInputType> =
     useMemo(
       () => ({
-        onSubmit: () => {
-          return Promise.resolve(true);
-        },
+        onSubmit: stake,
         retryEvent,
       }),
-      [retryEvent],
+      [retryEvent, stake],
     );
 
   const l2StakeFormDataContextValue: L2StakeFormDataContextValue = useMemo(

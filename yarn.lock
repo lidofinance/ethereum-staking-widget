@@ -3272,7 +3272,7 @@ __metadata:
 
 "@lidofinance/lido-ethereum-sdk@file:.yalc/@lidofinance/lido-ethereum-sdk::locator=lido-staking-widget%40workspace%3A.":
   version: 0.0.0
-  resolution: "@lidofinance/lido-ethereum-sdk@file:.yalc/@lidofinance/lido-ethereum-sdk#.yalc/@lidofinance/lido-ethereum-sdk::hash=3b8c76&locator=lido-staking-widget%40workspace%3A."
+  resolution: "@lidofinance/lido-ethereum-sdk@file:.yalc/@lidofinance/lido-ethereum-sdk#.yalc/@lidofinance/lido-ethereum-sdk::hash=f627e9&locator=lido-staking-widget%40workspace%3A."
   dependencies:
     "@openzeppelin/merkle-tree": "npm:^1.0.8"
     blockstore-core: "npm:^5.0.4"
@@ -3282,7 +3282,7 @@ __metadata:
     multiformats: "npm:^13.4.0"
   peerDependencies:
     viem: ^2.45.0
-  checksum: 10c0/7873fa88279d711230ad10d96f9cd4465d952bf426ecf208b735eeeffd2a9086623948f6bc0ec93af60e82648bc2b4fef5676456d18d171ddbf6dee8d3c8224d
+  checksum: 10c0/36673382a8edfa0eadc1164d3ee9ac255ff18e4108e8fd5800b86c251e8054c05c1e26178abc340189de8529f140d78379751eaa6ee23877e260293fdc10842a
   languageName: node
   linkType: hard
 

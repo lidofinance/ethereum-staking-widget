@@ -13,7 +13,6 @@ import {
 } from 'wagmi/chains';
 
 import { CHAINS } from 'config/chains';
-import { LIDO_L2_STAKING_CHAIN_IDS } from 'modules/l2-staking';
 export { CHAINS } from 'config/chains';
 
 export enum LIDO_MULTICHAIN_CHAINS {
@@ -32,11 +31,19 @@ export const isSupportedChain = (chainId?: CHAINS) => {
 };
 
 export const isSupportedL2WrapChain = (chainId?: CHAINS) => {
-  return Boolean(chainId && chainId in LIDO_L2_CONTRACT_ADDRESSES);
+  return Boolean(
+    chainId &&
+    chainId in LIDO_L2_CONTRACT_ADDRESSES &&
+    !!LIDO_L2_CONTRACT_ADDRESSES[chainId]?.steth,
+  );
 };
 
 export const isSupportedL2StakingChain = (chainId?: CHAINS) => {
-  return Boolean(chainId && LIDO_L2_STAKING_CHAIN_IDS.includes(chainId));
+  return Boolean(
+    chainId &&
+    chainId in LIDO_L2_CONTRACT_ADDRESSES &&
+    !!LIDO_L2_CONTRACT_ADDRESSES[chainId]?.stakeReceiver,
+  );
 };
 
 export const isSupportedL2Chain = (chainId?: CHAINS) => {
