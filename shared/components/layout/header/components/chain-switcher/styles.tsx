@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { POPUP_MENU_Z_INDEX } from '../popup';
+import { OptionStyled, POPUP_MENU_Z_INDEX } from '../popup';
 
 export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
@@ -71,4 +71,16 @@ export const ArrowStyle = styled.div<{ $opened: boolean }>`
 
   transform: rotate(${({ $opened }) => ($opened ? 180 : 0)}deg);
   transition: transform ${({ theme }) => theme.duration.norm} ease;
+`;
+
+const CHAIN_LOGO_SIZE = 28;
+const CHAIN_OPTION_LOGO_SIZE = 24;
+
+// svgr strips viewBox from the 28px logos, so they are scaled, not resized
+export const ChainOptionStyled = styled(OptionStyled)`
+  & > svg {
+    flex-shrink: 0;
+    transform: scale(${CHAIN_OPTION_LOGO_SIZE / CHAIN_LOGO_SIZE});
+    margin: ${(CHAIN_OPTION_LOGO_SIZE - CHAIN_LOGO_SIZE) / 2}px;
+  }
 `;

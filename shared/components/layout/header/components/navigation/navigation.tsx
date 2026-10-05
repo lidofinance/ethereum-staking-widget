@@ -1,11 +1,6 @@
 import { type FC, useMemo, Fragment } from 'react';
 
-import {
-  ChartColumnIncreasing,
-  Stake,
-  Wrap,
-  Withdraw,
-} from '@lidofinance/lido-ui';
+import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 
 import {
   HOME_PATH,
@@ -53,7 +48,7 @@ const routes: PageRoute[] = [
       {
         name: 'Rewards',
         path: REWARDS_PATH,
-        icon: <ChartColumnIncreasing data-testid="navRewards" />,
+        icon: <Wallet data-testid="navRewards" />,
       },
     ],
   },

@@ -1,3 +1,4 @@
+import { ArrowBottom } from '@lidofinance/lido-ui';
 import { LocalLink } from 'shared/components/local-link';
 import styled, { css } from 'styled-components';
 import { devicesHeaderMedia } from 'styles/global';
@@ -99,19 +100,12 @@ export const NavigationDropDownTrigger = styled(LocalLink)`
 export const NavigationDropDownIcon = styled.span`
   display: flex;
   flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
-
-  background: var(--lido-color-background);
   color: var(--lido-color-textSecondary);
 
   // overrides the nav-wide svg margin
   && svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     margin: 0;
     fill: currentColor;
   }
@@ -119,10 +113,9 @@ export const NavigationDropDownIcon = styled.span`
 
 export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
   display: flex;
-  // 8px keeps the original 44px row height with the 28px icon
-  padding: 8px 16px;
+  padding: 12px 16px;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   align-self: stretch;
 
   color: var(--lido-color-secondary);
@@ -147,8 +140,7 @@ export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
       background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
 
       ${NavigationDropDownIcon} {
-        background: var(--lido-color-primary);
-        color: var(--lido-color-primaryContrast);
+        color: var(--lido-color-primary);
       }
     `}
 
@@ -160,14 +152,18 @@ export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
   }
 `;
 
-export const NavigationDropDownArrow = styled.div<{ $opened: boolean }>`
-  border: 3px solid #7a8aa0;
-  border-bottom-width: 0;
-  border-left-color: transparent;
-  border-right-color: transparent;
-
-  margin: 9px;
-  height: 4px;
+export const NavigationDropDownArrow = styled(ArrowBottom)<{
+  $opened: boolean;
+}>`
+  // stays gray, unlike the section icon, which turns blue when active
+  && {
+    width: 24px;
+    height: 24px;
+    margin: 0 0 0 4px;
+    opacity: 1;
+    color: var(--lido-color-textSecondary);
+    fill: currentColor;
+  }
 
   transform: rotate(${({ $opened }) => ($opened ? 180 : 0)}deg);
   transition: transform ${({ theme }) => theme.duration.norm} ease;
@@ -199,7 +195,7 @@ export const MobileNav = styled.nav`
   border: 1px solid var(--lido-color-border);
   border-bottom: none;
   border-radius: 24px 24px 0 0;
-  box-shadow: 0 -4px 20px rgba(39, 56, 82, 0.08);
+  box-shadow: ${({ theme }) => theme.boxShadows.md} rgba(0, 10, 61, 0.16);
 
   // continues the bar below the screen edge: mobile browsers reposition fixed
   // elements late while the toolbar hides, which would show content underneath
