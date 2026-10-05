@@ -3,9 +3,10 @@ import { FC, ReactNode } from 'react';
 import {
   PopoverNoClickBackdrop,
   PopupStyled,
-  OptionStyled,
   type usePopupMenu,
 } from 'shared/components/layout/header/components/popup';
+
+import { ChainOptionStyled } from '../styles';
 
 export type ChainOption = { name: string; iconComponent: ReactNode };
 
@@ -34,7 +35,7 @@ export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
       <PopoverNoClickBackdrop {...backdropProps} />
       <PopupStyled data-testid="chainList" $opened={opened} {...menuProps}>
         {Object.entries(options).map(([chainId, chainOption]) => (
-          <OptionStyled
+          <ChainOptionStyled
             type="button"
             data-testid={`chainRow=${chainId}`}
             key={chainId}
@@ -43,7 +44,7 @@ export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
           >
             {chainOption.iconComponent}{' '}
             <span data-testid="chainName">{chainOption.name}</span>
-          </OptionStyled>
+          </ChainOptionStyled>
         ))}
       </PopupStyled>
     </>
