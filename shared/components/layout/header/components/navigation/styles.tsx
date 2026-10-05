@@ -195,6 +195,9 @@ export const MobileNav = styled.nav`
   padding-bottom: var(--nav-mobile-bottom-inset);
 
   background: var(--lido-color-foreground);
+  // separates the bar from the content, follows the rounded top corners
+  border: 1px solid var(--lido-color-border);
+  border-bottom: none;
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -4px 20px rgba(39, 56, 82, 0.08);
 `;
