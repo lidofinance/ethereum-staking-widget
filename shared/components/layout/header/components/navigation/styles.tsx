@@ -200,6 +200,21 @@ export const MobileNav = styled.nav`
   border-bottom: none;
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -4px 20px rgba(39, 56, 82, 0.08);
+
+  // continues the bar below the screen edge: mobile browsers reposition fixed
+  // elements late while the toolbar hides, which would show content underneath
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    right: -1px;
+    height: 100px;
+    background: var(--lido-color-foreground);
+    border: 1px solid var(--lido-color-border);
+    border-top: none;
+    border-bottom: none;
+  }
 `;
 
 const mobileNavFocusCss = css`
