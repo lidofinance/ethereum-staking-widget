@@ -2,6 +2,8 @@ import type { NextApiRequest } from 'next';
 import { API } from '@lidofinance/next-api-wrapper';
 import { LRUCache } from 'lru-cache';
 
+import { CACHE_DEFAULT_ERROR_HEADERS } from 'config/groups/cache';
+
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 import { FetcherError } from 'utils/fetcherError';
@@ -72,6 +74,8 @@ export const createCachedProxy = ({
       cache.set(cacheKey, transformedData);
       res.json(transformedData);
     } catch (e) {
+      // route-level cacheControl set public caching before the handler ran
+      res.setHeader('Cache-Control', CACHE_DEFAULT_ERROR_HEADERS);
       if (e instanceof FetcherError && e.status >= 400 && e.status < 500) {
         console.warn(`[CachedProxy]Forwarding ${e.status} error from ${url}`);
         res.status(e.status);
