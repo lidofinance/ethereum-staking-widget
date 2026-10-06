@@ -19,7 +19,6 @@ import {
   HowManyWithdrawalRequests,
   CanICancelMyWithdrawalRequest,
   HowDoIClaimMyRewards,
-  HowDoesLossProtectionWork,
 } from './list';
 
 export const FAQ_IDS = {
@@ -38,7 +37,6 @@ export const FAQ_IDS = {
   withdrawalRequests: 'faq-withdrawal-requests',
   cancelWithdrawal: 'faq-cancel-withdrawal',
   claimRewards: 'faq-claim-rewards',
-  lossProtection: 'faq-loss-protection',
 } as const;
 
 const FAQ_IDS_SET = new Set(Object.values(FAQ_IDS));
@@ -68,7 +66,6 @@ export const EarnUsdFaq: FC = () => {
         <HowManyWithdrawalRequests id={FAQ_IDS.withdrawalRequests} />
         <CanICancelMyWithdrawalRequest id={FAQ_IDS.cancelWithdrawal} />
         <HowDoIClaimMyRewards id={FAQ_IDS.claimRewards} />
-        <HowDoesLossProtectionWork id={FAQ_IDS.lossProtection} />
       </Section>
     </FaqGroup>
   );
