@@ -13,10 +13,9 @@ import {
 
 import { useBells } from 'features/stake/stake-form/hooks/use-bells';
 
-import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
-import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getReferralAddress } from 'utils/get-referral-address';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
+import { useTrackStakeEvent } from './use-track-event';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -37,10 +36,12 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { txModalStages } = useTxModalStagesL2FastStake();
   const txFlow = useTxFlow();
   const { featureFlags } = useConfig().externalConfig;
+  const trackStart = useTrackStakeEvent('fast_stake_start');
+  const trackEnd = useTrackStakeEvent('fast_stake_end');
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
-      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart);
+      trackStart();
       try {
         invariant(amount, 'amount is null');
         invariant(address, 'account is not defined');
@@ -94,7 +95,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
               bells();
             }
             txModalStages.success(balance, preStakeBalanceWsteth, txHash);
-            trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
+            trackEnd();
           },
           onMultisigDone: () => {
             txModalStages.successMultisig();
@@ -109,6 +110,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       }
     },
     [
+      trackStart,
       address,
       l1Core.publicClient,
       l2.wsteth,
@@ -118,6 +120,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       txModalStages,
       isAA,
       featureFlags.holidayDecorEnabled,
+      trackEnd,
       bells,
       onRetry,
     ],

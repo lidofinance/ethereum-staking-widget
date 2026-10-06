@@ -3270,9 +3270,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lidofinance/lido-ethereum-sdk@file:.yalc/@lidofinance/lido-ethereum-sdk::locator=lido-staking-widget%40workspace%3A.":
-  version: 0.0.0
-  resolution: "@lidofinance/lido-ethereum-sdk@file:.yalc/@lidofinance/lido-ethereum-sdk#.yalc/@lidofinance/lido-ethereum-sdk::hash=f627e9&locator=lido-staking-widget%40workspace%3A."
+"@lidofinance/lido-ethereum-sdk@npm:4.8.0-alpha.3":
+  version: 4.8.0-alpha.3
+  resolution: "@lidofinance/lido-ethereum-sdk@npm:4.8.0-alpha.3"
   dependencies:
     "@openzeppelin/merkle-tree": "npm:^1.0.8"
     blockstore-core: "npm:^5.0.4"
@@ -3282,7 +3282,7 @@ __metadata:
     multiformats: "npm:^13.4.0"
   peerDependencies:
     viem: ^2.45.0
-  checksum: 10c0/36673382a8edfa0eadc1164d3ee9ac255ff18e4108e8fd5800b86c251e8054c05c1e26178abc340189de8529f140d78379751eaa6ee23877e260293fdc10842a
+  checksum: 10c0/f3d992cfd73f9e68cd553f11245d1a3f9cba90d35f2d9dcd9c698273b282f25e73e613668549eaddec9456b12f432079ed72935b7473bced6c521ccac3b65287
   languageName: node
   linkType: hard
 
@@ -11193,7 +11193,7 @@ __metadata:
     "@lidofinance/eth-api-providers": "npm:^0.48.0"
     "@lidofinance/eth-providers": "npm:^0.48.0"
     "@lidofinance/lido-app-ui": "npm:^1.1.2"
-    "@lidofinance/lido-ethereum-sdk": "file:.yalc/@lidofinance/lido-ethereum-sdk"
+    "@lidofinance/lido-ethereum-sdk": "npm:4.8.0-alpha.3"
     "@lidofinance/lido-ui": "npm:^3.42.1"
     "@lidofinance/next-api-wrapper": "npm:^0.48.0"
     "@lidofinance/next-ip-rate-limit": "npm:^0.60.0"

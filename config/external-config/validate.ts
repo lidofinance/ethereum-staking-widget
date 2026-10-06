@@ -1,3 +1,4 @@
+import { CHAINS } from 'config/chains';
 import { z } from 'zod';
 
 ///
@@ -266,6 +267,50 @@ const MultiChainBannerSchema = z
   });
 
 //
+// L2 Stake
+//
+
+const DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH = 25;
+
+const L2StakeConfigurationSchema = z.object({
+  enabled: z.boolean().optional().default(true),
+  // Target wsteth liquidity for L2 stake in integer ETH
+  liquidityTarget: z
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .default(DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH),
+});
+
+const L2StakeSchema = z.object({
+  common: L2StakeConfigurationSchema,
+  perChain: z.record(z.number().min(1), L2StakeConfigurationSchema),
+});
+
+// Populate all chains with common config
+const L2StakeTransformSchema = L2StakeSchema.optional()
+  .default({
+    common: L2StakeConfigurationSchema.parse({}),
+    perChain: {},
+  })
+  .transform((data) => {
+    return {
+      common: data.common,
+      perChain: Object.fromEntries(
+        Object.values(CHAINS)
+          .filter((chain) => typeof chain === 'number')
+          .map((chainId) => [
+            chainId,
+            {
+              ...data.common,
+              ...(data.perChain[chainId] ?? {}),
+            },
+          ]),
+      ) as Record<CHAINS, z.infer<typeof L2StakeConfigurationSchema>>,
+    };
+  });
+//
 // Wallets
 //
 
@@ -284,6 +329,7 @@ const WalletsConfigSchema = z
 
 const ManifestConfigSchema = z.object({
   withdrawalDex: DexWithdrawalIntegrationEntrySchema,
+  l2Stake: L2StakeTransformSchema,
   multiChainBanner: MultiChainBannerSchema.optional().default([]),
   featureFlags: FeatureFlagsSchema.optional().default({}),
   earnVaults: EarnVaultListSchema.optional().default([]),

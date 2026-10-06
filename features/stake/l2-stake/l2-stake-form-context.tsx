@@ -5,6 +5,7 @@ import {
   createContext,
   useContext,
   useCallback,
+  useEffect,
 } from 'react';
 import { useFastStakeGasLimit } from './hooks/use-fast-stake-gas-limit';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -16,6 +17,7 @@ import {
   useWstethBalance,
   useMaxGasPrice,
   BALANCE_PADDING_L2,
+  useDappStatus,
 } from 'modules/web3';
 
 import {
@@ -32,6 +34,7 @@ import { minBN } from 'utils/bn';
 
 import { useL2FastStake } from './hooks/use-fast-stake';
 import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
+import { useL2StakeState } from './hooks/use-l2-stake-state';
 
 import {
   L2StakeFormValidationResolver,
@@ -44,6 +47,8 @@ import type {
   L2StakeFormNetworkData,
   L2StakeFormValidationContext,
 } from './types';
+import { parseEther } from 'viem';
+import { useTrackStakeEvent } from './hooks/use-track-event';
 
 //
 // Data context
@@ -149,8 +154,11 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
 // Data provider
 //
 export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { chainId, address } = useDappStatus();
   const networkData = useL2StakeFormNetworkData();
   const validationContextPromise = useL2StakeFormValidationContext(networkData);
+  const l2StakeState = useL2StakeState();
+  const trackStakeEvent = useTrackStakeEvent('fast_stake_more_liquidity');
 
   const formObject = useForm<
     L2StakeFormInputType,
@@ -163,6 +171,7 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     context: validationContextPromise,
     resolver: L2StakeFormValidationResolver,
     mode: 'onChange',
+    disabled: !l2StakeState.isEnabled,
   });
   const { setValue } = formObject;
   useQueryParamsReferralForm<L2StakeFormInputType>({ setValue });
@@ -174,6 +183,38 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onConfirm: networkData.revalidate,
     onRetry: retryFire,
   });
+
+  const [amount] = formObject.watch(['amount']);
+
+  useEffect(() => {
+    if (
+      networkData.etherBalance &&
+      networkData.fastStakeLiquidityEth &&
+      chainId &&
+      address &&
+      amount &&
+      l2StakeState.state.liquidityTarget
+    ) {
+      const liquidityTargetEth = parseEther(
+        String(l2StakeState.state.liquidityTarget),
+      );
+      if (
+        amount > liquidityTargetEth &&
+        amount > networkData.fastStakeLiquidityEth &&
+        amount <= networkData.etherBalance
+      ) {
+        trackStakeEvent();
+      }
+    }
+  }, [
+    networkData.etherBalance,
+    networkData.fastStakeLiquidityEth,
+    chainId,
+    address,
+    amount,
+    l2StakeState.state.liquidityTarget,
+    trackStakeEvent,
+  ]);
 
   const formControllerValue: FormControllerContextValueType<L2StakeFormInputType> =
     useMemo(

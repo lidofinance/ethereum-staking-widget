@@ -5,6 +5,16 @@ export const enum MATOMO_TX_EVENTS_TYPES {
   stakingStart = 'stakingStart',
   stakingFinish = 'stakingFinish',
 
+  // StakeL2
+  stakeL2StartBase = 'stakeL2StartBase',
+  stakeL2FinishBase = 'stakeL2FinishBase',
+  stakeL2StartLinea = 'stakeL2StartLinea',
+  stakeL2FinishLinea = 'stakeL2FinishLinea',
+  stakeL2StartArbitrum = 'stakeL2StartArbitrum',
+  stakeL2FinishArbitrum = 'stakeL2FinishArbitrum',
+  stakeL2StartOptimism = 'stakeL2StartOptimism',
+  stakeL2FinishOptimism = 'stakeL2FinishOptimism',
+
   // Wrap
   wrapApprovalStart = 'wrapApprovalStart',
   wrapApprovalFinish = 'wrapApprovalFinish',
@@ -41,6 +51,47 @@ export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
       'Ethereum_Staking_Widget',
       'Successfully finish staking',
       'eth_widget_staking_finish',
+    ],
+    // L2 Staking
+    [MATOMO_TX_EVENTS_TYPES.stakeL2StartBase]: [
+      'Ethereum_Staking_Widget',
+      'Initiating staking on Base transaction',
+      'eth_widget_staking_on_Base_start',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.stakeL2FinishBase]: [
+      'Ethereum_Staking_Widget',
+      'Successful finish staking on Base transaction',
+      'eth_widget_staking_on_Base_finish',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.stakeL2StartLinea]: [
+      'Ethereum_Staking_Widget',
+      'Initiating staking on Linea transaction',
+      'eth_widget_staking_on_Linea_start',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.stakeL2FinishLinea]: [
+      'Ethereum_Staking_Widget',
+      'Successful finish staking on Linea transaction',
+      'eth_widget_staking_on_Linea_finish',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.stakeL2StartArbitrum]: [
+      'Ethereum_Staking_Widget',
+      'Initiating staking on Arbitrum transaction',
+      'eth_widget_staking_on_Arbitrum_start',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.stakeL2FinishArbitrum]: [
+      'Ethereum_Staking_Widget',
+      'Successful finish staking on Arbitrum transaction',
+      'eth_widget_staking_on_Arbitrum_finish',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.stakeL2StartOptimism]: [
+      'Ethereum_Staking_Widget',
+      'Initiating staking on Optimism transaction',
+      'eth_widget_staking_on_Optimism_start',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.stakeL2FinishOptimism]: [
+      'Ethereum_Staking_Widget',
+      'Successful finish staking on Optimism transaction',
+      'eth_widget_staking_on_Optimism_finish',
     ],
 
     [MATOMO_TX_EVENTS_TYPES.wrapApprovalStart]: [
