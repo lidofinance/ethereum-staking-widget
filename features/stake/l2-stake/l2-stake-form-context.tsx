@@ -188,8 +188,8 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     if (
-      networkData.etherBalance &&
-      networkData.fastStakeLiquidityEth &&
+      networkData.etherBalance !== undefined &&
+      networkData.fastStakeLiquidityEth !== undefined &&
       chainId &&
       address &&
       amount &&

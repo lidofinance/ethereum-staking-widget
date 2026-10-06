@@ -42,7 +42,7 @@ export const L2StakeLiquidityBanner = () => {
   if (!fastStakeLiquidityData || inputAmount == null) return null;
 
   const exceedsLiquidity = inputAmount > fastStakeLiquidityData.eth;
-  const belowLiquidityTarget = inputAmount < liquidityTargetEth;
+  const belowLiquidityTarget = inputAmount <= liquidityTargetEth;
 
   if (exceedsLiquidity && belowLiquidityTarget)
     return (
