@@ -9,17 +9,23 @@ import { FetcherError } from './fetcherError';
 const USER_AGENT_HEADER: Record<string, string> =
   typeof window === 'undefined' ? { 'User-Agent': USER_AGENT } : {};
 
+const DEFAULT_HEADERS: Record<string, string> = {
+  'Content-type': 'application/json',
+  ...USER_AGENT_HEADER,
+};
+
 const DEFAULT_PARAMS = {
   method: 'GET',
-  headers: {
-    'Content-type': 'application/json',
-    ...USER_AGENT_HEADER,
-  },
+  headers: DEFAULT_HEADERS,
 };
 
 // callers pass their own `headers`, which would otherwise drop the defaults
-const mergeHeaders = (extra?: HeadersInit): Headers => {
-  const merged = new Headers(DEFAULT_PARAMS.headers);
+// Content-Type only with a body: on a bodyless GET it forces a CORS preflight
+const mergeHeaders = (
+  extra: HeadersInit | undefined,
+  hasBody: boolean,
+): Headers => {
+  const merged = new Headers(hasBody ? DEFAULT_HEADERS : USER_AGENT_HEADER);
   new Headers(extra).forEach((value, key) => merged.set(key, value));
   return merged;
 };
@@ -58,7 +64,7 @@ export const standardFetcher: StandardFetcher = async (url, params) => {
   const response = await fetch(url, {
     ...DEFAULT_PARAMS,
     ...fetchParams,
-    headers: mergeHeaders(fetchParams.headers),
+    headers: mergeHeaders(fetchParams.headers, fetchParams.body != null),
     signal: controller.signal,
   });
 
