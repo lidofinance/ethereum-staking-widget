@@ -6,8 +6,6 @@ export const enum API_ROUTES {
   REWARDS = 'api/rewards',
   VALIDATION = 'api/validation',
   CONFIG_MANIFEST = 'api/config-manifest',
-  EARN_VAULTS_APR = 'api/earn/vaults-apr',
-  EARN_VAULTS_TVL = 'api/earn/vaults-tvl',
   GEO = 'api/geo',
   SWAP_ONE_INCH = 'api/swap/one-inch',
 }
