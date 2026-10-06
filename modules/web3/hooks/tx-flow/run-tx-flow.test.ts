@@ -212,6 +212,42 @@ describe('runTxFlow', () => {
       expect(error.txHash).toBe(TX_HASH);
     });
 
+    it('propagates a failing onSuccess as settled when onFailure is omitted', async () => {
+      const { onFailure: _, ...cb } = createCallbacks();
+      const refreshError = new Error('balance refresh');
+      cb.onSuccess.mockRejectedValue(refreshError);
+      const error = await run({
+        ...cb,
+        sendTransaction: legacySdk(
+          { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+          {
+            stage: TransactionCallbackStage.CONFIRMATION,
+            payload: receipt(),
+          },
+          { stage: TransactionCallbackStage.DONE },
+        ),
+      }).catch((e) => e);
+
+      // The caller's own catch must get to show "completed, data unavailable"
+      expect(error).toBeInstanceOf(TxSettledError);
+      expect(error.cause).toBe(refreshError);
+      expect(error.txHash).toBe(TX_HASH);
+    });
+
+    it('propagates a failure before settlement as is when onFailure is omitted', async () => {
+      const { onFailure: _, ...cb } = createCallbacks();
+      const signError = new Error('rejected');
+      cb.onSign.mockRejectedValue(signError);
+      await expect(
+        run({
+          ...cb,
+          sendTransaction: legacySdk({
+            stage: TransactionCallbackStage.SIGN,
+          }),
+        }),
+      ).rejects.toBe(signError);
+    });
+
     it('surfaces a reverted receipt as a failure and skips success', async () => {
       const cb = createCallbacks();
       await expect(
@@ -358,6 +394,21 @@ describe('runTxFlow', () => {
       // afterwards for the same error must not report it a second time
       expect(cb.onFailure).toHaveBeenCalledTimes(1);
       const error = reportedError(cb.onFailure);
+      expect(error).toBeInstanceOf(TxSettledError);
+      expect(error.cause).toBe(refreshError);
+    });
+
+    it('propagates a failing onSuccess as settled when onFailure is omitted', async () => {
+      const { onFailure: _, ...cb } = createCallbacks();
+      const refreshError = new Error('balance refresh');
+      cb.onSuccess.mockRejectedValue(refreshError);
+      const error = await run(
+        { ...cb, callsFn: async () => [] },
+        { isAA: true, sendAACalls: aaSdk() },
+      ).catch((e) => e);
+
+      // The ERROR stage the AA sender emits has no handler to report to, so
+      // the error must still reach the caller
       expect(error).toBeInstanceOf(TxSettledError);
       expect(error.cause).toBe(refreshError);
     });

@@ -154,10 +154,12 @@ export const runTxFlow = async (
     if (staleError) throw staleError;
     if (!isSettled) throw error;
     // The SDK emits no ERROR stage for legacy transactions, so report the
-    // settled failure here; swallowing it lets the caller finish as a
-    // success (reset form, track completion) since the tx did complete
+    // settled failure here. With a handler the error is swallowed so the
+    // caller finishes as a success (reset form, track completion) since the
+    // tx did complete. Without one, the caller's own catch must show it
+    if (!onFailure) throw toFlowError(error);
     if (!isFailureReported) {
-      await onFailure?.({
+      await onFailure({
         stage: TransactionCallbackStage.ERROR,
         error: toFlowError(error),
         isAA,
