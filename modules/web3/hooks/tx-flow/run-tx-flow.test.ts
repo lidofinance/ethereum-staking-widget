@@ -364,7 +364,7 @@ describe('runTxFlow', () => {
       expect(cb.onFailure).not.toHaveBeenCalled();
     });
 
-    it('reports a failure before settlement once, as is, and rejects', async () => {
+    it('rejects a failure before settlement as is, ignoring the ERROR stage', async () => {
       const cb = createCallbacks();
       const failed = new Error('Transaction failed');
       await expect(
@@ -374,8 +374,8 @@ describe('runTxFlow', () => {
         ),
       ).rejects.toBe(failed);
 
-      expect(cb.onFailure).toHaveBeenCalledTimes(1);
-      expect(reportedError(cb.onFailure)).toBe(failed);
+      // The caller's catch handles rejection, same as for legacy transactions
+      expect(cb.onFailure).not.toHaveBeenCalled();
       expect(cb.onSuccess).not.toHaveBeenCalled();
     });
 
@@ -390,8 +390,7 @@ describe('runTxFlow', () => {
         ),
       ).resolves.toBeUndefined();
 
-      // DONE reports the failure itself; the ERROR stage the AA sender emits
-      // afterwards for the same error must not report it a second time
+      // The ERROR stage the AA sender emits must not report it a second time
       expect(cb.onFailure).toHaveBeenCalledTimes(1);
       const error = reportedError(cb.onFailure);
       expect(error).toBeInstanceOf(TxSettledError);

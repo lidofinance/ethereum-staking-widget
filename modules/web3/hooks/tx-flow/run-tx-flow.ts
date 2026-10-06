@@ -6,8 +6,7 @@ import { TxSettledError } from '../../utils/tx-settled-error';
 import { TxStaleError } from '../../utils/tx-stale-error';
 import type { TxCallbackProps, TxFlowArgs, TxFlowDeps } from './types';
 
-// Stages the SDK awaits before it reaches the wallet: throwing from them
-// aborts the request. Later stages only report on a transaction already sent.
+// Throwing from these aborts the request; later stages only report on a sent tx
 const PRE_SEND_STAGES = new Set<TxCallbackProps['stage']>([
   TransactionCallbackStage.GAS_LIMIT,
   TransactionCallbackStage.PERMIT,
@@ -40,103 +39,58 @@ export const runTxFlow = async (
     txHash,
   }: TxFlowDeps,
 ) => {
-  // Set once a successful receipt is known and cleared when its DONE stage
-  // completes. In between, the transaction is done: a failing confirmations
-  // read or balance refresh must not be presented as a failed transaction,
-  // and never with a Retry. Clearing matters for flows that chain several
-  // transactions (approve, then deposit) through one stage callback: the
-  // approval settling must not mask a failure of the deposit that follows
+  // True from a successful receipt until DONE completes: a failure in that
+  // window is not a failed transaction and must never get a Retry. Cleared
+  // after DONE so a chained transaction (approve, then deposit) reports its own
   let isSettled = false;
-  let isFailureReported = false;
-  // Kept because the SDK rewraps thrown errors and loses the instance
-  let staleError: TxStaleError | undefined;
-  const toFlowError = (error: unknown) =>
-    isSettled ? new TxSettledError(error, txHash.current) : error;
 
-  /**
-   * Callback function to handle different stages of the transaction flow.
-   * It calls the appropriate callback based on the stage of the transaction.
-   *
-   * @param args - The arguments for the current stage of the transaction.
-   */
   const txStagesCallback = async (txArgs: TxCallbackProps) => {
     if (!isCurrent()) {
-      if (PRE_SEND_STAGES.has(txArgs.stage))
-        throw (staleError = new TxStaleError());
+      if (PRE_SEND_STAGES.has(txArgs.stage)) throw new TxStaleError();
       return;
     }
     const args = { ...txArgs, isAA };
     switch (args.stage) {
+      case TransactionCallbackStage.GAS_LIMIT:
+        return onGasLimit?.(args);
+      case TransactionCallbackStage.PERMIT:
+        return onPermit?.(args);
       case TransactionCallbackStage.SIGN:
         return onSign?.(args);
       case TransactionCallbackStage.RECEIPT:
-        // In case of AA sendCalls, the callId is used to track the transaction.
-        // But in case of legacy sendTransaction, the payload is the transaction hash.
-        // Memoize the txHash for using it in subsequent calls.
+        // Legacy reports the tx hash here; AA reports a callId and the hash at DONE
         txHash.current = args.payload;
-        await onReceipt?.({
+        return onReceipt?.({
           ...args,
           txHashOrCallId:
             'callId' in args ? (args.callId as Hash) : args.payload,
         });
-        break;
-      case TransactionCallbackStage.DONE:
-        isSettled = true;
-        try {
-          await onSuccess?.({
-            ...args,
-            txHash: 'txHash' in args ? args.txHash : txHash.current,
-          });
-        } catch (error) {
-          // Report here rather than relying on the SDK rejecting: the L2
-          // wrap path fires the SDK call without awaiting it
-          isFailureReported = true;
-          await onFailure?.({
-            ...args,
-            stage: TransactionCallbackStage.ERROR,
-            error: toFlowError(error),
-          });
-          throw error;
-        }
-        isSettled = false;
-        txHash.current = undefined; // Reset txHash after success
-        break;
-      case TransactionCallbackStage.MULTISIG_DONE:
-        await onMultisigDone?.(args);
-        break;
-      case TransactionCallbackStage.ERROR:
-        if (isFailureReported) break;
-        isFailureReported = true;
-        await onFailure?.({
-          ...args,
-          error: toFlowError('error' in args ? args.error : args.payload),
-        });
-        break;
-      case TransactionCallbackStage.PERMIT:
-        await onPermit?.(args);
-        break;
-      case TransactionCallbackStage.GAS_LIMIT:
-        await onGasLimit?.(args);
-        break;
       case TransactionCallbackStage.CONFIRMATION:
-        // The SDK reports CONFIRMATION and then DONE regardless of the
-        // receipt status, so a reverted transaction would be presented as a
-        // success. Throwing here skips DONE and surfaces it as a failure.
+        // The SDK reports CONFIRMATION and DONE regardless of receipt status
         if (args.payload?.status === 'reverted') {
           throw new TransactionRevertedError(args.payload);
         }
         isSettled = true;
-        await onConfirmation?.(args);
-        break;
+        return onConfirmation?.(args);
+      case TransactionCallbackStage.DONE:
+        isSettled = true;
+        await onSuccess?.({
+          ...args,
+          txHash: 'txHash' in args ? args.txHash : txHash.current,
+        });
+        isSettled = false;
+        txHash.current = undefined;
+        return;
+      case TransactionCallbackStage.MULTISIG_DONE:
+        return onMultisigDone?.(args);
+      // ERROR is not handled: both senders reject afterwards (the legacy SDK
+      // never emits it) and the rejection is handled once below
       default:
-        break;
+        return;
     }
   };
 
-  const result = await validateAddress(address);
-  // if address is not valid, or the operation went stale while validating,
-  // don't send the transaction
-  if (!result || !isCurrent()) return;
+  if (!(await validateAddress(address)) || !isCurrent()) return;
 
   try {
     // callsFn must be defined for AA transactions. If it's not defined, the transaction will be sent to yourself instead of the smart account.
@@ -151,19 +105,18 @@ export const runTxFlow = async (
       await sendTransaction(txStagesCallback);
     }
   } catch (error) {
-    if (staleError) throw staleError;
+    // The SDK rewraps errors thrown from stage callbacks, so staleness cannot
+    // be recovered from the error itself
+    if (!isCurrent()) throw new TxStaleError();
     if (!isSettled) throw error;
-    // The SDK emits no ERROR stage for legacy transactions, so report the
-    // settled failure here. With a handler the error is swallowed so the
-    // caller finishes as a success (reset form, track completion) since the
-    // tx did complete. Without one, the caller's own catch must show it
-    if (!onFailure) throw toFlowError(error);
-    if (!isFailureReported) {
-      await onFailure({
-        stage: TransactionCallbackStage.ERROR,
-        error: toFlowError(error),
-        isAA,
-      });
-    }
+    // The tx did complete: with a handler the caller finishes as a success
+    // (reset form, track completion); without one its own catch must show it
+    const settledError = new TxSettledError(error, txHash.current);
+    if (!onFailure) throw settledError;
+    await onFailure({
+      stage: TransactionCallbackStage.ERROR,
+      error: settledError,
+      isAA,
+    });
   }
 };
