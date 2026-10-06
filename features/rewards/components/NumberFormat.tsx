@@ -8,7 +8,7 @@ import {
 } from 'features/rewards/utils/numberFormatting';
 
 type FormatArgs = {
-  number?: string | number | undefined;
+  number?: string | number | null;
   StEthEth?: boolean;
   currency?: boolean;
   currencyMoreAccuracy?: boolean;
@@ -20,7 +20,7 @@ type FormatArgs = {
 const format = (props: FormatArgs, manyDigits?: boolean): string => {
   const { number, StEthEth, currency, currencyMoreAccuracy, percent, ETH } =
     props;
-  if (number === undefined) return '';
+  if (number == null) return '';
 
   const numberString = typeof number === 'string' ? number : number.toString();
 
