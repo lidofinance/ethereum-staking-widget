@@ -6,7 +6,7 @@ import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 import { StakeFormProvider } from './stake-form-context';
 import { Wallet } from './wallet';
-import { StakeAmountInput } from './controls/stake-amount-input';
+import { StakeInputGroup } from './controls/stake-input-group';
 import { StakeSubmitButton } from './controls/stake-submit-button';
 import { StakeFormInfo } from './stake-form-info';
 import { SwapDiscountBanner } from '../swap-discount-banner';
@@ -18,7 +18,7 @@ export const StakeForm: FC = () => {
       <Wallet />
       <StakeBlock data-testid="stakeForm">
         <FormControllerStyled>
-          <StakeAmountInput />
+          <StakeInputGroup />
           <StakeSubmitButton />
           <DualGovernanceBanner>
             <SwapDiscountBanner>

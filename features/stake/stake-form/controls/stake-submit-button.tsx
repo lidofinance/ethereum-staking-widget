@@ -1,12 +1,16 @@
 import { LIMIT_LEVEL } from 'types';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { useDappStatus } from 'modules/web3';
+import { useAA, useDappStatus } from 'modules/web3';
 
 import { useStakeFormData } from '../stake-form-context';
 
 export const StakeSubmitButton = () => {
   const { isDappActive } = useDappStatus();
-  const { stakingLimitInfo } = useStakeFormData();
+  const { isAA } = useAA();
+  const { stakingLimitInfo, isWeth } = useStakeFormData();
+
+  // without batching the WETH is unwrapped in its own transaction first
+  const needsSeparateUnwrap = isWeth && !isAA;
 
   return (
     <SubmitButtonHookForm
@@ -17,7 +21,7 @@ export const StakeSubmitButton = () => {
       data-testid="stakeSubmitBtn"
       errorField="amount"
     >
-      Stake
+      {needsSeparateUnwrap ? 'Unwrap WETH and stake' : 'Stake'}
     </SubmitButtonHookForm>
   );
 };

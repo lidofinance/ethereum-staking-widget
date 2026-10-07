@@ -16,7 +16,13 @@ import { WalletLidoApr } from 'features/stake/shared/wallet-lido-apr';
 
 const WalletComponent = () => {
   const { chainId, isChainIdOnL2 } = useDappStatus();
-  const { stakeableEther, stethBalance, loading } = useStakeFormData();
+  const {
+    stakeableAmount,
+    isStakeableAmountLoading,
+    token,
+    stethBalance,
+    loading,
+  } = useStakeFormData();
 
   const stethAddress = useTokenAddress(LIDO_TOKENS.steth);
 
@@ -33,12 +39,12 @@ const WalletComponent = () => {
               <LimitMeter />
             </FlexCenter>
           }
-          loading={loading.isStakeableEtherLoading}
+          loading={isStakeableAmountLoading}
           value={
             <FormatToken
               data-testid="ethAvailableToStake"
-              amount={stakeableEther}
-              symbol="ETH"
+              amount={stakeableAmount}
+              symbol={token}
             />
           }
         />
