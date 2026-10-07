@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Address } from 'viem';
 import { useQueryClient } from '@tanstack/react-query';
+import { z } from 'zod';
 
 import { API_ROUTES } from 'consts/api';
 import { config } from 'config';
@@ -20,6 +21,8 @@ const getApiUrl = (route: string, params?: Record<string, string>) => {
   return url;
 };
 
+const VALIDATION_RESPONSE_SCHEMA = z.object({ isValid: z.boolean() });
+
 export const useApiAddressValidation = () => {
   const queryClient = useQueryClient();
 
@@ -36,9 +39,10 @@ export const useApiAddressValidation = () => {
             const url = getApiUrl(API_ROUTES.VALIDATION, {
               address: addressToValidate,
             });
-            return await standardFetcher(url, {
-              method: 'GET',
-            });
+            // a malformed response is treated like a failed request (null)
+            return VALIDATION_RESPONSE_SCHEMA.parse(
+              await standardFetcher<unknown>(url, { method: 'GET' }),
+            );
           } catch (error) {
             return null;
           }

@@ -1,7 +1,15 @@
+import { z } from 'zod';
+
 import { API_ROUTES, getApiPath } from 'consts/api';
 import { LIDO_TOKENS_VALUES } from 'consts/tokens';
 
 import { standardFetcher } from './standardFetcher';
+import { BIGINT_STRING_SCHEMA } from './zod';
+
+const ONE_INCH_RATE_SCHEMA = z.object({
+  rate: z.number(),
+  toReceive: BIGINT_STRING_SCHEMA,
+});
 
 type GetOneInchRateParams = {
   token: LIDO_TOKENS_VALUES;
@@ -15,11 +23,7 @@ export const getOneInchRate = async (params: GetOneInchRateParams) => {
   if (amount) urlParams.append('amount', amount.toString());
   const url = `${getApiPath(API_ROUTES.SWAP_ONE_INCH)}?${urlParams}`;
 
-  const data = await standardFetcher<{
-    rate: number;
-    toReceive: string;
-    fromAmount: string;
-  }>(url);
+  const data = ONE_INCH_RATE_SCHEMA.parse(await standardFetcher<unknown>(url));
 
   return {
     rate: data.rate,

@@ -1,13 +1,4 @@
-export type TotalReward = {
-  id: string;
+import type { TOTAL_REWARD_SCHEMA } from '../fetchers/backend';
+import type { z } from 'zod';
 
-  totalPooledEtherBefore: string;
-  totalPooledEtherAfter: string;
-  totalSharesBefore: string;
-  totalSharesAfter: string;
-
-  block: string;
-  blockTime: string;
-  logIndex: string;
-  transactionHash: string;
-};
+export type TotalReward = z.infer<typeof TOTAL_REWARD_SCHEMA>;

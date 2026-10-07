@@ -24,9 +24,10 @@ const shortError = (error: unknown) => {
 
 /**
  * Increments the eth_call Counter per batch entry. Labels bounded:
- * `address` / `methodEncoded` are kept raw only for allow-listed contracts;
- * for unknown contracts both collapse to `UNKNOWN_LABEL` so prom-client's
- * in-memory label store stays bounded regardless of incoming traffic shape.
+ * `address` is kept raw only for allow-listed contracts and `methodEncoded`
+ * only for selectors found in that contract's ABI; everything else collapses
+ * to `UNKNOWN_LABEL` so prom-client's in-memory label store stays bounded
+ * regardless of incoming traffic shape.
  *
  * Per-call try/catch isolates each entry: a malformed call cannot drop
  * metrics for siblings in the same batch.
@@ -74,14 +75,17 @@ export const collectRequestAddressMetric = async ({
         }
       }
 
+      // Keep the raw selector only when it decoded against the ABI. Any other
+      // selector collapses to `unknown`, otherwise arbitrary 4-byte values sent
+      // to a known contract would each allocate a new label series forever
+      const isKnownMethod = methodDecoded !== UNKNOWN_LABEL;
+
       metrics
         .labels({
           address: contractName ? address : UNKNOWN_LABEL,
           contractName: contractName || UNKNOWN_LABEL,
-          methodEncoded: contractName
-            ? methodEncoded || UNKNOWN_LABEL
-            : UNKNOWN_LABEL,
-          methodDecoded: methodDecoded || UNKNOWN_LABEL,
+          methodEncoded: isKnownMethod ? methodEncoded : UNKNOWN_LABEL,
+          methodDecoded,
         })
         .inc(1);
     } catch (error) {

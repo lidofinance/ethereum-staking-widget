@@ -25,6 +25,7 @@ export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
   'wallet_getCallsStatus',
 ]);
 
+export const SLIPPAGE_TOTAL_BPS = 10_000; // 100% (bps)
 export const MAX_SLIPPAGE = 300; // 3% (bps)
 export const PARTNER_FEE_BPS = 30; // 0.3% — Lido DAO treasury
 export const WHEN_PRICE_IMPACT_IS_HIGH_THAN = 3; // 3%

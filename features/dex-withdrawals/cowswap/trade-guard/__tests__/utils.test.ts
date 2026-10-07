@@ -99,6 +99,70 @@ describe('resolveLevel', () => {
 // analyzeParams
 // ---------------------------------------------------------------------------
 describe('analyzeParams', () => {
+  describe('minimum receive vs quote (STW-COW-QUOTE-01)', () => {
+    it('blocks when min receive is far below the quoted buy amount', () => {
+      const payload = makePayload({
+        buyToken: { address: USDC, symbol: 'USDC' },
+        buyTokenAmount: { units: '29910' },
+        minimumReceiveBuyAmount: { units: '1' },
+      } as Partial<OnTradeParamsPayload>);
+      const result = analyzeParams(payload);
+      expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
+    });
+
+    it('blocks when min receive implies more than max slippage', () => {
+      const payload = makePayload({
+        minimumReceiveBuyAmount: { units: '9.69' }, // 3.1% below quote
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('blocked');
+    });
+
+    it.each(['.5', '1.', '1.0000000000000000001', 'abc'])(
+      'fails closed on an unparseable min receive %p',
+      (units) => {
+        const payload = makePayload({
+          buyToken: { address: USDC, symbol: 'USDC' },
+          buyTokenAmount: { units: '29910' },
+          minimumReceiveBuyAmount: { units },
+        } as Partial<OnTradeParamsPayload>);
+        expect(analyzeParams(payload).level).toBe('blocked');
+      },
+    );
+
+    it('fails closed when the quote itself is unparseable', () => {
+      const payload = makePayload({
+        buyTokenAmount: { units: 'abc' },
+        minimumReceiveBuyAmount: { units: '1' },
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('blocked');
+    });
+
+    it('skips the check when no quote is present (approval pre-check)', () => {
+      const payload = makePayload({
+        buyTokenAmount: undefined,
+        minimumReceiveBuyAmount: undefined,
+      });
+      expect(analyzeParams(payload).level).toBe('safe');
+    });
+
+    it('allows min receive at exactly max slippage', () => {
+      const payload = makePayload({
+        minimumReceiveBuyAmount: { units: '9.7' }, // 3.0% below quote
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('safe');
+    });
+
+    it('allows truncated atoms at max slippage (6-decimal token)', () => {
+      const payload = makePayload({
+        buyToken: { address: USDC, symbol: 'USDC' },
+        buyTokenAmount: { units: '29910.123457' },
+        minimumReceiveBuyAmount: { units: '29012.819753' }, // floor(x * 0.97)
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('safe');
+    });
+  });
+
   describe('token presence', () => {
     it('returns blocked when sell token is missing', () => {
       const payload = makePayload({ sellToken: undefined });

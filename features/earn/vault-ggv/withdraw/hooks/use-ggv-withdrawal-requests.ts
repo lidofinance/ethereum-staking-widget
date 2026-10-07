@@ -1,18 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  Address,
-  encodeAbiParameters,
-  Hash,
-  isAddressEqual,
-  keccak256,
-} from 'viem';
+import { Address, encodeAbiParameters, isAddressEqual, keccak256 } from 'viem';
 import { useQuery } from '@tanstack/react-query';
 import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 
 import { getGGVQueueContract, getGGVVaultContract } from '../../contracts';
 import { getTokenAddress } from 'config/networks/token-address';
 
-import type { WQApiResponse } from '../types';
+import { WQ_API_RESPONSE_SCHEMA, type WQApiResponse } from '../types';
+import { standardFetcher } from 'utils/standardFetcher';
 import { GGV_STATS_ORIGIN } from '../../consts';
 
 export type GGVWithdrawalRequestsResponse = ReturnType<
@@ -54,16 +49,16 @@ const transformAPIResponse = (response: WQApiResponse) => {
     ...request,
     amount: BigInt(request.amount),
     blockNumber: BigInt(request.blockNumber),
-    offerToken: request.offerToken as Address,
+    offerToken: request.offerToken,
     timestamp: BigInt(request.timestamp),
-    transaction_hash: request.transaction_hash as Hash,
-    user: request.user as Address,
-    wantToken: request.wantToken as Address,
+    transaction_hash: request.transaction_hash,
+    user: request.user,
+    wantToken: request.wantToken,
     wantTokenDecimals: BigInt(request.wantTokenDecimals),
     metadata: {
       nonce: BigInt(request.metadata.nonce),
-      user: request.metadata.user as Address,
-      assetOut: request.metadata.assetOut as Address,
+      user: request.metadata.user,
+      assetOut: request.metadata.assetOut,
       amountOfAssets: BigInt(request.metadata.amountOfAssets),
       amountOfShares: BigInt(request.metadata.amountOfShares),
       creationTime: Number(request.metadata.creationTime),
@@ -80,7 +75,7 @@ const transformAPIResponse = (response: WQApiResponse) => {
         fulfillment: {
           block_number: BigInt(Fulfillment.block_number),
           timestamp: BigInt(Fulfillment.timestamp),
-          transaction_hash: Fulfillment.transaction_hash as Hash,
+          transaction_hash: Fulfillment.transaction_hash,
         },
       }))
       .sort(
@@ -92,7 +87,7 @@ const transformAPIResponse = (response: WQApiResponse) => {
         cancellation: {
           block_number: BigInt(Cancellation.block_number),
           timestamp: BigInt(Cancellation.timestamp),
-          transaction_hash: Cancellation.transaction_hash as Hash,
+          transaction_hash: Cancellation.transaction_hash,
         },
         request: transformRequest(Request),
       }),
@@ -124,8 +119,8 @@ export const useGGVWithdrawalRequests = () => {
 
       const url = `${GGV_STATS_ORIGIN}/boringQueue/ethereum/${vault.address}/${address}?string_values=true`;
 
-      const response: WQApiResponse = await fetch(url).then((res) =>
-        res.json(),
+      const response = WQ_API_RESPONSE_SCHEMA.parse(
+        await standardFetcher<unknown>(url),
       );
 
       const requests = transformAPIResponse(response);

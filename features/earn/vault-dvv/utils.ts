@@ -11,12 +11,6 @@ export const fetchDVVStats = async () => {
   return dvstETHVault;
 };
 
-export const fetchDVVStatsApr = async () => {
-  const data = await fetchDVVStats();
-  const apr = APY_SCHEMA.parse(data?.apr);
-  return apr;
-};
-
 export const fetchDVVStatsAprBreakdown = async () => {
   const data = await fetchDVVStats();
   const apr = APY_SCHEMA.parse(data?.apr);
