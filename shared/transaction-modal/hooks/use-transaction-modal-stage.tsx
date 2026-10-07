@@ -16,6 +16,9 @@ export const useTransactionModalStage = <S extends Record<string, Function>>(
   const { openModal } = useTransactionModal();
   const { closeModal } = useModalActions();
   const isMountedRef = useRef(true);
+  // Close handle of the session this hook opened last, so the flow's modal
+  // goes away together with the UI part that started the flow
+  const closeSessionRef = useRef<(() => void) | null>(null);
 
   const txModalStages = useMemo(() => {
     const transitStage: TransactionModalTransitStage = (
@@ -23,10 +26,10 @@ export const useTransactionModalStage = <S extends Record<string, Function>>(
       modalProps = {},
     ) => {
       if (!isMountedRef.current) return;
-      openModal({
+      closeSessionRef.current = openModal({
         children: TxStageEl,
         ...modalProps,
-      });
+      }).closeModal;
     };
 
     return getStages(transitStage);
@@ -35,6 +38,7 @@ export const useTransactionModalStage = <S extends Record<string, Function>>(
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
+      closeSessionRef.current?.();
     };
   }, []);
 

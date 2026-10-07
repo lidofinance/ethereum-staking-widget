@@ -18,7 +18,7 @@ export const SkeletonBalance = styled(InlineLoader).attrs({
   width: 100px;
 `;
 
-export const BalanceContainer = styled('div')`
+export const BalanceContainer = styled.span`
   display: inline-block;
   white-space: nowrap;
 `;
