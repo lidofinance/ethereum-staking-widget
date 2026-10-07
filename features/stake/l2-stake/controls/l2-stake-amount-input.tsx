@@ -5,16 +5,20 @@ import { useL2StakeFormData } from '../l2-stake-form-context';
 
 export const L2StakeAmountInput = () => {
   const { isWalletConnected, isDappActive } = useDappStatus();
-  const { maxAmount } = useL2StakeFormData();
+  const { maxAmount, token, isWethSupported, shouldShowUnlockRequirement } =
+    useL2StakeFormData();
 
   return (
     <TokenAmountInputHookForm
       disabled={isWalletConnected && !isDappActive}
       fieldName="amount"
-      token={'ETH'}
+      token={token}
       maxValue={maxAmount}
+      isLocked={shouldShowUnlockRequirement}
+      showErrorMessage={false}
       data-testid="stakeInput"
-      leftDecorator={<Eth />}
+      // the token select carries the icon when it is shown
+      leftDecorator={isWethSupported ? undefined : <Eth />}
     />
   );
 };

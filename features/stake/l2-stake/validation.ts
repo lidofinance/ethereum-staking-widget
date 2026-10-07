@@ -4,9 +4,10 @@ import invariant from 'tiny-invariant';
 
 import { getPrettyChainName, useAA, useDappStatus } from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
-import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
+import { validateStakeWeth } from 'shared/hook-form/validation/validate-stake-weth';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
@@ -23,20 +24,22 @@ export const L2StakeFormValidationResolver: Resolver<
   L2StakeFormInputType,
   Promise<L2StakeFormValidationContext>
 > = async (values, validationContextPromise) => {
-  const { amount } = values;
+  const { amount, token } = values;
   try {
     invariant(
       validationContextPromise,
       'validation context must be presented as context promise',
     );
 
-    validateEtherAmount('amount', amount, TOKENS_TO_WRAP.ETH);
+    validateEtherAmount('amount', amount, token);
 
     const {
       isWalletActive,
       etherBalance,
+      wethBalance,
       etherLiquidity,
-      gasCost,
+      gasCostEth,
+      gasCostWeth,
       isSmartAccount,
       shouldValidateEtherBalance,
       chainId,
@@ -49,18 +52,30 @@ export const L2StakeFormValidationResolver: Resolver<
       'amount',
       amount,
       etherLiquidity,
-      `Entered ETH amount exceeds current staking limit on ${getPrettyChainName(chainId)} of ${formatBalance(etherLiquidity).trimmed} ETH`,
+      `Entered ${token} amount exceeds current staking limit on ${getPrettyChainName(chainId)} of ${formatBalance(etherLiquidity).trimmed} ETH`,
     );
 
-    validateStakeEth({
-      formField: 'amount',
-      amount,
-      isWalletActive,
-      etherBalance,
-      shouldValidateEtherBalance,
-      gasCost,
-      isSmartAccount,
-    });
+    if (token === TOKENS_TO_STAKE.WETH) {
+      validateStakeWeth({
+        formField: 'amount',
+        amount,
+        isWalletActive,
+        wethBalance,
+        etherBalance,
+        gasCost: gasCostWeth,
+        isSmartAccount,
+      });
+    } else {
+      validateStakeEth({
+        formField: 'amount',
+        amount,
+        isWalletActive,
+        etherBalance,
+        shouldValidateEtherBalance,
+        gasCost: gasCostEth,
+        isSmartAccount,
+      });
+    }
 
     if (!isWalletActive) {
       return {
@@ -83,17 +98,27 @@ export const useL2StakeFormValidationContext = (
 ): Promise<L2StakeFormValidationContext> => {
   const { isDappActive, chainId } = useDappStatus();
   const { areAuxiliaryFundsSupported } = useAA();
-  const { etherBalance, fastStakeLiquidityEth, isSmartAccount, gasCost } =
-    networkData;
+  const {
+    etherBalance,
+    wethBalance,
+    isWethSupported,
+    fastStakeLiquidityEth,
+    isSmartAccount,
+    gasCostEth,
+    gasCostWeth,
+  } = networkData;
 
   const validationContextAwaited = useMemo(() => {
     if (
       // we ether not connected or must have all account related data
       !isDappActive ||
       (etherBalance !== undefined &&
-        gasCost !== undefined &&
+        gasCostEth !== undefined &&
+        gasCostWeth !== undefined &&
         isSmartAccount !== undefined &&
-        fastStakeLiquidityEth !== undefined)
+        fastStakeLiquidityEth !== undefined &&
+        // the WETH balance only resolves on chains that have WETH
+        (!isWethSupported || wethBalance !== undefined))
     ) {
       return {
         isWalletActive: isDappActive,
@@ -101,7 +126,9 @@ export const useL2StakeFormValidationContext = (
         shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
         // condition above guaranties stubs will only be passed when isDappActive = false
         etherBalance: etherBalance ?? 0n,
-        gasCost: gasCost ?? 0n,
+        wethBalance: wethBalance ?? 0n,
+        gasCostEth: gasCostEth ?? 0n,
+        gasCostWeth: gasCostWeth ?? 0n,
         isSmartAccount: isSmartAccount ?? false,
         etherLiquidity: fastStakeLiquidityEth ?? 0n,
       };
@@ -110,7 +137,10 @@ export const useL2StakeFormValidationContext = (
   }, [
     isDappActive,
     etherBalance,
-    gasCost,
+    wethBalance,
+    isWethSupported,
+    gasCostEth,
+    gasCostWeth,
     isSmartAccount,
     chainId,
     areAuxiliaryFundsSupported,

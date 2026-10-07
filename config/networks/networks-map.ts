@@ -164,6 +164,11 @@ const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.keys({
         [CONTRACT_NAMES.L2wstETH]:
           wrapContract?.wsteth ?? stakeContracts?.L2wstETH,
         [CONTRACT_NAMES.L2stakingReceiver]: stakeContracts?.L2stakingReceiver,
+        [CONTRACT_NAMES.L2FastStakeOraclePool]:
+          stakeContracts?.L2FastStakeOraclePool,
+        [CONTRACT_NAMES.L2FastStakeOracleFeed]:
+          stakeContracts?.L2FastStakeOracleFeed,
+        [CONTRACT_NAMES.weth]: stakeContracts?.L2WETH,
       },
     };
     return acc;

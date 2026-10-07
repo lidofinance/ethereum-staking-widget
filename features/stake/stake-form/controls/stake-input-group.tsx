@@ -3,7 +3,7 @@ import { useStakingLimitWarning } from 'modules/web3';
 
 import { useStakeFormData } from '../stake-form-context';
 import { StakeAmountInput } from './stake-amount-input';
-import { StakeTokenSelect } from './stake-token-select';
+import { StakeTokenSelect } from 'features/stake/shared/stake-token-select';
 
 export const StakeInputGroup = () => {
   const { stakingLimitInfo, isWethSupported } = useStakeFormData();
