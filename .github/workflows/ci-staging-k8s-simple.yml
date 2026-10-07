@@ -8,7 +8,6 @@ run-name: Build and push staking-widget-{web,api}:staging to Harbor
 # its workflows must stay disabled so two sources don't overwrite each
 # other's :staging tag.
 
-
 on:
   workflow_dispatch:
   push:
