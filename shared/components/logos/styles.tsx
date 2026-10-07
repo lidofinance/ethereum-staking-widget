@@ -7,9 +7,4 @@ export const LogoLidoStyle = styled.div`
   align-items: center;
   flex-shrink: 0;
   cursor: pointer;
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    width: 14px;
-    justify-content: flex-start;
-  }
 `;

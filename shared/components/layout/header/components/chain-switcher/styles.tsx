@@ -1,14 +1,15 @@
 import styled, { css } from 'styled-components';
+import { OptionStyled, POPUP_MENU_Z_INDEX } from '../popup';
 
 export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
 `;
 
-export const ChainSwitcherStyled = styled.div<{
+export const ChainSwitcherStyled = styled.button<{
   $disabled: boolean;
   $loading?: boolean;
 }>`
-  z-index: 202;
+  z-index: ${POPUP_MENU_Z_INDEX + 1};
 
   display: inline-flex;
   flex-grow: 1;
@@ -21,8 +22,10 @@ export const ChainSwitcherStyled = styled.div<{
 
   width: ${({ $disabled, $loading }) => ($disabled && !$loading ? '44px' : '68px')};
   height: 44px;
-  margin-right: 12px;
+  margin: 0;
   padding: 9px 8px;
+  border: none;
+  font-family: inherit;
 
   font-weight: 400;
   font-size: 14px;
@@ -38,15 +41,9 @@ export const ChainSwitcherStyled = styled.div<{
 
   background: var(--lido-color-controlBg);
 
-  &:not(:disabled):hover {
-    ${({ theme, $disabled }) =>
-      theme.name === 'dark'
-        ? css`
-            background: ${!$disabled && '#34343D'};
-          `
-        : css`
-            background: ${!$disabled && '#000A3D08'};
-          `}
+  &:not(:disabled):hover,
+  &:focus-visible {
+    background: ${({ theme, $disabled }) => !$disabled && (theme.name === 'dark' ? '#34343D' : '#000A3D08')};
   }
 `;
 
@@ -74,4 +71,16 @@ export const ArrowStyle = styled.div<{ $opened: boolean }>`
 
   transform: rotate(${({ $opened }) => ($opened ? 180 : 0)}deg);
   transition: transform ${({ theme }) => theme.duration.norm} ease;
+`;
+
+const CHAIN_LOGO_SIZE = 28;
+const CHAIN_OPTION_LOGO_SIZE = 24;
+
+// svgr strips viewBox from the 28px logos, so they are scaled, not resized
+export const ChainOptionStyled = styled(OptionStyled)`
+  & > svg {
+    flex-shrink: 0;
+    transform: scale(${CHAIN_OPTION_LOGO_SIZE / CHAIN_LOGO_SIZE});
+    margin: ${(CHAIN_OPTION_LOGO_SIZE - CHAIN_LOGO_SIZE) / 2}px;
+  }
 `;
