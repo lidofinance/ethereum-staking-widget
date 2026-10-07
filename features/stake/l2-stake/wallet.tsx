@@ -2,7 +2,13 @@ import { Divider } from '@lidofinance/lido-ui';
 
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
-import { CardNetwork, CardBalance, CardRow, Fallback } from 'shared/wallet';
+import {
+  CardNetwork,
+  CardBalance,
+  CardRow,
+  Fallback,
+  MultiChainWalletBackdrop,
+} from 'shared/wallet';
 import { CHAINS } from 'config';
 
 import {
@@ -10,9 +16,6 @@ import {
   useStETHByWstETH,
   useWstethBalance,
 } from 'modules/web3';
-
-// TODO:  to shared
-import { WalletCardBackdrop } from 'shared/wallet/fallback/lido-multichain-fallback';
 
 import { WalletLidoApr } from '../shared/wallet-lido-apr';
 import { useL2StakeFormData } from './l2-stake-form-context';
@@ -30,7 +33,7 @@ const WalletComponent = () => {
   const { stakeableEther, loading } = useL2StakeFormData();
 
   return (
-    <WalletCardBackdrop
+    <MultiChainWalletBackdrop
       data-testid="stakeCardSection"
       multiChainId={isChainIdOnL2 ? chainId : undefined}
     >
@@ -78,7 +81,7 @@ const WalletComponent = () => {
         />
         <WalletLidoApr />
       </CardRow>
-    </WalletCardBackdrop>
+    </MultiChainWalletBackdrop>
   );
 };
 

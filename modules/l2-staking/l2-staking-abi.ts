@@ -1,5 +1,3 @@
-// TODO: cleanup abis
-
 export const L2_STAKING_RECEIVER_ABI = [
   { inputs: [], name: 'AccessControlBadConfirmation', type: 'error' },
   {
