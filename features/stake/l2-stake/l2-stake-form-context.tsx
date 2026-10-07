@@ -227,8 +227,14 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
       () => ({
         onSubmit: stake,
         retryEvent,
+        onReset: ({ referral }) => {
+          formObject.reset({
+            amount: null,
+            referral,
+          });
+        },
       }),
-      [retryEvent, stake],
+      [formObject, retryEvent, stake],
     );
 
   const l2StakeFormDataContextValue: L2StakeFormDataContextValue = useMemo(

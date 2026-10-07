@@ -185,8 +185,14 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
       () => ({
         onSubmit: stake,
         retryEvent,
+        onReset: ({ referral }) => {
+          formObject.reset({
+            amount: null,
+            referral,
+          });
+        },
       }),
-      [stake, retryEvent],
+      [stake, retryEvent, formObject],
     );
 
   return (
