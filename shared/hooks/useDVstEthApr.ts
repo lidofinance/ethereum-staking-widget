@@ -1,30 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { z } from 'zod';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
+import { APY_SCHEMA } from 'utils/zod';
 
-type VaultDataPartial = {
-  id: string;
-  apr: number;
-};
-type RequestResponseData = Array<VaultDataPartial>;
+// Only the vault we read is validated: other vaults in the list may be broken
+const MELLOW_VAULTS_SCHEMA = z.array(z.looseObject({ id: z.string() }));
 
 const API_ENDPOINT = 'https://api.mellow.finance/v1/vaults';
 
 export const useDVstEthApr = () => {
-  const result = useQuery<RequestResponseData, Error, string>({
+  const result = useQuery({
     queryKey: ['dvsteth-apr'],
-    ...STRATEGY_LAZY,
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
-      return await standardFetcher<RequestResponseData>(API_ENDPOINT);
-    },
-    select: (data) => {
-      invariant(data, '[useDVstEthApr] Failed to fetch API');
-
-      const vaultData = data.find((vault) => vault.id === 'ethereum-dvsteth');
+      const vaults = MELLOW_VAULTS_SCHEMA.parse(
+        await standardFetcher<unknown>(API_ENDPOINT),
+      );
+      const vaultData = vaults.find((vault) => vault.id === 'ethereum-dvsteth');
       invariant(vaultData, '[useDVstEthApr] invalid API response');
 
-      return vaultData.apr.toFixed(1);
+      return APY_SCHEMA.parse(vaultData.apr).toFixed(1);
     },
   });
 

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { UNIX_TIMESTAMP_SCHEMA } from 'utils/zod';
 import { useSTGCollect } from './use-stg-collect';
@@ -16,6 +17,7 @@ type STGStatsData = {
 export const useSTGStats = () => {
   const { data, isLoading } = useQuery<STGStatsData>({
     queryKey: ['stg', 'stats'],
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       const fetchedData = await fetchSTGStats();
       const allocations = ALLOCATION_SCHEMA.parse(fetchedData.allocations);

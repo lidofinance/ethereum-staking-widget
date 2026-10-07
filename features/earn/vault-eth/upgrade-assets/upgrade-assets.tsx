@@ -27,6 +27,7 @@ import {
   ETH_VAULT_QUERY_SCOPE,
 } from '../consts';
 import { useEthVaultDrawer } from '../drawer-context';
+import { useEthVaultAvailable } from '../hooks/use-vault-available';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 
@@ -60,6 +61,7 @@ export const UpgradeAssetsBlock: FC = () => {
   const [isUpgrading, setIsUpgrading] = useState(false);
   const referral = useReferralQueryValue();
   const { isDepositGeoAvailable } = useEarnGeoGate();
+  const { isDepositEnabled } = useEthVaultAvailable();
   const { openDrawer: openDrawerRight } = useEthVaultDrawer();
 
   const { deposit } = useEthVaultDeposit();
@@ -110,7 +112,10 @@ export const UpgradeAssetsBlock: FC = () => {
     [deposit, queryClient, referral, refetchBalances],
   );
 
-  if (!isWalletConnected || !isDepositGeoAvailable) return null;
+  // An upgrade is a deposit: hide the block when deposits are paused, even if
+  // balances are still cached from before the pause
+  if (!isWalletConnected || !isDepositGeoAvailable || !isDepositEnabled)
+    return null;
 
   const tokensWithBalance = ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE.filter(
     (token) => {
