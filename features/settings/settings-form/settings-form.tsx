@@ -1,13 +1,17 @@
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
+import type { CHAINS } from 'consts/chains';
 import { useUserConfig } from 'config/user-config';
+import { wagmiChainMap } from 'modules/web3/consts/chains';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
-import { useContractAddress } from 'modules/web3';
-import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
+import {
+  RPCErrorType,
+  checkRpcUrl,
+  getRpcCheckAddress,
+} from 'utils/check-rpc-url';
 
 import {
   Actions,
@@ -15,59 +19,53 @@ import {
   DescriptionTitle,
   SettingsFormWrap,
 } from './styles';
-import { useDappStatus } from 'modules/web3';
 
 type FormValues = {
   rpcUrl: string;
 };
 
-export const SettingsForm = () => {
-  const { savedUserConfig, setSavedUserConfig } = useUserConfig();
-  const { chainId } = useDappStatus();
+// One form per chain: every supported chain keeps its own custom RPC, and a
+// user on an L2 can replace the L2 endpoint the wrap form actually uses
+const RpcUrlForm = ({ chainId }: { chainId: CHAINS }) => {
+  const { savedUserConfig, setRpcUrl } = useUserConfig();
+  const chainName = wagmiChainMap[chainId]?.name ?? `chain ${chainId}`;
 
   const formMethods = useForm<FormValues>({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: {
-      rpcUrl: (savedUserConfig.rpcUrls as Record<typeof chainId, string>)[
-        chainId
-      ],
-    },
+    defaultValues: { rpcUrl: savedUserConfig.rpcUrls[chainId] ?? '' },
   });
-
-  const { data: stethAddress } = useContractAddress(LIDO_CONTRACT_NAMES.lido);
 
   const {
     formState,
     setValue,
-    getValues,
     formState: { errors },
     clearErrors,
   } = formMethods;
 
-  const saveSettings = useCallback(
-    (formValues: FormValues) => {
-      setSavedUserConfig({
-        rpcUrls: {
-          [chainId]: formValues.rpcUrl,
-        },
-      });
+  const handleSubmit = useCallback(
+    ({ rpcUrl }: FormValues) => {
+      setRpcUrl(chainId, rpcUrl);
+      ToastSuccess(`${chainName} RPC has been saved`);
     },
-    [chainId, setSavedUserConfig],
+    [chainId, chainName, setRpcUrl],
   );
 
-  const handleSubmit = useCallback(
-    (formValues: FormValues) => {
-      saveSettings(formValues);
-      ToastSuccess('Settings have been saved');
-    },
-    [saveSettings],
-  );
+  const handleReset = useCallback(() => {
+    setValue('rpcUrl', '');
+    clearErrors();
+    setRpcUrl(chainId);
+    ToastSuccess(`${chainName} RPC has been reset`);
+  }, [chainId, chainName, clearErrors, setRpcUrl, setValue]);
 
   const validateRpcUrl = useCallback(
     async (rpcUrl: string) => {
       if (!rpcUrl) return true;
-      const rpcCheckResult = await checkRpcUrl(rpcUrl, chainId, stethAddress);
+      const rpcCheckResult = await checkRpcUrl(
+        rpcUrl,
+        chainId,
+        getRpcCheckAddress(chainId),
+      );
       switch (rpcCheckResult) {
         case true:
           return true;
@@ -79,45 +77,48 @@ export const SettingsForm = () => {
           return 'Url is working, but network does not match';
       }
     },
-    [chainId, stethAddress],
+    [chainId],
   );
 
-  const handleReset = useCallback(() => {
-    setValue('rpcUrl', '');
-    saveSettings(getValues());
-    clearErrors();
-    ToastSuccess('Settings have been reset');
-  }, [clearErrors, setValue, saveSettings, getValues]);
+  return (
+    <Block>
+      <form onSubmit={formMethods.handleSubmit(handleSubmit)}>
+        <Input
+          fullwidth
+          label={`${chainName} RPC URL`}
+          error={errors?.rpcUrl?.message}
+          {...formMethods.register('rpcUrl', {
+            required: true,
+            validate: validateRpcUrl,
+          })}
+        />
+        <Actions>
+          <Button fullwidth variant="translucent" onClick={handleReset}>
+            Reset to defaults
+          </Button>
+          <Button
+            type="submit"
+            fullwidth
+            color="primary"
+            loading={formState.isValidating}
+            disabled={!formState.isValid || formState.isValidating}
+          >
+            Save
+          </Button>
+        </Actions>
+      </form>
+    </Block>
+  );
+};
+
+export const SettingsForm = () => {
+  const { supportedChainIds } = useUserConfig();
 
   return (
     <SettingsFormWrap>
-      <Block>
-        <form onSubmit={formMethods.handleSubmit(handleSubmit)}>
-          <Input
-            fullwidth
-            label="RPC URL"
-            error={errors?.rpcUrl?.message}
-            {...formMethods.register('rpcUrl', {
-              required: true,
-              validate: validateRpcUrl,
-            })}
-          />
-          <Actions>
-            <Button fullwidth variant="translucent" onClick={handleReset}>
-              Reset to defaults
-            </Button>
-            <Button
-              type="submit"
-              fullwidth
-              color="primary"
-              loading={formState.isValidating}
-              disabled={!formState.isValid || formState.isValidating}
-            >
-              Save
-            </Button>
-          </Actions>
-        </form>
-      </Block>
+      {supportedChainIds.map((chainId) => (
+        <RpcUrlForm key={chainId} chainId={chainId} />
+      ))}
 
       <br />
 

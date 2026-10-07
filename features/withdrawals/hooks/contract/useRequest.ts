@@ -107,8 +107,13 @@ export const useWithdrawalRequest = ({
             onReceipt: async ({ payload }) => {
               return txModalStages.pending(amount, token, payload);
             },
-            // NOOP, handled in catch
-            onFailure: () => {},
+            onFailure: ({ error }) =>
+              txModalStages.failed(
+                error,
+                onRetry,
+                isSigningPermit,
+                onTryAllowance,
+              ),
             onSuccess: async ({ txHash }) => {
               void onConfirm?.();
               txModalStages.success(amount, token, txHash);
@@ -173,8 +178,13 @@ export const useWithdrawalRequest = ({
                 }
               }
             },
-            // NOOP, handled in catch
-            onFailure: () => {},
+            onFailure: ({ error }) =>
+              txModalStages.failed(
+                error,
+                onRetry,
+                isSigningPermit,
+                onTryAllowance,
+              ),
             onMultisigDone: () => {
               txModalStages.successMultisig();
             },

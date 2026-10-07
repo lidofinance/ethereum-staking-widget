@@ -3,7 +3,7 @@ import { ErrorMessage } from 'utils';
 
 import { Loader } from '@lidofinance/lido-ui';
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
-import { StageIconFail } from './icons';
+import { StageIconFail, StageIconSuccess } from './icons';
 import { ModalFooterButton, LoaderWrapper } from './styles';
 
 type TxStageFailProps = {
@@ -25,13 +25,20 @@ export const TxStageFail = ({
     },
     [onRetry],
   );
+  // The transaction itself went through, only a follow-up read failed:
+  // retrying would submit it again
+  const isSettled = failedText === ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE;
+
   return (
     <TransactionModalContent
-      title="Transaction Failed"
-      icon={<StageIconFail showLedger={false} />}
+      title={isSettled ? 'Transaction completed' : 'Transaction Failed'}
+      icon={
+        isSettled ? <StageIconSuccess /> : <StageIconFail showLedger={false} />
+      }
       description={failedText ?? 'Something went wrong'}
       footer={footer}
       footerHint={
+        !isSettled &&
         failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
         onRetry &&
         (!isLoading ? (

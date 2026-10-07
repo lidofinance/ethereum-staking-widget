@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { type Address, getContract } from 'viem';
 import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -19,6 +20,7 @@ const useDVVTvl = () => {
 
   return useQuery({
     queryKey: ['dvv', 'stats', 'tvl'],
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       const vault = getDVVVaultContract(publicClientMainnet);
 
@@ -116,6 +118,7 @@ export type MellowAPIResponse = {
 export const useDVVApr = () => {
   return useQuery({
     queryKey: ['dvv', 'stats', 'apr'],
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       return fetchDVVStatsAprBreakdown();
     },

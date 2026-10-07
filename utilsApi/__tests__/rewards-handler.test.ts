@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { CACHE_DEFAULT_ERROR_HEADERS } from 'config/groups/cache';
 import { createRewardsHandler } from '../rewards-handler';
 
 const VALID_ADDRESS = '0x' + '0'.repeat(40);
@@ -7,12 +8,18 @@ const VALID_ADDRESS = '0x' + '0'.repeat(40);
 type MockRes = NextApiResponse & {
   _status: number;
   _json: unknown;
+  _headers: Record<string, string>;
 };
 
 const makeRes = (): MockRes => {
   const res: any = {
     _status: 0,
     _json: undefined,
+    _headers: {},
+    setHeader(name: string, value: string) {
+      this._headers[name.toLowerCase()] = value;
+      return this;
+    },
     status(code: number) {
       this._status = code;
       return this;
@@ -62,6 +69,17 @@ describe('createRewardsHandler', () => {
     expect((res._json as { error: string }).error).toBe(
       'Invalid query parameters',
     );
+  });
+
+  it('marks the 400 as non-cacheable', async () => {
+    const res = makeRes();
+
+    await createRewardsHandler(vi.fn())(
+      makeReq({ address: '0xdeadbeef' }),
+      res,
+    );
+
+    expect(res._headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
   });
 
   it('returns 400 on limit above MAX_LIMIT', async () => {
