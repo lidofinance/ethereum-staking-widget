@@ -8,7 +8,7 @@ import {
   useEffect,
 } from 'react';
 import { useFastStakeGasLimit } from './hooks/use-fast-stake-gas-limit';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
 import {
@@ -23,6 +23,8 @@ import {
 import {
   FormControllerContext,
   FormControllerContextValueType,
+  passFormState,
+  recoverFormState,
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
@@ -165,8 +167,8 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     Promise<L2StakeFormValidationContext>
   >({
     defaultValues: {
-      amount: null,
-      referral: null,
+      amount: recoverFormState('stake').amount ?? null,
+      referral: recoverFormState('stake').referral ?? null,
     },
     context: validationContextPromise,
     resolver: L2StakeFormValidationResolver,
@@ -184,7 +186,11 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onRetry: retryFire,
   });
 
-  const [amount] = formObject.watch(['amount']);
+  // communicate the amount between L1 and L2 staking forms
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  useEffect(() => {
+    passFormState('stake', { amount });
+  }, [amount]);
 
   useEffect(() => {
     if (

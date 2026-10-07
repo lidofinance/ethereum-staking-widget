@@ -5,8 +5,9 @@ import {
   createContext,
   useContext,
   useCallback,
+  useEffect,
 } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
 import {
@@ -18,6 +19,8 @@ import {
 import {
   FormControllerContext,
   FormControllerContextValueType,
+  passFormState,
+  recoverFormState,
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
@@ -153,8 +156,8 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const formObject = useForm<StakeFormInput>({
     defaultValues: {
-      amount: null,
-      referral: null,
+      amount: recoverFormState('stake').amount ?? null,
+      referral: recoverFormState('stake').referral ?? null,
     },
     context: validationContextPromise,
     resolver: stakeFormValidationResolver,
@@ -165,6 +168,12 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   useQueryParamsAmountForm<StakeFormInput>({ setValue });
 
   const { retryEvent, retryFire } = useFormControllerRetry();
+
+  // communicate the amount between L1 and L2 staking forms
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  useEffect(() => {
+    passFormState('stake', { amount });
+  }, [amount]);
 
   const stake = useStake({
     onConfirm: networkData.revalidate,
