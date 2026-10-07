@@ -1,7 +1,10 @@
 import styled, { css } from 'styled-components';
 
-export const PopoverWrapperStyled = styled.div<{ $backdrop: boolean }>`
-  z-index: 200;
+export const POPUP_BASE_Z_INDEX = 200;
+export const POPUP_MENU_Z_INDEX = POPUP_BASE_Z_INDEX + 1;
+
+export const PopoverNoClickBackdrop = styled.div<{ $backdrop: boolean }>`
+  z-index: ${POPUP_BASE_Z_INDEX};
   position: fixed;
   top: 0;
   left: 0;
@@ -45,7 +48,7 @@ const hiddenCSS = css`
 `;
 
 export const PopupStyled = styled.div<PopupMenuProps>`
-  z-index: 201;
+  z-index: ${POPUP_MENU_Z_INDEX};
   min-width: 115px;
 
   position: absolute;
@@ -64,8 +67,7 @@ export const PopupStyled = styled.div<PopupMenuProps>`
   font-weight: 400;
 
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-  box-shadow: ${({ theme }) => theme.boxShadows.xs}
-    var(--lido-color-shadowLight);
+  box-shadow: ${({ theme }) => theme.boxShadows.md} rgba(0, 10, 61, 0.16);
 
   transition: opacity 150ms ease;
   transition-property: opacity, transform;
@@ -77,7 +79,7 @@ type PopupMenuOptionProps = {
   $active: boolean;
 };
 
-export const OptionStyled = styled.div<PopupMenuOptionProps>`
+export const OptionStyled = styled.button<PopupMenuOptionProps>`
   display: flex;
   align-items: center;
 
@@ -86,7 +88,9 @@ export const OptionStyled = styled.div<PopupMenuOptionProps>`
 
   padding: 0 8px;
   margin: 0;
+  border: none;
   box-sizing: border-box;
+  font: inherit;
 
   text-align: left;
   color: var(--lido-color-text);
@@ -107,10 +111,11 @@ export const OptionStyled = styled.div<PopupMenuOptionProps>`
           background: ${$active && '#34343D'};
         `
       : css`
-          background: ${$active && '#000A3D08'};
+          background: ${$active && 'rgba(0, 10, 61, 0.04)'};
         `}
 
-  &:not(:disabled):hover {
+  &:not(:disabled):hover,
+  &:focus-visible {
     ${({ theme }) =>
       theme.name === 'dark'
         ? css`

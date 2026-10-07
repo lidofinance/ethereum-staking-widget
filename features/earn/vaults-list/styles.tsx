@@ -19,6 +19,7 @@ export const ListSubtitle = styled.div`
   text-align: center;
   margin-bottom: ${({ theme }) => theme.spaceMap.xl}px;
   font-weight: 400;
+  text-wrap: balance;
 `;
 
 export const ListWrapper = styled.div`

@@ -8,7 +8,7 @@ import type { FC } from 'react';
 export const StakePage: FC = () => {
   return (
     <Layout
-      title="Stake Ether"
+      title="Stake Ethereum"
       subtitle="Stake ETH and receive stETH while staking"
     >
       <Head>
