@@ -284,6 +284,13 @@ const L2StakeConfigurationSchema = z.object({
     .default(DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH),
 });
 
+// Per-chain entries carry only the keys the manifest sets: an omitted key must
+// fall through to `common` (e.g. a common `enabled: false`), not to a default
+const L2StakePerChainConfigurationSchema = z.object({
+  enabled: z.boolean().optional(),
+  liquidityTarget: z.number().int().min(0).optional(),
+});
+
 const L2StakeSchema = z.object({
   common: L2StakeConfigurationSchema,
   perChain: z.record(
@@ -291,9 +298,14 @@ const L2StakeSchema = z.object({
       .string()
       .transform((v) => Number(v))
       .pipe(z.number().min(1)),
-    L2StakeConfigurationSchema,
+    L2StakePerChainConfigurationSchema,
   ),
 });
+
+const definedEntries = <T extends object>(overrides: T): Partial<T> =>
+  Object.fromEntries(
+    Object.entries(overrides).filter(([, value]) => value !== undefined),
+  ) as Partial<T>;
 
 // Populate all chains with common config
 const L2StakeTransformSchema = L2StakeSchema.optional()
@@ -311,7 +323,7 @@ const L2StakeTransformSchema = L2StakeSchema.optional()
             chainId,
             {
               ...data.common,
-              ...(data.perChain[chainId] ?? {}),
+              ...definedEntries(data.perChain[chainId] ?? {}),
             },
           ]),
       ) as Record<CHAINS, z.infer<typeof L2StakeConfigurationSchema>>,

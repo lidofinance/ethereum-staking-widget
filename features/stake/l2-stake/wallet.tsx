@@ -9,16 +9,11 @@ import {
   Fallback,
   MultiChainWalletBackdrop,
 } from 'shared/wallet';
-import { CHAINS } from 'config';
-
-import {
-  useDappStatus,
-  useStETHByWstETH,
-  useWstethBalance,
-} from 'modules/web3';
+import { useDappStatus, useWstethBalance } from 'modules/web3';
 
 import { WalletLidoApr } from '../shared/wallet-lido-apr';
 import { useL2StakeFormData } from './l2-stake-form-context';
+import { useFastStakeConversion } from './hooks/use-conversion';
 import { useL2StakeState } from './hooks/use-l2-stake-state';
 
 const WalletComponent = () => {
@@ -28,8 +23,13 @@ const WalletComponent = () => {
     isLoading: wstethBalanceLoading,
     tokenAddress,
   } = useWstethBalance();
-  const { data: stethByWsteth, isLoading: stethByWstethLoading } =
-    useStETHByWstETH(wstethBalance, CHAINS.Mainnet);
+  const { data: conversion, isLoading: conversionLoading } =
+    useFastStakeConversion();
+  // Value of the staked wstETH at the oracle price; the fee only applies to a stake
+  const ethByWsteth =
+    wstethBalance != null && conversion
+      ? conversion.wstethToEth(wstethBalance, { includeFee: false })
+      : undefined;
   const { stakeableAmount, isStakeableAmountLoading, token } =
     useL2StakeFormData();
 
@@ -57,11 +57,11 @@ const WalletComponent = () => {
         <CardBalance
           small
           title="Staked amount"
-          loading={stethByWstethLoading || wstethBalanceLoading}
+          loading={conversionLoading || wstethBalanceLoading}
           extra={
             <FormatToken
               data-testid="stEthByWstEth"
-              amount={stethByWsteth}
+              amount={ethByWsteth}
               symbol="ETH"
               approx={true}
             />
