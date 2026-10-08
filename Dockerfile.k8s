@@ -1,5 +1,9 @@
+# Pin the Alpine minor version to avoid unexpected base OS upgrades while
+# still receiving patched packages within the Alpine 3.24 line.
+ARG ALPINE_VERSION=3.24
+
 # build env
-FROM node:24-alpine AS build
+FROM node:24-alpine${ALPINE_VERSION} AS build
 
 ARG BUILD_VERSION=dev
 ARG BUILD_BRANCH=develop
@@ -24,14 +28,17 @@ RUN sed -i "s|REPLACE_WITH_VERSION|$BUILD_VERSION|" build-info.json && \
     sed -i "s|REPLACE_WITH_COMMIT|$BUILD_COMMIT|" build-info.json
 
 RUN NODE_NO_BUILD_DYNAMICS=true yarn build
-# public/runtime is used to inject runtime vars; it should exist and user node should have write access there for it
-RUN rm -rf /app/public/runtime && mkdir /app/public/runtime && chown node /app/public/runtime
+# public/runtime is used to inject runtime vars; it should exist and user node
+# should have write access there for it
+RUN rm -rf /app/public/runtime \
+  && mkdir /app/public/runtime \
+  && chown node /app/public/runtime
 
 # final image
-FROM node:24-alpine AS base
+FROM node:24-alpine${ALPINE_VERSION} AS base
 
 WORKDIR /app
-RUN apk add --no-cache curl=~8 
+RUN apk add --no-cache curl=~8
 
 COPY --from=build /app /app
 RUN chown -R node:node /app/.next

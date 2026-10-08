@@ -1,10 +1,14 @@
 # Web image: static Vite build served by nginx-unprivileged.
 # Node.js used only for build and to generate env file at runtime
 
+# Pin the Alpine minor version to avoid unexpected base OS upgrades while
+# still receiving patched packages within the Alpine 3.24 line.
+ARG ALPINE_VERSION=3.24
+
 #
 # ################# Build Stage ##########################
 #
-FROM node:24-alpine AS builder
+FROM node:24-alpine${ALPINE_VERSION} AS builder
 WORKDIR /app
 
 # Dependency layer install with yarn binary version from project
@@ -23,7 +27,7 @@ RUN yarn build:web
 #
 # ################# Runtime Stage ##########################
 #
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:alpine${ALPINE_VERSION} AS runtime
 
 # Add node(w/ libstdc++ dep) for runtime env file generation
 COPY --from=builder /usr/local/bin/node /usr/local/bin/node

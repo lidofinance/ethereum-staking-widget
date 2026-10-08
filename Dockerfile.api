@@ -6,7 +6,11 @@
 # deployed by the SAME `staking-widget` helm release, so command/port
 # expectations in the chart values must keep working unchanged.
 
-FROM node:24-alpine AS builder
+# Pin the Alpine minor version to avoid unexpected base OS upgrades while
+# still receiving patched packages within the Alpine 3.24 line.
+ARG ALPINE_VERSION=3.24
+
+FROM node:24-alpine${ALPINE_VERSION} AS builder
 WORKDIR /app
 
 # .yarn/releases is the committed yarn pinned by yarnPath in .yarnrc.yml;
@@ -22,7 +26,7 @@ COPY . .
 # node_modules stay external.
 RUN yarn workspace api build
 
-FROM node:24-alpine AS runtime
+FROM node:24-alpine${ALPINE_VERSION} AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 
