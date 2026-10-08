@@ -270,6 +270,7 @@ const MultiChainBannerSchema = z
 // L2 Stake
 //
 
+// Default liquidity target for L2 stake in ETH that the pool aims to maintain
 const DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH = 25;
 
 const L2StakeConfigurationSchema = z.object({
@@ -285,7 +286,13 @@ const L2StakeConfigurationSchema = z.object({
 
 const L2StakeSchema = z.object({
   common: L2StakeConfigurationSchema,
-  perChain: z.record(z.number().min(1), L2StakeConfigurationSchema),
+  perChain: z.record(
+    z
+      .string()
+      .transform((v) => Number(v))
+      .pipe(z.number().min(1)),
+    L2StakeConfigurationSchema,
+  ),
 });
 
 // Populate all chains with common config

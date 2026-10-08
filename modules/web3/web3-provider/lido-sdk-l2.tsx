@@ -13,6 +13,7 @@ import { useDappChain } from './dapp-chain';
 
 import { L2StakeModule, LIDO_L2_STAKING_CHAINS } from 'modules/l2-staking';
 import {
+  isSupportedL2Chain,
   isSupportedL2StakingChain,
   isSupportedL2WrapChain,
 } from 'consts/chains';
@@ -24,6 +25,7 @@ type LidoSDKL2ContextValue = {
   l2Stake: L2StakeModule;
   isL2: boolean;
   isL2Stake: boolean;
+  isL2Wrap: boolean;
 };
 
 const LidoSDKL2Context = createContext<LidoSDKL2ContextValue | null>(null);
@@ -73,8 +75,9 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
       l2: new LidoSDKL2({ core }),
       l2Stake: new L2StakeModule({ core }),
 
-      isL2: isSupportedL2WrapChain(sdkChainId),
+      isL2: isSupportedL2Chain(sdkChainId),
       isL2Stake: isSupportedL2StakingChain(sdkChainId),
+      isL2Wrap: isSupportedL2WrapChain(sdkChainId),
     };
   }, [publicClient, sdkChainId, walletClient]);
   return (

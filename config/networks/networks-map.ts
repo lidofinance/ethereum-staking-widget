@@ -4,19 +4,25 @@ import getConfigNext from 'next/config';
 
 const { serverRuntimeConfig } = getConfigNext();
 
-import { LIDO_L2_CONTRACT_ADDRESSES as LIDO_L2_WRAP_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
-
 // Main deployments
 import mainnetSet from 'networks/mainnet.json';
 import hoodiSet from 'networks/hoodi.json';
 import sepoliaSet from 'networks/sepolia.json';
 import holeskySet from 'networks/holesky.json';
 
+// L2 deployments
+import optimismSet from 'networks/l2/optimism.json';
+import optimismSepoliaSet from 'networks/l2/optimism-sepolia.json';
+import unichainSet from 'networks/l2/unichain.json';
+import unichainSepoliaSet from 'networks/l2/unichain-sepolia.json';
+import baseSet from 'networks/l2/base.json';
+import lineaSet from 'networks/l2/linea.json';
+import arbitrumSet from 'networks/l2/arbitrum.json';
+
 // Devnet deployments
 import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json';
 import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json';
 import { getPreConfig } from 'config/get-preconfig';
-import { LIDO_L2_STAKING_CONTRACT_MAP } from 'modules/l2-staking';
 import { CHAINS } from 'config/chains';
 
 // For future overrides of APIs in devnets
@@ -140,48 +146,18 @@ const DEVNET_OVERRIDES: Record<number, string> = // Merge client&server values
       {} as Record<number, string>,
     );
 
-/**
- * Merges L2 wrap and staking contract addresses into a single network map.
- * L2 stake and L2 wrap can overlap for the same network.
- */
-const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.keys({
-  ...LIDO_L2_WRAP_CONTRACT_ADDRESSES,
-  ...LIDO_L2_STAKING_CONTRACT_MAP,
-}).reduce(
-  (acc, chainId) => {
-    const wrapContract =
-      LIDO_L2_WRAP_CONTRACT_ADDRESSES[
-        chainId as unknown as keyof typeof LIDO_L2_WRAP_CONTRACT_ADDRESSES
-      ];
-    const stakeContracts =
-      LIDO_L2_STAKING_CONTRACT_MAP[
-        chainId as unknown as keyof typeof LIDO_L2_STAKING_CONTRACT_MAP
-      ];
-    acc[chainId] = {
-      api: {},
-      contracts: {
-        [CONTRACT_NAMES.L2stETH]: wrapContract?.steth,
-        [CONTRACT_NAMES.L2wstETH]:
-          wrapContract?.wsteth ?? stakeContracts?.L2wstETH,
-        [CONTRACT_NAMES.L2stakingReceiver]: stakeContracts?.L2stakingReceiver,
-        [CONTRACT_NAMES.L2FastStakeOraclePool]:
-          stakeContracts?.L2FastStakeOraclePool,
-        [CONTRACT_NAMES.L2FastStakeOracleFeed]:
-          stakeContracts?.L2FastStakeOracleFeed,
-        [CONTRACT_NAMES.weth]: stakeContracts?.L2WETH,
-      },
-    };
-    return acc;
-  },
-  {} as Record<string, NetworkConfig>,
-);
-
 const NETWORKS_MAP = {
-  ...L2_NETWORK_MAP,
   [CHAINS.Mainnet]: mainnetSet as NetworkConfig,
   [CHAINS.Holesky]: holeskySet as NetworkConfig,
   [CHAINS.Hoodi]: hoodiSet as NetworkConfig,
   [CHAINS.Sepolia]: sepoliaSet as NetworkConfig,
+  [CHAINS.Optimism]: optimismSet as NetworkConfig,
+  [CHAINS.OptimismSepolia]: optimismSepoliaSet as NetworkConfig,
+  [CHAINS.Unichain]: unichainSet as NetworkConfig,
+  [CHAINS.UnichainSepolia]: unichainSepoliaSet as NetworkConfig,
+  [CHAINS.Base]: baseSet as NetworkConfig,
+  [CHAINS.Linea]: lineaSet as NetworkConfig,
+  [CHAINS.Arbitrum]: arbitrumSet as NetworkConfig,
 } as Record<string, NetworkConfig>;
 
 // keys MUST correlate with the `DEVNET_OVERRIDES` env

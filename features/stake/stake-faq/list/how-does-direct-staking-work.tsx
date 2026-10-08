@@ -15,9 +15,7 @@ export const HowDoesDirectStakingWork: FC = () => {
     <Accordion
       summary={`How does Direct Staking on ${chainName} work?`}
       onClick={() => {
-        trackMatomoEvent(
-          MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnOptimismWrapLink,
-        );
+        trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.faqHowDoesDirectStakingWork);
       }}
     >
       <p>
