@@ -30,7 +30,8 @@ const WalletComponent = () => {
     wstethBalance != null && conversion
       ? conversion.wstethToEth(wstethBalance, { includeFee: false })
       : undefined;
-  const { stakeableEther, loading } = useL2StakeFormData();
+  const { stakeableAmount, isStakeableAmountLoading, token } =
+    useL2StakeFormData();
 
   return (
     <MultiChainWalletBackdrop
@@ -40,12 +41,12 @@ const WalletComponent = () => {
       <CardRow>
         <CardBalance
           title={'Available to stake'}
-          loading={loading.isStakeableEtherLoading}
+          loading={isStakeableAmountLoading}
           value={
             <FormatToken
               data-testid="ethAvailableToStake"
-              amount={stakeableEther}
-              symbol="ETH"
+              amount={stakeableAmount}
+              symbol={token}
             />
           }
         />

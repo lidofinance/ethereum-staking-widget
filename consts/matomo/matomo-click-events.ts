@@ -64,6 +64,10 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack',
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim',
 
+  // /stake page
+  stakeTokenSelectETH = 'stakeTokenSelectEth',
+  stakeTokenSelectWETH = 'stakeTokenSelectWeth',
+
   // /wrap page
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
   wrapTokenSelectETH = 'wrapTokenSelectEth',
@@ -369,6 +373,17 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "How does Direct Staking on L2 work?',
     'eth_widget_faq_howDirectStakingOnL2Works',
+  ],
+  // /stake page
+  [MATOMO_CLICK_EVENTS_TYPES.stakeTokenSelectETH]: [
+    'Ethereum_Staking_Widget',
+    'Select ETH to stake on stake page',
+    'eth_widget_stake_select_token_eth',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.stakeTokenSelectWETH]: [
+    'Ethereum_Staking_Widget',
+    'Select WETH to stake on stake page',
+    'eth_widget_stake_select_token_weth',
   ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectETH]: [

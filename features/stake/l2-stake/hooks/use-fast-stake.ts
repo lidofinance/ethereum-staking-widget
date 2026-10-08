@@ -12,6 +12,7 @@ import {
 } from 'modules/web3';
 
 import { useBells } from 'features/stake/stake-form/hooks/use-bells';
+import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 
 import { getReferralAddress } from 'utils/get-referral-address';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
@@ -19,6 +20,7 @@ import { useTrackStakeEvent } from './use-track-event';
 
 type StakeArguments = {
   amount: bigint | null;
+  token: TOKENS_TO_STAKE;
   referral: string | null;
 };
 
@@ -36,11 +38,16 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { txModalStages } = useTxModalStagesL2FastStake();
   const txFlow = useTxFlow();
   const { featureFlags } = useConfig().externalConfig;
-  const trackStart = useTrackStakeEvent('fast_stake_start');
-  const trackEnd = useTrackStakeEvent('fast_stake_end');
+  const trackStartEth = useTrackStakeEvent('fast_stake_start');
+  const trackEndEth = useTrackStakeEvent('fast_stake_end');
+  const trackStartWeth = useTrackStakeEvent('fast_stake_weth_start');
+  const trackEndWeth = useTrackStakeEvent('fast_stake_weth_end');
 
   return useCallback(
-    async ({ amount, referral }: StakeArguments): Promise<boolean> => {
+    async ({ amount, token, referral }: StakeArguments): Promise<boolean> => {
+      const isWeth = token === TOKENS_TO_STAKE.WETH;
+      const trackStart = isWeth ? trackStartWeth : trackStartEth;
+      const trackEnd = isWeth ? trackEndWeth : trackEndEth;
       trackStart();
       try {
         invariant(amount, 'amount is null');
@@ -61,7 +68,15 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
         };
 
         const minReceiveAmount = await l2Stake.getFastStakeWstethByEth(amount);
-        const token = 'ETH';
+
+        // The receiver pulls WETH, so it needs an allowance first: in the same
+        // batch for AA wallets, as a separate transaction otherwise. The
+        // allowance is read here rather than taken from the form state, so a
+        // retry after a confirmed approval never approves again. The flag tells
+        // the stage callbacks which of the chained transactions is reporting
+        let needsApprove =
+          isWeth &&
+          (await l2Stake.getWethAllowanceForFastStake(address)) < amount;
 
         const stakeCall = await l2Stake.fastStakeEthPopulateTx({
           amount,
@@ -70,8 +85,24 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
           minReceiveAmount,
         });
         await txFlow({
-          callsFn: async () => [stakeCall],
+          callsFn: async () => {
+            const calls = needsApprove
+              ? [
+                  await l2Stake.approveWethForFastStakePopulateTx({ amount }),
+                  stakeCall,
+                ]
+              : [stakeCall];
+            needsApprove = false;
+            return calls;
+          },
           sendTransaction: async (txStagesCallback) => {
+            if (needsApprove) {
+              await l2Stake.approveWethForFastStake({
+                amount,
+                callback: txStagesCallback,
+              });
+              needsApprove = false;
+            }
             await l2Stake.fastStakeEth({
               amount,
               callback: txStagesCallback,
@@ -81,15 +112,23 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
             });
           },
           onSign: async ({ payload }) => {
-            txModalStages.sign(amount, minReceiveAmount);
+            if (needsApprove) {
+              txModalStages.signApproval(amount);
+              return;
+            }
+            txModalStages.sign(amount, token, minReceiveAmount);
             return applyRoundUpTxParameter(
               (payload as bigint) ?? config.STAKE_GASLIMIT_FALLBACK,
             );
           },
           onReceipt: ({ txHashOrCallId }) => {
-            return txModalStages.pending(amount, txHashOrCallId, isAA);
+            if (needsApprove) {
+              return txModalStages.pendingApproval(amount, txHashOrCallId);
+            }
+            return txModalStages.pending(amount, token, txHashOrCallId, isAA);
           },
           onSuccess: async ({ txHash }) => {
+            if (needsApprove) return;
             const balance = await onStakeTxConfirmed();
             if (featureFlags.holidayDecorEnabled) {
               bells();
@@ -97,7 +136,9 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
             txModalStages.success(balance, preStakeBalanceWsteth, txHash);
             trackEnd();
           },
+          onFailure: ({ error }) => txModalStages.failed(error, onRetry),
           onMultisigDone: () => {
+            if (needsApprove) return;
             txModalStages.successMultisig();
           },
         });
@@ -110,7 +151,8 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       }
     },
     [
-      trackStart,
+      trackStartEth,
+      trackStartWeth,
       address,
       l1Core.publicClient,
       l2.wsteth,
@@ -120,7 +162,8 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       txModalStages,
       isAA,
       featureFlags.holidayDecorEnabled,
-      trackEnd,
+      trackEndEth,
+      trackEndWeth,
       bells,
       onRetry,
     ],

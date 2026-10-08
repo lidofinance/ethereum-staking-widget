@@ -10,6 +10,7 @@ import {
   LIDO_L2_CONTRACT_ADDRESSES,
 } from '@lidofinance/lido-ethereum-sdk/common';
 import { bridgedWstethAbi } from '@lidofinance/lido-ethereum-sdk/l2';
+import { wethABI } from 'abi/weth-abi';
 
 import {
   L2_STAKING_ORACLE_POOL_ABI,
@@ -23,9 +24,13 @@ import type {
   L2StakingOraclePoolContractType,
   L2FastStakeProps,
   ParsedL2FastStakeProps,
+  L2WethContractType,
+  L2ApproveWethProps,
+  ParsedL2ApproveWethProps,
 } from './types';
 
 import type {
+  AccountValue,
   CHAINS,
   CommonTransactionProps,
   PopulatedTransaction,
@@ -166,6 +171,96 @@ export class L2StakeModule extends LidoSDKModule {
       LINK_TOKEN,
       CCIP_ROUTER,
     };
+  }
+
+  // WETH is the receiver's WNATIVE: staking it is approve + fastStake with the token address
+  @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
+  public async getWethContractAddress(): Promise<Address> {
+    const { WNATIVE } = await this.getReceiverConstants();
+    return WNATIVE;
+  }
+
+  @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
+  public async getWethContract(): Promise<L2WethContractType> {
+    const address = await this.getWethContractAddress();
+    return getEncodableContract(
+      getContract({
+        address,
+        abi: wethABI,
+        client: this.core.keyedClient,
+      }),
+    );
+  }
+
+  public async getWethAllowanceForFastStake(
+    account?: AccountValue,
+  ): Promise<bigint> {
+    const parsedAccount = await this.core.useAccount(account);
+    const [weth, receiver] = await Promise.all([
+      this.getWethContract(),
+      this.getL2StakingReceiverContractAddress(),
+    ]);
+    return weth.read.allowance([parsedAccount.address, receiver]);
+  }
+
+  public async approveWethForFastStakeEstimateGas(
+    props: Omit<
+      L2ApproveWethProps,
+      'callback' | 'waitForTransactionReceiptParameters'
+    >,
+    options?: TransactionOptions,
+  ): Promise<bigint> {
+    const { amount, account } = await this.parseApproveProps(props);
+    const [weth, receiver] = await Promise.all([
+      this.getWethContract(),
+      this.getL2StakingReceiverContractAddress(),
+    ]);
+    return weth.estimateGas.approve([receiver, amount], {
+      account,
+      ...options,
+    });
+  }
+
+  public async approveWethForFastStakePopulateTx(
+    props: Omit<
+      L2ApproveWethProps,
+      'callback' | 'waitForTransactionReceiptParameters'
+    >,
+    options?: TransactionOptions,
+  ): Promise<PopulatedTransaction> {
+    const { amount, account } = await this.parseApproveProps(props);
+    const [weth, receiver] = await Promise.all([
+      this.getWethContract(),
+      this.getL2StakingReceiverContractAddress(),
+    ]);
+    const encodedTx = weth.encode.approve([receiver, amount], {
+      account,
+      ...options,
+    });
+    return { ...encodedTx, from: account.address };
+  }
+
+  public async approveWethForFastStake(
+    props: L2ApproveWethProps,
+    options?: TransactionOptions,
+  ): Promise<TransactionResult> {
+    this.core.useWalletClient();
+    const { account, callback, amount, ...rest } =
+      await this.parseApproveProps(props);
+    const [weth, receiver] = await Promise.all([
+      this.getWethContract(),
+      this.getL2StakingReceiverContractAddress(),
+    ]);
+    const params = [receiver, amount] as const;
+
+    return this.core.performTransaction({
+      ...rest,
+      ...options,
+      account,
+      callback,
+      getGasLimit: (options) => weth.estimateGas.approve(params, options),
+      sendTransaction: (options) => weth.write.approve(params, options),
+    });
   }
 
   //   @Logger('Contracts:')
@@ -321,6 +416,17 @@ export class L2StakeModule extends LidoSDKModule {
       // decodeResult: (receipt) =>
       //   this.unwrapParseEvents(receipt, account.address),
     });
+  }
+
+  private async parseApproveProps<TProps extends L2ApproveWethProps>(
+    props: TProps,
+  ): Promise<ParsedL2ApproveWethProps> {
+    return {
+      ...props,
+      account: await this.core.useAccount(props.account),
+      amount: BigInt(props.amount),
+      callback: props.callback ?? NOOP,
+    };
   }
 
   private async parseProps<

@@ -1,4 +1,5 @@
 import type { EncodableContract } from '@lidofinance/lido-ethereum-sdk/common';
+import type { wethABI } from 'abi/weth-abi';
 import type { GetContractReturnType, Address, JsonRpcAccount } from 'viem';
 import type {
   L2StakingReceiverAbiType,
@@ -35,5 +36,18 @@ export type ParsedL2FastStakeProps = L2FastStakeProps & {
   amount: bigint;
   minReceiveAmount: bigint;
   referral: Address;
+  account: JsonRpcAccount;
+};
+
+export type L2WethContractType = EncodableContract<
+  GetContractReturnType<typeof wethABI, LidoSdkKeyedClients>
+>;
+
+export type L2ApproveWethProps = {
+  amount: EtherValue;
+} & CommonTransactionProps;
+
+export type ParsedL2ApproveWethProps = L2ApproveWethProps & {
+  amount: bigint;
   account: JsonRpcAccount;
 };

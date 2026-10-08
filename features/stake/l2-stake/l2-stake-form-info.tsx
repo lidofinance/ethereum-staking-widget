@@ -15,7 +15,7 @@ import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
 import type { L2StakeFormInputType } from './types';
 
 export const L2StakeFormInfo = () => {
-  const { gasCost, loading } = useL2StakeFormData();
+  const { gasCost, token, loading } = useL2StakeFormData();
   const amount = useWatch<L2StakeFormInputType, 'amount'>({ name: 'amount' });
   const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(gasCost);
   // This will use Lido SDK default chain for fetching the protocol fee
@@ -46,7 +46,7 @@ export const L2StakeFormInfo = () => {
       >
         {conversion ? (
           <>
-            1 ETH =
+            1 {token} =
             <FormatToken
               data-testid="destinationRate"
               amount={conversion.ethToWsteth(ONE_stETH)}
