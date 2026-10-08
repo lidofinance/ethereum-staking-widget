@@ -59,8 +59,7 @@ export type sendCallsCallbackProps =
   | onFailureCallbackProps;
 
 export type TxCallbackProps =
-  | sendTransactionCallbackProps
-  | sendCallsCallbackProps;
+  sendTransactionCallbackProps | sendCallsCallbackProps;
 
 export type StageCallback<TArgs, TReturn = void> = (
   args: TArgs & CommonCallbackProps,
@@ -100,3 +99,18 @@ export type TxFlowArgs = {
   callsFn?: () => Promise<(AACall | null | undefined | false)[]>;
   sendTransaction: (txStagesCallback: TransactionCallback) => Promise<void>;
 } & StageCallbacks;
+
+export type TxFlowDeps = {
+  isAA: boolean;
+  address?: Address;
+  validateAddress: (address?: Address) => Promise<boolean>;
+  sendAACalls: (
+    calls: (AACall | null | undefined | false)[],
+    callback: (props: TxCallbackProps) => Promise<void>,
+  ) => Promise<unknown>;
+  // False once the owning UI unmounted or a newer flow started; a stale flow
+  // must neither reach the wallet nor report stages
+  isCurrent: () => boolean;
+  // Memoized txHash shared across stages (and across flows by the hook)
+  txHash: { current: Hash | undefined };
+};

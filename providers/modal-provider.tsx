@@ -110,10 +110,14 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
   );
 
   const closeModal: ModalContextValue['closeModal'] = useCallback((modal) => {
+    // Bind the close to the session that is current now: a modal opened before
+    // the timer fires must not be closed by an action meant for its predecessor
+    const modalSession = modalSessionRef.current;
     // setTimeout helps to get rid of this error:
     // "Can't perform a react state update on an unmounted component"
     // after WalletConnect connection
     setTimeout(() => {
+      if (modalSessionRef.current !== modalSession) return;
       setModalState((prevState) => {
         if (modal && modal !== prevState?.modal) return prevState;
         return null;

@@ -1,4 +1,3 @@
-import { isAddressEqual, type Address } from 'viem';
 import { useQuery } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
 
@@ -9,18 +8,8 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { getSTGShareManagerSTRETH } from '../contracts';
 import { getWithdrawalParams } from '../withdraw/utils';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
+import { getMellowUserPointsWei } from 'features/earn/shared/api/mellow-points';
 import { STG_STATS_ORIGIN } from '../consts';
-
-type UserPointsResponse = {
-  user_address: Address;
-  user_referal_points: string;
-  user_vault_balance: number;
-  timestamp: number;
-  vault_address: Address;
-  user_mellow_points: string;
-  user_symbiotic_points: string;
-  user_merits_points: string;
-}[];
 
 export const useSTGPosition = () => {
   const { address, isDappActive } = useDappStatus();
@@ -54,17 +43,12 @@ export const useSTGPosition = () => {
     queryKey: ['stg', 'mellow-points', { address }] as const,
     enabled: isEnabled,
     queryFn: async () => {
-      // TODO: add zod validation
-      const mellowBaseUrl = `${STG_STATS_ORIGIN}/v1/chain/1/users`;
-      const userPointsUrl = `${mellowBaseUrl}/${address}`;
-
-      const userPointsData =
-        await standardFetcher<UserPointsResponse>(userPointsUrl);
-      const pointsForVault = userPointsData.find((vault) =>
-        isAddressEqual(vault.vault_address, stgVaultAddress),
+      const userPointsUrl = `${STG_STATS_ORIGIN}/v1/chain/1/users/${address}`;
+      // validated and converted to wei here, so components never parse it
+      return getMellowUserPointsWei(
+        await standardFetcher<unknown>(userPointsUrl),
+        stgVaultAddress,
       );
-
-      return pointsForVault ?? null;
     },
   });
 
@@ -89,9 +73,7 @@ export const useSTGPosition = () => {
 
   const data = isEnabled ? strethBalanceQuery.data : undefined;
   const wsteth = strethToWstethQuery.data;
-  const mellowPoints = mellowPointsBalanceQuery.data?.user_mellow_points
-    ? Number(mellowPointsBalanceQuery.data.user_mellow_points)
-    : undefined;
+  const mellowPoints = mellowPointsBalanceQuery.data;
 
   const { usdAmount, ...usdQuery } = useWstethUsd(
     wsteth,
