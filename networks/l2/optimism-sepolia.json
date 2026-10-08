@@ -1,0 +1,7 @@
+{
+  "contracts": {
+    "L2stETH": "0xf49d208b5c7b10415c7beafe9e656f2df9edfe3b",
+    "L2wstETH": "0x24B47cd3A74f1799b32B2de11073764Cb1bb318B"
+  },
+  "api": {}
+}

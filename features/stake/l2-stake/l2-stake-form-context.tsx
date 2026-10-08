@@ -104,7 +104,7 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
 
   const maxAmount = useTokenMaxAmount({
     balance: etherBalance,
-    limit: fastStakeLiquidity?.eth,
+    limit: fastStakeLiquidityEth,
     isPadded: !isSmartAccount,
     padding: BALANCE_PADDING_L2,
     gasLimit: gasLimit,

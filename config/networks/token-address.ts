@@ -34,6 +34,8 @@ export const getTokenAddress = (
 
   let contractKey = TOKENS_TO_CONTRACTS[token];
 
+  // We map L2 tokens to their respective L2 contracts keys
+  // The contracts are different because ABIs are different between L1 and L2 token contracts
   if (isSupportedL2Chain(chain)) {
     if (token === TOKENS.wsteth) {
       contractKey = CONTRACT_NAMES.L2wstETH;

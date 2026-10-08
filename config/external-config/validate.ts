@@ -270,6 +270,7 @@ const MultiChainBannerSchema = z
 // L2 Stake
 //
 
+// Default liquidity target for L2 stake in ETH that the pool aims to maintain
 const DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH = 25;
 
 const L2StakeConfigurationSchema = z.object({
