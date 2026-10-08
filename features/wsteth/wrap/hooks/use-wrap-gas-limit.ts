@@ -57,7 +57,7 @@ const fetchGasLimitStETH = async (
 export const useWrapGasLimit = () => {
   const { chainId, isDappActiveOnL2 } = useDappStatus();
   const { wrap } = useLidoSDK();
-  const { l2, isL2 } = useLidoSDKL2();
+  const { l2, isL2Wrap } = useLidoSDKL2();
 
   const wrapFallback = isDappActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
 
@@ -65,12 +65,12 @@ export const useWrapGasLimit = () => {
     gasLimitETH: bigint | null;
     gasLimitStETH: bigint;
   }>({
-    queryKey: ['wrap-gas-limit', chainId, isL2],
+    queryKey: ['wrap-gas-limit', chainId, isL2Wrap],
     ...STRATEGY_CONSTANT,
     queryFn: async () =>
       Promise.all([
-        !isL2 ? fetchGasLimitETH(wrap) : Promise.resolve(null),
-        fetchGasLimitStETH(isL2, l2, wrap, wrapFallback),
+        !isL2Wrap ? fetchGasLimitETH(wrap) : Promise.resolve(null),
+        fetchGasLimitStETH(isL2Wrap, l2, wrap, wrapFallback),
       ]).then(([gasLimitETH, gasLimitStETH]) => ({
         gasLimitETH,
         gasLimitStETH,

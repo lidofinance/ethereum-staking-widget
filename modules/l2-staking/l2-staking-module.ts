@@ -202,7 +202,8 @@ export class L2StakeModule extends LidoSDKModule {
     return calcFastStakeEthByWsteth(wstethAmount, feeRate, price);
   }
 
-  @Cache(CACHE_TIME_DYNAMIC, ['core.chain.id'])
+  // NB!: no cache for this
+  // TODO: cache busting mechanism in SDK
   public async getFastStakeLiquidity(): Promise<{
     wsteth: bigint;
     eth: bigint;

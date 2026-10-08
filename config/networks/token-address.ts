@@ -39,7 +39,7 @@ export const getTokenAddress = (
       contractKey = CONTRACT_NAMES.L2wstETH;
     }
     if (token === TOKENS.steth) {
-      contractKey = CONTRACT_NAMES.L2wstETH;
+      contractKey = CONTRACT_NAMES.L2stETH;
     }
   }
 

@@ -12,7 +12,7 @@ import {
 export const useUnwrapGasLimit = () => {
   const { chainId, isDappActiveOnL2 } = useDappStatus();
   const { wrap } = useLidoSDK();
-  const { l2, isL2 } = useLidoSDKL2();
+  const { l2, isL2Wrap } = useLidoSDKL2();
 
   const fallback = isDappActiveOnL2 ? UNWRAP_L2_GAS_LIMIT : UNWRAP_GAS_LIMIT;
 
@@ -21,7 +21,7 @@ export const useUnwrapGasLimit = () => {
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
-        if (isL2) {
+        if (isL2Wrap) {
           return await l2.wrapWstethToStethEstimateGas({
             value: ESTIMATE_AMOUNT,
             account: config.ESTIMATE_ACCOUNT,
