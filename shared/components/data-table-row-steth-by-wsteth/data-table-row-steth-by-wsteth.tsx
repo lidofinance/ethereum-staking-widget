@@ -11,22 +11,16 @@ import {
 
 type DataTableRowStethByWstethProps = {
   toSymbol?: string;
-  providerChainId?: number;
 };
 
 type DataTableRowWstethByStethProps = {
   fromSymbol?: string;
-  providerChainId?: number;
 };
 
 export const DataTableRowWstethBySteth = ({
   fromSymbol = 'ETH',
-  providerChainId,
 }: DataTableRowWstethByStethProps) => {
-  const { data: wstethBySteth, isLoading } = useWstethBySteth(
-    ONE_stETH,
-    providerChainId,
-  );
+  const { data: wstethBySteth, isLoading } = useWstethBySteth(ONE_stETH);
 
   return (
     <DataTableRow
@@ -52,12 +46,8 @@ export const DataTableRowWstethBySteth = ({
 
 export const DataTableRowStethByWsteth = ({
   toSymbol = 'stETH',
-  providerChainId,
 }: DataTableRowStethByWstethProps) => {
-  const { data: stethByWsteth, isLoading } = useStETHByWstETH(
-    ONE_wstETH,
-    providerChainId,
-  );
+  const { data: stethByWsteth, isLoading } = useStETHByWstETH(ONE_wstETH);
 
   return (
     <DataTableRow
