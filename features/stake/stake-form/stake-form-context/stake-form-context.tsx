@@ -35,6 +35,7 @@ import {
   type StakeFormDataContextValue,
   type StakeFormInput,
   type StakeFormNetworkData,
+  type StakeFormValidationContextByToken,
 } from './types';
 import {
   stakeFormValidationResolver,
@@ -197,18 +198,20 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
 //
 export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const networkData = useStakeFormNetworkData();
-  const validationContextPromise = useStakeFormValidationContext(networkData);
+  const validationContextByToken = useStakeFormValidationContext(networkData);
 
-  const formObject = useForm<StakeFormInput>({
-    defaultValues: {
-      amount: recoverFormState('stake').amount ?? null,
-      token: TOKENS_TO_STAKE.ETH,
-      referral: recoverFormState('stake').referral ?? null,
+  const formObject = useForm<StakeFormInput, StakeFormValidationContextByToken>(
+    {
+      defaultValues: {
+        amount: recoverFormState('stake').amount ?? null,
+        token: TOKENS_TO_STAKE.ETH,
+        referral: recoverFormState('stake').referral ?? null,
+      },
+      context: validationContextByToken,
+      resolver: stakeFormValidationResolver,
+      mode: 'onChange',
     },
-    context: validationContextPromise,
-    resolver: stakeFormValidationResolver,
-    mode: 'onChange',
-  });
+  );
   const { setValue } = formObject;
   useQueryParamsReferralForm<StakeFormInput>({ setValue });
   useQueryParamsAmountForm<StakeFormInput>({ setValue });

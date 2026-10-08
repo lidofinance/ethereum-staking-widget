@@ -5,7 +5,10 @@ import invariant from 'tiny-invariant';
 import { useAA, useDappStatus } from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
-import { useAwaiter } from 'shared/hooks/use-awaiter';
+import {
+  isWethBalanceReady,
+  useValidationContextByToken,
+} from 'features/stake/shared/validation-context-by-token';
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 import { validateStakeWeth } from 'shared/hook-form/validation/validate-stake-weth';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
@@ -16,16 +19,17 @@ import type {
   StakeFormInput,
   StakeFormNetworkData,
   StakeFormValidationContext,
+  StakeFormValidationContextByToken,
 } from './types';
 
 export const stakeFormValidationResolver: Resolver<
   StakeFormInput,
-  Promise<StakeFormValidationContext>
-> = async (values, validationContextPromise) => {
+  StakeFormValidationContextByToken
+> = async (values, validationContextByToken) => {
   const { amount, token } = values;
   try {
     invariant(
-      validationContextPromise,
+      validationContextByToken,
       'validation context must be presented as context promise',
     );
 
@@ -42,7 +46,7 @@ export const stakeFormValidationResolver: Resolver<
       isSmartAccount,
       shouldValidateEtherBalance,
     } = await awaitWithTimeout(
-      validationContextPromise,
+      validationContextByToken[token],
       VALIDATION_CONTEXT_TIMEOUT,
     );
 
@@ -88,9 +92,64 @@ export const stakeFormValidationResolver: Resolver<
   }
 };
 
+type StakeFormValidationContextDeps = {
+  isDappActive: boolean;
+  areAuxiliaryFundsSupported: boolean;
+};
+
+type StakeFormValidationContextSource = Pick<
+  StakeFormNetworkData,
+  | 'stakingLimitInfo'
+  | 'etherBalance'
+  | 'wethBalance'
+  | 'isSmartAccount'
+  | 'gasCostEth'
+  | 'gasCostWeth'
+>;
+
+// Resolves once the ETH validation has its data; the WETH balance is not
+// required here, so it is stubbed until it arrives and only WETH validation
+// waits for it (see useValidationContextByToken)
+export const getStakeFormValidationContext = (
+  {
+    stakingLimitInfo,
+    etherBalance,
+    wethBalance,
+    isSmartAccount,
+    gasCostEth,
+    gasCostWeth,
+  }: StakeFormValidationContextSource,
+  { isDappActive, areAuxiliaryFundsSupported }: StakeFormValidationContextDeps,
+): StakeFormValidationContext | undefined => {
+  if (
+    stakingLimitInfo &&
+    // we ether not connected or must have all account related data
+    (!isDappActive ||
+      (etherBalance !== undefined &&
+        gasCostEth !== undefined &&
+        gasCostWeth !== undefined &&
+        isSmartAccount !== undefined))
+  ) {
+    return {
+      isWalletActive: isDappActive,
+      stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
+      currentStakeLimit: stakingLimitInfo.currentStakeLimit,
+      shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
+      // condition above guaranties stubs will only be passed when isDappActive = false
+      etherBalance: etherBalance ?? 0n,
+      gasCostEth: gasCostEth ?? 0n,
+      gasCostWeth: gasCostWeth ?? 0n,
+      isSmartAccount: isSmartAccount ?? false,
+      // stubbed while loading; never reached by ETH validation
+      wethBalance: wethBalance ?? 0n,
+    };
+  }
+  return undefined;
+};
+
 export const useStakeFormValidationContext = (
   networkData: StakeFormNetworkData,
-): Promise<StakeFormValidationContext> => {
+): StakeFormValidationContextByToken => {
   const { isDappActive } = useDappStatus();
   const { areAuxiliaryFundsSupported } = useAA();
   const {
@@ -103,43 +162,37 @@ export const useStakeFormValidationContext = (
     gasCostWeth,
   } = networkData;
 
-  const validationContextAwaited = useMemo(() => {
-    if (
-      stakingLimitInfo &&
-      // we ether not connected or must have all account related data
-      (!isDappActive ||
-        (etherBalance !== undefined &&
-          gasCostEth !== undefined &&
-          gasCostWeth !== undefined &&
-          isSmartAccount !== undefined &&
-          // the WETH balance only resolves on chains that have WETH
-          (!isWethSupported || wethBalance !== undefined)))
-    ) {
-      return {
-        isWalletActive: isDappActive,
-        stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
-        currentStakeLimit: stakingLimitInfo.currentStakeLimit,
-        shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
-        // condition above guaranties stubs will only be passed when isDappActive = false
-        etherBalance: etherBalance ?? 0n,
-        wethBalance: wethBalance ?? 0n,
-        gasCostEth: gasCostEth ?? 0n,
-        gasCostWeth: gasCostWeth ?? 0n,
-        isSmartAccount: isSmartAccount ?? false,
-      };
-    }
-    return undefined;
-  }, [
-    stakingLimitInfo,
-    isDappActive,
-    etherBalance,
-    wethBalance,
-    isWethSupported,
-    gasCostEth,
-    gasCostWeth,
-    isSmartAccount,
-    areAuxiliaryFundsSupported,
-  ]);
+  const context = useMemo(
+    () =>
+      getStakeFormValidationContext(
+        {
+          stakingLimitInfo,
+          etherBalance,
+          wethBalance,
+          isSmartAccount,
+          gasCostEth,
+          gasCostWeth,
+        },
+        { isDappActive, areAuxiliaryFundsSupported },
+      ),
+    [
+      stakingLimitInfo,
+      etherBalance,
+      wethBalance,
+      isSmartAccount,
+      gasCostEth,
+      gasCostWeth,
+      isDappActive,
+      areAuxiliaryFundsSupported,
+    ],
+  );
 
-  return useAwaiter(validationContextAwaited).awaiter;
+  return useValidationContextByToken({
+    context,
+    isWethBalanceReady: isWethBalanceReady({
+      isDappActive,
+      isWethSupported,
+      wethBalance,
+    }),
+  });
 };

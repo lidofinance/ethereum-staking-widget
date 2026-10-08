@@ -25,17 +25,11 @@ type StakeArguments = {
 };
 
 type StakeOptions = {
-  // true when the receiver's WETH allowance does not cover the amount
-  needsApprove: boolean;
   onConfirm?: () => Promise<void> | void;
   onRetry?: () => void;
 };
 
-export const useL2FastStake = ({
-  needsApprove: needsApproveAllowance,
-  onConfirm,
-  onRetry,
-}: StakeOptions) => {
+export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { bells } = useBells();
   const { address } = useDappStatus();
   const { isAA } = useAA();
@@ -76,9 +70,13 @@ export const useL2FastStake = ({
         const minReceiveAmount = await l2Stake.getFastStakeWstethByEth(amount);
 
         // The receiver pulls WETH, so it needs an allowance first: in the same
-        // batch for AA wallets, as a separate transaction otherwise. The flag
-        // tells the stage callbacks which of the chained transactions is reporting
-        let needsApprove = isWeth && needsApproveAllowance;
+        // batch for AA wallets, as a separate transaction otherwise. The
+        // allowance is read here rather than taken from the form state, so a
+        // retry after a confirmed approval never approves again. The flag tells
+        // the stage callbacks which of the chained transactions is reporting
+        let needsApprove =
+          isWeth &&
+          (await l2Stake.getWethAllowanceForFastStake(address)) < amount;
 
         const stakeCall = await l2Stake.fastStakeEthPopulateTx({
           amount,
@@ -159,7 +157,6 @@ export const useL2FastStake = ({
       l1Core.publicClient,
       l2.wsteth,
       l2Stake,
-      needsApproveAllowance,
       txFlow,
       onConfirm,
       txModalStages,

@@ -1,28 +1,31 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import {
   decodeFunctionData,
   getAddress,
   zeroAddress,
   type Address,
   type Hash,
-  type TransactionReceipt,
 } from 'viem';
 import {
   CHAINS,
   LIDO_L2_CONTRACT_ADDRESSES,
 } from '@lidofinance/lido-ethereum-sdk/common';
-import {
-  TransactionCallbackStage,
-  type LidoSDKCore,
-  type TransactionCallback,
-} from '@lidofinance/lido-ethereum-sdk/core';
+import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 
-import type { AACall, TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
 import {
   L2StakeModule,
   calcFastStakeWstethByEth,
 } from 'modules/l2-staking/l2-staking-module';
 import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
+import { wethABI } from 'abi/weth-abi';
+import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
+import {
+  aaSendCalls,
+  expectOrdered,
+  legacyPerformTransaction,
+  renderHook,
+  sentAACalls,
+} from 'features/stake/shared/__tests__/stake-test-utils';
 
 // Referenced from the hoisted mock factories, so hoisted with them
 const { ACCOUNT, FALLBACK_REFERRAL } = vi.hoisted(() => ({
@@ -32,6 +35,7 @@ const { ACCOUNT, FALLBACK_REFERRAL } = vi.hoisted(() => ({
 const REFERRAL: Address = '0x00000000000000000000000000000000000000bb';
 const POOL: Address = '0x00000000000000000000000000000000000000cc';
 const FEED: Address = '0x00000000000000000000000000000000000000dd';
+const WETH = getAddress('0x00000000000000000000000000000000000000ee');
 const RECEIVER = LIDO_L2_CONTRACT_ADDRESSES[CHAINS.Base]?.stakeReceiver;
 const TX_HASH: Hash =
   '0x1111111111111111111111111111111111111111111111111111111111111111';
@@ -45,12 +49,7 @@ const MIN_RECEIVE = calcFastStakeWstethByEth(AMOUNT, FEE, PRICE);
 const BALANCE_BEFORE = 5n * P;
 const BALANCE_AFTER = BALANCE_BEFORE + MIN_RECEIVE;
 
-type PerformTransactionProps = {
-  account: { address: Address };
-  callback: TransactionCallback;
-  getGasLimit: (options: object) => Promise<bigint>;
-  sendTransaction: (options: object) => Promise<Hash>;
-};
+const { ETH, WETH: WETH_TOKEN } = TOKENS_TO_STAKE;
 
 const state = vi.hoisted(() => ({
   isAA: false,
@@ -58,6 +57,8 @@ const state = vi.hoisted(() => ({
   wstethBalance: vi.fn(),
   sendAACalls: vi.fn(),
   txModalStages: {
+    signApproval: vi.fn(),
+    pendingApproval: vi.fn(),
     sign: vi.fn(),
     pending: vi.fn(),
     success: vi.fn(),
@@ -109,53 +110,23 @@ vi.mock('../hooks/use-track-event', () => ({
 
 import { useL2FastStake } from '../hooks/use-fast-stake';
 
-// Hooks run during a server render; the returned callback is then driven
-// outside of React like the form submit would
-const renderHook = <T,>(useHook: () => T): T => {
-  let value: T | undefined;
-  const Probe = () => {
-    value = useHook();
-    return null;
-  };
-  renderToStaticMarkup(<Probe />);
-  return value as T;
-};
-
-type LegacyOutcome = 'success' | 'reverted' | 'rejected' | 'multisig';
-
-// Mirrors the SDK's performTransaction stage sequence for each outcome
-const legacyPerformTransaction = (outcome: LegacyOutcome) =>
-  vi.fn(async (props: PerformTransactionProps) => {
-    const { callback, getGasLimit, sendTransaction, account } = props;
-    const gas = await getGasLimit({ account });
-    await callback({ stage: TransactionCallbackStage.SIGN, payload: gas });
-    if (outcome === 'rejected') throw new Error('User rejected the request');
-    const hash = await sendTransaction({ account, gas });
-    if (outcome === 'multisig') {
-      await callback({ stage: TransactionCallbackStage.MULTISIG_DONE });
-      return { hash };
-    }
-    await callback({ stage: TransactionCallbackStage.RECEIPT, payload: hash });
-    const receipt = {
-      status: outcome === 'reverted' ? 'reverted' : 'success',
-      transactionHash: hash,
-    } as unknown as TransactionReceipt;
-    await callback({
-      stage: TransactionCallbackStage.CONFIRMATION,
-      payload: receipt,
-    });
-    await callback({ stage: TransactionCallbackStage.DONE, payload: 0n });
-    return { hash };
-  });
-
 const createModule = (
   performTransaction: ReturnType<typeof legacyPerformTransaction>,
+  { allowance = 0n } = {},
 ) => {
   const reads: Record<string, unknown> = {
+    // the receiver's WETH allowance, read when the transaction is built
+    allowance,
     getOraclePool: POOL,
     getOracle: FEED,
     getFee: FEE,
     getLatestAnswer: PRICE,
+    // receiver constants: WETH is the receiver's WNATIVE
+    TOKEN: zeroAddress,
+    WNATIVE: WETH,
+    MIN_PROCESS_MESSAGE_GAS: 0n,
+    LINK_TOKEN: zeroAddress,
+    CCIP_ROUTER: zeroAddress,
   };
   const publicClient = {
     readContract: vi.fn(async ({ functionName }: { functionName: string }) => {
@@ -175,11 +146,15 @@ const createModule = (
     useWalletClient: vi.fn(() => walletClient),
     performTransaction,
   };
-  return {
-    module: new L2StakeModule({ core: core as unknown as LidoSDKCore }),
-    walletClient,
+  state.l2Stake = new L2StakeModule({ core: core as unknown as LidoSDKCore });
+  // lets a test move the chain state between two stake calls
+  const setAllowance = (value: bigint) => {
+    reads.allowance = value;
   };
+  return { walletClient, publicClient, setAllowance };
 };
+
+const allowanceRead = expect.objectContaining({ functionName: 'allowance' });
 
 const decodeFastStake = (data: Hash) => {
   const decoded = decodeFunctionData({ abi: L2_STAKING_RECEIVER_ABI, data });
@@ -187,9 +162,34 @@ const decodeFastStake = (data: Hash) => {
   return decoded.args as readonly [Address, bigint, bigint, Address];
 };
 
+const decodeApprove = (data: Hash) => {
+  const decoded = decodeFunctionData({ abi: wethABI, data });
+  expect(decoded.functionName).toBe('approve');
+  return decoded.args as readonly [Address, bigint];
+};
+
+const approveCall = expect.objectContaining({
+  address: WETH,
+  functionName: 'approve',
+  args: [RECEIVER, AMOUNT],
+});
+const stakeCall = (token: Address, referral: Address = REFERRAL) =>
+  expect.objectContaining({
+    address: RECEIVER,
+    functionName: 'fastStakeReferral',
+    args: [token, AMOUNT, MIN_RECEIVE, getAddress(referral)],
+    value: token === zeroAddress ? AMOUNT : 0n,
+  });
+
 const onConfirm = vi.fn();
 const onRetry = vi.fn();
-const stake = () => renderHook(() => useL2FastStake({ onConfirm, onRetry }));
+
+const stake = (token: TOKENS_TO_STAKE, referral: Address | null = REFERRAL) =>
+  renderHook(() => useL2FastStake({ onConfirm, onRetry }))({
+    amount: AMOUNT,
+    token,
+    referral,
+  });
 
 const consoleWarnSpy = vi
   .spyOn(console, 'warn')
@@ -208,33 +208,32 @@ afterAll(() => {
 });
 
 describe('useL2FastStake', () => {
-  describe('legacy signing', () => {
+  describe('legacy signing, ETH', () => {
     it('stakes ETH for the quoted wstETH and reports success', async () => {
-      const performTransaction = legacyPerformTransaction('success');
-      const { module, walletClient } = createModule(performTransaction);
-      state.l2Stake = module;
+      const { walletClient, publicClient } = createModule(
+        legacyPerformTransaction('success'),
+      );
 
-      await expect(
-        stake()({ amount: AMOUNT, referral: REFERRAL }),
-      ).resolves.toBe(true);
+      await expect(stake(ETH)).resolves.toBe(true);
 
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
       expect(walletClient.writeContract).toHaveBeenCalledWith(
-        expect.objectContaining({
-          address: RECEIVER,
-          functionName: 'fastStakeReferral',
-          args: [zeroAddress, AMOUNT, MIN_RECEIVE, getAddress(REFERRAL)],
-          value: AMOUNT,
-        }),
+        stakeCall(zeroAddress),
       );
       expect(state.txModalStages.sign).toHaveBeenCalledWith(
         AMOUNT,
+        ETH,
         MIN_RECEIVE,
       );
       expect(state.txModalStages.pending).toHaveBeenCalledWith(
         AMOUNT,
+        ETH,
         TX_HASH,
         false,
       );
+      expect(state.txModalStages.signApproval).not.toHaveBeenCalled();
+      // the allowance only matters for WETH
+      expect(publicClient.readContract).not.toHaveBeenCalledWith(allowanceRead);
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
@@ -245,34 +244,23 @@ describe('useL2FastStake', () => {
     });
 
     it('falls back to the configured referral when none is given', async () => {
-      const { module, walletClient } = createModule(
+      const { walletClient } = createModule(
         legacyPerformTransaction('success'),
       );
-      state.l2Stake = module;
 
-      await stake()({ amount: AMOUNT, referral: null });
+      await stake(ETH, null);
 
       expect(walletClient.writeContract).toHaveBeenCalledWith(
-        expect.objectContaining({
-          args: [
-            zeroAddress,
-            AMOUNT,
-            MIN_RECEIVE,
-            getAddress(FALLBACK_REFERRAL),
-          ],
-        }),
+        stakeCall(zeroAddress, FALLBACK_REFERRAL),
       );
     });
 
     it('reports a rejected signature and offers a retry', async () => {
-      const { module, walletClient } = createModule(
+      const { walletClient } = createModule(
         legacyPerformTransaction('rejected'),
       );
-      state.l2Stake = module;
 
-      await expect(
-        stake()({ amount: AMOUNT, referral: REFERRAL }),
-      ).resolves.toBe(false);
+      await expect(stake(ETH)).resolves.toBe(false);
 
       expect(walletClient.writeContract).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
@@ -284,15 +272,13 @@ describe('useL2FastStake', () => {
     });
 
     it('reports a reverted transaction as a failure', async () => {
-      const { module } = createModule(legacyPerformTransaction('reverted'));
-      state.l2Stake = module;
+      createModule(legacyPerformTransaction('reverted'));
 
-      await expect(
-        stake()({ amount: AMOUNT, referral: REFERRAL }),
-      ).resolves.toBe(false);
+      await expect(stake(ETH)).resolves.toBe(false);
 
       expect(state.txModalStages.pending).toHaveBeenCalledWith(
         AMOUNT,
+        ETH,
         TX_HASH,
         false,
       );
@@ -305,17 +291,157 @@ describe('useL2FastStake', () => {
     });
 
     it('reports a multisig proposal without waiting for a receipt', async () => {
-      const { module } = createModule(legacyPerformTransaction('multisig'));
-      state.l2Stake = module;
+      createModule(legacyPerformTransaction('multisig'));
 
-      await expect(
-        stake()({ amount: AMOUNT, referral: REFERRAL }),
-      ).resolves.toBe(true);
+      await expect(stake(ETH)).resolves.toBe(true);
 
       expect(state.txModalStages.successMultisig).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
       expect(onConfirm).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('legacy signing, WETH', () => {
+    it('approves and then stakes as two transactions when the allowance is short', async () => {
+      const { walletClient, publicClient } = createModule(
+        legacyPerformTransaction('success', 'success'),
+        { allowance: AMOUNT - 1n },
+      );
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+
+      expect(publicClient.readContract).toHaveBeenCalledWith(allowanceRead);
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(2);
+      expect(walletClient.writeContract).toHaveBeenNthCalledWith(
+        1,
+        approveCall,
+      );
+      expect(walletClient.writeContract).toHaveBeenNthCalledWith(
+        2,
+        stakeCall(WETH),
+      );
+
+      expect(state.txModalStages.signApproval).toHaveBeenCalledWith(AMOUNT);
+      expect(state.txModalStages.pendingApproval).toHaveBeenCalledWith(
+        AMOUNT,
+        TX_HASH,
+      );
+      expect(state.txModalStages.sign).toHaveBeenCalledWith(
+        AMOUNT,
+        WETH_TOKEN,
+        MIN_RECEIVE,
+      );
+      expect(state.txModalStages.pending).toHaveBeenCalledWith(
+        AMOUNT,
+        WETH_TOKEN,
+        TX_HASH,
+        false,
+      );
+      expectOrdered(
+        state.txModalStages.signApproval,
+        state.txModalStages.pendingApproval,
+        state.txModalStages.sign,
+        state.txModalStages.pending,
+        state.txModalStages.success,
+      );
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.success).toHaveBeenCalledWith(
+        BALANCE_AFTER,
+        BALANCE_BEFORE,
+        TX_HASH,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
+    });
+
+    it('skips the approval when the allowance covers the amount', async () => {
+      const { walletClient } = createModule(
+        legacyPerformTransaction('success'),
+        { allowance: AMOUNT },
+      );
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
+      expect(walletClient.writeContract).toHaveBeenCalledWith(stakeCall(WETH));
+      expect(state.txModalStages.signApproval).not.toHaveBeenCalled();
+      expect(state.txModalStages.success).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops at a rejected approval', async () => {
+      const { walletClient } = createModule(
+        legacyPerformTransaction('rejected'),
+      );
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(false);
+
+      expect(walletClient.writeContract).not.toHaveBeenCalled();
+      expect(state.txModalStages.signApproval).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.sign).not.toHaveBeenCalled();
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'User rejected the request' }),
+        onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('does not approve again when retried after a confirmed approval', async () => {
+      const { walletClient, setAllowance } = createModule(
+        legacyPerformTransaction('success', 'rejected', 'success'),
+      );
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(false);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
+      expect(walletClient.writeContract).toHaveBeenCalledWith(approveCall);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'User rejected the request' }),
+        onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+      expect(onConfirm).not.toHaveBeenCalled();
+
+      // the approval is on chain: the retry reads it while building the stake
+      setAllowance(AMOUNT);
+      walletClient.writeContract.mockClear();
+      state.txModalStages.signApproval.mockClear();
+      state.wstethBalance
+        .mockReset()
+        .mockResolvedValueOnce(BALANCE_BEFORE)
+        .mockResolvedValueOnce(BALANCE_AFTER);
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
+      expect(walletClient.writeContract).toHaveBeenCalledWith(stakeCall(WETH));
+      expect(state.txModalStages.signApproval).not.toHaveBeenCalled();
+      expect(state.txModalStages.success).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports a reverted stake after a confirmed approval', async () => {
+      createModule(legacyPerformTransaction('success', 'reverted'));
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(false);
+
+      expect(state.txModalStages.pendingApproval).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({ code: 'TRANSACTION_REVERTED' }),
+        onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('proposes both transactions to a multisig and reports once', async () => {
+      const { walletClient } = createModule(
+        legacyPerformTransaction('multisig', 'multisig'),
+      );
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(2);
+      expect(state.txModalStages.successMultisig).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
     });
   });
 
@@ -326,42 +452,19 @@ describe('useL2FastStake', () => {
 
     it('sends a single receiver call carrying the ETH value', async () => {
       const performTransaction = legacyPerformTransaction('success');
-      const { module, walletClient } = createModule(performTransaction);
-      state.l2Stake = module;
-      let calls: AACall[] = [];
-      state.sendAACalls.mockImplementation(
-        async (
-          sentCalls: AACall[],
-          callback: (props: {
-            stage: TransactionCallbackStage;
-            callId?: string;
-            txHash?: Hash;
-          }) => Promise<void>,
-        ) => {
-          calls = sentCalls;
-          await callback({ stage: TransactionCallbackStage.SIGN });
-          await callback({
-            stage: TransactionCallbackStage.RECEIPT,
-            callId: CALL_ID,
-          });
-          await callback({
-            stage: TransactionCallbackStage.DONE,
-            txHash: TX_HASH,
-          });
-        },
-      );
+      const { walletClient } = createModule(performTransaction);
+      const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
+      state.sendAACalls.mockImplementation(sendCalls);
 
-      await expect(
-        stake()({ amount: AMOUNT, referral: REFERRAL }),
-      ).resolves.toBe(true);
+      await expect(stake(ETH)).resolves.toBe(true);
 
       expect(performTransaction).not.toHaveBeenCalled();
       expect(walletClient.writeContract).not.toHaveBeenCalled();
+      const calls = sentAACalls(sendCalls);
       expect(calls).toHaveLength(1);
-      const [call] = calls;
-      expect(call?.to).toBe(RECEIVER);
-      expect(call?.value).toBe(AMOUNT);
-      expect(decodeFastStake(call?.data as Hash)).toEqual([
+      expect(calls[0]?.to).toBe(RECEIVER);
+      expect(calls[0]?.value).toBe(AMOUNT);
+      expect(decodeFastStake(calls[0]?.data as Hash)).toEqual([
         zeroAddress,
         AMOUNT,
         MIN_RECEIVE,
@@ -369,10 +472,12 @@ describe('useL2FastStake', () => {
       ]);
       expect(state.txModalStages.sign).toHaveBeenCalledWith(
         AMOUNT,
+        ETH,
         MIN_RECEIVE,
       );
       expect(state.txModalStages.pending).toHaveBeenCalledWith(
         AMOUNT,
+        ETH,
         CALL_ID,
         true,
       );
@@ -383,36 +488,83 @@ describe('useL2FastStake', () => {
       );
     });
 
+    it('batches the approval with the WETH stake', async () => {
+      const performTransaction = legacyPerformTransaction('success');
+      createModule(performTransaction);
+      const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
+      state.sendAACalls.mockImplementation(sendCalls);
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+
+      expect(performTransaction).not.toHaveBeenCalled();
+      const calls = sentAACalls(sendCalls);
+      expect(calls).toHaveLength(2);
+      expect(calls[0]?.to).toBe(WETH);
+      expect(calls[0]?.value ?? 0n).toBe(0n);
+      expect(decodeApprove(calls[0]?.data as Hash)).toEqual([RECEIVER, AMOUNT]);
+      expect(calls[1]?.to).toBe(RECEIVER);
+      expect(calls[1]?.value).toBe(0n);
+      expect(decodeFastStake(calls[1]?.data as Hash)).toEqual([
+        WETH,
+        AMOUNT,
+        MIN_RECEIVE,
+        getAddress(REFERRAL),
+      ]);
+      // one signature covers both calls: no separate approval stage
+      expect(state.txModalStages.signApproval).not.toHaveBeenCalled();
+      expect(state.txModalStages.pendingApproval).not.toHaveBeenCalled();
+      expect(state.txModalStages.sign).toHaveBeenCalledWith(
+        AMOUNT,
+        WETH_TOKEN,
+        MIN_RECEIVE,
+      );
+      expect(state.txModalStages.pending).toHaveBeenCalledWith(
+        AMOUNT,
+        WETH_TOKEN,
+        CALL_ID,
+        true,
+      );
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.success).toHaveBeenCalledWith(
+        BALANCE_AFTER,
+        BALANCE_BEFORE,
+        TX_HASH,
+      );
+    });
+
+    it('sends only the stake when the allowance already covers the amount', async () => {
+      createModule(legacyPerformTransaction('success'), {
+        allowance: AMOUNT,
+      });
+      const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
+      state.sendAACalls.mockImplementation(sendCalls);
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+
+      const calls = sentAACalls(sendCalls);
+      expect(calls).toHaveLength(1);
+      expect(calls[0]?.to).toBe(RECEIVER);
+      expect(decodeFastStake(calls[0]?.data as Hash)[0]).toBe(WETH);
+    });
+
     it('reports a rejected batch and offers a retry', async () => {
-      const { module } = createModule(legacyPerformTransaction('success'));
-      state.l2Stake = module;
+      const { walletClient } = createModule(
+        legacyPerformTransaction('success'),
+      );
       const rejected = new Error('User rejected the request');
       state.sendAACalls.mockImplementation(
-        async (
-          _calls: AACall[],
-          callback: (props: {
-            stage: TransactionCallbackStage;
-            error?: unknown;
-          }) => Promise<void>,
-        ) => {
-          await callback({ stage: TransactionCallbackStage.SIGN });
-          await callback({
-            stage: TransactionCallbackStage.ERROR,
-            error: rejected,
-          });
-          throw rejected;
-        },
+        aaSendCalls({ callId: CALL_ID, txHash: TX_HASH, failWith: rejected }),
       );
 
-      await expect(
-        stake()({ amount: AMOUNT, referral: REFERRAL }),
-      ).resolves.toBe(false);
+      await expect(stake(WETH_TOKEN)).resolves.toBe(false);
 
+      expect(walletClient.writeContract).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         rejected,
         onRetry,
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
+      expect(onConfirm).not.toHaveBeenCalled();
     });
   });
 });

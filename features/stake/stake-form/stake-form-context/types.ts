@@ -1,5 +1,6 @@
 import { type StakeLimitFullInfo } from 'shared/hooks/useStakingLimitInfo';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
+import type { ValidationContextByToken } from 'features/stake/shared/validation-context-by-token';
 import { LIMIT_LEVEL } from 'types';
 
 export type StakeFormInput = {
@@ -58,3 +59,6 @@ export type StakeFormValidationContext = {
   isSmartAccount: boolean;
   shouldValidateEtherBalance: boolean;
 };
+
+export type StakeFormValidationContextByToken =
+  ValidationContextByToken<StakeFormValidationContext>;

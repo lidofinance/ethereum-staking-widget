@@ -51,7 +51,7 @@ import type {
   L2StakeFormDataContextValue,
   L2StakeFormInputType,
   L2StakeFormNetworkData,
-  L2StakeFormValidationContext,
+  L2StakeFormValidationContextByToken,
 } from './types';
 import { parseEther } from 'viem';
 import { useTrackStakeEvent } from './hooks/use-track-event';
@@ -206,20 +206,20 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
 export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { chainId, address } = useDappStatus();
   const networkData = useL2StakeFormNetworkData();
-  const validationContextPromise = useL2StakeFormValidationContext(networkData);
+  const validationContextByToken = useL2StakeFormValidationContext(networkData);
   const l2StakeState = useL2StakeState();
   const trackStakeEvent = useTrackStakeEvent('fast_stake_more_liquidity');
 
   const formObject = useForm<
     L2StakeFormInputType,
-    Promise<L2StakeFormValidationContext>
+    L2StakeFormValidationContextByToken
   >({
     defaultValues: {
       amount: recoverFormState('stake').amount ?? null,
       token: recoverFormState('stake').token ?? TOKENS_TO_STAKE.ETH,
       referral: recoverFormState('stake').referral ?? null,
     },
-    context: validationContextPromise,
+    context: validationContextByToken,
     resolver: L2StakeFormValidationResolver,
     mode: 'onChange',
     disabled: !l2StakeState.isEnabled,
@@ -250,11 +250,7 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     ]);
   }, [networkData, approvalData]);
 
-  const stake = useL2FastStake({
-    needsApprove: approvalData.needsApprove,
-    onConfirm,
-    onRetry: retryFire,
-  });
+  const stake = useL2FastStake({ onConfirm, onRetry: retryFire });
 
   // communicate the amount between L1 and L2 staking forms
   useEffect(() => {

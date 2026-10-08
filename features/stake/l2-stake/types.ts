@@ -1,4 +1,5 @@
 import type { TOKENS_TO_STAKE } from 'features/stake/shared/types';
+import type { ValidationContextByToken } from 'features/stake/shared/validation-context-by-token';
 
 export type L2StakeFormInputType = {
   amount: bigint | null;
@@ -37,6 +38,9 @@ export type L2StakeFormValidationContext = {
   shouldValidateEtherBalance: boolean;
   chainId: number;
 };
+
+export type L2StakeFormValidationContextByToken =
+  ValidationContextByToken<L2StakeFormValidationContext>;
 
 export type L2StakeFormNetworkData = {
   wstethBalance?: bigint;
