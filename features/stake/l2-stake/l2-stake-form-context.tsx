@@ -118,13 +118,18 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
 
   const fastStakeLiquidityEth = fastStakeLiquidity?.eth;
 
+  // Unknown until both reads are in: with the liquidity missing the balance
+  // alone would overstate what can be staked (and validation has nothing to
+  // check it against)
   const stakeableEther = useMemo(() => {
-    if (etherBalance === undefined) return undefined;
+    if (etherBalance === undefined || fastStakeLiquidityEth === undefined)
+      return undefined;
     return minBN(etherBalance, fastStakeLiquidityEth);
   }, [etherBalance, fastStakeLiquidityEth]);
 
   const stakeableWeth = useMemo(() => {
-    if (wethBalance === undefined) return undefined;
+    if (wethBalance === undefined || fastStakeLiquidityEth === undefined)
+      return undefined;
     return minBN(wethBalance, fastStakeLiquidityEth);
   }, [wethBalance, fastStakeLiquidityEth]);
 
@@ -257,9 +262,12 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     passFormState('stake', { amount });
   }, [amount]);
 
+  const stakedTokenBalance = isWeth
+    ? networkData.wethBalance
+    : networkData.etherBalance;
   useEffect(() => {
     if (
-      networkData.etherBalance !== undefined &&
+      stakedTokenBalance !== undefined &&
       networkData.fastStakeLiquidityEth !== undefined &&
       chainId &&
       address &&
@@ -272,13 +280,13 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
       if (
         amount > liquidityTargetEth &&
         amount > networkData.fastStakeLiquidityEth &&
-        amount <= networkData.etherBalance
+        amount <= stakedTokenBalance
       ) {
         trackStakeEvent();
       }
     }
   }, [
-    networkData.etherBalance,
+    stakedTokenBalance,
     networkData.fastStakeLiquidityEth,
     chainId,
     address,

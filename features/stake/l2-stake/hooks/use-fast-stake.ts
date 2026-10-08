@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { config, useConfig } from 'config';
+import { useConfig } from 'config';
 import {
   applyRoundUpTxParameter,
   useDappStatus,
@@ -10,11 +10,18 @@ import {
   useTxFlow,
   useLidoSDKL2,
 } from 'modules/web3';
+import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
+import {
+  calcFastStakeWstethByEth,
+  LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK,
+  LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK,
+} from 'modules/l2-staking';
 
 import { useBells } from 'features/stake/stake-form/hooks/use-bells';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 
 import { getReferralAddress } from 'utils/get-referral-address';
+import { useFastStakeConversion } from './use-conversion';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
 import { useTrackStakeEvent } from './use-track-event';
 
@@ -35,6 +42,8 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { isAA } = useAA();
   const { core: l1Core } = useLidoSDK();
   const { l2Stake, l2 } = useLidoSDKL2();
+  // the rate the form is showing; the stake is checked against it
+  const { data: shownRate, refetch: refetchRate } = useFastStakeConversion();
   const { txModalStages } = useTxModalStagesL2FastStake();
   const txFlow = useTxFlow();
   const { featureFlags } = useConfig().externalConfig;
@@ -67,7 +76,32 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
           return balance;
         };
 
-        const minReceiveAmount = await l2Stake.getFastStakeWstethByEth(amount);
+        // The rate is re-read right before sending, as the last step before
+        // the wallet is reached in both signing paths. `price` is ETH per
+        // wstETH, so a higher price or a higher fee means fewer wstETH for the
+        // same ETH: only that direction stops the stake. A better rate passes
+        // and the floor the user signs for is computed from the fresh read
+        const verifyQuote = async (): Promise<bigint> => {
+          const rate = await l2Stake.fetchFastStakeRate();
+          if (
+            shownRate &&
+            (rate.price > shownRate.price || rate.feeRate > shownRate.feeRate)
+          ) {
+            void refetchRate();
+            throw new QuoteMismatchError();
+          }
+          return calcFastStakeWstethByEth(amount, rate.feeRate, rate.price);
+        };
+        // the verified floor, kept for the sign stage of the modal
+        let minReceiveAmount = 0n;
+
+        const populateStakeCall = (minReceiveAmount: bigint) =>
+          l2Stake.fastStakeEthPopulateTx({
+            amount,
+            token,
+            referral: referralAddress,
+            minReceiveAmount,
+          });
 
         // The receiver pulls WETH, so it needs an allowance first: in the same
         // batch for AA wallets, as a separate transaction otherwise. The
@@ -78,22 +112,15 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
           isWeth &&
           (await l2Stake.getWethAllowanceForFastStake(address)) < amount;
 
-        const stakeCall = await l2Stake.fastStakeEthPopulateTx({
-          amount,
-          token,
-          referral: referralAddress,
-          minReceiveAmount,
-        });
         await txFlow({
           callsFn: async () => {
-            const calls = needsApprove
-              ? [
-                  await l2Stake.approveWethForFastStakePopulateTx({ amount }),
-                  stakeCall,
-                ]
-              : [stakeCall];
+            const approveCall = needsApprove
+              ? await l2Stake.approveWethForFastStakePopulateTx({ amount })
+              : null;
+            minReceiveAmount = await verifyQuote();
+            const stakeCall = await populateStakeCall(minReceiveAmount);
             needsApprove = false;
-            return calls;
+            return approveCall ? [approveCall, stakeCall] : [stakeCall];
           },
           sendTransaction: async (txStagesCallback) => {
             if (needsApprove) {
@@ -103,6 +130,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
               });
               needsApprove = false;
             }
+            minReceiveAmount = await verifyQuote();
             await l2Stake.fastStakeEth({
               amount,
               callback: txStagesCallback,
@@ -118,7 +146,10 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
             }
             txModalStages.sign(amount, token, minReceiveAmount);
             return applyRoundUpTxParameter(
-              (payload as bigint) ?? config.STAKE_GASLIMIT_FALLBACK,
+              (payload as bigint) ??
+                (isWeth
+                  ? LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK
+                  : LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK),
             );
           },
           onReceipt: ({ txHashOrCallId }) => {
@@ -157,6 +188,8 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       l1Core.publicClient,
       l2.wsteth,
       l2Stake,
+      shownRate,
+      refetchRate,
       txFlow,
       onConfirm,
       txModalStages,

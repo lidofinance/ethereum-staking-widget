@@ -45,6 +45,7 @@ export const calcFastStakeWstethByEth = (
   price: bigint,
 ): bigint => {
   const P = L2_ORACLE_POOL_PRECISION;
+  invariant(price > 0n && feeRate < P, 'Invalid fast stake rate');
   const feeAmount = (ethAmount * feeRate) / P;
   return ((ethAmount - feeAmount) * P) / price;
 };
@@ -272,9 +273,13 @@ export class L2StakeModule extends LidoSDKModule {
     return fee;
   }
 
-  // less cache, price/fee can change periodically
-  @Cache(CACHE_TIME_DYNAMIC, ['core.chain.id'])
-  public async getFastStakeRate(): Promise<{ feeRate: bigint; price: bigint }> {
+  // Uncached: the quote a transaction is checked against must be current.
+  // A zero price or a fee of 100%+ is rejected here, so a bad feed answer
+  // surfaces as a failed read instead of a division by zero in a component
+  public async fetchFastStakeRate(): Promise<{
+    feeRate: bigint;
+    price: bigint;
+  }> {
     const oraclePool = await this.getL2StakingReceiverOraclePoolContract();
     const oracleFeed = await this.getL2StakingReceiverOracleFeedContract();
 
@@ -282,7 +287,17 @@ export class L2StakeModule extends LidoSDKModule {
       oraclePool.read.getFee(),
       oracleFeed.read.getLatestAnswer(),
     ]);
+    invariant(
+      price > 0n && feeRate < L2_ORACLE_POOL_PRECISION,
+      'Invalid fast stake rate',
+    );
     return { feeRate, price };
+  }
+
+  // less cache, price/fee can change periodically
+  @Cache(CACHE_TIME_DYNAMIC, ['core.chain.id'])
+  public async getFastStakeRate(): Promise<{ feeRate: bigint; price: bigint }> {
+    return this.fetchFastStakeRate();
   }
 
   @Cache(CACHE_TIME_DYNAMIC, ['core.chain.id'])

@@ -310,9 +310,9 @@ export default withBundleAnalyzer({
     rpcUrls_1301: process.env.EL_RPC_URLS_1301,
     // Base rpcs
     rpcUrls_8453: process.env.EL_RPC_URLS_8453,
-    // Arbitrum rpcs
-    rpcUrls_59144: process.env.EL_RPC_URLS_59144,
     // Linea rpcs
+    rpcUrls_59144: process.env.EL_RPC_URLS_59144,
+    // Arbitrum rpcs
     rpcUrls_42161: process.env.EL_RPC_URLS_42161,
 
     cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,

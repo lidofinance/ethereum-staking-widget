@@ -34,7 +34,9 @@ export type L2StakeFormValidationContext = {
   gasCostWeth: bigint;
   etherBalance: bigint;
   wethBalance: bigint;
-  etherLiquidity: bigint;
+  // undefined only while the pool cannot be read on the current SDK chain
+  // (the wallet sits on another chain); never a stub
+  etherLiquidity?: bigint;
   shouldValidateEtherBalance: boolean;
   chainId: number;
 };

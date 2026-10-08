@@ -104,6 +104,10 @@ import { useStake } from '../use-stake';
 // A stand-in for the SDK stake module: the same performTransaction stage
 // sequence and wallet client as the WETH unwrap, so both transactions are
 // observable on one mock in order
+const stakeEthPopulateTx = vi.fn(async () => {
+  throw new Error('insufficient funds for gas * price + value');
+});
+
 const createSdk = (
   performTransaction: ReturnType<typeof legacyPerformTransaction>,
 ) => {
@@ -124,19 +128,9 @@ const createSdk = (
   };
   const stake = {
     core,
-    stakeEthPopulateTx: async ({
-      value,
-      referralAddress,
-    }: Omit<StakeEthProps, 'callback'>) => ({
-      to: STETH,
-      from: ACCOUNT,
-      value,
-      data: encodeFunctionData({
-        abi: StethAbi,
-        functionName: 'submit',
-        args: [referralAddress],
-      }),
-    }),
+    // Must never be reached: it estimates `submit` with the full value, which
+    // a node rejects for a WETH stake until the unwrap has landed
+    stakeEthPopulateTx,
     stakeEth: async ({ value, referralAddress, callback }: StakeEthProps) =>
       performTransaction({
         account: { address: ACCOUNT },
@@ -152,7 +146,11 @@ const createSdk = (
           }),
       }),
   };
-  state.sdk = { stake, stETH: { balance: stethBalance }, core };
+  state.sdk = {
+    stake,
+    stETH: { balance: stethBalance, contractAddress: async () => STETH },
+    core,
+  };
   return { walletClient };
 };
 
@@ -470,6 +468,32 @@ describe('useStake', () => {
       expect(onUnwrapped).not.toHaveBeenCalled();
       expect(onConfirm).not.toHaveBeenCalled();
       expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe('stake call construction', () => {
+  it('never estimates the stake up front: the ETH of a WETH stake only exists after the unwrap', async () => {
+    createSdk(legacyPerformTransaction('success', 'success'));
+    await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+    expect(stakeEthPopulateTx).not.toHaveBeenCalled();
+
+    state.isAA = true;
+    createSdk(legacyPerformTransaction());
+    state.sendAACalls.mockImplementation(
+      aaSendCalls({ callId: CALL_ID, txHash: TX_HASH }),
+    );
+    await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+    expect(stakeEthPopulateTx).not.toHaveBeenCalled();
+    const [, stakeCall] = sentAACalls(state.sendAACalls);
+    expect(stakeCall).toEqual({
+      to: STETH,
+      data: encodeFunctionData({
+        abi: StethAbi,
+        functionName: 'submit',
+        args: [REFERRAL],
+      }),
+      value: AMOUNT,
     });
   });
 });

@@ -1,8 +1,11 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
+import { encodeFunctionData } from 'viem';
+import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 
 import { config, useConfig } from 'config';
 import {
+  type AACall,
   applyRoundUpTxParameter,
   useDappStatus,
   useLidoSDK,
@@ -75,7 +78,7 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
 
         const referralAddress = await getReferralAddress(
           referral,
-          stake.core.rpcProvider,
+          stake.core.publicClient,
         );
         const preStakeBalance = await stETH.balance(address);
 
@@ -87,12 +90,23 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
           return balance;
         };
 
-        const stakeCall = await stake.stakeEthPopulateTx({
+        // Built without a gas estimate: for a WETH stake the ETH only exists
+        // after the unwrap, so estimating `submit` with the full value up
+        // front fails for anyone whose ETH balance is below the amount. The
+        // wallet estimates the AA batch as a whole, and the SDK estimates the
+        // legacy transaction once the unwrap has landed
+        const populateStakeCall = async (): Promise<AACall> => ({
+          to: await stETH.contractAddress(),
+          data: encodeFunctionData({
+            abi: StethAbi,
+            functionName: 'submit',
+            args: [referralAddress],
+          }),
           value: amount,
-          referralAddress,
         });
         await txFlow({
           callsFn: async () => {
+            const stakeCall = await populateStakeCall();
             const calls = needsUnwrap
               ? [unwrapPopulateTx(amount), stakeCall]
               : [stakeCall];

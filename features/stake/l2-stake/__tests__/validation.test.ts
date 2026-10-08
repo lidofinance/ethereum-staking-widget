@@ -4,6 +4,7 @@ vi.mock('modules/web3', () => ({
   getPrettyChainName: () => 'Base',
   useAA: vi.fn(),
   useDappStatus: vi.fn(),
+  useLidoSDKL2: vi.fn(),
 }));
 vi.mock('@lidofinance/lido-ui', () => ({ ToastError: vi.fn() }));
 
@@ -119,6 +120,30 @@ describe('L2StakeFormValidationResolver', () => {
     });
   });
 
+  describe('without a wallet', () => {
+    const visitor = context({ isWalletActive: false, etherBalance: 0n });
+
+    it('still applies the pool liquidity cap', async () => {
+      await expect(amountError(LIQUIDITY + 1n, visitor)).resolves.toMatch(
+        /exceeds current staking limit/,
+      );
+    });
+
+    it('does not check the stubbed balance', async () => {
+      const result = await resolve(LIQUIDITY, visitor);
+      expect((result.errors as Errors).amount).toBeUndefined();
+      expect((result.errors as Errors).referral).toBe('wallet not connected');
+    });
+
+    it('skips the liquidity check while the pool is not readable', async () => {
+      const result = await resolve(
+        LIQUIDITY + 1n,
+        context({ ...visitor, etherLiquidity: undefined }),
+      );
+      expect((result.errors as Errors).amount).toBeUndefined();
+    });
+  });
+
   describe('WETH', () => {
     const weth = TOKENS_TO_STAKE.WETH;
 
@@ -200,6 +225,7 @@ describe('L2StakeFormValidationResolver', () => {
 describe('getL2StakeFormValidationContext', () => {
   const deps = {
     isDappActive: true,
+    isLiquidityReadable: true,
     areAuxiliaryFundsSupported: false,
     chainId: CHAIN_ID,
   };
@@ -247,19 +273,42 @@ describe('getL2StakeFormValidationContext', () => {
     ).toBeUndefined();
   });
 
-  it('resolves with stubs when no wallet is connected', () => {
+  const noWallet = {
+    etherBalance: undefined,
+    wethBalance: undefined,
+    isSmartAccount: undefined,
+    gasCostEth: undefined,
+    gasCostWeth: undefined,
+  };
+
+  it('resolves with account stubs but the real liquidity when no wallet is connected', () => {
     const result = getL2StakeFormValidationContext(
-      {
-        etherBalance: undefined,
-        wethBalance: undefined,
-        fastStakeLiquidityEth: undefined,
-        isSmartAccount: undefined,
-        gasCostEth: undefined,
-        gasCostWeth: undefined,
-      },
+      { ...noWallet, fastStakeLiquidityEth: LIQUIDITY },
       { ...deps, isDappActive: false },
     );
-    expect(result).toMatchObject({ isWalletActive: false, etherBalance: 0n });
+    expect(result).toMatchObject({
+      isWalletActive: false,
+      etherBalance: 0n,
+      etherLiquidity: LIQUIDITY,
+    });
+  });
+
+  it('waits for the pool liquidity even without a wallet', () => {
+    expect(
+      getL2StakeFormValidationContext(
+        { ...noWallet, fastStakeLiquidityEth: undefined },
+        { ...deps, isDappActive: false },
+      ),
+    ).toBeUndefined();
+  });
+
+  it('resolves without liquidity while the pool is not readable on the SDK chain', () => {
+    const result = getL2StakeFormValidationContext(
+      { ...noWallet, fastStakeLiquidityEth: undefined },
+      { ...deps, isDappActive: false, isLiquidityReadable: false },
+    );
+    expect(result).toMatchObject({ isWalletActive: false });
+    expect(result?.etherLiquidity).toBeUndefined();
   });
 
   it('skips the ETH balance check when auxiliary funds are supported', () => {

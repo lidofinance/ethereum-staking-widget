@@ -266,6 +266,11 @@ const MultiChainBannerSchema = z
     message: 'Chain IDs in multiChainBanner must be unique',
   });
 
+type UnknownRecord = Record<string, unknown>;
+
+const isUnknownRecord = (value: unknown): value is UnknownRecord =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 //
 // L2 Stake
 //
@@ -291,16 +296,41 @@ const L2StakePerChainConfigurationSchema = z.object({
   liquidityTarget: z.number().int().min(0).optional(),
 });
 
-const L2StakeSchema = z.object({
-  common: L2StakeConfigurationSchema,
-  perChain: z.record(
-    z
-      .string()
-      .transform((v) => Number(v))
-      .pipe(z.number().min(1)),
-    L2StakePerChainConfigurationSchema,
-  ),
-});
+const sanitizeL2StakeEntry = (entry: unknown) => {
+  if (!isUnknownRecord(entry)) return {};
+  const { enabled, liquidityTarget } = entry;
+  return {
+    ...(enabled !== undefined && { enabled: enabled === true }),
+    ...(typeof liquidityTarget === 'number' &&
+      Number.isInteger(liquidityTarget) &&
+      liquidityTarget >= 0 && { liquidityTarget }),
+  };
+};
+
+const L2StakeSchema = z.preprocess(
+  (value) => {
+    const section = isUnknownRecord(value) ? value : {};
+    const perChain = isUnknownRecord(section.perChain) ? section.perChain : {};
+    return {
+      common: sanitizeL2StakeEntry(section.common),
+      perChain: Object.fromEntries(
+        Object.entries(perChain)
+          .filter(([key]) => /^[1-9]\d*$/.test(key))
+          .map(([key, entry]) => [key, sanitizeL2StakeEntry(entry)]),
+      ),
+    };
+  },
+  z.object({
+    common: L2StakeConfigurationSchema,
+    perChain: z.record(
+      z
+        .string()
+        .transform((v) => Number(v))
+        .pipe(z.number().min(1)),
+      L2StakePerChainConfigurationSchema,
+    ),
+  }),
+);
 
 const definedEntries = <T extends object>(overrides: T): Partial<T> =>
   Object.fromEntries(
@@ -308,27 +338,22 @@ const definedEntries = <T extends object>(overrides: T): Partial<T> =>
   ) as Partial<T>;
 
 // Populate all chains with common config
-const L2StakeTransformSchema = L2StakeSchema.optional()
-  .default({
-    common: L2StakeConfigurationSchema.parse({}),
-    perChain: {},
-  })
-  .transform((data) => {
-    return {
-      common: data.common,
-      perChain: Object.fromEntries(
-        Object.values(CHAINS)
-          .filter((chain) => typeof chain === 'number')
-          .map((chainId) => [
-            chainId,
-            {
-              ...data.common,
-              ...definedEntries(data.perChain[chainId] ?? {}),
-            },
-          ]),
-      ) as Record<CHAINS, z.infer<typeof L2StakeConfigurationSchema>>,
-    };
-  });
+const L2StakeTransformSchema = L2StakeSchema.transform((data) => {
+  return {
+    common: data.common,
+    perChain: Object.fromEntries(
+      Object.values(CHAINS)
+        .filter((chain) => typeof chain === 'number')
+        .map((chainId) => [
+          chainId,
+          {
+            ...data.common,
+            ...definedEntries(data.perChain[chainId] ?? {}),
+          },
+        ]),
+    ) as Record<CHAINS, z.infer<typeof L2StakeConfigurationSchema>>,
+  };
+});
 //
 // Wallets
 //
@@ -383,11 +408,6 @@ const ManifestKeySchema = z
     /^[1-9]\d*(?:-.+)?$/,
     "Must be a chain id or chain id with suffix (e.g. '1', '1-staging')",
   );
-
-type UnknownRecord = Record<string, unknown>;
-
-const isUnknownRecord = (value: unknown): value is UnknownRecord =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 // Objects are merged recursively, while arrays and primitive values from the
 // network config replace their baseConfig counterparts. Object.fromEntries is

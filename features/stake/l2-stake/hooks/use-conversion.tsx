@@ -18,7 +18,7 @@ export const useFastStakeConversion = () => {
     queryKey: [LIDO_L2_STAKING_QUERY_SCOPE, 'conversion', { chainId }],
     enabled: isL2Stake,
     queryFn: async () => {
-      const { feeRate, price } = await l2Stake.getFastStakeRate();
+      const { feeRate, price } = await l2Stake.fetchFastStakeRate();
       const rate = ({ includeFee = true }: ConversionOptions = {}) =>
         includeFee ? feeRate : 0n;
       return {

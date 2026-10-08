@@ -14,7 +14,7 @@ vi.mock('modules/web3', () => ({
     chainId: 8453,
     isL2Stake: true,
     l2Stake: {
-      getFastStakeRate: async () => ({ feeRate: FEE, price: PRICE }),
+      fetchFastStakeRate: async () => ({ feeRate: FEE, price: PRICE }),
     },
   }),
 }));

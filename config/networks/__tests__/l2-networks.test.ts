@@ -1,4 +1,5 @@
 import { getAddress } from 'viem';
+import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { CHAINS } from 'config/chains';
 import { LIDO_L2_STAKING_CHAIN_IDS } from 'modules/l2-staking/const';
@@ -47,6 +48,25 @@ describe('networks/l2', () => {
       for (const name of L2_STAKING_CONTRACTS) {
         expect(contracts[name], name).toBeDefined();
       }
+    },
+  );
+
+  // The UI reads the receiver (allowance spender) and wstETH from these
+  // files, the transactions use the SDK constants: they must be the same
+  // contracts, or the unlock state would disagree with the approval made
+  it.each(LIDO_L2_STAKING_CHAIN_IDS)(
+    'staking chain %s agrees with the SDK on the receiver and wstETH',
+    (chainId) => {
+      const { contracts } = L2_SETS[chainId];
+      const sdk =
+        LIDO_L2_CONTRACT_ADDRESSES[
+          chainId as keyof typeof LIDO_L2_CONTRACT_ADDRESSES
+        ];
+      expect(sdk?.stakeReceiver).toBeDefined();
+      expect(contracts.L2stakingReceiver).toBe(
+        getAddress(sdk?.stakeReceiver ?? '0x'),
+      );
+      expect(contracts.L2wstETH).toBe(getAddress(sdk?.wsteth ?? '0x'));
     },
   );
 });

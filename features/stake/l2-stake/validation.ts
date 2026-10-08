@@ -2,7 +2,12 @@ import { useMemo } from 'react';
 import type { Resolver } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
-import { getPrettyChainName, useAA, useDappStatus } from 'modules/web3';
+import {
+  getPrettyChainName,
+  useAA,
+  useDappStatus,
+  useLidoSDKL2,
+} from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import {
@@ -52,12 +57,24 @@ export const L2StakeFormValidationResolver: Resolver<
       VALIDATION_CONTEXT_TIMEOUT,
     );
 
-    validateBigintMax(
-      'amount',
-      amount,
-      etherLiquidity,
-      `Entered ${token} amount exceeds current staking limit on ${getPrettyChainName(chainId)} of ${formatBalance(etherLiquidity).trimmed} ETH`,
-    );
+    // The pool liquidity does not depend on a wallet, so the cap applies to
+    // a visitor as well. It is absent only while the pool is not readable
+    if (etherLiquidity !== undefined) {
+      validateBigintMax(
+        'amount',
+        amount,
+        etherLiquidity,
+        `Entered ${token} amount exceeds current staking limit on ${getPrettyChainName(chainId)} of ${formatBalance(etherLiquidity).trimmed} ETH`,
+      );
+    }
+
+    // Everything below is account data, stubbed while the dapp is inactive
+    if (!isWalletActive) {
+      return {
+        values,
+        errors: { referral: 'wallet not connected' },
+      };
+    }
 
     if (token === TOKENS_TO_STAKE.WETH) {
       validateStakeWeth({
@@ -81,13 +98,6 @@ export const L2StakeFormValidationResolver: Resolver<
       });
     }
 
-    if (!isWalletActive) {
-      return {
-        values,
-        errors: { referral: 'wallet not connected' },
-      };
-    }
-
     return {
       values,
       errors: {},
@@ -99,6 +109,9 @@ export const L2StakeFormValidationResolver: Resolver<
 
 type L2StakeFormValidationContextDeps = {
   isDappActive: boolean;
+  // false while the wallet sits on another chain, where the SDK cannot read
+  // the pool of the chain the form is on
+  isLiquidityReadable: boolean;
   areAuxiliaryFundsSupported: boolean;
   chainId: number;
 };
@@ -127,34 +140,39 @@ export const getL2StakeFormValidationContext = (
   }: L2StakeFormValidationContextSource,
   {
     isDappActive,
+    isLiquidityReadable,
     areAuxiliaryFundsSupported,
     chainId,
   }: L2StakeFormValidationContextDeps,
 ): L2StakeFormValidationContext | undefined => {
-  if (
-    // we ether not connected or must have all account related data
+  // The pool liquidity is a public read: it is waited for whenever the pool
+  // can be read, wallet or not, and never stubbed. Only account data waits
+  // for a connected wallet
+  const isLiquidityReady =
+    !isLiquidityReadable || fastStakeLiquidityEth !== undefined;
+  const isAccountDataReady =
     !isDappActive ||
     (etherBalance !== undefined &&
       gasCostEth !== undefined &&
       gasCostWeth !== undefined &&
-      isSmartAccount !== undefined &&
-      fastStakeLiquidityEth !== undefined)
-  ) {
-    return {
-      isWalletActive: isDappActive,
-      chainId,
-      shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
-      // condition above guaranties stubs will only be passed when isDappActive = false
-      etherBalance: etherBalance ?? 0n,
-      gasCostEth: gasCostEth ?? 0n,
-      gasCostWeth: gasCostWeth ?? 0n,
-      isSmartAccount: isSmartAccount ?? false,
-      etherLiquidity: fastStakeLiquidityEth ?? 0n,
-      // stubbed while loading; never reached by ETH validation
-      wethBalance: wethBalance ?? 0n,
-    };
-  }
-  return undefined;
+      isSmartAccount !== undefined);
+
+  if (!isLiquidityReady || !isAccountDataReady) return undefined;
+
+  return {
+    isWalletActive: isDappActive,
+    chainId,
+    shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
+    etherLiquidity: fastStakeLiquidityEth,
+    // account data; the condition above guarantees the stubs are only passed
+    // while isDappActive is false, where the resolver does not reach them
+    etherBalance: etherBalance ?? 0n,
+    gasCostEth: gasCostEth ?? 0n,
+    gasCostWeth: gasCostWeth ?? 0n,
+    isSmartAccount: isSmartAccount ?? false,
+    // stubbed while loading; never reached by ETH validation
+    wethBalance: wethBalance ?? 0n,
+  };
 };
 
 export const useL2StakeFormValidationContext = (
@@ -162,6 +180,7 @@ export const useL2StakeFormValidationContext = (
 ): L2StakeFormValidationContextByToken => {
   const { isDappActive, chainId } = useDappStatus();
   const { areAuxiliaryFundsSupported } = useAA();
+  const { isL2Stake: isLiquidityReadable } = useLidoSDKL2();
   const {
     etherBalance,
     wethBalance,
@@ -183,7 +202,12 @@ export const useL2StakeFormValidationContext = (
           gasCostEth,
           gasCostWeth,
         },
-        { isDappActive, areAuxiliaryFundsSupported, chainId },
+        {
+          isDappActive,
+          isLiquidityReadable,
+          areAuxiliaryFundsSupported,
+          chainId,
+        },
       ),
     [
       etherBalance,
@@ -193,6 +217,7 @@ export const useL2StakeFormValidationContext = (
       gasCostEth,
       gasCostWeth,
       isDappActive,
+      isLiquidityReadable,
       areAuxiliaryFundsSupported,
       chainId,
     ],

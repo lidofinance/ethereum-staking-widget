@@ -19,6 +19,7 @@ import {
 import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
 import { wethABI } from 'abi/weth-abi';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
+import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import {
   aaSendCalls,
   expectOrdered,
@@ -54,6 +55,9 @@ const { ETH, WETH: WETH_TOKEN } = TOKENS_TO_STAKE;
 const state = vi.hoisted(() => ({
   isAA: false,
   l2Stake: undefined as L2StakeModule | undefined,
+  // the rate the form displays, as the conversion query hands it over
+  shownRate: undefined as { feeRate: bigint; price: bigint } | undefined,
+  refetchRate: vi.fn(),
   wstethBalance: vi.fn(),
   sendAACalls: vi.fn(),
   txModalStages: {
@@ -67,6 +71,12 @@ const state = vi.hoisted(() => ({
   },
 }));
 
+vi.mock('../hooks/use-conversion', () => ({
+  useFastStakeConversion: () => ({
+    data: state.shownRate,
+    refetch: state.refetchRate,
+  }),
+}));
 vi.mock('modules/web3', async () => {
   const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
   return {
@@ -198,6 +208,7 @@ const consoleWarnSpy = vi
 beforeEach(() => {
   vi.clearAllMocks();
   state.isAA = false;
+  state.shownRate = { feeRate: FEE, price: PRICE };
   state.wstethBalance
     .mockReset()
     .mockResolvedValueOnce(BALANCE_BEFORE)
@@ -566,5 +577,99 @@ describe('useL2FastStake', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
       expect(onConfirm).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('quote verification', () => {
+  it('stops before signing when the price got worse than displayed', async () => {
+    const { walletClient } = createModule(legacyPerformTransaction('success'));
+    // the form quoted a lower price, i.e. more wstETH per ETH than the pool pays now
+    state.shownRate = { feeRate: FEE, price: PRICE - 1n };
+
+    await expect(stake(ETH)).resolves.toBe(false);
+
+    expect(walletClient.writeContract).not.toHaveBeenCalled();
+    expect(state.txModalStages.sign).not.toHaveBeenCalled();
+    expect(state.txModalStages.failed).toHaveBeenCalledWith(
+      expect.any(QuoteMismatchError),
+      onRetry,
+    );
+    // the form is asked to show the current rate
+    expect(state.refetchRate).toHaveBeenCalledTimes(1);
+  });
+
+  it('stops before signing when the fee got worse than displayed', async () => {
+    const { walletClient } = createModule(legacyPerformTransaction('success'));
+    state.shownRate = { feeRate: FEE - 1n, price: PRICE };
+
+    await expect(stake(ETH)).resolves.toBe(false);
+
+    expect(walletClient.writeContract).not.toHaveBeenCalled();
+    expect(state.txModalStages.failed).toHaveBeenCalledWith(
+      expect.any(QuoteMismatchError),
+      onRetry,
+    );
+  });
+
+  it('signs for the fresh floor when the rate got better than displayed', async () => {
+    const { walletClient } = createModule(legacyPerformTransaction('success'));
+    state.shownRate = { feeRate: FEE + 1n, price: PRICE + 1n };
+
+    await expect(stake(ETH)).resolves.toBe(true);
+
+    expect(state.txModalStages.sign).toHaveBeenCalledWith(
+      AMOUNT,
+      ETH,
+      MIN_RECEIVE,
+    );
+    expect(walletClient.writeContract).toHaveBeenCalledWith(
+      stakeCall(zeroAddress),
+    );
+    expect(state.refetchRate).not.toHaveBeenCalled();
+  });
+
+  it('stakes on the fresh rate when the form has not displayed one', async () => {
+    const { walletClient } = createModule(legacyPerformTransaction('success'));
+    state.shownRate = undefined;
+
+    await expect(stake(ETH)).resolves.toBe(true);
+
+    expect(walletClient.writeContract).toHaveBeenCalledWith(
+      stakeCall(zeroAddress),
+    );
+  });
+
+  it('checks the quote after the approve, right before the stake', async () => {
+    const { walletClient } = createModule(
+      legacyPerformTransaction('success', 'success'),
+    );
+    state.shownRate = { feeRate: FEE, price: PRICE - 1n };
+
+    await expect(stake(WETH_TOKEN)).resolves.toBe(false);
+
+    // the approve went through, the stake was never sent
+    expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
+    expect(walletClient.writeContract).toHaveBeenCalledWith(approveCall);
+    expect(state.txModalStages.failed).toHaveBeenCalledWith(
+      expect.any(QuoteMismatchError),
+      onRetry,
+    );
+  });
+
+  it('does not send an AA batch when the rate got worse than displayed', async () => {
+    state.isAA = true;
+    createModule(legacyPerformTransaction());
+    state.sendAACalls.mockImplementation(
+      aaSendCalls({ callId: CALL_ID, txHash: TX_HASH }),
+    );
+    state.shownRate = { feeRate: FEE, price: PRICE - 1n };
+
+    await expect(stake(WETH_TOKEN)).resolves.toBe(false);
+
+    expect(state.sendAACalls).not.toHaveBeenCalled();
+    expect(state.txModalStages.failed).toHaveBeenCalledWith(
+      expect.any(QuoteMismatchError),
+      onRetry,
+    );
   });
 });
