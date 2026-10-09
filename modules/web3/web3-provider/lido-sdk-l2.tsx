@@ -2,7 +2,6 @@ import { createContext, useContext, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import { useConnection, usePublicClient, useWalletClient } from 'wagmi';
 
-import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 
@@ -12,11 +11,21 @@ import { getContractAddress } from 'config/networks/contract-address';
 
 import { useDappChain } from './dapp-chain';
 
+import { L2StakeModule, LIDO_L2_STAKING_CHAINS } from 'modules/l2-staking';
+import {
+  isSupportedL2Chain,
+  isSupportedL2StakingChain,
+  isSupportedL2WrapChain,
+} from 'consts/chains';
+
 type LidoSDKL2ContextValue = {
   chainId: CHAINS;
   core: LidoSDKCore;
   l2: LidoSDKL2;
+  l2Stake: L2StakeModule;
   isL2: boolean;
+  isL2Stake: boolean;
+  isL2Wrap: boolean;
 };
 
 const LidoSDKL2Context = createContext<LidoSDKL2ContextValue | null>(null);
@@ -57,14 +66,18 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
         sdkChainId,
         CONTRACT_NAMES.lidoLocator,
       ),
+      customSupportedChains: LIDO_L2_STAKING_CHAINS,
     });
 
     return {
       chainId: core.chainId,
       core,
       l2: new LidoSDKL2({ core }),
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- rule false positive: number is not a valid index for the CHAINS-keyed map without the assertion
-      isL2: !!LIDO_L2_CONTRACT_ADDRESSES[sdkChainId as CHAINS],
+      l2Stake: new L2StakeModule({ core }),
+
+      isL2: isSupportedL2Chain(sdkChainId),
+      isL2Stake: isSupportedL2StakingChain(sdkChainId),
+      isL2Wrap: isSupportedL2WrapChain(sdkChainId),
     };
   }, [publicClient, sdkChainId, walletClient]);
   return (

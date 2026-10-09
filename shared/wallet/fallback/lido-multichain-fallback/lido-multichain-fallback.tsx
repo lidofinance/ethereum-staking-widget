@@ -15,9 +15,11 @@ import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
-import { Wrap, TextStyle, ButtonStyle } from './styles';
+import { TextStyle, ButtonStyle } from './styles';
 import { useDappStatus } from 'modules/web3';
 import { joinWithOr } from 'utils/join-with-or';
+
+import { MultiChainWalletBackdrop } from 'shared/wallet/components/multichain-wallet-backdrop';
 
 export type LidoMultichainFallbackComponent = FC<
   { textEnding: string } & BlockProps
@@ -48,7 +50,7 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
     (!!walletChainId && LIDO_MULTICHAIN_CHAINS[walletChainId]) || 'unknown';
 
   return (
-    <Wrap {...props} chainId={walletChainId as LIDO_MULTICHAIN_CHAINS}>
+    <MultiChainWalletBackdrop {...props} multiChainId={walletChainId}>
       {getChainLogo(walletChainId as LIDO_MULTICHAIN_CHAINS)}
       <TextStyle>
         You are currently on {lidoMultichainChainName}.
@@ -70,6 +72,6 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
           Lido Multichain
         </ButtonStyle>
       </Link>
-    </Wrap>
+    </MultiChainWalletBackdrop>
   );
 };

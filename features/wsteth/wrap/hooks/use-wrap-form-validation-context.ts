@@ -17,7 +17,7 @@ export const useWrapFormValidationContext = ({
 }: UseWrapFormValidationContextArgs): WrapFormValidationContext => {
   const { isDappActive } = useDappStatus();
   const { areAuxiliaryFundsSupported } = useAA();
-  const { isL2 } = useLidoSDKL2();
+  const { isL2Wrap } = useLidoSDKL2();
 
   const {
     stakeLimitInfo,
@@ -37,7 +37,7 @@ export const useWrapFormValidationContext = ({
     waitForAccountData &&
     wrapEthGasCost &&
     // L2 dont't have stakeLimitInfo
-    (isL2 || stakeLimitInfo)
+    (isL2Wrap || stakeLimitInfo)
   );
 
   const asyncContextValue: WrapFormAsyncValidationContext | undefined =

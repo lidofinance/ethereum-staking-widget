@@ -5,6 +5,7 @@ export * from './matomo-input-events';
 export * from './matomo-fetch-events';
 export * from './matomo-earn-events';
 export * from './matomo-error-events';
+export * from './matomo-dimensions';
 
 import {
   MATOMO_CLICK_EVENTS,

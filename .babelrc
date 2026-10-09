@@ -9,5 +9,19 @@
       }
     ]
   ],
-  "plugins": ["babel-plugin-styled-components"]
+  "plugins": [
+    // Standard (TC39, stage 3) decorators, as used by lido-ethereum-sdk `@Cache`:
+    // the decorator receives (method, context), NOT the legacy (target, key, desc).
+    // Next 12 compiles with its own bundled Babel core 7.18, whose only decorator
+    // helper is the "2021-12" one, so the plugin is pinned to that generation.
+    // Revisit (SWC / "2023-11") when Next is upgraded.
+    [
+      "@babel/plugin-proposal-decorators",
+      { "version": "2021-12", "decoratorsBeforeExport": true }
+    ],
+    // The 2021-12 decorator transform emits `static {}` blocks, which the bundled
+    // Babel 7.18 only accepts with this plugin registered explicitly.
+    "@babel/plugin-proposal-class-static-block",
+    "babel-plugin-styled-components"
+  ]
 }

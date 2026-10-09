@@ -14,6 +14,7 @@ import {
   RisksOfEngagingWithLido,
   LidoFee,
   HowCanIUnstakeSteth,
+  HowDoesDirectStakingWork,
 } from './list';
 
 export const StakeFaq: FC = () => {
@@ -23,6 +24,7 @@ export const StakeFaq: FC = () => {
     <Section title="FAQ" onClick={onClickHandler}>
       <WhatIsLido />
       <HowDoesLidoWork />
+      <HowDoesDirectStakingWork />
       <WhatSecurityMeasures />
       <RisksOfEngagingWithLido />
       <LidoEthApr />

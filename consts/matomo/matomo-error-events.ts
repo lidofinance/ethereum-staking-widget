@@ -16,6 +16,7 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   PROVIDER_DISCONNECTED = 'PROVIDER_DISCONNECTED',
   CHAIN_DISCONNECTED = 'CHAIN_DISCONNECTED',
   TX_SETTLED_DATA_UNAVAILABLE = 'TX_SETTLED_DATA_UNAVAILABLE',
+  QUOTE_CHANGED = 'QUOTE_CHANGED',
   SOMETHING_WRONG = 'SOMETHING_WRONG',
 }
 
@@ -97,6 +98,11 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'Transaction settled but follow-up data could not be loaded',
     'eth_widget_errors_tx_settled_data_unavailable',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'The exchange rate has changed. Check the updated amount and try again.',
+    'eth_widget_errors_quote_changed',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG]: [
     'Ethereum_Staking_Widget_Errors',

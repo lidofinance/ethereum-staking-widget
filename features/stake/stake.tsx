@@ -1,5 +1,4 @@
 import { FaqPlaceholder } from 'features/ipfs';
-import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
 import {
   DisclaimerSection,
@@ -9,13 +8,14 @@ import {
 import { StakeFaq } from './stake-faq/stake-faq';
 import { LidoStats } from './lido-stats/lido-stats';
 import { StakeForm } from './stake-form';
+import { L2Stake } from './l2-stake';
+import { useDappStatus } from 'modules/web3';
 
 export const Stake = () => {
+  const { isChainIdOnL2 } = useDappStatus();
   return (
     <>
-      <NoSSRWrapper>
-        <StakeForm />
-      </NoSSRWrapper>
+      {isChainIdOnL2 ? <L2Stake /> : <StakeForm />}
       <LidoStats />
       <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
         <StakeFaq />

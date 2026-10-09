@@ -13,7 +13,7 @@ import { useWithdrawalRequest } from 'features/withdrawals/hooks';
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { trackWithdrawalFinishEvent } from 'utils/track-withdrawal-finish-event';
+import { weiToEth } from 'utils/weiToEth';
 
 import { useRequestFormDataContextValue } from './use-request-form-data-context-value';
 import { useValidationContext } from './use-validation-context';
@@ -115,7 +115,9 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
       trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalRequestStart);
       const requestResult = await request(data);
       if (requestResult && data.amount) {
-        trackWithdrawalFinishEvent(data.amount);
+        trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalRequestFinish, {
+          value: weiToEth(data.amount),
+        });
       }
       return requestResult;
     },

@@ -43,6 +43,9 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqHowCanIUseWstethDefiProtocols = 'faqHowCanIUseWstethDefiProtocols',
   faqDoINeedToUnwrapMyWstethWithdrawalsTabs = 'faqDoINeedToUnwrapMyWstethWithdrawalsTabs',
 
+  // L2 Stake
+  faqHowDoesDirectStakingWork = 'faqHowDoesDirectStakingWork',
+
   // Optimism
   faqHowCanIGetWstethOnOptimismWrapLink = 'faqHowCanIGetWstethOnOptimismWrapLink',
   faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism = 'faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism',
@@ -60,6 +63,10 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqHowCouldIUnwrapWstETHBackToStETHOnUnichainUnwrapLink = 'faqHowCouldIUnwrapWstETHBackToStETHOnUnichainUnwrapLink',
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack',
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim',
+
+  // /stake page
+  // token goes as a custom dimension
+  stakeTokenSelect = 'stakeTokenSelect',
 
   // /wrap page
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
@@ -362,6 +369,17 @@ export const MATOMO_CLICK_EVENTS: Record<
       'Push «Withdrawals Request and Claim» What happens if I want to unstake ETH on Ethereum? Can I do that from Unichain?',
       'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim',
     ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowDoesDirectStakingWork]: [
+    'Ethereum_Staking_Widget',
+    'Push "How does Direct Staking on L2 work?',
+    'eth_widget_faq_howDirectStakingOnL2Works',
+  ],
+  // /stake page
+  [MATOMO_CLICK_EVENTS_TYPES.stakeTokenSelect]: [
+    'Ethereum_Staking_Widget',
+    'Select token to stake on stake page',
+    'eth_widget_stake_select_token',
+  ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectETH]: [
     'Ethereum_Staking_Widget',

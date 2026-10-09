@@ -4,21 +4,26 @@ import getConfigNext from 'next/config';
 
 const { serverRuntimeConfig } = getConfigNext();
 
-import {
-  CHAINS,
-  LIDO_L2_CONTRACT_ADDRESSES,
-} from '@lidofinance/lido-ethereum-sdk/common';
-
 // Main deployments
 import mainnetSet from 'networks/mainnet.json';
 import hoodiSet from 'networks/hoodi.json';
 import sepoliaSet from 'networks/sepolia.json';
 import holeskySet from 'networks/holesky.json';
 
+// L2 deployments
+import optimismSet from 'networks/l2/optimism.json';
+import optimismSepoliaSet from 'networks/l2/optimism-sepolia.json';
+import unichainSet from 'networks/l2/unichain.json';
+import unichainSepoliaSet from 'networks/l2/unichain-sepolia.json';
+import baseSet from 'networks/l2/base.json';
+import lineaSet from 'networks/l2/linea.json';
+import arbitrumSet from 'networks/l2/arbitrum.json';
+
 // Devnet deployments
 import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json';
 import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json';
 import { getPreConfig } from 'config/get-preconfig';
+import { CHAINS } from 'config/chains';
 
 // For future overrides of APIs in devnets
 export const API_NAMES = {};
@@ -41,6 +46,9 @@ export const CONTRACT_NAMES = {
   // l2 contracts
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
+  L2stakingReceiver: 'L2stakingReceiver',
+  L2FastStakeOraclePool: 'L2FastStakeOraclePool',
+  L2FastStakeOracleFeed: 'L2FastStakeOracleFeed',
   // 3rd party contracts
   aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
@@ -138,30 +146,18 @@ const DEVNET_OVERRIDES: Record<number, string> = // Merge client&server values
       {} as Record<number, string>,
     );
 
-// For now stub L2 deployments,
-// as we don't need L2 devnets and it's easier to add more L2s
-const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.entries(
-  LIDO_L2_CONTRACT_ADDRESSES,
-).reduce(
-  (acc, [chainId, { wsteth, steth }]) => {
-    acc[chainId] = {
-      api: {},
-      contracts: {
-        [CONTRACT_NAMES.L2stETH]: steth,
-        [CONTRACT_NAMES.L2wstETH]: wsteth,
-      },
-    };
-    return acc;
-  },
-  {} as Record<string, NetworkConfig>,
-);
-
 const NETWORKS_MAP = {
-  ...L2_NETWORK_MAP,
   [CHAINS.Mainnet]: mainnetSet as NetworkConfig,
   [CHAINS.Holesky]: holeskySet as NetworkConfig,
   [CHAINS.Hoodi]: hoodiSet as NetworkConfig,
   [CHAINS.Sepolia]: sepoliaSet as NetworkConfig,
+  [CHAINS.Optimism]: optimismSet as NetworkConfig,
+  [CHAINS.OptimismSepolia]: optimismSepoliaSet as NetworkConfig,
+  [CHAINS.Unichain]: unichainSet as NetworkConfig,
+  [CHAINS.UnichainSepolia]: unichainSepoliaSet as NetworkConfig,
+  [CHAINS.Base]: baseSet as NetworkConfig,
+  [CHAINS.Linea]: lineaSet as NetworkConfig,
+  [CHAINS.Arbitrum]: arbitrumSet as NetworkConfig,
 } as Record<string, NetworkConfig>;
 
 // keys MUST correlate with the `DEVNET_OVERRIDES` env
@@ -172,7 +168,7 @@ const DEVNETS_MAP = {
 } as Record<string, NetworkConfig>;
 
 export const getNetworkConfigMapByChain = (
-  chain: CHAINS,
+  chain: number,
 ): NetworkConfig | undefined => {
   const overridedSetName = DEVNET_OVERRIDES[chain];
 

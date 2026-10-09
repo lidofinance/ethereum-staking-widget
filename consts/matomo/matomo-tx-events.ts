@@ -1,7 +1,7 @@
 import { MatomoEventType } from '@lidofinance/analytics-matomo';
 
 export const enum MATOMO_TX_EVENTS_TYPES {
-  // Stake
+  // Stake (chain and token go as custom dimensions)
   stakingStart = 'stakingStart',
   stakingFinish = 'stakingFinish',
 
@@ -32,14 +32,15 @@ export const enum MATOMO_TX_EVENTS_TYPES {
 
 export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
   {
+    // Staking, on any chain and with any token
     [MATOMO_TX_EVENTS_TYPES.stakingStart]: [
       'Ethereum_Staking_Widget',
-      'Start staking',
+      'Initiating staking transaction',
       'eth_widget_staking_start',
     ],
     [MATOMO_TX_EVENTS_TYPES.stakingFinish]: [
       'Ethereum_Staking_Widget',
-      'Successfully finish staking',
+      'Successful finish staking transaction',
       'eth_widget_staking_finish',
     ],
 

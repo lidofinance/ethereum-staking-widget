@@ -2,16 +2,21 @@ import { Tooltip } from '@lidofinance/lido-ui';
 import { DATA_UNAVAILABLE } from 'consts/text';
 
 import { config } from 'config';
-import { Component } from 'types';
+import type { FC, ComponentProps } from 'react';
 
-export type FormatPriceComponent = Component<
-  'span',
-  { amount: number | null | undefined; currency?: string; fallback?: string }
->;
+export type FormatPriceComponentProps = ComponentProps<'span'> & {
+  amount: number | null | undefined;
+  smallNumberThreshold?: number;
+  maximumFractionDigits?: number;
+  currency?: string;
+  fallback?: string;
+};
 
-export const FormatPrice: FormatPriceComponent = (props) => {
+export const FormatPrice: FC<FormatPriceComponentProps> = (props) => {
   const {
     amount,
+    smallNumberThreshold = 0.01,
+    maximumFractionDigits,
     currency = 'USD',
     fallback = DATA_UNAVAILABLE,
     ...rest
@@ -22,9 +27,10 @@ export const FormatPrice: FormatPriceComponent = (props) => {
       : amount.toLocaleString(config.LOCALE, {
           style: 'currency',
           currency,
+          maximumFractionDigits,
         });
 
-  if (amount && amount < 0.01) {
+  if (amount && amount < smallNumberThreshold) {
     return (
       <Tooltip
         placement="topRight"
@@ -38,7 +44,7 @@ export const FormatPrice: FormatPriceComponent = (props) => {
           </span>
         }
       >
-        <span {...rest}>{actual}</span>
+        <span {...rest}>{actual}..</span>
       </Tooltip>
     );
   }

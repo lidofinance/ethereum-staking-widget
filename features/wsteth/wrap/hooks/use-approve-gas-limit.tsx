@@ -16,7 +16,7 @@ import {
 export const useApproveGasLimit = () => {
   const { chainId, isDappActiveOnL2 } = useDappStatus();
   const { wstETH } = useLidoSDK();
-  const { l2, isL2 } = useLidoSDKL2();
+  const { l2, isL2Wrap } = useLidoSDKL2();
 
   const fallback = isDappActiveOnL2
     ? STETH_L2_APPROVE_GAS_LIMIT
@@ -27,7 +27,7 @@ export const useApproveGasLimit = () => {
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
-        if (isL2) {
+        if (isL2Wrap) {
           return await l2.approveWstethForWrapEstimateGas({
             value: ESTIMATE_AMOUNT,
             account: config.ESTIMATE_ACCOUNT,
