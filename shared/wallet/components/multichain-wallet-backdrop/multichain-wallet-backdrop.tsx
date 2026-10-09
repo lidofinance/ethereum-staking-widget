@@ -31,11 +31,7 @@ export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
         `;
       case LIDO_MULTICHAIN_CHAINS.Linea:
         return css`
-          background: linear-gradient(
-            54.15deg,
-            #4591ac -13.73%,
-            #84dcfb 91.51%
-          );
+          background: linear-gradient(52deg, #190066 0.01%, #84dcfb 100%);
         `;
       case LIDO_MULTICHAIN_CHAINS['BNB Chain']:
         return css`

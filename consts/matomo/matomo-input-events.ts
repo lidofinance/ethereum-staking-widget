@@ -3,10 +3,10 @@ import { MatomoEventType } from '@lidofinance/analytics-matomo';
 export const enum MATOMO_INPUT_EVENTS_TYPES {
   ethRewardsEnterAddressManually = 'ethRewardsEnterAddressManually',
   ethRewardsEnterAddressAuto = 'ethRewardsEnterAddressAuto',
-  stakeL2MoreLiquidityBase = 'stakeL2MoreLiquidityBase',
-  stakeL2MoreLiquidityArbitrum = 'stakeL2MoreLiquidityArbitrum',
-  stakeL2MoreLiquidityOptimism = 'stakeL2MoreLiquidityOptimism',
-  stakeL2MoreLiquidityLinea = 'stakeL2MoreLiquidityLinea',
+  // chain and token go as custom dimensions
+  stakingMoreLiquidity = 'stakingMoreLiquidity',
+  // chain goes as a custom dimension and as the numeric value, 0 on disconnect
+  walletChainChanged = 'walletChainChanged',
 }
 
 export const MATOMO_INPUT_EVENTS: Record<
@@ -24,24 +24,14 @@ export const MATOMO_INPUT_EVENTS: Record<
     'eth_widget_enter_address_auto',
   ],
 
-  [MATOMO_INPUT_EVENTS_TYPES.stakeL2MoreLiquidityBase]: [
+  [MATOMO_INPUT_EVENTS_TYPES.stakingMoreLiquidity]: [
     'Ethereum_Staking_Widget',
-    'Direct Staking on Base user may want more liquidity',
-    'eth_widget_staking_on_Base_whale',
+    'Direct Staking user may want more liquidity',
+    'eth_widget_staking_whale',
   ],
-  [MATOMO_INPUT_EVENTS_TYPES.stakeL2MoreLiquidityArbitrum]: [
+  [MATOMO_INPUT_EVENTS_TYPES.walletChainChanged]: [
     'Ethereum_Staking_Widget',
-    'Direct Staking on Arbitrum user may want more liquidity',
-    'eth_widget_staking_on_Arbitrum_whale',
-  ],
-  [MATOMO_INPUT_EVENTS_TYPES.stakeL2MoreLiquidityOptimism]: [
-    'Ethereum_Staking_Widget',
-    'Direct Staking on Optimism user may want more liquidity',
-    'eth_widget_staking_on_Optimism_whale',
-  ],
-  [MATOMO_INPUT_EVENTS_TYPES.stakeL2MoreLiquidityLinea]: [
-    'Ethereum_Staking_Widget',
-    'Direct Staking on Linea user may want more liquidity',
-    'eth_widget_staking_on_Linea_whale',
+    'Wallet chain changed',
+    'eth_widget_wallet_chain_changed',
   ],
 };

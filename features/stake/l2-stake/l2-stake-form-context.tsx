@@ -282,7 +282,7 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
         amount > networkData.fastStakeLiquidityEth &&
         amount <= stakedTokenBalance
       ) {
-        trackStakeEvent();
+        trackStakeEvent({ token });
       }
     }
   }, [
@@ -293,6 +293,7 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     amount,
     l2StakeState.state.liquidityTarget,
     trackStakeEvent,
+    token,
   ]);
 
   const formControllerValue: FormControllerContextValueType<L2StakeFormInputType> =

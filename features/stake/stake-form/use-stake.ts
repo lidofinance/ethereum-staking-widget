@@ -48,12 +48,13 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
 
   return useCallback(
     async ({ amount, token, referral }: StakeArguments): Promise<boolean> => {
-      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart);
+      const isWeth = token === TOKENS_TO_STAKE.WETH;
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart, { token });
 
       // Lido takes ETH only, so WETH is unwrapped first: in the same batch
       // for AA wallets, as a separate transaction otherwise. The flag tells
       // the stage callbacks which of the chained transactions is reporting
-      let needsUnwrap = token === TOKENS_TO_STAKE.WETH;
+      let needsUnwrap = isWeth;
       // Set once the separate unwrap has landed: from then on the funds are
       // ETH, so a failed stake must be retried as an ETH stake
       let isUnwrapped = false;
@@ -153,7 +154,7 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
               bells();
             }
             txModalStages.success(balance, preStakeBalance, txHash);
-            trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
+            trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish, { token });
           },
           onFailure: async ({ error }) => {
             await recoverAfterUnwrap();

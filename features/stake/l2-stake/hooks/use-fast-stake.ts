@@ -47,17 +47,13 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { txModalStages } = useTxModalStagesL2FastStake();
   const txFlow = useTxFlow();
   const { featureFlags } = useConfig().externalConfig;
-  const trackStartEth = useTrackStakeEvent('fast_stake_start');
-  const trackEndEth = useTrackStakeEvent('fast_stake_end');
-  const trackStartWeth = useTrackStakeEvent('fast_stake_weth_start');
-  const trackEndWeth = useTrackStakeEvent('fast_stake_weth_end');
+  const trackStart = useTrackStakeEvent('fast_stake_start');
+  const trackEnd = useTrackStakeEvent('fast_stake_end');
 
   return useCallback(
     async ({ amount, token, referral }: StakeArguments): Promise<boolean> => {
       const isWeth = token === TOKENS_TO_STAKE.WETH;
-      const trackStart = isWeth ? trackStartWeth : trackStartEth;
-      const trackEnd = isWeth ? trackEndWeth : trackEndEth;
-      trackStart();
+      trackStart({ token });
       try {
         invariant(amount, 'amount is null');
         invariant(address, 'account is not defined');
@@ -165,7 +161,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
               bells();
             }
             txModalStages.success(balance, preStakeBalanceWsteth, txHash);
-            trackEnd();
+            trackEnd({ token });
           },
           onFailure: ({ error }) => txModalStages.failed(error, onRetry),
           onMultisigDone: () => {
@@ -182,8 +178,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       }
     },
     [
-      trackStartEth,
-      trackStartWeth,
+      trackStart,
       address,
       l1Core.publicClient,
       l2.wsteth,
@@ -195,8 +190,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       txModalStages,
       isAA,
       featureFlags.holidayDecorEnabled,
-      trackEndEth,
-      trackEndWeth,
+      trackEnd,
       bells,
       onRetry,
     ],

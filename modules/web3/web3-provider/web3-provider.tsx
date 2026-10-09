@@ -33,7 +33,13 @@ import { config } from 'config';
 import { CHAINS } from 'consts/chains';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
-import { walletMetricProps } from 'consts/matomo';
+import { MATOMO_INPUT_EVENTS_TYPES, walletMetricProps } from 'consts/matomo';
+import {
+  DISCONNECTED_CHAIN_ID,
+  getTrackedChain,
+  setTrackedChain,
+} from 'utils/tracked-chain';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { SupportOnlyL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './web3-transport';
@@ -214,7 +220,11 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   // separately; the first `useConnections` entry may belong to an obsolete
   // wallet, so wallet-first reads must follow the current connection only
   const connections = useConnections({ config: wagmiConfig });
-  const { connector: currentConnector, status } = useConnection({
+  const {
+    connector: currentConnector,
+    status,
+    chainId: walletChainId,
+  } = useConnection({
     config: wagmiConfig,
   });
   const activeConnection = useMemo(() => {
@@ -229,6 +239,21 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     void onActiveConnection(activeConnection);
   }, [activeConnection, onActiveConnection]);
+
+  // analytics read the wallet chain outside React; every change, including
+  // a disconnect (reported as 0), is an event of its own
+  useEffect(() => {
+    const nextChain =
+      status === 'connected' && walletChainId
+        ? walletChainId
+        : DISCONNECTED_CHAIN_ID;
+    if (nextChain === getTrackedChain()) return;
+    setTrackedChain(nextChain);
+    trackMatomoEvent(MATOMO_INPUT_EVENTS_TYPES.walletChainChanged, {
+      chainId: nextChain,
+      value: nextChain,
+    });
+  }, [status, walletChainId]);
 
   return (
     <Web3ProviderContext.Provider

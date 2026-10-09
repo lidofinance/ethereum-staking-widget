@@ -1,29 +1,9 @@
 import { MatomoEventType } from '@lidofinance/analytics-matomo';
 
 export const enum MATOMO_TX_EVENTS_TYPES {
-  // Stake
+  // Stake (chain and token go as custom dimensions)
   stakingStart = 'stakingStart',
   stakingFinish = 'stakingFinish',
-
-  // StakeL2
-  stakeL2StartBase = 'stakeL2StartBase',
-  stakeL2FinishBase = 'stakeL2FinishBase',
-  stakeL2StartLinea = 'stakeL2StartLinea',
-  stakeL2FinishLinea = 'stakeL2FinishLinea',
-  stakeL2StartArbitrum = 'stakeL2StartArbitrum',
-  stakeL2FinishArbitrum = 'stakeL2FinishArbitrum',
-  stakeL2StartOptimism = 'stakeL2StartOptimism',
-  stakeL2FinishOptimism = 'stakeL2FinishOptimism',
-
-  // StakeL2 with WETH
-  stakeL2WethStartBase = 'stakeL2WethStartBase',
-  stakeL2WethFinishBase = 'stakeL2WethFinishBase',
-  stakeL2WethStartLinea = 'stakeL2WethStartLinea',
-  stakeL2WethFinishLinea = 'stakeL2WethFinishLinea',
-  stakeL2WethStartArbitrum = 'stakeL2WethStartArbitrum',
-  stakeL2WethFinishArbitrum = 'stakeL2WethFinishArbitrum',
-  stakeL2WethStartOptimism = 'stakeL2WethStartOptimism',
-  stakeL2WethFinishOptimism = 'stakeL2WethFinishOptimism',
 
   // Wrap
   wrapApprovalStart = 'wrapApprovalStart',
@@ -52,97 +32,16 @@ export const enum MATOMO_TX_EVENTS_TYPES {
 
 export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
   {
+    // Staking, on any chain and with any token
     [MATOMO_TX_EVENTS_TYPES.stakingStart]: [
       'Ethereum_Staking_Widget',
-      'Start staking',
+      'Initiating staking transaction',
       'eth_widget_staking_start',
     ],
     [MATOMO_TX_EVENTS_TYPES.stakingFinish]: [
       'Ethereum_Staking_Widget',
-      'Successfully finish staking',
+      'Successful finish staking transaction',
       'eth_widget_staking_finish',
-    ],
-    // L2 Staking
-    [MATOMO_TX_EVENTS_TYPES.stakeL2StartBase]: [
-      'Ethereum_Staking_Widget',
-      'Initiating staking on Base transaction',
-      'eth_widget_staking_on_Base_start',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2FinishBase]: [
-      'Ethereum_Staking_Widget',
-      'Successful finish staking on Base transaction',
-      'eth_widget_staking_on_Base_finish',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2StartLinea]: [
-      'Ethereum_Staking_Widget',
-      'Initiating staking on Linea transaction',
-      'eth_widget_staking_on_Linea_start',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2FinishLinea]: [
-      'Ethereum_Staking_Widget',
-      'Successful finish staking on Linea transaction',
-      'eth_widget_staking_on_Linea_finish',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2StartArbitrum]: [
-      'Ethereum_Staking_Widget',
-      'Initiating staking on Arbitrum transaction',
-      'eth_widget_staking_on_Arbitrum_start',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2FinishArbitrum]: [
-      'Ethereum_Staking_Widget',
-      'Successful finish staking on Arbitrum transaction',
-      'eth_widget_staking_on_Arbitrum_finish',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2StartOptimism]: [
-      'Ethereum_Staking_Widget',
-      'Initiating staking on Optimism transaction',
-      'eth_widget_staking_on_Optimism_start',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2FinishOptimism]: [
-      'Ethereum_Staking_Widget',
-      'Successful finish staking on Optimism transaction',
-      'eth_widget_staking_on_Optimism_finish',
-    ],
-    // L2 Staking with WETH
-    [MATOMO_TX_EVENTS_TYPES.stakeL2WethStartBase]: [
-      'Ethereum_Staking_Widget',
-      'Initiating staking WETH on Base transaction',
-      'eth_widget_staking_weth_on_Base_start',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2WethFinishBase]: [
-      'Ethereum_Staking_Widget',
-      'Successful finish staking WETH on Base transaction',
-      'eth_widget_staking_weth_on_Base_finish',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2WethStartLinea]: [
-      'Ethereum_Staking_Widget',
-      'Initiating staking WETH on Linea transaction',
-      'eth_widget_staking_weth_on_Linea_start',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2WethFinishLinea]: [
-      'Ethereum_Staking_Widget',
-      'Successful finish staking WETH on Linea transaction',
-      'eth_widget_staking_weth_on_Linea_finish',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2WethStartArbitrum]: [
-      'Ethereum_Staking_Widget',
-      'Initiating staking WETH on Arbitrum transaction',
-      'eth_widget_staking_weth_on_Arbitrum_start',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2WethFinishArbitrum]: [
-      'Ethereum_Staking_Widget',
-      'Successful finish staking WETH on Arbitrum transaction',
-      'eth_widget_staking_weth_on_Arbitrum_finish',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2WethStartOptimism]: [
-      'Ethereum_Staking_Widget',
-      'Initiating staking WETH on Optimism transaction',
-      'eth_widget_staking_weth_on_Optimism_start',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.stakeL2WethFinishOptimism]: [
-      'Ethereum_Staking_Widget',
-      'Successful finish staking WETH on Optimism transaction',
-      'eth_widget_staking_weth_on_Optimism_finish',
     ],
 
     [MATOMO_TX_EVENTS_TYPES.wrapApprovalStart]: [
