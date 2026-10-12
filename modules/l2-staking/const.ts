@@ -9,6 +9,8 @@ export const LIDO_L2_STAKING_CHAIN_IDS = LIDO_L2_STAKING_CHAINS.map(
   (chain) => chain.id,
 ) as CHAINS[];
 
+// TODO: recheck (L2 might not be affected) after GLAMSTERDAM fork
+
 // Used only when estimation fails. Sized to the highest measured chain
 // (Arbitrum, which includes L1 data cost) with ~10% headroom. Measured 2026-10:
 // ETH stake 178k-251k, WETH stake 178k-255k, WETH approve 29k-59k

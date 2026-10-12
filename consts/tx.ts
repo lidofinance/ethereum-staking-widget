@@ -1,3 +1,5 @@
+// TODO: recalculate after GLAMSTERDAM fork
+
 export const WSTETH_APPROVE_GAS_LIMIT = 78_000n;
 export const STETH_L2_APPROVE_GAS_LIMIT = 52_500n;
 
