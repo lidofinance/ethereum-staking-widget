@@ -20,6 +20,8 @@ import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
 import { wethABI } from 'abi/weth-abi';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
+import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { ErrorMessage } from 'utils/getErrorMessage';
 import {
   aaSendCalls,
   expectOrdered,
@@ -79,7 +81,9 @@ vi.mock('../hooks/use-conversion', () => ({
 }));
 vi.mock('modules/web3', async () => {
   const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+  const errors = await import('modules/web3/utils');
   return {
+    ...errors,
     useDappStatus: () => ({ address: ACCOUNT }),
     useAA: () => ({ isAA: state.isAA }),
     useLidoSDK: () => ({ core: { publicClient: {} } }),
@@ -311,6 +315,24 @@ describe('useL2FastStake', () => {
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
       expect(onConfirm).not.toHaveBeenCalled();
     });
+
+    it('reports a stake whose confirmation read failed as completed', async () => {
+      const { walletClient } = createModule(
+        legacyPerformTransaction('unconfirmed'),
+      );
+
+      // the stake is on chain: the form resets, the modal says so without a Retry
+      await expect(stake(ETH)).resolves.toBe(true);
+
+      expect(walletClient.writeContract).toHaveBeenCalledWith(
+        stakeCall(zeroAddress),
+      );
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(TxSettledError),
+        onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
   });
 
   describe('legacy signing, WETH', () => {
@@ -413,6 +435,51 @@ describe('useL2FastStake', () => {
       expect(onConfirm).not.toHaveBeenCalled();
 
       // the approval is on chain: the retry reads it while building the stake
+      setAllowance(AMOUNT);
+      walletClient.writeContract.mockClear();
+      state.txModalStages.signApproval.mockClear();
+      state.wstethBalance
+        .mockReset()
+        .mockResolvedValueOnce(BALANCE_BEFORE)
+        .mockResolvedValueOnce(BALANCE_AFTER);
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
+      expect(walletClient.writeContract).toHaveBeenCalledWith(stakeCall(WETH));
+      expect(state.txModalStages.signApproval).not.toHaveBeenCalled();
+      expect(state.txModalStages.success).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the amount and offers to continue when the approval settles but its confirmation read fails', async () => {
+      const { walletClient, setAllowance } = createModule(
+        legacyPerformTransaction('unconfirmed', 'success'),
+      );
+
+      // not a completed stake: the form must keep the amount, so no reset
+      await expect(stake(WETH_TOKEN)).resolves.toBe(false);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
+      expect(walletClient.writeContract).toHaveBeenCalledWith(approveCall);
+      expect(state.txModalStages.sign).not.toHaveBeenCalled();
+      // the approval is on chain: the form refreshes the allowance
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+      // a failure with a Retry (which stakes), not "completed"
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'TxFlowInterruptedError',
+          message: ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
+        }),
+        onRetry,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalledWith(
+        expect.any(TxSettledError),
+        expect.anything(),
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+
+      // the retry reads the landed approval and sends the stake alone
       setAllowance(AMOUNT);
       walletClient.writeContract.mockClear();
       state.txModalStages.signApproval.mockClear();

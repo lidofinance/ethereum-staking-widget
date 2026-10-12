@@ -9,6 +9,8 @@ import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 import type { TransactionCallback } from '@lidofinance/lido-ethereum-sdk/core';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { ErrorMessage } from 'utils/getErrorMessage';
 import { wethABI } from 'abi/weth-abi';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import {
@@ -62,7 +64,9 @@ const state = vi.hoisted(() => ({
 
 vi.mock('modules/web3', async () => {
   const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+  const errors = await import('modules/web3/utils');
   return {
+    ...errors,
     useDappStatus: () => ({ address: ACCOUNT }),
     useAA: () => ({ isAA: state.isAA }),
     useLidoSDK: () => state.sdk,
@@ -262,6 +266,23 @@ describe('useStake', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
       expect(onConfirm).not.toHaveBeenCalled();
     });
+
+    it('reports a stake whose confirmation read failed as completed', async () => {
+      const { walletClient } = createSdk(
+        legacyPerformTransaction('unconfirmed'),
+      );
+
+      // the stake is on chain: the form resets, the modal says so without a Retry
+      await expect(stake(ETH)).resolves.toBe(true);
+
+      expect(walletClient.writeContract).toHaveBeenCalledWith(submitCall());
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(TxSettledError),
+        onRetry,
+      );
+      expect(onUnwrapped).not.toHaveBeenCalled();
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
   });
 
   describe('legacy signing, WETH', () => {
@@ -342,6 +363,37 @@ describe('useStake', () => {
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.objectContaining({ message: 'User rejected the request' }),
         onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('keeps the amount as ETH and offers to continue when the unwrap settles but its confirmation read fails', async () => {
+      const { walletClient } = createSdk(
+        legacyPerformTransaction('unconfirmed'),
+      );
+
+      // not a completed stake: the form must keep the amount, so no reset
+      await expect(stake(WETH_TOKEN)).resolves.toBe(false);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
+      expect(walletClient.writeContract).toHaveBeenCalledWith(unwrapCall);
+      expect(state.txModalStages.sign).not.toHaveBeenCalled();
+      // the unwrap is on chain: the form switches to ETH and refreshes balances
+      expect(onUnwrapped).toHaveBeenCalledTimes(1);
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+      expectOrdered(onUnwrapped, onConfirm, state.txModalStages.failed);
+      // a failure with a Retry (which stakes the ETH), not "completed"
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'TxFlowInterruptedError',
+          message: ErrorMessage.STAKE_WETH_INTERRUPTED,
+        }),
+        onRetry,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalledWith(
+        expect.any(TxSettledError),
+        expect.anything(),
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });

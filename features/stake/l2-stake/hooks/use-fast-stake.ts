@@ -9,6 +9,8 @@ import {
   useAA,
   useTxFlow,
   useLidoSDKL2,
+  TxSettledError,
+  TxFlowInterruptedError,
 } from 'modules/web3';
 import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import {
@@ -21,6 +23,7 @@ import { useBells } from 'features/stake/stake-form/hooks/use-bells';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 
 import { getReferralAddress } from 'utils/get-referral-address';
+import { ErrorMessage } from 'utils/getErrorMessage';
 import { useFastStakeConversion } from './use-conversion';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
 import { useTrackStakeEvent } from './use-track-event';
@@ -107,6 +110,10 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
         let needsApprove =
           isWeth &&
           (await l2Stake.getWethAllowanceForFastStake(address)) < amount;
+        // Set when the approval landed but the stake was never sent: the flow
+        // then resolves (its last receipt was a success) although nothing was
+        // staked
+        let isFlowInterrupted = false;
 
         await txFlow({
           callsFn: async () => {
@@ -163,14 +170,31 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
             txModalStages.success(balance, preStakeBalanceWsteth, txHash);
             trackEnd({ token });
           },
-          onFailure: ({ error }) => txModalStages.failed(error, onRetry),
+          onFailure: async ({ error }) => {
+            // The approval settled but its confirmation read failed, so the
+            // SDK never got to the stake. Not a completed stake: keep the
+            // amount, refresh the allowance and offer to continue
+            if (needsApprove && error instanceof TxSettledError) {
+              isFlowInterrupted = true;
+              await onConfirm?.();
+              txModalStages.failed(
+                new TxFlowInterruptedError(
+                  ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
+                  error.cause,
+                ),
+                onRetry,
+              );
+              return;
+            }
+            txModalStages.failed(error, onRetry);
+          },
           onMultisigDone: () => {
             if (needsApprove) return;
             txModalStages.successMultisig();
           },
         });
 
-        return true;
+        return !isFlowInterrupted;
       } catch (error) {
         console.warn(error);
         txModalStages.failed(error, onRetry);

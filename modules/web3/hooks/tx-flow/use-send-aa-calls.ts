@@ -28,15 +28,23 @@ export const useSendAACalls = () => {
           stage: TransactionCallbackStage.SIGN,
         });
 
+        const batch = calls
+          .filter((call) => !!call)
+          .map((call) => ({
+            to: call.to,
+            data: call.data,
+            value: call.value,
+          }));
+
         const callData = await walletClient.sendCalls({
           account: address ?? null,
-          calls: calls
-            .filter((call) => !!call)
-            .map((call) => ({
-              to: call.to,
-              data: call.data,
-              value: call.value,
-            })),
+          calls: batch,
+          // Every batch here is a dependent one (unwrap or approve, then the
+          // action) and the flow assumes all of it landed or none did: a
+          // retry after a partial batch would redo the first call. So atomic
+          // execution is required rather than preferred, which also stops the
+          // fallback below from sending the calls as separate transactions
+          forceAtomic: batch.length > 1,
           experimental_fallback: true, // fallback to legacy sendTransaction if sendCalls is not supported
         });
 

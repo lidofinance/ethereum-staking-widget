@@ -26,7 +26,10 @@ export type PerformTransactionProps = {
   sendTransaction: (options: object) => Promise<Hash>;
 };
 
-export type LegacyOutcome = 'success' | 'reverted' | 'rejected' | 'multisig';
+// 'unconfirmed': the receipt is in, but the confirmations read the SDK does
+// between CONFIRMATION and DONE rejects, so the call fails after settling
+export type LegacyOutcome =
+  'success' | 'reverted' | 'rejected' | 'multisig' | 'unconfirmed';
 
 // Mirrors the SDK's performTransaction stage sequence. Each call takes the
 // next outcome, so a chained flow (unwrap or approve, then stake) can be
@@ -52,6 +55,7 @@ export const legacyPerformTransaction = (...outcomes: LegacyOutcome[]) =>
       stage: TransactionCallbackStage.CONFIRMATION,
       payload: receipt,
     });
+    if (outcome === 'unconfirmed') throw new Error('confirmations read failed');
     await callback({ stage: TransactionCallbackStage.DONE, payload: 0n });
     return { hash };
   });
@@ -65,8 +69,8 @@ type AAOutcome = {
 
 type AACallback = (props: TxCallbackProps) => Promise<void>;
 
-// Mirrors useSendAACalls: SIGN, RECEIPT (callId), DONE (txHash); the batch
-// is atomic, so there is no per-call outcome
+// Mirrors useSendAACalls: SIGN, RECEIPT (callId), DONE (txHash); the sender
+// requires atomic execution of a batch, so there is no per-call outcome
 export const aaSendCalls = ({ callId, txHash, failWith }: AAOutcome) =>
   vi.fn(async (_calls: AACall[], callback: AACallback) => {
     try {

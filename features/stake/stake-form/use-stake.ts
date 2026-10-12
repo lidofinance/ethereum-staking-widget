@@ -11,10 +11,13 @@ import {
   useLidoSDK,
   useAA,
   useTxFlow,
+  TxSettledError,
+  TxFlowInterruptedError,
 } from 'modules/web3';
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { ErrorMessage } from 'utils/getErrorMessage';
 import { getReferralAddress } from 'utils/get-referral-address';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 
@@ -58,6 +61,9 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
       // Set once the separate unwrap has landed: from then on the funds are
       // ETH, so a failed stake must be retried as an ETH stake
       let isUnwrapped = false;
+      // Set when the unwrap landed but the stake was never sent: the flow then
+      // resolves (its last receipt was a success) although nothing was staked
+      let isStakeSkipped = false;
 
       const recoverAfterUnwrap = async () => {
         if (!isUnwrapped) return;
@@ -158,6 +164,20 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
           },
           onFailure: async ({ error }) => {
             await recoverAfterUnwrap();
+            // The unwrap settled but its confirmation read failed, so the SDK
+            // never got to the stake. Not a completed stake: keep the amount,
+            // now as ETH, and offer to continue with it
+            if (needsUnwrap && error instanceof TxSettledError) {
+              isStakeSkipped = true;
+              txModalStages.failed(
+                new TxFlowInterruptedError(
+                  ErrorMessage.STAKE_WETH_INTERRUPTED,
+                  error.cause,
+                ),
+                onRetry,
+              );
+              return;
+            }
             txModalStages.failed(error, onRetry);
           },
           onMultisigDone: () => {
@@ -166,7 +186,7 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
           },
         });
 
-        return true;
+        return !isStakeSkipped;
       } catch (error) {
         console.warn(error);
         await recoverAfterUnwrap();

@@ -1,5 +1,6 @@
 import { SendCallsError } from 'modules/web3';
 import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { TxFlowInterruptedError } from 'modules/web3/utils/tx-flow-interrupted-error';
 import { TxStaleError } from 'modules/web3/utils/tx-stale-error';
 import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import { UnknownBundleIdError, UserRejectedRequestError } from 'viem';
@@ -25,6 +26,8 @@ export enum ErrorMessage {
   CHAIN_DISCONNECTED = 'Your wallet is not connected to the selected network.\nSwitch to the selected network in your wallet and try again.',
   TX_SETTLED_DATA_UNAVAILABLE = 'Your transaction was completed, but the updated data could not be loaded. Refresh the page to see the latest state.',
   QUOTE_CHANGED = 'The exchange rate has changed. Check the updated amount and try again.',
+  STAKE_WETH_INTERRUPTED = 'Your WETH was unwrapped, but the stake was not sent. Retry to stake the ETH.',
+  STAKE_WETH_L2_INTERRUPTED = 'Your WETH was approved, but the stake was not sent. Retry to stake it.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -200,6 +203,9 @@ const extractHumaneMessage = (error: unknown) => {
   if (error instanceof TxSettledError) {
     return ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE;
   }
+  if (error instanceof TxFlowInterruptedError) {
+    return error.message;
+  }
   if (error instanceof QuoteMismatchError) {
     return ErrorMessage.QUOTE_CHANGED;
   }
@@ -351,6 +357,10 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
   [ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE]:
     MATOMO_ERROR_EVENTS_TYPES.TX_SETTLED_DATA_UNAVAILABLE,
   [ErrorMessage.QUOTE_CHANGED]: MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED,
+  [ErrorMessage.STAKE_WETH_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED,
+  [ErrorMessage.STAKE_WETH_L2_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_L2_INTERRUPTED,
 };
 
 const trackErrorDebounced = debounce((errorMessage: string) => {
