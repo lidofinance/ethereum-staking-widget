@@ -20,7 +20,7 @@ import {
 import {
   FormControllerContext,
   FormControllerContextValueType,
-  passFormState,
+  passFormStateTo,
   recoverFormState,
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
@@ -200,12 +200,16 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const networkData = useStakeFormNetworkData();
   const validationContextByToken = useStakeFormValidationContext(networkData);
 
+  // recover the previously saved form state for the 'stake' scope
+  // L2 stake saves state to it
+  const recoveredState = recoverFormState('stake');
+
   const formObject = useForm<StakeFormInput, StakeFormValidationContextByToken>(
     {
       defaultValues: {
-        amount: recoverFormState('stake').amount ?? null,
-        token: TOKENS_TO_STAKE.ETH,
-        referral: recoverFormState('stake').referral ?? null,
+        amount: recoveredState.amount ?? null,
+        token: recoveredState.token ?? TOKENS_TO_STAKE.ETH,
+        referral: recoveredState.referral ?? null,
       },
       context: validationContextByToken,
       resolver: stakeFormValidationResolver,
@@ -218,9 +222,16 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const { retryEvent, retryFire } = useFormControllerRetry();
 
+  // the named watch keeps type not undefined
   const token = useWatch({ control: formObject.control, name: 'token' });
-  const { amount } = useWatch({ control: formObject.control });
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  const referral = useWatch({ control: formObject.control, name: 'referral' });
   const isWeth = token === TOKENS_TO_STAKE.WETH;
+
+  // communicate the amount/token to L2 staking form
+  useEffect(() => {
+    passFormStateTo('stakeL2', { amount, token, referral });
+  }, [amount, token, referral]);
 
   // WETH may be unavailable on the connected chain (or after a chain switch).
   // The selector is hidden there, so the token must be normalized here
@@ -229,12 +240,6 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
       setValue('token', TOKENS_TO_STAKE.ETH, { shouldValidate: true });
     }
   }, [networkData.isWethSupported, token, setValue]);
-
-  // communicate the amount between L1 and L2 staking forms
-
-  useEffect(() => {
-    passFormState('stake', { amount });
-  }, [amount]);
 
   // after a separate unwrap the funds are ETH: keep the amount, retry as ETH
   const onUnwrapped = useCallback(() => {

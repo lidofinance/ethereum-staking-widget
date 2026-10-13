@@ -28,8 +28,14 @@ export type PerformTransactionProps = {
 
 // 'unconfirmed': the receipt is in, but the confirmations read the SDK does
 // between CONFIRMATION and DONE rejects, so the call fails after settling
+// 'unestimated': the SDK's gas estimate failed, so the wallet is never reached
 export type LegacyOutcome =
-  'success' | 'reverted' | 'rejected' | 'multisig' | 'unconfirmed';
+  | 'success'
+  | 'reverted'
+  | 'rejected'
+  | 'multisig'
+  | 'unconfirmed'
+  | 'unestimated';
 
 // Mirrors the SDK's performTransaction stage sequence. Each call takes the
 // next outcome, so a chained flow (unwrap or approve, then stake) can be
@@ -38,6 +44,7 @@ export const legacyPerformTransaction = (...outcomes: LegacyOutcome[]) =>
   vi.fn(async (props: PerformTransactionProps) => {
     const outcome = outcomes.shift() ?? 'success';
     const { callback, getGasLimit, sendTransaction, account } = props;
+    if (outcome === 'unestimated') throw new Error('Not enough ether for gas');
     const gas = await getGasLimit({ account });
     await callback({ stage: TransactionCallbackStage.SIGN, payload: gas });
     if (outcome === 'rejected') throw new Error('User rejected the request');

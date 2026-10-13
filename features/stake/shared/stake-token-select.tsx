@@ -19,6 +19,7 @@ export const StakeTokenSelect = (props: StakeTokenSelectProps) => {
 
   return (
     <TokenSelectHookForm
+      resetAmount={false}
       disabled={isWalletConnected && !isDappActive}
       options={OPTIONS}
       onChange={(token) => {

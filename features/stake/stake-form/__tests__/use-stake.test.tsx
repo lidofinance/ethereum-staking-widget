@@ -347,7 +347,7 @@ describe('useStake', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });
 
-    it('recovers to ETH when the stake is rejected after a confirmed unwrap', async () => {
+    it('recovers to ETH and offers to continue when the stake is rejected after a confirmed unwrap', async () => {
       const { walletClient } = createSdk(
         legacyPerformTransaction('success', 'rejected'),
       );
@@ -356,15 +356,72 @@ describe('useStake', () => {
 
       expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
       expect(walletClient.writeContract).toHaveBeenCalledWith(unwrapCall);
+      expect(state.txModalStages.sign).toHaveBeenCalledTimes(1);
       // the funds are ETH now: the form switches token and refreshes balances
       expect(onUnwrapped).toHaveBeenCalledTimes(1);
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expectOrdered(onUnwrapped, onConfirm, state.txModalStages.failed);
+      // the stake was never sent: say what landed, keep the rejection as cause
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
-        expect.objectContaining({ message: 'User rejected the request' }),
+        expect.objectContaining({
+          name: 'TxFlowInterruptedError',
+          message: ErrorMessage.STAKE_WETH_INTERRUPTED,
+          cause: expect.objectContaining({
+            message: 'User rejected the request',
+          }),
+        }),
         onRetry,
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('recovers to ETH and offers to continue when the stake cannot be estimated after a confirmed unwrap', async () => {
+      const { walletClient } = createSdk(
+        legacyPerformTransaction('success', 'unestimated'),
+      );
+
+      await expect(stake(WETH_TOKEN)).resolves.toBe(false);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
+      expect(walletClient.writeContract).toHaveBeenCalledWith(unwrapCall);
+      // the wallet was never reached for the stake
+      expect(state.txModalStages.sign).not.toHaveBeenCalled();
+      expect(onUnwrapped).toHaveBeenCalledTimes(1);
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+      expectOrdered(onUnwrapped, onConfirm, state.txModalStages.failed);
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'TxFlowInterruptedError',
+          message: ErrorMessage.STAKE_WETH_INTERRUPTED,
+          cause: expect.objectContaining({
+            message: 'Not enough ether for gas',
+          }),
+        }),
+        onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('reports a stake whose confirmation read failed after an unwrap as completed, not interrupted', async () => {
+      const { walletClient } = createSdk(
+        legacyPerformTransaction('success', 'unconfirmed'),
+      );
+
+      // the stake is on chain: a completed stake, the form resets
+      await expect(stake(WETH_TOKEN)).resolves.toBe(true);
+
+      expect(walletClient.writeContract).toHaveBeenCalledTimes(2);
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(TxSettledError),
+        onRetry,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'TxFlowInterruptedError' }),
+        expect.anything(),
+      );
     });
 
     it('keeps the amount as ETH and offers to continue when the unwrap settles but its confirmation read fails', async () => {

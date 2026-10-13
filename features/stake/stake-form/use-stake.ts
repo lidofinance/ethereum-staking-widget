@@ -13,6 +13,7 @@ import {
   useTxFlow,
   TxSettledError,
   TxFlowInterruptedError,
+  TxStaleError,
 } from 'modules/web3';
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
@@ -61,15 +62,33 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
       // Set once the separate unwrap has landed: from then on the funds are
       // ETH, so a failed stake must be retried as an ETH stake
       let isUnwrapped = false;
-      // Set when the unwrap landed but the stake was never sent: the flow then
-      // resolves (its last receipt was a success) although nothing was staked
-      let isStakeSkipped = false;
+      // Set once the stake reached the wallet and got a hash
+      let isStakeSent = false;
 
       const recoverAfterUnwrap = async () => {
         if (!isUnwrapped) return;
-        isUnwrapped = false;
         onUnwrapped?.();
         await onConfirm?.();
+      };
+
+      const reportFailure = (error: unknown): boolean => {
+        // Determine if failure occurred after WETH was unwrapped but before the stake was sent
+        const isInterruptedAfterUnwrap =
+          isUnwrapped && !isStakeSent && !(error instanceof TxStaleError);
+        // if so, report as failure but hint user that funds are safu in ETH
+        if (isInterruptedAfterUnwrap) {
+          txModalStages.failed(
+            new TxFlowInterruptedError(
+              ErrorMessage.STAKE_WETH_INTERRUPTED,
+              error instanceof TxSettledError ? error.cause : error,
+            ),
+            onRetry,
+          );
+          return false;
+        }
+        // otherwise, report as a regular failure
+        txModalStages.failed(error, onRetry);
+        return error instanceof TxSettledError;
       };
 
       try {
@@ -145,6 +164,7 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
             if (needsUnwrap) {
               return txModalStages.pendingUnwrap(amount, txHashOrCallId);
             }
+            isStakeSent = true;
             return txModalStages.pending(amount, token, txHashOrCallId, isAA);
           },
           onConfirmation: () => {
@@ -162,36 +182,20 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
             txModalStages.success(balance, preStakeBalance, txHash);
             trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish, { token });
           },
-          onFailure: async ({ error }) => {
-            await recoverAfterUnwrap();
-            // The unwrap settled but its confirmation read failed, so the SDK
-            // never got to the stake. Not a completed stake: keep the amount,
-            // now as ETH, and offer to continue with it
-            if (needsUnwrap && error instanceof TxSettledError) {
-              isStakeSkipped = true;
-              txModalStages.failed(
-                new TxFlowInterruptedError(
-                  ErrorMessage.STAKE_WETH_INTERRUPTED,
-                  error.cause,
-                ),
-                onRetry,
-              );
-              return;
-            }
-            txModalStages.failed(error, onRetry);
-          },
           onMultisigDone: () => {
             if (needsUnwrap) return;
             txModalStages.successMultisig();
           },
         });
 
-        return !isStakeSkipped;
+        return true;
       } catch (error) {
+        // Without an onFailure the flow rethrows a settled failure too, so
+        // every outcome is reported here
         console.warn(error);
         await recoverAfterUnwrap();
-        txModalStages.failed(error, onRetry);
-        return false;
+        // a completed stake resets the form like after a success
+        return reportFailure(error);
       }
     },
     [

@@ -1,13 +1,18 @@
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 import { getPrettyChainName, useDappStatus } from 'modules/web3';
 import { config } from 'config';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { useL2StakeState } from 'features/stake/l2-stake/hooks/use-l2-stake-state';
 
 export const HowDoesDirectStakingWork: FC = () => {
   const { isChainIdOnL2, chainId } = useDappStatus();
   const chainName = getPrettyChainName(chainId);
+  const { state } = useL2StakeState();
+  const { current: accordionState } = useRef<{ opened: boolean }>({
+    opened: false,
+  });
 
   if (!isChainIdOnL2) return null;
 
@@ -15,7 +20,12 @@ export const HowDoesDirectStakingWork: FC = () => {
     <Accordion
       summary={`How does Direct Staking on ${chainName} work?`}
       onClick={() => {
-        trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.faqHowDoesDirectStakingWork);
+        if (!accordionState.opened) {
+          trackMatomoEvent(
+            MATOMO_CLICK_EVENTS_TYPES.faqHowDoesDirectStakingWork,
+          );
+          accordionState.opened = true;
+        }
       }}
     >
       <p>
@@ -33,8 +43,8 @@ export const HowDoesDirectStakingWork: FC = () => {
         The ETH accumulated in the pool is periodically sent to Ethereum via
         Chainlink CCIP, staked through the Lido protocol, and the resulting
         wstETH is bridged back to {chainName} to replenish the pool. The pool
-        holds liquidity equivalent to 25 stETH and is replenished automatically
-        once its balance reaches a set threshold.
+        holds liquidity equivalent to {state.liquidityTarget} stETH and is
+        replenished automatically once its balance reaches a set threshold.
       </p>
 
       <p>

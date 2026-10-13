@@ -24,7 +24,7 @@ import {
 import {
   FormControllerContext,
   FormControllerContextValueType,
-  passFormState,
+  passFormStateTo,
   recoverFormState,
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
@@ -231,14 +231,16 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const l2StakeState = useL2StakeState();
   const trackStakeEvent = useTrackStakeEvent('fast_stake_more_liquidity');
 
+  const recoveredState = recoverFormState('stakeL2');
+
   const formObject = useForm<
     L2StakeFormInputType,
     L2StakeFormValidationContextByToken
   >({
     defaultValues: {
-      amount: recoverFormState('stake').amount ?? null,
-      token: recoverFormState('stake').token ?? TOKENS_TO_STAKE.ETH,
-      referral: recoverFormState('stake').referral ?? null,
+      amount: recoveredState.amount ?? null,
+      token: recoveredState.token ?? TOKENS_TO_STAKE.ETH,
+      referral: recoveredState.referral ?? null,
     },
     context: validationContextByToken,
     resolver: L2StakeFormValidationResolver,
@@ -249,8 +251,16 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   useQueryParamsReferralForm<L2StakeFormInputType>({ setValue });
   useQueryParamsAmountForm<L2StakeFormInputType>({ setValue });
 
-  const [token, amount] = useWatch({ control, name: ['token', 'amount'] });
+  const [token, amount, referral] = useWatch({
+    control,
+    name: ['token', 'amount', 'referral'],
+  });
   const isWeth = token === TOKENS_TO_STAKE.WETH;
+
+  // communicate the amount between L1 and L2 staking forms
+  useEffect(() => {
+    passFormStateTo('stake', { amount, token, referral });
+  }, [amount, token, referral]);
 
   const approvalData = useL2WethApprove({ amount: amount ?? 0n, token });
 
@@ -272,11 +282,6 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [networkData, approvalData]);
 
   const stake = useL2FastStake({ onConfirm, onRetry: retryFire });
-
-  // communicate the amount between L1 and L2 staking forms
-  useEffect(() => {
-    passFormState('stake', { amount });
-  }, [amount]);
 
   const stakedTokenBalance = isWeth
     ? networkData.wethBalance

@@ -34,6 +34,7 @@ export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
 
   return (
     <TokenSelectHookForm
+      resetAmount={false}
       disabled={isWalletConnected && !isDappActive}
       options={options}
       onChange={(value) => {
