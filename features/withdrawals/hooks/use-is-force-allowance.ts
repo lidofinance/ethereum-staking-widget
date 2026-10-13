@@ -1,14 +1,14 @@
 import { useConfig } from 'config';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'react-router';
 import { useState } from 'react';
 
 export const useIsForceAllowance = () => {
   const [isUserStateForceAllowance, setIsUserStateForceAllowance] =
     useState(false);
   const { featureFlags } = useConfig().externalConfig;
-  const { query } = useRouter();
+  const [searchParams] = useSearchParams();
 
-  const isUrlForceAllowance = query.forceAllowance === 'enabled';
+  const isUrlForceAllowance = searchParams.get('forceAllowance') === 'enabled';
   const isFeatureFlagForceAllowance = featureFlags.forceAllowance === true;
   const isForceAllowance =
     isUrlForceAllowance ||

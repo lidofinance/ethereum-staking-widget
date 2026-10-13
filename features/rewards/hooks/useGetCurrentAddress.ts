@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'react-router';
 import debounce from 'lodash/debounce';
 import { usePublicClient } from 'wagmi';
 import { isAddress, type PublicClient } from 'viem';
@@ -26,7 +26,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState('');
 
-  const { isReady, query } = useRouter();
+  const [searchParams] = useSearchParams();
   const { address: account, chainId, isSupportedChain } = useDappStatus();
   // it works, but typing issue
   const publicClient = usePublicClient({ chainId: chainId }) as PublicClient;
@@ -81,23 +81,19 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
 
   // Pick up an address
 
+  const queryAddress = searchParams.get('address');
   useEffect(() => {
-    if (isReady) {
-      const queryAddr = Array.isArray(query.address)
-        ? query.address[0]
-        : query.address;
-      // From query parameters, more important
-      if (queryAddr) {
-        setInputValue(queryAddr);
-        return;
-      }
-      // From a connected wallet
-      if (account && isSupportedChain) {
-        setInputValue(account);
-        trackMatomoEvent(MATOMO_INPUT_EVENTS_TYPES.ethRewardsEnterAddressAuto);
-      }
+    // From query parameters, more important
+    if (queryAddress) {
+      setInputValue(queryAddress);
+      return;
     }
-  }, [account, query.address, isReady, setInputValue, isSupportedChain]);
+    // From a connected wallet
+    if (account && isSupportedChain) {
+      setInputValue(account);
+      trackMatomoEvent(MATOMO_INPUT_EVENTS_TYPES.ethRewardsEnterAddressAuto);
+    }
+  }, [account, queryAddress, setInputValue, isSupportedChain]);
 
   return {
     address,

@@ -2,7 +2,6 @@ import { WRAP_PATH, WRAP_UNWRAP_PATH } from 'consts/urls';
 import { Wallet } from 'features/wsteth/shared/wallet';
 import { WrapForm } from 'features/wsteth/wrap/wrap-form/wrap-form';
 import { Switch } from 'shared/components/switch';
-import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 import { WrapFaq } from './shared/wrap-faq/wrap-faq';
 import { UnwrapForm } from './unwrap/unwrap-form';
@@ -22,11 +21,9 @@ export const WrapUnwrapTabs = ({ mode }: WrapUnwrapLayoutProps) => {
   const isUnwrapMode = mode === 'unwrap';
   return (
     <>
-      <NoSsrWrapper>
-        <Switch checked={isUnwrapMode} routes={NAV_ROUTES} />
-        <Wallet isUnwrapMode={isUnwrapMode} />
-        {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
-      </NoSsrWrapper>
+      <Switch checked={isUnwrapMode} routes={NAV_ROUTES} />
+      <Wallet isUnwrapMode={isUnwrapMode} />
+      {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
         <WrapFaq />
       </OnlyInfraRender>

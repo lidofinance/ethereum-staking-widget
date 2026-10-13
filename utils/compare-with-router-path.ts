@@ -12,6 +12,8 @@ export const compareWithRouterPathInInfra = (asPath: string, href: string) => {
 };
 
 export const compareWithRouterPathInIPFS = (asPath: string, href: string) => {
-  // '/?ref=123&embed=456&app=789#/wrap' ---> '/wrap'
-  return asPath.split('#')[1] === href;
+  // createHashRouter resolves the '#/route' fragment into location.pathname,
+  // so asPath ('/wrap?ref=123') never contains '#' — the legacy
+  // `split('#')[1]` always returned undefined and no tab ever highlighted.
+  return compareWithRouterPathInInfra(asPath, href);
 };

@@ -34,8 +34,7 @@ export const ADDRESS_SCHEMA = z
 // 32-byte hash, e.g. a transaction hash
 export const HASH_SCHEMA = z
   .string()
-  .refine((value) => isHash(value), { message: 'Invalid hash' })
-  .transform((value) => value as Hash);
+  .refine((value): value is Hash => isHash(value), { message: 'Invalid hash' });
 
 // Unsigned integer string, e.g. a token amount in base units. Kept as string.
 // Digits only: `BigInt()` would also accept '', whitespace and hex

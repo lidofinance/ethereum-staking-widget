@@ -1,7 +1,11 @@
-import { maxUint112, maxUint24, parseEther } from 'viem';
+import { maxUint112, maxUint24 } from 'viem';
 import { PartnerVedaIcon } from 'assets/earn';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import type { GGVDepositTokens } from './deposit/form-context/types';
+
+// Pure (server-importable) values live in consts-data.ts; re-exported here
+// so frontend import sites keep working unchanged.
+export * from './consts-data';
 
 export const GGV_TOKEN_SYMBOL = TOKEN_SYMBOLS.gg;
 
@@ -26,13 +30,3 @@ export const GGV_PARTNERS = [
     text: 'Veda',
   },
 ];
-
-export const GGV_START_DATE = new Date('2025-09-03');
-
-export const GGV_INCENTIVES = [
-  parseEther('57.5'),
-  parseEther('32'),
-  parseEther('38.5'),
-];
-
-export const GGV_STATS_ORIGIN = 'https://api.sevenseas.capital';

@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'react-router';
 
 import { useIsLedgerLive } from 'modules/web3';
 import { useConfig } from 'config/use-config';
@@ -104,25 +104,26 @@ export const useEarnState = () => {
  * **WARNING: It doesn't rely on external config, therefore it may not reflect the final earn state!**
  */
 export const useEarnRuntimeState = () => {
-  const { query, isReady } = useRouter();
-  // query.app is read directly from the router (not useAppFlag/useIsLedgerLive) because this
+  const [searchParams] = useSearchParams();
+  // ?app= is read directly from search params (not useAppFlag/useIsLedgerLive) because this
   // hook is called from useExternalConfigContext inside ConfigProvider, before Web3Provider
   // (Wagmi) is mounted. The full connector-based check is applied separately in useEarnState.
-  // Reading from query directly (vs AppFlagProvider) also works during SSR.
-  const isLedgerLiveByFlag = query.app === 'ledger-live';
+  const isLedgerLiveByFlag = searchParams.get('app') === 'ledger-live';
 
   // Cache the earn query param to prevent it from being lost on rerenders in iframe
-  // (Next.js Router can have unstable query params in iframe due to History API limitations)
-  if (isReady && query.earn && typeof query.earn === 'string') {
-    setCachedEarnParam(query.earn);
+  // (query params can get lost in iframe due to History API limitations)
+  const earnQueryParam = searchParams.get('earn');
+  if (earnQueryParam) {
+    setCachedEarnParam(earnQueryParam);
   }
 
-  // Use cached value if current query.earn is undefined, but we had it before
-  const earnParam = query.earn || getCachedEarnParam();
+  // Use cached value if current ?earn= is absent, but we had it before
+  const earnParam = earnQueryParam || getCachedEarnParam();
 
   return computeEarnRuntimeState({
     isLedgerLive: isLedgerLiveByFlag,
     earnParam: typeof earnParam === 'string' ? earnParam : undefined,
-    isReady,
+    // the SPA router has no hydration delay for query parsing
+    isReady: true,
   });
 };

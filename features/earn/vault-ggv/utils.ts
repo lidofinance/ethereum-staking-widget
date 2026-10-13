@@ -1,10 +1,18 @@
 import { type Address } from 'viem';
 import { bnAmountToNumber } from 'utils/bn';
-import { GGV_INCENTIVES, GGV_START_DATE, GGV_STATS_ORIGIN } from './consts';
+// `./consts-data` (not `./consts`): this module is imported by the api
+// server — the .tsx consts file drags icons/styled-components with it.
+import {
+  GGV_INCENTIVES,
+  GGV_START_DATE,
+  GGV_STATS_ORIGIN,
+} from './consts-data';
 import { z } from 'zod';
 import { standardFetcher } from 'utils/standardFetcher';
 import { DECIMAL_STRING_SCHEMA } from 'utils/zod';
-import { ManifestConfigVaultApyType } from 'config/external-config';
+// `import type` + concrete module (not the barrel, which exports React
+// hooks) — keeps the api server bundle free of browser code.
+import type { ManifestConfigVaultApyType } from 'config/external-config/types';
 
 // Only the fields the widget reads are validated, the rest passes through
 const SEVEN_SEAS_DAILY_ITEM_SCHEMA = z.looseObject({

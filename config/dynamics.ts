@@ -1,13 +1,30 @@
-import * as dynamics from 'env-dynamics.mjs';
-// We're making dynamic env variables
-// so we can inject selected envs from Docker runtime too,
-// not only during build-time for static pages
+import {
+  buildAndSerializeClientEnv,
+  parseClientEnv,
+} from './client-env-manifest';
 
-declare global {
-  interface Window {
-    __env__: typeof dynamics;
-  }
+// Configuration invariant
+if (
+  import.meta.env?.PROD &&
+  !__IPFS_MODE__ &&
+  typeof window !== 'undefined' &&
+  !window.__env__
+) {
+  throw new Error(
+    'Runtime env missing: the window-env data element was not populated',
+  );
 }
+
+// Determine runtime
+const isProdBrowser = typeof window !== 'undefined' && window.__env__;
+
+// Prod runtime will have window.__env__ injected but dev and IPFS builds will have build time ENVS.
+const envSource = isProdBrowser
+  ? window.__env__
+  : JSON.parse(buildAndSerializeClientEnv());
+
+// Parse and validate the runtime env
+const dynamics = parseClientEnv(envSource);
 
 // Don't use dynamics directly in the project!
 // Only through:
@@ -15,4 +32,4 @@ declare global {
 //    import { config } from 'config'; // or
 //    import { config } from './get-config'; // in config "namespace"
 // ```
-export default typeof window !== 'undefined' ? window.__env__ : dynamics;
+export default dynamics;

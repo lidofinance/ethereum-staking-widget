@@ -1,7 +1,11 @@
 // direct group import, not the `config` barrel: the barrel reaches this module
 // back through provider -> external-config
 import { USER_AGENT } from 'config/groups/app';
-import { extractErrorMessage } from 'utils';
+// Import the concrete module, NOT the `utils` barrel — the barrel pulls
+// React (formatBalance) and wagmi (getErrorMessage → modules/web3), which
+// must stay out of the api server's bundle (server imports this fetcher's
+// consumers, e.g. features/earn/vault-*/utils.ts).
+import { extractErrorMessage } from './extractErrorMessage';
 import { FetcherError } from './fetcherError';
 
 // User-Agent is a forbidden header in browsers, so only set it server-side —

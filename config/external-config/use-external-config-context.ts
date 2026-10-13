@@ -13,6 +13,7 @@ import {
   overrideManifestConfig,
   useFallbackManifestEntry,
 } from './frontend-fallback';
+import { getQaMockManifestEntry } from './qa-mock';
 import { ManifestSchema } from './validate';
 import { getManifestKey } from './utils';
 import type { ExternalConfig, ManifestConfig, ManifestEntry } from './types';
@@ -85,7 +86,11 @@ export const useExternalConfigContext = (
   });
 
   return useMemo(() => {
-    const { config: cleanConfig, ...rest } = queryResult.data ?? fallbackData;
+    // QA overlay wins over fetched data; runtime overrides below (earn
+    // disable) still apply on top of it. Read once per mount — changes
+    // require a reload, same contract as the other QA mocks.
+    const { config: cleanConfig, ...rest } =
+      getQaMockManifestEntry() ?? queryResult.data ?? fallbackData;
 
     const EARN_CONFIG = cleanConfig.pages[EARN_PATH];
 

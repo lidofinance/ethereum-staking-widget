@@ -1,6 +1,7 @@
 import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 
 export const useStETHByWstETH = (wsteth?: bigint | null) => {
   const { chainId } = useDappStatus();
@@ -10,7 +11,7 @@ export const useStETHByWstETH = (wsteth?: bigint | null) => {
   return useQuery({
     queryKey: ['use-steth-by-wsteth', wsteth?.toString(), isL2, chainId],
     enabled: wsteth != null && !!(isL2 ? l2.steth : wrap),
-    staleTime: Infinity,
+    ...STRATEGY_CONSTANT,
     queryFn: () => {
       if (wsteth === 0n) return 0n;
       invariant(wsteth);

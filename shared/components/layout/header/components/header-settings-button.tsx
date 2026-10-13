@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { ReactComponent as GearIcon } from 'assets/icons/gear.svg';
+import GearIcon from 'assets/icons/gear.svg?react';
 import { SETTINGS_PATH } from 'consts/urls';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';

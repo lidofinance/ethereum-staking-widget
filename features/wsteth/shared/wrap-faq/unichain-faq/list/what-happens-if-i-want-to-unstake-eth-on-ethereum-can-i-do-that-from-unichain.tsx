@@ -1,8 +1,8 @@
 import { FC } from 'react';
-import { Accordion, Link } from '@lidofinance/lido-ui';
+import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 export const WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichain: FC =
@@ -11,17 +11,17 @@ export const WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichain: FC 
       <Accordion summary="What happens if I want to unstake ETH on Ethereum? Can I do that from Unichain?">
         <p>
           You would need to{' '}
-          <Link
+          <OuterLink
             href={`https://superbridge.app/unichain`}
             data-matomo={
               MATOMO_CLICK_EVENTS_TYPES.faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack
             }
           >
             bridge your wstETH or stETH back
-          </Link>{' '}
+          </OuterLink>{' '}
           to Ethereum mainnet first. Once on the mainnet, you can transform your
           wstETH or stETH to ETH using the{' '}
-          <LocalLink
+          <Link
             href={WITHDRAWALS_REQUEST_PATH}
             onClick={() =>
               trackMatomoEvent(
@@ -31,7 +31,7 @@ export const WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichain: FC 
             aria-hidden="true"
           >
             Withdrawals Request and Claim
-          </LocalLink>{' '}
+          </Link>{' '}
           tabs.
         </p>
       </Accordion>

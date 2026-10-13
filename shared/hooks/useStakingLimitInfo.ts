@@ -2,6 +2,7 @@ import { parseEther } from 'viem';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { config } from 'config';
+import { QA_KEYS } from 'consts/qa-keys';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { LIMIT_LEVEL } from 'types';
 import { useLidoSDK, useLidoSDKL2 } from 'modules/web3';
@@ -60,7 +61,7 @@ export const useStakingLimitInfo = (): UseQueryResult<StakeLimitFullInfo> => {
 
       const shouldMock = config.enableQaHelpers;
       const mockDataString = window.localStorage.getItem(
-        'getStakeLimitFullInfo',
+        QA_KEYS.stakeLimitFullInfo,
       );
 
       if (shouldMock && mockDataString) {

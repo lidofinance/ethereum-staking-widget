@@ -13,17 +13,23 @@ const projectAliases = [
   'features',
   'modules',
   'networks',
-  'pages',
   'providers',
   'scripts',
   'shared',
   'styles',
   'types',
   'utils',
-  'utilsApi',
 ].map((dirName) => ({
   find: dirName,
   replacement: resolve(projectRoot, dirName),
+}));
+
+// Same shims the Vite build uses (vite.config.ts) — kept only for
+// dependency-side specifiers (e.g. `next/link.js` in @lidofinance/lido-ui);
+// app code imports react-router / react-helmet-async directly.
+const nextShims = ['router', 'link', 'head'].map((mod) => ({
+  find: new RegExp(`^next/${mod}(\\.js)?$`),
+  replacement: resolve(projectRoot, 'shims', `next-${mod}.tsx`),
 }));
 
 export default defineConfig({
@@ -31,6 +37,7 @@ export default defineConfig({
   resolve: {
     alias: [
       ...projectAliases,
+      ...nextShims,
       {
         find: 'assets',
         replacement: resolve(projectRoot, 'assets'),
@@ -43,18 +50,16 @@ export default defineConfig({
         find: 'build-info.json',
         replacement: resolve(projectRoot, 'build-info.json'),
       },
-      {
-        find: 'env-dynamics.mjs',
-        replacement: resolve(projectRoot, 'env-dynamics.mjs'),
-      },
     ],
+  },
+  define: {
+    __IPFS_MODE__: JSON.stringify(false),
   },
   test: {
     environment: 'node',
-    exclude: ['test/**', 'node_modules/**', '.next/**'],
+    exclude: ['test/**', 'node_modules/**', 'dist/**', 'server/**'],
     globals: true,
     include: ['**/*.{test,tests,spec}.{ts,tsx,js,jsx}'],
-    setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       reportsDirectory: './coverage',

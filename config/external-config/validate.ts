@@ -301,7 +301,8 @@ const MANIFEST_CONFIG_DEFAULT = ManifestConfigSchema.parse({});
 // Manifest Entry
 //
 
-const ManifestEntrySchema = z.object({
+// Exported for the QA debug drawer manifest mock (config/external-config/qa-mock.ts)
+export const ManifestEntrySchema = z.object({
   cid: z.string().optional(),
   ens: z.string().optional(),
   leastSafeVersion: z.string(),

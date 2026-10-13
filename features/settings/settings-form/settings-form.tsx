@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
-import type { CHAINS } from 'consts/chains';
+import type { CHAIN_ID } from 'consts/chains';
 import { useUserConfig } from 'config/user-config';
 import { wagmiChainMap } from 'modules/web3/consts/chains';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
@@ -26,7 +26,7 @@ type FormValues = {
 
 // One form per chain: every supported chain keeps its own custom RPC, and a
 // user on an L2 can replace the L2 endpoint the wrap form actually uses
-const RpcUrlForm = ({ chainId }: { chainId: CHAINS }) => {
+const RpcUrlForm = ({ chainId }: { chainId: CHAIN_ID }) => {
   const { savedUserConfig, setRpcUrl } = useUserConfig();
   const chainName = wagmiChainMap[chainId]?.name ?? `chain ${chainId}`;
 
@@ -117,7 +117,7 @@ export const SettingsForm = () => {
   return (
     <SettingsFormWrap>
       {supportedChainIds.map((chainId) => (
-        <RpcUrlForm key={chainId} chainId={chainId} />
+        <RpcUrlForm key={chainId} chainId={chainId as CHAIN_ID} />
       ))}
 
       <br />

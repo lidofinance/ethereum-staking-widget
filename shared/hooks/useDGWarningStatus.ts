@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useConfig } from 'config/use-config';
+import { QA_KEYS } from 'consts/qa-keys';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useLidoSDK } from 'modules/web3';
 import {
@@ -25,7 +26,7 @@ export const useDGWarningStatus = (
 
   const isDGBannerEnabled = overrideWithQAMockBoolean(
     Boolean(featureFlags.dgBannerEnabled),
-    'mock-qa-helpers-dg-banner-enabled',
+    QA_KEYS.dgBannerEnabled,
   );
 
   const queryResult = useQuery({
@@ -43,12 +44,12 @@ export const useDGWarningStatus = (
   const dgWarningState = dgStatus?.state ?? 'Unknown';
   const dgWarningStateOverriden = overrideWithQAMockString(
     featureFlags.dgWarningState ? 'Warning' : dgWarningState,
-    'mock-qa-helpers-dg-state',
+    QA_KEYS.dgState,
   ) as DGWarningState;
 
   const vetoSupportPercent = overrideWithQAMockNumber(
     dgStatus?.currentVetoSupportPercent ?? 0,
-    'mock-qa-helpers-dg-current-veto-support-percent',
+    QA_KEYS.dgVetoSupportPercent,
   );
 
   const isWarningState = dgWarningStateOverriden === 'Warning';

@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback, useRef } from 'react';
 
-import { CHAINS } from 'consts/chains';
+import type { CHAIN_ID } from 'consts/chains';
 import { useLocalStorage } from 'shared/hooks/use-local-storage';
 
 import { getUserConfigDefault } from './utils';
@@ -17,7 +17,7 @@ export type UserConfigContextType = UserConfigDefaultType & {
   savedUserConfig: SavedUserConfig;
   setSavedUserConfig: (config: SavedUserConfig) => void;
   /** Sets or, with an empty url, clears one chain's custom RPC, keeping the others */
-  setRpcUrl: (chainId: CHAINS, rpcUrl?: string) => void;
+  setRpcUrl: (chainId: CHAIN_ID, rpcUrl?: string) => void;
   isWalletConnectionAllowed: boolean;
   setIsWalletConnectionAllowed: (isAllowed: boolean) => void;
 };
@@ -52,7 +52,7 @@ export const useUserConfigContext = () => {
   savedUserConfigRef.current = savedUserConfig;
 
   const setRpcUrl = useCallback(
-    (chainId: CHAINS, rpcUrl?: string) => {
+    (chainId: CHAIN_ID, rpcUrl?: string) => {
       setSavedConfigAndRemember({
         rpcUrls: assignRpcUrl(
           savedUserConfigRef.current.rpcUrls,

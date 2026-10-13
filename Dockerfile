@@ -52,15 +52,6 @@ RUN NODE_NO_BUILD_DYNAMICS=true yarn build
 # final image
 FROM node:24-alpine${ALPINE_VERSION} AS base
 
-ARG BASE_PATH=""
-ARG SUPPORTED_CHAINS="1"
-ARG DEFAULT_CHAIN="1"
-
-ENV NEXT_TELEMETRY_DISABLED=1 \
-  BASE_PATH=$BASE_PATH \
-  SUPPORTED_CHAINS=$SUPPORTED_CHAINS \
-  DEFAULT_CHAIN=$DEFAULT_CHAIN
-
 WORKDIR /app
 
 # Production dependencies only — devDependencies never reach the final image.

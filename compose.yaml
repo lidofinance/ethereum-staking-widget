@@ -1,0 +1,50 @@
+# Local production stack — the same images k8s runs (Dockerfile.web,
+# Dockerfile.api), wired like the helm release: nginx serves the static
+# build, splices runtime env into every HTML response via SSI, and proxies
+# /api/* to the api container over the compose network.
+#
+# Env comes from .env.local — the same file `yarn dev` uses (docker compose
+# parses quoting properly, unlike plain `docker run --env-file`). Values
+# are read at container BOOT: after editing, `docker compose up` again —
+# no rebuild needed for env-only changes.
+#
+#   docker compose up --build
+#   → http://localhost:3000
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - '3000:8080' # nginx-unprivileged listens on 8080
+    env_file:
+      - path: .env.local
+        required: false
+    environment:
+      # File-mount features are host-filesystem-coupled — off by default
+      # locally (see the api service note below). Blanked here too so the
+      # SPA's presence flags agree with what the api actually has.
+      VALIDATION_FILE_PATH: ''
+      CONFIG_MANIFEST_PATH: ''
+    depends_on:
+      - staking-widget-api
+
+  # The service name doubles as the DNS name nginx proxies to — must stay
+  # in sync with the `upstream staking_widget_api` block in
+  # infra/nginx/default.conf.template.
+  staking-widget-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file:
+      - path: .env.local
+        required: false
+    environment:
+      # `environment` outranks env_file: the api must listen where the
+      # nginx upstream expects it, whatever .env.local says.
+      PORT: 8080
+      # A set-but-missing file is a FATAL api startup check, and the paths
+      # in .env.local point at the host filesystem. To test these features
+      # locally, drop the override and bind-mount the file instead.
+      VALIDATION_FILE_PATH: ''
+      CONFIG_MANIFEST_PATH: ''

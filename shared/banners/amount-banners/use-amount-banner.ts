@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { QA_KEYS } from 'consts/qa-keys';
 import { overrideWithQAMockEther } from 'utils/qa';
 
 import { useAmountBannerABVariant } from './use-amount-banner-ab-variant';
@@ -13,10 +14,10 @@ import {
 } from './consts';
 import type { AmountBannerConfig } from './types';
 
-const QA_AMOUNT_MOCK_KEY = 'mockAmountBannerStethBalance';
-const QA_AMOUNT_THRESHOLD_1_MOCK_KEY = 'mockAmountBannerStethBalanceThreshold1';
-const QA_AMOUNT_THRESHOLD_2_MOCK_KEY = 'mockAmountBannerStethBalanceThreshold2';
-const QA_AMOUNT_THRESHOLD_3_MOCK_KEY = 'mockAmountBannerStethBalanceThreshold3';
+const QA_AMOUNT_MOCK_KEY = QA_KEYS.amountBannerBalance;
+const QA_AMOUNT_THRESHOLD_1_MOCK_KEY = QA_KEYS.amountBannerThreshold1;
+const QA_AMOUNT_THRESHOLD_2_MOCK_KEY = QA_KEYS.amountBannerThreshold2;
+const QA_AMOUNT_THRESHOLD_3_MOCK_KEY = QA_KEYS.amountBannerThreshold3;
 
 export const useAmountBanner = (
   amount: bigint | undefined,

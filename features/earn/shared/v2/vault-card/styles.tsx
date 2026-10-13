@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Block, Badge, Tooltip } from '@lidofinance/lido-ui';
-import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
+import ChevronsUp from 'assets/icons/chevrons-up.svg?react';
 
 const getBackgroundGradient = (variant: 'eth' | 'usd' | 'default'): string => {
   const gradients: Record<'eth' | 'usd' | 'default', string> = {

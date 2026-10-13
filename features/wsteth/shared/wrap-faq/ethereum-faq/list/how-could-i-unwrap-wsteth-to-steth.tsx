@@ -4,14 +4,14 @@ import { Accordion } from '@lidofinance/lido-ui';
 import { WRAP_UNWRAP_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 
 export const HowCouldIUnwrapWstethToSteth: FC = () => {
   return (
     <Accordion summary="How could I unwrap wstETH back to stETH?">
       <p>
         You can unwrap your wstETH tokens using{' '}
-        <LocalLink
+        <Link
           href={WRAP_UNWRAP_PATH}
           onClick={() =>
             trackMatomoEvent(
@@ -21,7 +21,7 @@ export const HowCouldIUnwrapWstethToSteth: FC = () => {
           aria-hidden="true"
         >
           Wrap &amp; Unwrap staking widget
-        </LocalLink>
+        </Link>
         .
       </p>
     </Accordion>

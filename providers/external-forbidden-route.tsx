@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, ReactNode } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useConfig } from 'config';
@@ -14,25 +14,21 @@ export const ExternalForbiddenRouteProvider = ({
   children: ReactNode;
 }) => {
   const [showContent, setShowContent] = useState(true);
-  const router = useRouter();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const path = useRouterPath();
   const { pages } = useConfig().externalConfig;
 
   const checkPathEffect = useCallback(() => {
     if (pages && isDisabledPath(path, pages)) {
       setShowContent(false);
-      // Extract dynamic path segment names (e.g. [vault], [action]) to exclude them from query
-      const dynamicParams = new Set(
-        router.pathname.match(/\[(\w+)\]/g)?.map((p) => p.slice(1, -1)) ?? [],
-      );
-      const query = Object.fromEntries(
-        Object.entries(router.query).filter(([key]) => !dynamicParams.has(key)),
-      );
-      void router
-        .push({ pathname: HOME_PATH, query })
-        .finally(() => setShowContent(true));
+      // search params exclude route params — they must not leak into the
+      // redirect query string (`/?vault=usd&action=deposit`)
+      void Promise.resolve(
+        navigate({ pathname: HOME_PATH, search: searchParams.toString() }),
+      ).finally(() => setShowContent(true));
     }
-  }, [pages, path, router]);
+  }, [pages, path, navigate, searchParams]);
 
   const effectDeps = useMemo(() => [pages, path], [pages, path]);
 

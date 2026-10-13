@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
+import { QA_KEYS } from 'consts/qa-keys';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
 import { getSwapIntegration } from './integrations';
@@ -10,7 +11,7 @@ import type {
 } from './types';
 
 const DISCOUNT_THRESHOLD = 1.004;
-const MOCK_LS_KEY = 'mock-qa-helpers-discount-rate';
+const MOCK_LS_KEY = QA_KEYS.discountRate;
 
 if (config.enableQaHelpers && typeof window !== 'undefined') {
   (window as any).setMockDiscountRate = (rate?: number) =>

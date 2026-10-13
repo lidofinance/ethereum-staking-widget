@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Block } from '@lidofinance/lido-ui';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 
 export const VaultCardWrapper = styled(Block)`
   display: flex;
@@ -44,6 +44,6 @@ export const VaultCardMyPositionValue = styled.div`
   }
 `;
 
-export const VaultCardCTALink = styled(LocalLink)`
+export const VaultCardCTALink = styled(Link)`
   margin-top: ${({ theme }) => theme.spaceMap.sm}px;
 `;

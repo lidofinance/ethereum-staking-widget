@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 
 import { VaultEthIcon } from 'assets/earn-v2';
-import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
+import ChevronsUp from 'assets/icons/chevrons-up.svg?react';
 import {
   Table,
   Tr,

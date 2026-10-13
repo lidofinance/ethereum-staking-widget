@@ -4,7 +4,6 @@ export const CHAINS_COLORS: {
   [key in CHAINS]?: string;
 } = {
   [CHAINS.Mainnet]: '#29b6af',
-  [CHAINS.Holesky]: '#AA346A',
   [CHAINS.Hoodi]: '#AA346A',
   [CHAINS.Sepolia]: '#FFD700',
   [CHAINS.Optimism]: '#da3737',

@@ -3,7 +3,7 @@ import { Accordion } from '@lidofinance/lido-ui';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 export const DoINeedToUnwrapMyWsteth: FC = () => {
@@ -11,7 +11,7 @@ export const DoINeedToUnwrapMyWsteth: FC = () => {
     <Accordion summary="Do I need to unwrap my wstETH before requesting withdrawals?">
       <p>
         No, you can transform your wstETH to ETH using the{' '}
-        <LocalLink
+        <Link
           href={WITHDRAWALS_REQUEST_PATH}
           onClick={() =>
             trackMatomoEvent(
@@ -21,7 +21,7 @@ export const DoINeedToUnwrapMyWsteth: FC = () => {
           aria-hidden="true"
         >
           Withdrawals Request and Claim tabs
-        </LocalLink>
+        </Link>
         . Note that, under the hood, wstETH will unwrap to stETH first, so your
         request will be denominated in stETH.
       </p>

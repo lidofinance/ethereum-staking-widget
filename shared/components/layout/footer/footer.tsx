@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import buildInfo from 'build-info.json';
 import { config } from 'config';
+import { QA_DEBUG_TRIGGER_ATTR } from 'features/qa-debug';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
 
 import {
@@ -42,7 +43,11 @@ const { label, link } = getVersionInfo();
 
 export const Footer: FC = () => {
   return (
-    <FooterStyle size="full" forwardedAs="footer">
+    <FooterStyle
+      size="full"
+      forwardedAs="footer"
+      {...{ [QA_DEBUG_TRIGGER_ATTR]: true }}
+    >
       <LogoLidoStyle />
       <OnlyInfraRender>
         <FooterLink

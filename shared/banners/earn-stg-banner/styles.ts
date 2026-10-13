@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 
 import { BannerWrap } from '../shared-banner-partials';
 
@@ -53,7 +53,7 @@ export const IconWrapper = styled.div`
   }
 `;
 
-export const OverlayLink = styled(LocalLink)`
+export const OverlayLink = styled(Link)`
   display: block;
   position: absolute;
   top: 0;

@@ -14,11 +14,11 @@ export type {
 export {
   getManifestKey,
   getLocalFallbackManifest,
-  shouldRedirectToRoot,
   isDisabledPath,
 } from './utils';
 export {
   ManifestSchema,
+  ManifestEntrySchema,
   ManifestConfigPages,
   ManifestConfigWithdrawalDexIntegrations,
 } from './validate';

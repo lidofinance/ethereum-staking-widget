@@ -6,15 +6,23 @@ import {
   useCallback,
 } from 'react';
 
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
+import { z } from 'zod';
 import invariant from 'tiny-invariant';
 import {
   AddressValidationFile,
   validateAddressLocally,
 } from 'utils/address-validation';
 import { useApiAddressValidation } from 'shared/hooks/use-api-address-validation';
+import { standardFetcher } from 'utils/standardFetcher';
 import { Address } from 'viem';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+
+const StaticValidationFileSchema = z.object({
+  addresses: z.array(z.string()),
+  isBroken: z.boolean().optional().default(false),
+});
 
 type AddressValidationContextType = {
   isValidAddress: boolean;
@@ -39,150 +47,109 @@ export const useAddressValidation = () => {
  * ADDRESS VALIDATION PROVIDER LOGIC
  *
  * APPROACH: Manual function calls (not automatic useQuery)
- * - validateAddress(address) is called manually when user performs action
- * - Uses queryClient.fetchQuery() for caching
- * - Sequential execution: API first, then file validation as fallback
+ * - validateAddress(address) is called manually on user action
+ *   (e.g. submit button click before form submission)
+ * - The heavy lifting (external service + file fallback) lives SERVER-SIDE
+ *   in /api/validation; the SPA keeps only a last-resort local check for
+ *   the case when the api pod itself is unreachable.
  *
  * ┌─────────────────────────────────────────────────────────────────────┐
  * │        User action triggers validateAddress(address)                │
- * │        (e.g. submit button click before form submission)            │
  * └─────────────────────┬───────────────────────────────────────────────┘
  *                       │
  *                       ▼
  *           ┌───────────────────────────┐
- *           │ !addressToValidate ||     │
- *           │ config.ipfsMode?          │
+ *           │ !address || ipfsMode?     │
  *           └───┬───────────────────┬───┘
  *               │ YES               │ NO
  *               ▼                   ▼
- *        ┌─────────────┐    ┌──────────────────────────┐
- *        │ set=true    │    │ addressApi               │
- *        │ return true │    │ ValidationEnabled?       │
- *        └─────────────┘    └──────┬───────────────────┘
- *                                  │
- *                   ┌──────────────┴──────────────┐
- *                   │ TRUE                        │ FALSE
- *                   ▼                             ▼
- *      ┌────────────────────────┐    ┌────────────────────────┐
- *      │ await validateAddress  │    │ validationFile?        │
- *      │ API(address)           │    └────┬───────────────┬───┘
- *      └────────┬───────────────┘         │ NO            │ YES
- *               │                         ▼               ▼
- *               ▼                   ┌──────────┐    ┌─────────────────┐
- *    ┌──────────────────────┐      │ set=true │    │ await validate  │
- *    │ Result type?         │      │ return   │    │ AddressFile()   │
- *    └──┬───────────────┬───┘      │ true     │    │ ┌─────────────┐ │
- *       │               │          └──────────┘    │ │queryFn:     │ │
- *       │ !== null &&   │ === null                 │ │ if broken → │ │
- *       │ has isValid   │                          │ │   false     │ │
- *       ▼               ▼                          │ │ else →      │ │
- *  ┌──────────┐  ┌──────────────┐                 │ │ validateLoc-│ │
- *  │ set=API  │  │ validationFi-│                 │ │ ally()      │ │
- *  │ .isValid │  │ le?          │                 │ └─────────────┘ │
- *  │ return   │  └──┬────────┬──┘                 └────────┬────────┘
- *  │ API      │     │ NO     │ YES                         │
- *  │ .isValid │     ▼        ▼                             ▼
- *  └──────────┘  ┌──────┐ ┌─────────────────┐      ┌──────────────┐
- *                │set=  │ │ await validate  │      │ set=file     │
- *                │true  │ │ AddressFile()   │      │ .isValid     │
- *                │return│ │ ┌─────────────┐ │      │ return file  │
- *                │true  │ │ │queryFn:     │ │      │ .isValid     │
- *                └──────┘ │ │ if broken → │ │      └──────────────┘
- *                         │ │   false     │ │
- *                         │ │ else →      │ │
- *                         │ │ validateLoc-│ │
- *                         │ │ ally()      │ │
- *                         │ └─────────────┘ │
- *                         └────────┬────────┘
- *                                  │
- *                                  ▼
- *                          ┌──────────────┐
- *                          │ set=file     │
- *                          │ .isValid     │
- *                          │ return file  │
- *                          │ .isValid     │
- *                          └──────────────┘
+ *        ┌─────────────┐   ┌───────────────────────────────┐
+ *        │ set=true    │   │ validation configured?        │
+ *        │ return true │   │ (addressApiValidationEnabled  │
+ *        └─────────────┘   │  || useValidationFile)        │
+ *                          └──────┬────────────────────┬───┘
+ *                                 │ YES                │ NO
+ *                                 ▼                    ▼
+ *              ┌─────────────────────────┐      ┌──────────────┐
+ *              │ GET /api/validation     │      │ set=true     │
+ *              │ (api pod)               │      │ return true  │
+ *              └───────────┬─────────────┘      └──────────────┘
+ *                          │
+ *        ── server-side routing (routes/validation.ts) ──────────────
+ *        │ 1. external service (VALIDATION_SERVICE_BASE_PATH)       │
+ *        │    │ upstream failed?                                    │
+ *        │    ▼                                                     │
+ *        │ 2. blocklist file (VALIDATION_FILE_PATH configmap):      │
+ *        │    broken file → {isValid:false} (fail-closed)           │
+ *        │    healthy     → local list check                        │
+ *        │    X-Validation-Source: upstream | file                  │
+ *        │ 3. no file → 502; neither configured → 404               │
+ *        ─────────────────────────────────────────────────────────────
+ *                          │
+ *              ┌───────────┴─────────────┐
+ *              │ 2xx {isValid}?          │
+ *              └───┬─────────────────┬───┘
+ *                  │ YES             │ NO (api pod unreachable/5xx —
+ *                  ▼                 ▼     e.g. DDoS on api; web pod +
+ *        ┌──────────────┐  ┌─────────────────────┐  wallet-RPC transports
+ *        │ set=API      │  │ staticBlocklist     │  keep working, so txs
+ *        │ .isValid     │  │ prefetched at boot? │  still flow)
+ *        │ return it    │  └───┬─────────────┬───┘
+ *        └──────────────┘      │ YES         │ NO
+ *                              ▼             ▼
+ *                   ┌───────────────────┐  ┌─────────────┐
+ *                   │ validateAddress   │  │ set=true    │
+ *                   │ Locally(address,  │  │ return true │
+ *                   │ staticBlocklist)  │  │ (fail-open) │
+ *                   └───────────────────┘  └─────────────┘
  *
  * ALL POSSIBLE OUTCOMES:
- * 1. No address / ipfsMode → return true
- * 2. API enabled + success → return API.isValid
- * 3. API enabled + error + file exists → return file.isValid
- * 4. API enabled + error + NO file → return true (DEFAULT)
- * 5. API disabled + file exists → return file.isValid
- * 6. API disabled + NO file → return true (DEFAULT)
+ * 1. No address / ipfsMode            → true
+ * 2. Validation not configured        → true (DEFAULT)
+ * 3. /api/validation answered         → its isValid (upstream OR api-pod file)
+ * 4. api pod down + static blocklist  → local check vs /runtime/validation.json
+ * 5. api pod down + no blocklist      → true (fail-open, best-effort by nature)
  *
- * EXECUTION FLOW:
- * 1. validateAddress(address) called manually
- * 2. Early return: !address || ipfsMode → set=true, return true
- * 3. If API enabled:
- *    - Call validateAddressAPI() → internally checks config & calls fetchQuery
- *    - If result !== null && has isValid → set & return API result
- *    - If result === null (error):
- *      - If file exists → call validateAddressFile(), set & return file result
- *      - If NO file → set=true, return true (DEFAULT)
- * 4. If API disabled:
- *    - If file exists → call validateAddressFile(), set & return file result
- *    - If NO file → set=true, return true (DEFAULT)
- * 5. All paths call setIsValidAddress() before returning
+ * BLOCKLIST DELIVERY (one configmap, sha256-hashed at render time —
+ * plain addresses never ship to pods or browsers):
+ * - api pod: mounted file, used server-side inside /api/validation
+ * - web pod: same configmap served by nginx as /runtime/validation.json,
+ *   prefetched here once per session (staleTime: Infinity) so it is
+ *   already cached when the api goes down mid-session
+ * - dev: scripts/write-validation-file.mjs hashes VALIDATION_FILE_PATH into
+ *   public/runtime/validation.json (same URL as k8s)
  *
- * validateAddressFile() DETAILS:
- * - Returns early with { isValid: true } if no validationFile
- * - Uses queryClient.fetchQuery() with queryFn that:
- *   - Checks file.isBroken → return { isValid: false }
- *   - Otherwise → return validateAddressLocally()
- *
- * PRIORITY ORDER:
- * 1. API result (when enabled & successful: result !== null && isValid defined)
- * 2. File validation (fallback when API error, or when API disabled)
- *    - If file.isBroken = true → { isValid: false }
- *    - Otherwise → validateAddressLocally()
- * 3. Default: true (when no validation sources available)
- *
- * CACHING (via queryClient.fetchQuery):
- * - API validation: cached per address for 1 minute
- * - File validation: cached per address + file metadata for 1 minute
- * - Repeated calls use cached results
+ * CACHING (via react-query):
+ * - /api/validation verdict: cached per address for 1 minute (the hook)
+ * - static blocklist: once per session
  */
-
 export const AddressValidationProvider = ({
   children,
-  validationFile,
 }: {
   children: ReactNode;
-  validationFile?: AddressValidationFile;
 }) => {
   const validateAddressAPI = useApiAddressValidation();
   // Tracks UI state, can be reset
   const [isValidAddress, setIsValidAddress] = useState(true);
-  const queryClient = useQueryClient();
 
-  // File validation query (works independently of API settings)
-  const validateAddressFile = useCallback(
-    async (addressToValidate: Address) => {
-      if (!validationFile) {
-        return { isValid: true };
-      }
-
-      const result = await queryClient.fetchQuery({
-        queryKey: [
-          'address-validation-file',
-          addressToValidate,
-          validationFile?.addresses?.length,
-          validationFile?.isBroken,
-        ],
-        queryFn: async () => {
-          // If validation file is broken, consider all addresses invalid
-          if (validationFile.isBroken) return { isValid: false };
-
-          return validateAddressLocally(addressToValidate, validationFile);
-        },
-        staleTime: 1 * 60 * 1000, // 1 minute
+  // Static blocklist from the web pod (nginx), NOT from the api pod — it
+  // must stay reachable when the api is down. Prefetched once per session.
+  const { data: staticBlocklist } = useQuery<AddressValidationFile>({
+    queryKey: ['validation-static-file'],
+    enabled: !config.ipfsMode && config.useValidationFile,
+    ...STRATEGY_CONSTANT,
+    retry: 1,
+    queryFn: async () => {
+      const data = await standardFetcher('/runtime/validation.json', {
+        headers: { Accept: 'application/json' },
       });
-
-      return result;
+      const parsed = StaticValidationFileSchema.parse(data);
+      return {
+        addresses: new Set(parsed.addresses.map((addr) => addr.toLowerCase())),
+        isBroken: parsed.isBroken,
+      };
     },
-    [validationFile, queryClient],
-  );
+  });
 
   const validateAddress = useCallback(
     async (addressToValidate?: Address) => {
@@ -193,38 +160,24 @@ export const AddressValidationProvider = ({
         return true;
       }
 
-      // Case 1: API is enabled
-      if (config.addressApiValidationEnabled) {
-        const apiResult = await validateAddressAPI(addressToValidate);
+      const apiResult = await validateAddressAPI(addressToValidate);
 
-        // API responded successfully - use API result
-        if (apiResult !== null && apiResult.isValid !== undefined) {
-          setIsValidAddress(apiResult.isValid);
+      // api pod answered (from upstream or its own file fallback)
+      if (apiResult !== null && apiResult.isValid !== undefined) {
+        setIsValidAddress(apiResult.isValid);
 
-          return apiResult.isValid;
-        }
-
-        // API failed - fallback to file validation
-        if (apiResult === null && validationFile) {
-          const fileResult = await validateAddressFile(addressToValidate);
-          setIsValidAddress(fileResult.isValid);
-
-          return fileResult.isValid;
-        }
-      } else if (validationFile) {
-        // Case 2: API is disabled - use file validation when available
-        const fileResult = await validateAddressFile(addressToValidate);
-        setIsValidAddress(fileResult.isValid);
-
-        return fileResult.isValid;
+        return apiResult.isValid;
       }
 
-      // Default to valid if no validation data available
-      setIsValidAddress(true);
+      // api pod unreachable → static blocklist from the web pod
+      const isValid = staticBlocklist
+        ? validateAddressLocally(addressToValidate, staticBlocklist).isValid
+        : true;
+      setIsValidAddress(isValid);
 
-      return true;
+      return isValid;
     },
-    [validateAddressAPI, validateAddressFile, validationFile],
+    [validateAddressAPI, staticBlocklist],
   );
 
   return (

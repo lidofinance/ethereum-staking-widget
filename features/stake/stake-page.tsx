@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import { Helmet } from 'react-helmet-async';
 
 import { Layout } from 'shared/components';
 import { Stake } from './stake';
@@ -11,9 +11,9 @@ export const StakePage: FC = () => {
       title="Stake Ether"
       subtitle="Stake ETH and receive stETH while staking"
     >
-      <Head>
+      <Helmet>
         <title>Stake with Lido | Lido</title>
-      </Head>
+      </Helmet>
       <Stake />
     </Layout>
   );

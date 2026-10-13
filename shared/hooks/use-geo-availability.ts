@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { config, useConfig } from 'config';
 import { API_ROUTES, getApiPath } from 'consts/api';
 import { GEO_AVAILABILITY, type GeoResponse } from 'consts/geo';
+import { QA_KEYS } from 'consts/qa-keys';
 import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { getGeoAvailability, resolveGeoAvailability } from 'utils/geo';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -18,7 +19,7 @@ const GEO_RESPONSE_SCHEMA = z.object({
   availability: z.enum([GEO_AVAILABILITY.full, GEO_AVAILABILITY.limited]),
 });
 
-const QA_COUNTRY_KEY = 'mock-qa-helpers-geo-country';
+const QA_COUNTRY_KEY = QA_KEYS.geoCountry;
 
 // Pins the country per browser, for stands where the env cannot be changed and
 // for testers behind Cloudflare, who cannot change the country their IP

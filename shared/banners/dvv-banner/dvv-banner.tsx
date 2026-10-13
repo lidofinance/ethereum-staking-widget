@@ -21,9 +21,9 @@ import {
   Loader,
 } from './styles';
 
-import { ReactComponent as IconMellowLogo } from 'assets/dvv-banner/dvv-banner-mellow-logo.svg';
-import { ReactComponent as IconPartnersLogoLight } from 'assets/dvv-banner/dvv-banner-partners-logo-light.svg';
-import { ReactComponent as IconPartnersLogoDark } from 'assets/dvv-banner/dvv-banner-partners-logo-dark.svg';
+import IconMellowLogo from 'assets/dvv-banner/dvv-banner-mellow-logo.svg?react';
+import IconPartnersLogoLight from 'assets/dvv-banner/dvv-banner-partners-logo-light.svg?react';
+import IconPartnersLogoDark from 'assets/dvv-banner/dvv-banner-partners-logo-dark.svg?react';
 
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo';

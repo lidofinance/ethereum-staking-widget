@@ -2,13 +2,13 @@ import { FC } from 'react';
 
 import { BlockProps, Link } from '@lidofinance/lido-ui';
 
-import { ReactComponent as ArbitrumLogo } from 'assets/icons/lido-multichain/arbitrum.svg';
-import { ReactComponent as BaseLogo } from 'assets/icons/lido-multichain/base.svg';
-import { ReactComponent as LineaLogo } from 'assets/icons/lido-multichain/linea.svg';
-import { ReactComponent as OptimismLogo } from 'assets/icons/lido-multichain/optimism.svg';
-import { ReactComponent as BNBLogo } from 'assets/icons/lido-multichain/bnb.svg';
-import { ReactComponent as UnichainLogo } from 'assets/icons/lido-multichain/unichain.svg';
-import { ReactComponent as MetisLogo } from 'assets/icons/lido-multichain/metis.svg';
+import ArbitrumLogo from 'assets/icons/lido-multichain/arbitrum.svg?react';
+import BaseLogo from 'assets/icons/lido-multichain/base.svg?react';
+import LineaLogo from 'assets/icons/lido-multichain/linea.svg?react';
+import OptimismLogo from 'assets/icons/lido-multichain/optimism.svg?react';
+import BNBLogo from 'assets/icons/lido-multichain/bnb.svg?react';
+import UnichainLogo from 'assets/icons/lido-multichain/unichain.svg?react';
+import MetisLogo from 'assets/icons/lido-multichain/metis.svg?react';
 
 import { config } from 'config';
 import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';

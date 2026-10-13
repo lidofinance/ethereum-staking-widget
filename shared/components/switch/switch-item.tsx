@@ -9,7 +9,7 @@ export const SwitchItem: SwitchItemComponent = (props) => {
 
   return (
     <SwitchItemStyled
-      scroll={false}
+      preventScrollReset
       href={href ?? ''}
       $active={active}
       {...rest}

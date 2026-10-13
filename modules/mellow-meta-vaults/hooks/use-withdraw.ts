@@ -10,6 +10,7 @@ import {
   applyRoundUpTxParameter,
 } from 'modules/web3';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
+import { QA_KEYS } from 'consts/qa-keys';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { ErrorMessage, getError } from 'utils';
 import { overrideWithQAMockBigInt } from 'utils/qa';
@@ -23,8 +24,8 @@ import { COLLECTOR_CONFIG } from '../consts';
 import { meetsSyncRedeemRequirements } from '../utils/sync-redeem-requirements';
 
 const QA_REMAINING_DAILY_LIMIT_KEY =
-  'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit';
-const QA_LIQUID_ASSETS_KEY = 'mock-qa-helpers-mellow-sync-redeem-liquid-assets';
+  QA_KEYS.mellowSyncRedeemRemainingDailyLimit;
+const QA_LIQUID_ASSETS_KEY = QA_KEYS.mellowSyncRedeemLiquidAssets;
 
 type SyncWithdrawAvailability =
   | { status: 'available' }

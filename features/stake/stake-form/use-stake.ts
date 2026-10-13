@@ -11,6 +11,7 @@ import {
 } from 'modules/web3';
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { QA_KEYS } from 'consts/qa-keys';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getReferralAddress } from 'utils/get-referral-address';
 
@@ -46,7 +47,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
         if (
           config.enableQaHelpers &&
-          window.localStorage.getItem('mockLimitReached') === 'true'
+          window.localStorage.getItem(QA_KEYS.stakeLimitReached) === 'true'
         ) {
           throw new MockLimitReachedError('Stake limit reached');
         }

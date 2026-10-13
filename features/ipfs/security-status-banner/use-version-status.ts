@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import buildInfo from 'build-info.json';
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
+import { QA_KEYS } from 'consts/qa-keys';
 import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { useDappStatus } from 'modules/web3';
 import { overrideWithQAMockBoolean } from 'utils/qa';
@@ -33,12 +34,10 @@ export const useVersionStatus = () => {
       const urlCid = URL_CID_REGEX.exec(window.location.href)?.groups?.cid;
       if (urlCid) return urlCid;
 
-      const response = await fetch(
-        `${config.BASE_PATH_ASSET}/runtime/window-env.js`,
-        {
-          method: 'HEAD',
-        },
-      );
+      // extract X-Ipfs-Roots response header from bundled asset
+      const response = await fetch(`${config.BASE_PATH_ASSET}/manifest.json`, {
+        method: 'HEAD',
+      });
 
       return response.headers.get('X-Ipfs-Roots');
     },
@@ -56,40 +55,31 @@ export const useVersionStatus = () => {
   // for IPFS - ^this and current cid doesn't match
   const realIsUpdateAvailable = Boolean(
     remoteVersionQueryResult.data &&
-      ((currentCidQueryResult.data &&
-        remoteVersionQueryResult.data.cid !== currentCidQueryResult.data) ||
-        !config.ipfsMode) &&
-      remoteVersionQueryResult.data.leastSafeVersion !== NO_SAFE_VERSION,
+    ((currentCidQueryResult.data &&
+      remoteVersionQueryResult.data.cid !== currentCidQueryResult.data) ||
+      !config.ipfsMode) &&
+    remoteVersionQueryResult.data.leastSafeVersion !== NO_SAFE_VERSION,
   );
   const isUpdateAvailable =
     realIsUpdateAvailable ||
-    overrideWithQAMockBoolean(
-      false,
-      'mock-qa-helpers-security-banner-is-update-available',
-    );
+    overrideWithQAMockBoolean(false, QA_KEYS.securityBannerIsUpdateAvailable);
 
   const realIsVersionUnsafe = Boolean(
     remoteVersionQueryResult.data?.leastSafeVersion &&
-      (remoteVersionQueryResult.data.leastSafeVersion === NO_SAFE_VERSION ||
-        isVersionLess(
-          buildInfo.version,
-          remoteVersionQueryResult.data.leastSafeVersion,
-        )),
+    (remoteVersionQueryResult.data.leastSafeVersion === NO_SAFE_VERSION ||
+      isVersionLess(
+        buildInfo.version,
+        remoteVersionQueryResult.data.leastSafeVersion,
+      )),
   );
   const isVersionUnsafe =
     realIsVersionUnsafe ||
-    overrideWithQAMockBoolean(
-      false,
-      'mock-qa-helpers-security-banner-is-version-unsafe',
-    );
+    overrideWithQAMockBoolean(false, QA_KEYS.securityBannerIsVersionUnsafe);
 
   const realIsNotVerifiable = !!remoteVersionQueryResult.error;
   const isNotVerifiable =
     realIsNotVerifiable ||
-    overrideWithQAMockBoolean(
-      false,
-      'mock-qa-helpers-security-banner-is-not-verifiable',
-    );
+    overrideWithQAMockBoolean(false, QA_KEYS.securityBannerIsNotVerifiable);
 
   // disconnect wallet and disallow connection for unsafe versions
   useEffect(() => {

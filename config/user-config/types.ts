@@ -1,17 +1,10 @@
-import { CHAINS } from 'consts/chains';
+import type { CHAIN_ID } from 'consts/chains';
 
 export type UserConfigDefaultType = {
   defaultChain: number;
   supportedChainIds: number[];
   prefillUnsafeElRpcUrls: {
-    [CHAINS.Mainnet]: string[];
-    [CHAINS.Holesky]: string[];
-    [CHAINS.Hoodi]: string[];
-    [CHAINS.Sepolia]: string[];
-    [CHAINS.OptimismSepolia]: string[];
-    [CHAINS.Optimism]: string[];
-    [CHAINS.Unichain]: string[];
-    [CHAINS.UnichainSepolia]: string[];
+    [chainId in CHAIN_ID]: string[];
   };
   walletconnectProjectId: string | undefined;
 };

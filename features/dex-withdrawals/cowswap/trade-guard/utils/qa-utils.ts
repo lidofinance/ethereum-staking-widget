@@ -1,3 +1,4 @@
+import { QA_KEYS } from 'consts/qa-keys';
 import { overrideWithQAMockString, overrideWithQAMockNumber } from 'utils/qa';
 
 import { DEFAULT_THRESHOLDS, type Thresholds } from '../consts';
@@ -5,7 +6,7 @@ import { TradeGuardLevel } from '../types';
 
 import { LEVEL_ORDER } from './resolve-level';
 
-const QA_KEY_LEVEL = 'mock-qa-helpers-trade-guard-level';
+const QA_KEY_LEVEL = QA_KEYS.tradeGuardLevel;
 
 // ---------------------------------------------------------------------------
 // QA override keys (only active when ENABLE_QA_HELPERS=true)
@@ -15,9 +16,9 @@ const QA_KEY_LEVEL = 'mock-qa-helpers-trade-guard-level';
 // ---------------------------------------------------------------------------
 
 const QA_THRESHOLD_KEYS: Record<keyof Thresholds, string> = {
-  oracleDeviationBlock: 'mock-qa-helpers-trade-guard-oracle-block',
-  maxAllowedSellAmount: 'mock-qa-helpers-trade-guard-max-sell',
-  minSellUnitsToTriggerOracle: 'mock-qa-helpers-trade-guard-min-sell',
+  oracleDeviationBlock: QA_KEYS.tradeGuardOracleBlock,
+  maxAllowedSellAmount: QA_KEYS.tradeGuardMaxSell,
+  minSellUnitsToTriggerOracle: QA_KEYS.tradeGuardMinSell,
 };
 
 export const applyQALevelOverride = (

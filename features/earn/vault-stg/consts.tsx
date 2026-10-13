@@ -1,6 +1,10 @@
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { PartnerMellowIcon } from 'assets/earn';
 
+// Pure (server-importable) values live in consts-data.ts; re-exported here
+// so frontend import sites keep working unchanged.
+export * from './consts-data';
+
 export const STG_TOKEN_SYMBOL = TOKEN_SYMBOLS.streth;
 
 export const STG_DEPOSIT_TOKENS = ['ETH', 'WETH', 'wstETH'] as const;
@@ -18,11 +22,3 @@ export const STG_PARTNERS = [
 ];
 
 export const MELLOW_POINT_SYMBOL = 'Mellow';
-
-export const STG_COLLECTOR_CONFIG = {
-  baseAssetFallback: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-  oracleUpdateInterval: 86400n,
-  redeemHandlingInterval: 3600n,
-} as const;
-
-export const STG_STATS_ORIGIN = 'https://api.mellow.finance';

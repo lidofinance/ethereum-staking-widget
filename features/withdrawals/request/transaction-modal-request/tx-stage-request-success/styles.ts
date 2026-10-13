@@ -41,7 +41,9 @@ export const NFTImage = styled.img.attrs({
 `;
 
 export const NFTImageExample = styled(NFTImage).attrs({
-  src: NFTExample.src,
+  // Vite asset imports are plain URL strings (webpack's url-loader used to
+  // wrap them in an object with `.src`).
+  src: NFTExample,
 })`
   position: relative;
   left: 20px;

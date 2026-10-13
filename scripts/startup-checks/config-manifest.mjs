@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 
 export const CONFIG_MANIFEST_PATH = process.env.CONFIG_MANIFEST_PATH;
 

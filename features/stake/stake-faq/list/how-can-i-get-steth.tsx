@@ -5,7 +5,7 @@ import { config } from 'config';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { HOME_PATH } from 'consts/urls';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { LocalLink } from 'shared/components/local-link';
+import { Link } from 'shared/components/link';
 
 export const HowCanIGetSteth: FC = () => {
   return (
@@ -13,7 +13,7 @@ export const HowCanIGetSteth: FC = () => {
       <p>
         You can get stETH many ways, including interacting with the smart
         contract directly. Yet, it is much easier to use a{' '}
-        <LocalLink
+        <Link
           href={HOME_PATH}
           onClick={() =>
             trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthWidget)
@@ -21,7 +21,7 @@ export const HowCanIGetSteth: FC = () => {
           aria-hidden="true"
         >
           Lido Ethereum staking widget
-        </LocalLink>
+        </Link>
         , stake your tokens directly from{' '}
         <OuterLink
           href={'https://www.ledger.com/coin/wallet/ethereum'}

@@ -1,6 +1,6 @@
-import type { CHAINS } from 'consts/chains';
+import type { CHAIN_ID } from 'consts/chains';
 
-export type RpcUrls = Partial<Record<CHAINS, string>>;
+export type RpcUrls = Partial<Record<CHAIN_ID, string>>;
 
 /**
  * Returns the map with one chain's custom RPC replaced (or removed when
@@ -8,7 +8,7 @@ export type RpcUrls = Partial<Record<CHAINS, string>>;
  */
 export const assignRpcUrl = (
   rpcUrls: RpcUrls,
-  chainId: CHAINS,
+  chainId: CHAIN_ID,
   rpcUrl?: string,
 ): RpcUrls => {
   const { [chainId]: _current, ...otherRpcUrls } = rpcUrls;

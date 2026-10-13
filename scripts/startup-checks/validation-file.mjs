@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 
 export const VALIDATION_FILE_PATH = process.env.VALIDATION_FILE_PATH;
 
