@@ -26,10 +26,10 @@ const shortError = (error: unknown): string => {
  * `eth_call_address_to` Counter per batch entry with ABI-decoded function
  * names (the PoC port dropped this; dashboards are keyed on these labels).
  *
- * Labels bounded: `address` / `methodEncoded` are kept raw only for
- * allow-listed contracts; for unknown contracts both collapse to
- * `UNKNOWN_LABEL` so prom-client's in-memory label store stays bounded
- * regardless of incoming traffic shape.
+ * Labels bounded: `address` is kept raw only for allow-listed contracts and
+ * `methodEncoded` only for selectors found in that contract's ABI; everything
+ * else collapses to `UNKNOWN_LABEL` so prom-client's in-memory label store
+ * stays bounded regardless of incoming traffic shape.
  *
  * Per-call try/catch isolates each entry: a malformed call cannot drop
  * metrics for siblings in the same batch.
@@ -85,18 +85,18 @@ export const collectRequestAddressMetric = ({
         }
       }
 
+      // Keep the raw selector only when it decoded against the ABI. Any other
+      // selector collapses to `unknown`, otherwise arbitrary 4-byte values sent
+      // to a known contract would each allocate a new label series forever
+      const isKnownMethod = methodDecoded !== UNKNOWN_LABEL;
+
       metrics
         .labels({
           address: contractName ? address : UNKNOWN_LABEL,
           contractName: contractName || UNKNOWN_LABEL,
-          // raw selector only when it decodes to a known ABI function —
-          // otherwise attacker-varied selectors on an allowlisted contract
-          // grow the label set without bound
           methodEncoded:
-            methodDecoded !== UNKNOWN_LABEL && methodEncoded
-              ? methodEncoded
-              : UNKNOWN_LABEL,
-          methodDecoded: methodDecoded || UNKNOWN_LABEL,
+            isKnownMethod && methodEncoded ? methodEncoded : UNKNOWN_LABEL,
+          methodDecoded,
         })
         .inc(1);
     } catch (error) {

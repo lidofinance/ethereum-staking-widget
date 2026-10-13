@@ -9,6 +9,7 @@ import {
 import metrics from '../metrics/index.js';
 import { collectRequestAddressMetric } from '../metrics/collect-request-address-metric.js';
 import { ROUTES } from '../consts.js';
+import { USER_AGENT } from 'config/groups/app';
 
 /**
  * JSON-RPC proxy — THE security-critical surface. Ported from
@@ -179,7 +180,10 @@ const proxyToUpstream = async (
       const res = await fetch(url, {
         method: 'POST',
         signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-        headers: { 'content-type': 'application/json' },
+        headers: {
+          'content-type': 'application/json',
+          'user-agent': USER_AGENT,
+        },
         body: JSON.stringify(body),
       });
       const raw = await res.text();

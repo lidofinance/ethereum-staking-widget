@@ -1,4 +1,3 @@
-import { parseEther } from 'viem';
 import { TokenStrethIcon, TokenMellowIcon } from 'assets/earn';
 import { VaultPosition } from 'features/earn/shared/vault-position';
 import { STG_TOKEN_SYMBOL, MELLOW_POINT_SYMBOL } from '../../consts';
@@ -20,15 +19,6 @@ export const STGPosition = () => {
     usdQuery: { isLoading: isLoadingUsd } = { isLoading: false },
   } = useSTGPosition();
 
-  // convert mellow points to the wei at 18 decimals for easier compatibility with components
-  const mellowPointsBalance =
-    mellowPoints && Number.isFinite(mellowPoints)
-      ? parseEther(mellowPoints.toFixed(4))
-      : // temp solution for the problem that the new users will get undefined points balance from API
-        // TODO: find solution how to distinguish between new users and broken data from API
-        // set this to undefined after fixing the issue
-        0n;
-
   return (
     <VaultPosition
       position={{
@@ -42,7 +32,7 @@ export const STGPosition = () => {
       points={[
         {
           symbol: MELLOW_POINT_SYMBOL,
-          balance: mellowPointsBalance,
+          balance: mellowPoints,
           usdAmount: null,
           isLoading: isLoading,
           icon: <TokenMellowIcon />,

@@ -59,6 +59,7 @@ const envSchema = z.object({
 
   // External services
   ETH_API_BASE_PATH: z.string().optional(),
+  ONE_INCH_API_KEY: z.string().optional(),
   REWARDS_BACKEND: z.string().optional(),
   VALIDATION_SERVICE_BASE_PATH: z.string().optional(),
   VALIDATION_FILE_PATH: z.string().optional(),

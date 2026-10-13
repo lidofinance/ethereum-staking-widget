@@ -12,6 +12,7 @@ import {
   registerSecretsRotationRestart,
   registerShutdownSignals,
 } from '../../scripts/shutdown.mjs';
+import { markReady } from '../../scripts/readiness.mjs';
 
 import { config, rpcProvidersUrls } from './config.js';
 import { loggerOptions } from './logger.js';
@@ -26,8 +27,8 @@ import { cspReportRoute } from './routes/csp-report.js';
 import { rewardsRoute } from './routes/rewards.js';
 import { validationRoute } from './routes/validation.js';
 import { rpcRoute } from './routes/rpc.js';
-import { earnVaultsAprRoute } from './routes/earn-vaults-apr.js';
-import { earnVaultsTvlRoute } from './routes/earn-vaults-tvl.js';
+import { oneInchRoute } from './routes/one-inch.js';
+import { readinessRoute } from './routes/readiness.js';
 import { geoRoute } from './routes/geo.js';
 import { configManifestRoute } from './routes/config-manifest.js';
 
@@ -75,17 +76,18 @@ const start = async (): Promise<void> => {
 
   // Routes
   await fastify.register(healthRoute);
+  await fastify.register(readinessRoute);
   await fastify.register(metricsRoute);
   await fastify.register(cspReportRoute);
   await fastify.register(rewardsRoute);
   await fastify.register(validationRoute);
   await fastify.register(rpcRoute);
-  await fastify.register(earnVaultsAprRoute);
-  await fastify.register(earnVaultsTvlRoute);
+  await fastify.register(oneInchRoute);
   await fastify.register(geoRoute);
   await fastify.register(configManifestRoute);
 
   await fastify.listen({ host: config.HOST, port: config.PORT });
+  markReady();
 
   // Shared with the Next target: graceful close on signals (force-exit timer
   // guards a hung close) and restart-by-exit on OpenBao secret rotation.

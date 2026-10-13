@@ -18,6 +18,12 @@ export const CACHE_VALIDATION_HEADERS =
 // visitor's country to everyone behind the same edge node
 export const CACHE_GEO_HEADERS = 'private, no-store, must-revalidate';
 export const CACHE_DEFAULT_ERROR_HEADERS = 'no-store, must-revalidate';
+// Prometheus scrapes /api/metrics directly; a cached body replays a stale sample
+export const CACHE_METRICS_HEADERS = 'no-store, must-revalidate';
+export const CACHE_ONE_INCH_RATE_HEADERS =
+  'public, max-age=60, stale-if-error=1200, stale-while-revalidate=60';
+export const CACHE_ONE_INCH_RATE_KEY = 'oneinch-rate';
+export const CACHE_ONE_INCH_RATE_TTL = 60_000; // 1m
 
 export const applyCacheControl = (reply: FastifyReply, value: string): void => {
   if (reply.statusCode >= 400) {

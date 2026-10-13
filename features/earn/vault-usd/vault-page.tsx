@@ -1,17 +1,22 @@
-import type { FC, ReactNode } from 'react';
+import { useMemo, type FC, type ReactNode } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { PartnerNethermindIconCircle, VaultUsdIcon } from 'assets/earn-v2';
 import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
+import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
-import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
+import {
+  ACTIVE_FEES_TOOLTIP,
+  WITHDRAWAL_WAITING_TIME_TOOLTIP,
+} from 'modules/mellow-meta-vaults';
 
 import { VaultAllocation } from '../shared/v2/vault-allocation/vault-allocation';
 import { Disclaimers } from '../shared/v2/disclaimers';
 import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
+import { ActiveFeesValue } from '../shared/v2/active-fees-value';
 
 import { UsdVaultPositionManager } from './position-manager/position-manager';
 import { EarnUsdFaq } from './faq/faq';
@@ -19,6 +24,7 @@ import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultPosition } from './hooks/use-position';
+import { useUsdVaultActiveFees } from './hooks/use-active-fees';
 import { UsdVaultApyHint } from './components/apy-hint';
 import {
   USD_VAULT_DESCRIPTION,
@@ -26,11 +32,6 @@ import {
   USD_VAULT_TOKEN_SYMBOL,
 } from './consts';
 import { ProtectedTooltip } from './protected-tooltip';
-
-const FEES = [
-  { label: 'Performance fee', value: '10%' },
-  { label: 'Platform fee', value: '1%' },
-];
 
 const GENERAL_INFO_LEFT = [
   {
@@ -155,7 +156,6 @@ const DATA = {
   title: USD_VAULT_TITLE,
   description: USD_VAULT_DESCRIPTION,
   logo: VaultUsdIcon,
-  fees: FEES,
   generalInfoLeft: GENERAL_INFO_LEFT,
   generalInfoRight: GENERAL_INFO_RIGHT,
   riskDisclosure: RISK_DISCLOSURE,
@@ -176,13 +176,32 @@ export const VaultPageUSD: FC<{
     isLoading: isPositionLoading,
     usdcAmount,
   } = useUsdVaultPosition();
+  const { value: activeFeesValue, isLoading: isActiveFeesLoading } =
+    useUsdVaultActiveFees();
 
   const sharesBalance = earnusdPositionData?.earnusdSharesBalance;
+
+  const fees = useMemo<InfoItem[]>(
+    () => [
+      {
+        label: 'Active fees',
+        value: (
+          <ActiveFeesValue
+            value={activeFeesValue}
+            isLoading={isActiveFeesLoading}
+          />
+        ),
+        tooltip: ACTIVE_FEES_TOOLTIP,
+      },
+    ],
+    [activeFeesValue, isActiveFeesLoading],
+  );
 
   return (
     <>
       <VaultPage
         {...DATA}
+        fees={fees}
         apx={apy}
         tvlUsd={tvlUsd}
         isApxLoading={isApyLoading}

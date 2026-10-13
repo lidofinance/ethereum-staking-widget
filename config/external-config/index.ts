@@ -11,7 +11,11 @@ export type {
   ManifestConfigDexIntegration,
   ManifestConfigEarnVault,
 } from './types';
-export { getManifestKey, getLocalFallbackManifest } from './utils';
+export {
+  getManifestKey,
+  getLocalFallbackManifest,
+  isDisabledPath,
+} from './utils';
 export {
   ManifestSchema,
   ManifestEntrySchema,

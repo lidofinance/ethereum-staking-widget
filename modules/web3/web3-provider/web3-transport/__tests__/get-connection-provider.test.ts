@@ -42,6 +42,43 @@ describe('getConnectionProvider', () => {
     expect(getProvider).toHaveBeenCalledWith({ chainId: 1 });
   });
 
+  it('returns null when the injected provider serves another account', async () => {
+    const provider = walletProvider(
+      ['0x0000000000000000000000000000000000000002'],
+      '0x1',
+    );
+    const connection = makeConnection({
+      type: 'injected',
+      getProvider: vi.fn(async () => provider),
+    });
+
+    await expect(getConnectionProvider(connection)).resolves.toBeNull();
+  });
+
+  it('returns null when the injected provider is on another chain', async () => {
+    const provider = walletProvider([ACCOUNT], '0x5');
+    const connection = makeConnection({
+      type: 'injected',
+      getProvider: vi.fn(async () => provider),
+    });
+
+    await expect(getConnectionProvider(connection)).resolves.toBeNull();
+  });
+
+  it('returns null when the injected provider rejects validation requests', async () => {
+    const provider = {
+      request: vi.fn(async () => {
+        throw new Error('locked');
+      }),
+    };
+    const connection = makeConnection({
+      type: 'injected',
+      getProvider: vi.fn(async () => provider),
+    });
+
+    await expect(getConnectionProvider(connection)).resolves.toBeNull();
+  });
+
   it('returns null for unknown connector types', async () => {
     const connection = makeConnection({
       type: 'walletConnect',

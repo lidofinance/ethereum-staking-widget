@@ -58,7 +58,9 @@
     "../global.d.ts",
     // ambient __IPFS_MODE__ (config/dynamics.ts is in the server's type
     // graph via `config`), plus the ImportMetaEnv merge
-    "../vite-env.d.ts"
+    "../vite-env.d.ts",
+    // declares Window.__env__ (read by config/dynamics.ts) — see global.d.ts
+    "../node_modules/@lidofinance/analytics-matomo/dist/index.d.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }

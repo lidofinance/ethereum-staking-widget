@@ -19,7 +19,11 @@ const RPC_URL_VALUES = Object.values(rpcProvidersUrls).flatMap((value) =>
   (value ?? []).map((url) => url.trim()).filter(Boolean),
 );
 
-const patterns = [...commonPatterns, ...RPC_URL_VALUES].filter(Boolean);
+const patterns = [
+  ...commonPatterns,
+  ...RPC_URL_VALUES,
+  config.ONE_INCH_API_KEY,
+].filter(Boolean);
 export const mask = satanizer(patterns);
 
 export const loggerOptions = {

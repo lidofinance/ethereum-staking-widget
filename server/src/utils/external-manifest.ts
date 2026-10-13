@@ -186,10 +186,3 @@ export const getExternalManifestConfig =
     const key = getManifestKey(config.DEFAULT_CHAIN, config.MANIFEST_OVERRIDE);
     return manifest[key]?.config ?? null;
   };
-
-/** The vault list bundled with the build — used to pre-create caches. */
-export const getLocalManifestEarnVaults = (): ManifestEarnVault[] => {
-  const local = FallbackLocalManifest as unknown as Manifest;
-  const key = getManifestKey(config.DEFAULT_CHAIN, config.MANIFEST_OVERRIDE);
-  return local[key]?.config?.earnVaults ?? local['1']?.config?.earnVaults ?? [];
-};

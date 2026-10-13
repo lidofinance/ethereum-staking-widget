@@ -127,6 +127,11 @@ const MANIFEST = {
   matomoHost: entry('MATOMO_URL', toOptionalString, optionalString),
   ethAPIBasePath: entry('ETH_API_BASE_PATH', toOptionalString, optionalString),
   wqAPIBasePath: entry('WQ_API_BASE_PATH', toOptionalString, optionalString),
+  cowswapWidgetBaseUrl: entry(
+    'COWSWAP_WIDGET_BASE_URL',
+    toOptionalString,
+    optionalString,
+  ),
   rewardsBackendBasePath: entry(
     'REWARDS_BACKEND_BASE_PATH',
     toOptionalString,

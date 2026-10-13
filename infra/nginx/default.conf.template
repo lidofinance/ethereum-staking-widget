@@ -17,6 +17,14 @@ server {
   root /usr/share/nginx/html;
   index index.html;
 
+  # Unhashed public/ files keep their URL across releases — short cache, same
+  # as pages. Must precede the immutable regex below (first regex match wins).
+  location ~ ^/(apple-touch-icon\.png|lido-preview\.png|bells\.mp3|honk\.mp3|favicon[^/]*)$ {
+    include /var/cache/nginx/security-headers.conf;
+    add_header cache-control "public, max-age=15, s-maxage=30, stale-if-error=604800, stale-while-revalidate=172800" always;
+    try_files $uri =404;
+  }
+
   # Cache static assets aggressively (immutable in Vite output).
   location ~* \.(js|css|woff2?|svg|png|jpg|jpeg|gif|webp|ico|mp3)$ {
     include /var/cache/nginx/security-headers.conf;

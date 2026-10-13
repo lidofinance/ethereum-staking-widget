@@ -3,6 +3,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { config } from '../config.js';
 import {
   applyCacheControl,
+  CACHE_DEFAULT_ERROR_HEADERS,
   CACHE_REWARDS_HEADERS,
 } from '../utils/cache-control.js';
 import { createCachedProxy } from '../utils/cached-proxy.js';
@@ -50,6 +51,7 @@ export const rewardsRoute: FastifyPluginAsync = async (fastify) => {
     allowAnyOrigin(reply);
     const parsed = rewardsQuerySchema.safeParse(req.query);
     if (!parsed.success) {
+      reply.header('cache-control', CACHE_DEFAULT_ERROR_HEADERS);
       return reply.code(400).send({
         error: 'Invalid query parameters',
         details: parsed.error.issues.map((i) => ({

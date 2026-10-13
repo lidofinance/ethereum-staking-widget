@@ -33,6 +33,14 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
     'sha256-' +
     createHash('sha256').update(IPFS_BASE_SCRIPT_CONTENT).digest('base64');
 
+  // Same env and default as COWSWAP_BASE_URL in
+  // features/dex-withdrawals/cowswap/consts.ts
+  const cowswapWidgetBaseUrl =
+    process.env.COWSWAP_WIDGET_BASE_URL || 'https://cow-ipfs.testnet.fi/';
+  if (!/^https:\/\/[\w.-]+(:\d+)?(\/[\w.~/-]*)?$/.test(cowswapWidgetBaseUrl)) {
+    throw new Error('COWSWAP_WIDGET_BASE_URL must be a plain https URL');
+  }
+
   // Mirrors the non-report parts of the legacy config/csp for IPFS mode.
   const csp = [
     "default-src 'self'",
@@ -43,7 +51,7 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
     // above and the window.__env__ loader
     `script-src 'self' ${IPFS_BASE_SCRIPT_HASH} ${WINDOW_ENV_LOADER_CSP_HASH}`,
     "connect-src 'self' https: wss:",
-    "frame-src 'self' https://swap.cow.fi https://*.walletconnect.org https://*.walletconnect.com",
+    `frame-src 'self' ${cowswapWidgetBaseUrl} https://*.walletconnect.org https://*.walletconnect.com`,
     "child-src 'self' https://*.walletconnect.org https://*.walletconnect.com",
     "worker-src 'none'",
     "object-src 'none'",

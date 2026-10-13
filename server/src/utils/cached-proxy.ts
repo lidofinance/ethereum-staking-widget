@@ -1,6 +1,8 @@
 import { LRUCache } from 'lru-cache';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
+import { CACHE_DEFAULT_ERROR_HEADERS } from './cache-control.js';
+
 const DEFAULT_CACHE_MAX_ENTRIES = 200;
 const DEFAULT_TIMEOUT_MS = 5_000;
 
@@ -36,6 +38,8 @@ export interface CachedProxyOptions {
  * - Fastify req/reply instead of NextApiRequest/Response.
  * - Global fetch (Node 20+) instead of `standardFetcher`.
  * - 4xx upstream errors are forwarded with the same status; 5xx → 502.
+ *   Error replies carry no-store: the route set public caching before the
+ *   proxy ran.
  *
  * Error bodies use the `error` key, NEVER `message`: the SPA's
  * extractErrorMessage() only surfaces `.message` into user-facing text, so
@@ -89,14 +93,14 @@ export const createCachedProxy = (opts: CachedProxyOptions) => {
             'cached-proxy: forwarding 4xx',
           );
           if (opts.fallback) return opts.fallback(req, reply);
-          return reply.code(res.status).send({ error: res.statusText });
+          return sendError(reply, res.status, { error: res.statusText });
         }
         req.log.error(
           { upstreamUrl: fullUrl, status: res.status },
           'cached-proxy: upstream 5xx',
         );
         if (opts.fallback) return opts.fallback(req, reply);
-        return reply.code(502).send({ error: 'upstream error' });
+        return sendError(reply, 502, { error: 'upstream error' });
       }
 
       const data = (await res.json()) as unknown;
@@ -120,12 +124,19 @@ export const createCachedProxy = (opts: CachedProxyOptions) => {
         'cached-proxy: failed',
       );
       if (opts.fallback) return opts.fallback(req, reply);
-      return reply
-        .code(502)
-        .send({ error: 'upstream unreachable', ...(code ? { code } : {}) });
+      return sendError(reply, 502, {
+        error: 'upstream unreachable',
+        ...(code ? { code } : {}),
+      });
     }
   };
 };
+
+const sendError = (reply: FastifyReply, status: number, body: object) =>
+  reply
+    .code(status)
+    .header('cache-control', CACHE_DEFAULT_ERROR_HEADERS)
+    .send(body);
 
 /**
  * Ported from `utilsApi/cached-proxy-build-params.ts`.

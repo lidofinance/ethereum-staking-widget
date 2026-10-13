@@ -8,6 +8,7 @@ import {
 import { collectStartupMetrics as collectBuildInfoMetrics } from '@lidofinance/api-metrics';
 
 import buildInfoJson from 'build-info.json';
+import { USER_AGENT } from 'config/groups/app';
 import { openKeys } from '../../../scripts/log-environment-variables.mjs';
 import {
   getRPCChecks,
@@ -116,7 +117,7 @@ const collectStartupChecksRPCMetrics = async (
   const rpcMetrics = new StartupChecksRPCMetrics(registry);
 
   try {
-    await startupCheckRPCs();
+    await startupCheckRPCs({ userAgent: USER_AGENT });
     const rpcChecksResults = await getRPCChecks();
     if (!rpcChecksResults) {
       throw new Error(

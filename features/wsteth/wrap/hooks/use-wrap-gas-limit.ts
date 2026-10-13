@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { config } from 'config';
-import { STRATEGY_EAGER } from 'consts/react-query-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import {
   WRAP_FROM_ETH_GAS_LIMIT,
   WRAP_GAS_LIMIT,
@@ -66,7 +66,7 @@ export const useWrapGasLimit = () => {
     gasLimitStETH: bigint;
   }>({
     queryKey: ['wrap-gas-limit', chainId, isL2],
-    ...STRATEGY_EAGER,
+    ...STRATEGY_CONSTANT,
     queryFn: async () =>
       Promise.all([
         !isL2 ? fetchGasLimitETH(wrap) : Promise.resolve(null),

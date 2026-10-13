@@ -92,7 +92,22 @@ fi
 # Used as iframe and img src for WalletConnect 
 CSP_WALLET_CONNECT_HOSTS="https://*.walletconnect.org https://*.walletconnect.com"
 
-CSP_IFRAME_VALUE="'self' https://swap.cow.fi ${CSP_WALLET_CONNECT_HOSTS}"
+# CoW widget iframe origin — same env and default as COWSWAP_BASE_URL in
+# features/dex-withdrawals/cowswap/consts.ts. Lands in the CSP header, so only
+# a bare https URL is accepted (a space or `;` would inject directives).
+COWSWAP_WIDGET_BASE_URL="${COWSWAP_WIDGET_BASE_URL:-https://cow-ipfs.testnet.fi/}"
+case "$COWSWAP_WIDGET_BASE_URL" in
+  *"$NL"*)
+    echo "entrypoint: ERROR: COWSWAP_WIDGET_BASE_URL contains a newline" >&2
+    exit 1
+    ;;
+esac
+if ! printf '%s' "$COWSWAP_WIDGET_BASE_URL" | grep -Eq '^https://[A-Za-z0-9.-]+(:[0-9]+)?(/[A-Za-z0-9._~/-]*)?$'; then
+  echo "entrypoint: ERROR: COWSWAP_WIDGET_BASE_URL must be a plain https URL" >&2
+  exit 1
+fi
+
+CSP_IFRAME_VALUE="'self' ${COWSWAP_WIDGET_BASE_URL} ${CSP_WALLET_CONNECT_HOSTS}"
 
 CSP_VALUE="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.reown.com; img-src 'self' data: blob: ${CSP_WALLET_CONNECT_HOSTS}; script-src ${CSP_SCRIPT_SRC_VALUE}; connect-src 'self' https: wss:; frame-ancestors *; frame-src ${CSP_IFRAME_VALUE}; child-src ${CSP_IFRAME_VALUE}; worker-src 'none'; object-src 'none'; media-src 'none'; manifest-src 'self'; form-action 'self'; script-src-attr 'none'; base-uri 'none'"
 

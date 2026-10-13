@@ -1,4 +1,8 @@
 import { buildParams } from '../cached-proxy.js';
+import {
+  CACHE_DEFAULT_ERROR_HEADERS,
+  CACHE_DEFAULT_HEADERS,
+} from '../cache-control.js';
 
 describe('buildParams', () => {
   it('returns null when ignoreParams is true', () => {
@@ -75,5 +79,59 @@ describe('createCachedProxy upstream failure', () => {
     });
     expect(res.body).not.toContain('SECRET');
     await app.close();
+  });
+});
+
+describe('createCachedProxy error responses', () => {
+  const callProxy = async (fetchMock: ReturnType<typeof vi.fn>) => {
+    const { createCachedProxy } = await import('../cached-proxy.js');
+    const Fastify = (await import('fastify')).default;
+    vi.stubGlobal('fetch', fetchMock);
+
+    const app = Fastify({ logger: false });
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream.test/',
+      cacheTTL: 1,
+    });
+    // routes set public caching before the proxy runs (rewards, validation)
+    app.get('/p', async (req, reply) => {
+      reply.header('cache-control', CACHE_DEFAULT_HEADERS);
+      return proxy(req, reply);
+    });
+
+    const res = await app.inject({ method: 'GET', url: '/p?address=0xabc' });
+    await app.close();
+    return res;
+  };
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('sends no-store on upstream 5xx so the error is not cached', async () => {
+    const res = await callProxy(
+      vi.fn().mockResolvedValue(new Response('{}', { status: 502 })),
+    );
+
+    expect(res.statusCode).toBe(502);
+    expect(res.headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
+  });
+
+  it('sends no-store on timeout', async () => {
+    const res = await callProxy(
+      vi.fn().mockRejectedValue(new DOMException('timed out', 'TimeoutError')),
+    );
+
+    expect(res.statusCode).toBe(502);
+    expect(res.headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
+  });
+
+  it('sends no-store on forwarded 4xx', async () => {
+    const res = await callProxy(
+      vi.fn().mockResolvedValue(new Response('{}', { status: 404 })),
+    );
+
+    expect(res.statusCode).toBe(404);
+    expect(res.headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
   });
 });
