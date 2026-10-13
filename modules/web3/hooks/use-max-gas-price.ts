@@ -2,34 +2,30 @@ import { useFeeHistory } from 'wagmi';
 import type { GetFeeHistoryReturnType } from 'viem';
 
 import { useDappStatus } from './use-dapp-status';
+import {
+  FEE_HISTORY_BLOCK_COUNT,
+  FEE_HISTORY_REWARD_PERCENTILES,
+  feeHistoryToMaxFee,
+} from '../utils/tx-fees';
 
-const REWARD_PERCENTILES = [25];
+const selectMaxFee = (feeHistory: GetFeeHistoryReturnType) =>
+  feeHistoryToMaxFee(feeHistory).maxFeePerGas;
 
-const feeHistoryToMaxFee = ({
-  reward,
-  baseFeePerGas,
-}: GetFeeHistoryReturnType) => {
-  const maxPriorityFeePerGas = reward
-    ? reward?.map((fees) => fees[0]).reduce((sum, fee) => sum + fee) /
-      BigInt(reward.length)
-    : 0n;
-
-  const lastBaseFeePerGas = baseFeePerGas[0];
-
-  // we have to multiply by 2 until we find a reliable way to predict baseFee change
-  return lastBaseFeePerGas * 2n + maxPriorityFeePerGas;
-};
-
+/**
+ * Fee-history based max gas price: 2x pending base fee + sampled tip.
+ * Chain-agnostic; use `useMaxTxCost` for a tx cost that respects the chain's
+ * fee model (L1 data fee on OP-stack, linea_estimateGas on Linea).
+ */
 export const useMaxGasPrice = (chainId?: number) => {
   const { chainId: dappChainId } = useDappStatus();
 
   const { data, isLoading, error, isFetching, refetch } = useFeeHistory({
-    blockCount: 5,
+    blockCount: FEE_HISTORY_BLOCK_COUNT,
     blockTag: 'pending',
     chainId: chainId || dappChainId,
-    rewardPercentiles: REWARD_PERCENTILES,
+    rewardPercentiles: FEE_HISTORY_REWARD_PERCENTILES,
     query: {
-      select: feeHistoryToMaxFee,
+      select: selectMaxFee,
     },
   });
 

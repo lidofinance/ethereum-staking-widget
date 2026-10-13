@@ -32,6 +32,12 @@ const FEED: Address = '0x00000000000000000000000000000000000000dd';
 const WETH: Address = '0x00000000000000000000000000000000000000ee';
 const TX_HASH: Hash =
   '0x1111111111111111111111111111111111111111111111111111111111111111';
+// linea_estimateGas reply: 7 wei base fee, 0x100 tip
+const LINEA_QUOTE = {
+  gasLimit: '0x30000',
+  baseFeePerGas: '0x7',
+  priorityFeePerGas: '0x100',
+};
 
 const l2Addresses = (chainId: CHAINS) => {
   const addresses = LIDO_L2_CONTRACT_ADDRESSES[chainId];
@@ -66,10 +72,13 @@ const createModule = (chainId: CHAINS = CHAINS.Base) => {
     estimateContractGas: vi.fn(async () => 120_000n),
   };
   const walletClient = { writeContract: vi.fn(async () => TX_HASH) };
+  // raw RPC for chain-specific fee quotes (linea_estimateGas)
+  const rpcProvider = { request: vi.fn(async () => LINEA_QUOTE) };
   const core = {
     chain: { id: chainId },
     chainId,
     logMode: 'none',
+    rpcProvider,
     keyedClient: { public: publicClient, wallet: walletClient },
     useAccount: vi.fn(async (account?: Address) => ({
       address: account ?? ACCOUNT,
@@ -93,7 +102,7 @@ const createModule = (chainId: CHAINS = CHAINS.Base) => {
     ),
   };
   const l2Stake = new L2StakeModule({ core: core as unknown as LidoSDKCore });
-  return { l2Stake, core, publicClient, walletClient };
+  return { l2Stake, core, publicClient, walletClient, rpcProvider };
 };
 
 const decodeFastStake = (data?: Hash) => {
@@ -393,6 +402,86 @@ describe('L2StakeModule', () => {
           value: 0n,
         }),
       );
+    });
+  });
+
+  // The core prices txs from a fee-history sample; on Linea that sample is
+  // unrelated to the L1-cost-driven tip the sequencer wants and gets charged
+  // in full, so the stake and the approval are re-priced per tx
+  describe('Linea fee quoting', () => {
+    const amount = 3n * P;
+    const minReceiveAmount = calcFastStakeWstethByEth(amount, FEE, PRICE);
+    const lineaFees = { maxFeePerGas: 14n + 256n, maxPriorityFeePerGas: 256n };
+
+    it('re-prices the stake from linea_estimateGas for the exact calldata', async () => {
+      const { l2Stake, rpcProvider, publicClient, walletClient } = createModule(
+        CHAINS.Linea,
+      );
+      const populated = await l2Stake.fastStakeEthPopulateTx({
+        token: 'ETH',
+        amount,
+        minReceiveAmount,
+        referral: REFERRAL,
+      });
+      await l2Stake.fastStakeEth({
+        token: 'ETH',
+        amount,
+        minReceiveAmount,
+        referral: REFERRAL,
+      });
+
+      expect(rpcProvider.request).toHaveBeenCalledWith({
+        method: 'linea_estimateGas',
+        params: [
+          expect.objectContaining({
+            from: ACCOUNT,
+            to: populated.to,
+            data: populated.data,
+          }),
+        ],
+      });
+      expect(publicClient.estimateContractGas).toHaveBeenCalledWith(
+        expect.objectContaining(lineaFees),
+      );
+      expect(walletClient.writeContract).toHaveBeenCalledWith(
+        expect.objectContaining({ ...lineaFees, value: amount }),
+      );
+    });
+
+    it('re-prices the WETH approval too', async () => {
+      const { l2Stake, rpcProvider, walletClient } = createModule(CHAINS.Linea);
+      await l2Stake.approveWethForFastStake({ amount });
+
+      expect(rpcProvider.request).toHaveBeenCalledWith(
+        expect.objectContaining({ method: 'linea_estimateGas' }),
+      );
+      expect(walletClient.writeContract).toHaveBeenCalledWith(
+        expect.objectContaining({ functionName: 'approve', ...lineaFees }),
+      );
+    });
+
+    it('keeps the core price when the quote fails', async () => {
+      const { l2Stake, rpcProvider, walletClient } = createModule(CHAINS.Linea);
+      // quoted for the estimate and again for the send
+      rpcProvider.request.mockRejectedValue(new Error('rpc down'));
+      vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      await l2Stake.fastStakeEth({ token: 'ETH', amount, minReceiveAmount });
+
+      const [write] = walletClient.writeContract.mock.calls[0] as unknown as [
+        Record<string, unknown>,
+      ];
+      expect(write).not.toHaveProperty('maxFeePerGas');
+    });
+
+    it('does not quote on chains with a fee market', async () => {
+      const { l2Stake, rpcProvider, walletClient } = createModule(CHAINS.Base);
+      await l2Stake.fastStakeEth({ token: 'ETH', amount, minReceiveAmount });
+
+      expect(rpcProvider.request).not.toHaveBeenCalled();
+      const [write] = walletClient.writeContract.mock.calls[0] as unknown as [
+        Record<string, unknown>,
+      ];
+      expect(write).not.toHaveProperty('maxFeePerGas');
     });
   });
 });

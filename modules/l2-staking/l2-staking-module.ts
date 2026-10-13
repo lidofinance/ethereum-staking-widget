@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-import { Address, getContract, zeroAddress } from 'viem';
+import { Address, encodeFunctionData, getContract, zeroAddress } from 'viem';
 import {
   ERROR_CODE,
   LidoSDKModule,
@@ -11,6 +11,11 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/common';
 import { bridgedWstethAbi } from '@lidofinance/lido-ethereum-sdk/l2';
 import { wethABI } from 'abi/weth-abi';
+import {
+  GAS_FEE_MODEL,
+  getGasFeeModel,
+} from 'modules/web3/consts/gas-fee-model';
+import { getLineaTxFees } from 'modules/web3/utils/tx-fees';
 
 import {
   L2_STAKING_ORACLE_POOL_ABI,
@@ -253,15 +258,56 @@ export class L2StakeModule extends LidoSDKModule {
       this.getL2StakingReceiverContractAddress(),
     ]);
     const params = [receiver, amount] as const;
+    const tx = {
+      to: weth.address,
+      data: encodeFunctionData({
+        abi: wethABI,
+        functionName: 'approve',
+        args: params,
+      }),
+    };
 
     return this.core.performTransaction({
       ...rest,
       ...options,
       account,
       callback,
-      getGasLimit: (options) => weth.estimateGas.approve(params, options),
-      sendTransaction: (options) => weth.write.approve(params, options),
+      getGasLimit: async (options) =>
+        weth.estimateGas.approve(params, await this.withChainFees(options, tx)),
+      sendTransaction: async (options) =>
+        weth.write.approve(params, await this.withChainFees(options, tx)),
     });
+  }
+
+  /**
+   * The SDK core prices every tx from a fee-history sample (2x base fee + 25th
+   * percentile tip). On Linea the base fee is fixed and the tip is the L1 data
+   * cost of this very tx: the sample is noise there and gets charged in full,
+   * so the tx is re-priced with linea_estimateGas, as wallets do. Other chains
+   * keep the core's price.
+   */
+  private async withChainFees<T extends TransactionOptions>(
+    options: T,
+    tx: { to: Address; data: `0x${string}`; value?: bigint },
+  ): Promise<T> {
+    if (getGasFeeModel(this.core.chain.id) !== GAS_FEE_MODEL.Linea) {
+      return options;
+    }
+    const account =
+      typeof options.account === 'string'
+        ? options.account
+        : options.account?.address;
+    if (!account) return options;
+    try {
+      const { maxFeePerGas, maxPriorityFeePerGas } = await getLineaTxFees(
+        this.core.publicClient,
+        { ...tx, account },
+      );
+      return { ...options, maxFeePerGas, maxPriorityFeePerGas };
+    } catch (error) {
+      console.warn('[l2-staking::linea-fees]', error);
+      return options;
+    }
   }
 
   //   @Logger('Contracts:')
@@ -418,16 +464,31 @@ export class L2StakeModule extends LidoSDKModule {
     ] as const;
 
     const value = token === 'ETH' ? amount : 0n;
+    const tx = {
+      to: contract.address,
+      data: encodeFunctionData({
+        abi: L2_STAKING_RECEIVER_ABI,
+        functionName: 'fastStakeReferral',
+        args: params,
+      }),
+      value,
+    };
 
     return this.core.performTransaction({
       ...rest,
       ...options,
       account,
       callback,
-      getGasLimit: (options) =>
-        contract.estimateGas.fastStakeReferral(params, { ...options, value }),
-      sendTransaction: (options) =>
-        contract.write.fastStakeReferral(params, { ...options, value }),
+      getGasLimit: async (options) =>
+        contract.estimateGas.fastStakeReferral(params, {
+          ...(await this.withChainFees(options, tx)),
+          value,
+        }),
+      sendTransaction: async (options) =>
+        contract.write.fastStakeReferral(params, {
+          ...(await this.withChainFees(options, tx)),
+          value,
+        }),
       // decodeResult: (receipt) =>
       //   this.unwrapParseEvents(receipt, account.address),
     });

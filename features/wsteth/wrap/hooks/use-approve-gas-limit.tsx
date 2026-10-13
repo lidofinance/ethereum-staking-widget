@@ -11,7 +11,13 @@ import {
   useLidoSDKL2,
   useDappStatus,
   ESTIMATE_AMOUNT,
+  type FeeEstimateTx,
 } from 'modules/web3';
+
+type ApproveGasLimitQueryResult = {
+  gasLimit: bigint;
+  tx?: FeeEstimateTx;
+};
 
 export const useApproveGasLimit = () => {
   const { chainId, isDappActiveOnL2 } = useDappStatus();
@@ -22,31 +28,43 @@ export const useApproveGasLimit = () => {
     ? STETH_L2_APPROVE_GAS_LIMIT
     : WSTETH_APPROVE_GAS_LIMIT;
 
-  const { data } = useQuery<bigint | undefined>({
+  const { data } = useQuery<ApproveGasLimitQueryResult>({
     queryKey: ['approve-wrap-gas-limit', isDappActiveOnL2, chainId],
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
         if (isL2Wrap) {
-          return await l2.approveWstethForWrapEstimateGas({
+          const props = {
             value: ESTIMATE_AMOUNT,
             account: config.ESTIMATE_ACCOUNT,
-          });
+          };
+          const [gasLimit, { to, data }] = await Promise.all([
+            l2.approveWstethForWrapEstimateGas(props),
+            l2.approveWstethForWrapPopulateTx(props),
+          ]);
+          // representative tx for chain-specific fee quotes (L1 data fee)
+          return {
+            gasLimit,
+            tx: data
+              ? { account: config.ESTIMATE_ACCOUNT, to, data }
+              : undefined,
+          };
         } else {
           const spender = await wstETH.contractAddress();
 
-          return await wstETH.estimateApprove({
+          const gasLimit = await wstETH.estimateApprove({
             amount: ESTIMATE_AMOUNT,
             to: spender,
             account: config.ESTIMATE_ACCOUNT,
           });
+          return { gasLimit };
         }
       } catch (error) {
         console.warn(error);
-        return fallback;
+        return { gasLimit: fallback };
       }
     },
   });
 
-  return data ?? fallback;
+  return { gasLimit: data?.gasLimit ?? fallback, tx: data?.tx };
 };

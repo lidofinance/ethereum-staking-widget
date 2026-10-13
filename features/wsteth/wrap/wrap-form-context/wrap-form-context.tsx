@@ -130,6 +130,8 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       wrapGasLimit: isSteth
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,
+      // ETH wrap is L1-only, the fee-history price is enough there
+      wrapTx: isSteth ? networkData.txStETH : undefined,
     }),
     [networkData, approvalDataOnL1, isSteth],
   );

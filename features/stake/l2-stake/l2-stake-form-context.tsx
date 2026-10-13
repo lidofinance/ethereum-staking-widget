@@ -16,7 +16,7 @@ import {
   useWethBalance,
   useIsSmartAccount,
   useWstethBalance,
-  useMaxGasPrice,
+  useMaxTxCost,
   BALANCE_PADDING_L2,
   useDappStatus,
 } from 'modules/web3';
@@ -85,6 +85,9 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
     gasLimitEth,
     gasLimitWeth: gasLimitWethStake,
     gasLimitWethApprove,
+    txEth,
+    txWeth,
+    txWethApprove,
   } = useFastStakeGasLimit();
   // the approval is counted in even when the allowance is already there, so a
   // first-time staker never sees an understated max cost
@@ -94,16 +97,29 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
     isLoading: isFastStakeLiquidityLoading,
     refetch: refetchFastStakeLiquidity,
   } = useFastStakeLiquidity();
-  const { maxGasPrice, isLoading: isMaxGasPriceLoading } = useMaxGasPrice();
 
-  const gasCostEth = useMemo(
-    () => (maxGasPrice ? gasLimitEth * maxGasPrice : undefined),
-    [gasLimitEth, maxGasPrice],
-  );
+  // costs are quoted per tx: the chain's fee model may add an L1 data fee or
+  // price the tx by its calldata, so the two WETH txs are quoted separately
+  const { maxTxCost: gasCostEth, isLoading: isGasCostEthLoading } =
+    useMaxTxCost({ gasLimit: gasLimitEth, tx: txEth });
+  const { maxTxCost: gasCostWethStake, isLoading: isGasCostWethStakeLoading } =
+    useMaxTxCost({ gasLimit: gasLimitWethStake, tx: txWeth });
+  const {
+    maxTxCost: gasCostWethApprove,
+    isLoading: isGasCostWethApproveLoading,
+  } = useMaxTxCost({ gasLimit: gasLimitWethApprove, tx: txWethApprove });
+
   const gasCostWeth = useMemo(
-    () => (maxGasPrice ? gasLimitWeth * maxGasPrice : undefined),
-    [gasLimitWeth, maxGasPrice],
+    () =>
+      gasCostWethStake !== undefined && gasCostWethApprove !== undefined
+        ? gasCostWethStake + gasCostWethApprove
+        : undefined,
+    [gasCostWethStake, gasCostWethApprove],
   );
+  const isMaxGasPriceLoading =
+    isGasCostEthLoading ||
+    isGasCostWethStakeLoading ||
+    isGasCostWethApproveLoading;
 
   const {
     data: etherBalance,
@@ -138,7 +154,7 @@ const useL2StakeFormNetworkData = (): L2StakeFormNetworkData => {
     limit: fastStakeLiquidityEth,
     isPadded: !isSmartAccount,
     padding: BALANCE_PADDING_L2,
-    gasLimit: gasLimitEth,
+    gasCost: gasCostEth,
     isLoading: isSmartAccountLoading,
   });
 
