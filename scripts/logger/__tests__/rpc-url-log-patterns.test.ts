@@ -53,7 +53,7 @@ describe('getRpcUrlPatterns', () => {
 
   it('covers every EL_RPC_URLS variable documented in .env.example', () => {
     const example = readFileSync(
-      resolve(__dirname, '../../.env.example'),
+      resolve(__dirname, '../../../.env.example'),
       'utf8',
     );
     const documented = example
