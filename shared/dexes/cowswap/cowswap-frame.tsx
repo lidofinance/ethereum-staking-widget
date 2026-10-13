@@ -71,11 +71,14 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 export type CowswapFrameProps = {
   profile: CowswapProfile;
   refetchBalances: () => void;
+  // cancel the host Block bottom padding once loaded
+  consumeBottomSpace?: boolean;
 };
 
 export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   profile,
   refetchBalances,
+  consumeBottomSpace = true,
 }) => {
   const {
     appCode,
@@ -317,7 +320,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
 
   return (
     <>
-      <DexWrapper $consumeBottomSpace={isLoaded}>
+      <DexWrapper $consumeBottomSpace={consumeBottomSpace && isLoaded}>
         <CowSwapWidget
           provider={provider}
           params={params}
