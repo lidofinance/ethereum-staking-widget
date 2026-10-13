@@ -43,7 +43,7 @@ describe('getRpcUrlPatterns', () => {
       PREFILL_UNSAFE_EL_RPC_URLS_1: 'https://public.example',
       EL_RPC_URLS_: 'https://nochain.example',
       EL_RPC_URLS_1X: 'https://badchain.example',
-      ONE_INCH_API_KEY: 'secret',
+      NEXT_PUBLIC_UNRELATED: 'https://unrelated.example',
       EL_RPC_URLS_1: '',
       EL_RPC_URLS_10: undefined,
     });
