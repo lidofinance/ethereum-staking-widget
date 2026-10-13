@@ -1,11 +1,6 @@
-import { ethAddress } from 'viem';
-
 import { LOCALE } from 'config/groups/locale';
-import mainnetConfig from 'networks/mainnet.json';
 
 import type { TradeGuardLevel } from './types';
-
-const c = mainnetConfig.contracts;
 
 // --- Thresholds ---
 export type Thresholds = {
@@ -42,18 +37,3 @@ export const TRADE_ORACLE_DEVIATION_ERROR = (
   `Oracle price differs from trade one by ${deviationPercent.toFixed(1)}%. Maximum is ${oracleDeviationThreshold.toFixed(1)}%`;
 
 export const LEVEL_ORDER: TradeGuardLevel[] = ['safe', 'blocked'];
-
-// ---------------------------------------------------------------------------
-// Token decimals (all whitelisted tokens)
-// ---------------------------------------------------------------------------
-
-export const TOKEN_DECIMALS: Record<string, number> = {
-  [c.lido.toLowerCase()]: 18, // stETH
-  [c.wsteth.toLowerCase()]: 18, // wstETH
-  [ethAddress]: 18, // ETH placeholder
-  [c.weth.toLowerCase()]: 18, // WETH
-  [c.usdc.toLowerCase()]: 6, // USDC
-  [c.usdt.toLowerCase()]: 6, // USDT
-  [c.usds.toLowerCase()]: 18, // USDS
-  [c.wbtc.toLowerCase()]: 8, // WBTC
-};

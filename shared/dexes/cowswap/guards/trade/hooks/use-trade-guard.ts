@@ -1,15 +1,17 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
+import type { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import type { OrderData } from '../../tx';
 import { useOracleRates } from '../../oracles';
+import type { OracleFeedMaps } from '../../oracles/utils';
 
 import {
   evaluateTrade,
   evaluateApproval,
   verifyOrderAgainstSnapshot,
+  type TokenDecimalsMap,
   type ValidatedTradeSnapshot,
 } from '../utils';
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
@@ -26,14 +28,22 @@ import {
 
 type UseTradeGuardOptions = {
   isTestnet?: boolean;
+  tokenDecimals: TokenDecimalsMap;
+  oracleFeeds: OracleFeedMaps;
+  quoteErrorEvent: MATOMO_TX_EVENTS_TYPES;
 };
 
-export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
+export const useTradeGuard = ({
+  isTestnet = false,
+  tokenDecimals,
+  oracleFeeds,
+  quoteErrorEvent,
+}: UseTradeGuardOptions) => {
   const [modalState, setModalState] =
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
   const lastValidatedTradeRef = useRef<ValidatedTradeSnapshot | null>(null);
-  const { verifyWithOracle } = useOracleRates();
+  const { verifyWithOracle } = useOracleRates(oracleFeeds);
 
   const handleModalClose = useCallback((result: boolean) => {
     resolveRef.current?.(result);
@@ -51,7 +61,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
       helpTip?: SigningHelpTip,
     ): Promise<boolean> =>
       new Promise((resolve) => {
-        trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteError);
+        trackMatomoEvent(quoteErrorEvent);
         // Resolve any pending modal before opening a new one
         resolveRef.current?.(false);
         resolveRef.current = resolve;
@@ -64,7 +74,7 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
           helpTip,
         });
       }),
-    [],
+    [quoteErrorEvent],
   );
 
   // Swap gate: structural checks → oracle check → modal
@@ -122,8 +132,12 @@ export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
   /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
   const verifySignedOrder = useCallback(
     (order: OrderData): string | null =>
-      verifyOrderAgainstSnapshot(order, lastValidatedTradeRef.current),
-    [],
+      verifyOrderAgainstSnapshot(
+        order,
+        lastValidatedTradeRef.current,
+        tokenDecimals,
+      ),
+    [tokenDecimals],
   );
 
   const openTransactionGuardModal = useCallback(

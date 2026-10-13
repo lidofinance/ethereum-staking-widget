@@ -12,6 +12,7 @@ import { applyOracleResult } from './apply-oracle-result';
 import { readThresholds, applyQALevelOverride } from './qa-utils';
 import {
   verifyOrderAmounts,
+  type TokenDecimalsMap,
   type ValidatedTradeSnapshot,
 } from './verify-order';
 
@@ -119,6 +120,7 @@ export const evaluateApproval = (
 export const verifyOrderAgainstSnapshot = (
   order: OrderData,
   snapshot: ValidatedTradeSnapshot | null,
+  tokenDecimals: TokenDecimalsMap,
 ): string | null => {
   if (
     !snapshot ||
@@ -128,5 +130,5 @@ export const verifyOrderAgainstSnapshot = (
     return TRADE_BUILD_ERROR(1001);
   }
 
-  return verifyOrderAmounts(order, snapshot);
+  return verifyOrderAmounts(order, snapshot, tokenDecimals);
 };

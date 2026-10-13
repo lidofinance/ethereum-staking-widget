@@ -13,12 +13,17 @@ import {
   validateSignTypedData,
   validateCowSwapOrderMessage,
 } from '../validate-typed-message';
+import { TRANSACTION_ERROR } from '../../consts';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
-import { MAINNET_TX_CONFIG, SEPOLIA_TX_CONFIG } from '../../__tests__/fixtures';
+import {
+  MAINNET_TX_CONFIG,
+  SEPOLIA_TX_CONFIG,
+  TEST_APP_CODE,
+} from '../../__tests__/fixtures';
 
 const CHAIN_MAINNET = 1;
 const CHAIN_SEPOLIA = 11155111;
@@ -48,11 +53,13 @@ const mainnetCtx = {
   chainId: CHAIN_MAINNET,
   signer: SIGNER as `0x${string}`,
   networkTxConfig: MAINNET_TX_CONFIG,
+  appCode: TEST_APP_CODE,
 };
 const sepoliaCtx = {
   chainId: CHAIN_SEPOLIA,
   signer: SIGNER as `0x${string}`,
   networkTxConfig: SEPOLIA_TX_CONFIG,
+  appCode: TEST_APP_CODE,
 };
 
 // ---- App data response helper ----
@@ -298,6 +305,7 @@ describe('validateSignTypedData', () => {
           chainId: CHAIN_MAINNET,
           signer: checksummed,
           networkTxConfig: MAINNET_TX_CONFIG,
+          appCode: TEST_APP_CODE,
         },
       );
       expect(result.allowed).toBe(true);
@@ -600,7 +608,7 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toBeDefined();
     });
 
-    it('rejects when appData response has wrong appCode (schema fail)', async () => {
+    it('rejects when appData appCode differs from integration appCode', async () => {
       vi.mocked(standardFetcher).mockResolvedValue(
         buildAppDataResponse(FEE_RECIPIENT, { appCode: 'Evil App' }),
       );
@@ -609,7 +617,30 @@ describe('validateSignTypedData', () => {
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
-      expect(result.reason).toBeDefined();
+      expect(result.reason).toBe(TRANSACTION_ERROR(2038));
+    });
+
+    it('rejects default appCode for integration with another appCode', async () => {
+      const result = await validateSignTypedData(buildTypedDataParams(), {
+        ...mainnetCtx,
+        appCode: 'Lido Swap',
+      });
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBe(TRANSACTION_ERROR(2038));
+    });
+
+    it('allows order with appCode of the integration', async () => {
+      const appData = buildAppDataResponse(FEE_RECIPIENT, {
+        appCode: 'Lido Swap',
+      });
+      vi.mocked(standardFetcher).mockResolvedValue(appData);
+      const result = await validateSignTypedData(
+        buildTypedDataParams({
+          appData: hashFullAppData(appData.fullAppData),
+        }),
+        { ...mainnetCtx, appCode: 'Lido Swap' },
+      );
+      expect(result.allowed).toBe(true);
     });
 
     it('rejects when partnerFee.volumeBps is wrong', async () => {

@@ -3,11 +3,14 @@ import { type Address, isAddressEqual, parseUnits } from 'viem';
 import { safeParseDecimal } from '../../utils';
 import type { OrderData } from '../../tx';
 
-import { TRADE_VERIFICATION_ERROR, TOKEN_DECIMALS } from '../consts';
+import { TRADE_VERIFICATION_ERROR } from '../consts';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+/** Lowercased token address → decimals for all tokens of the integration. */
+export type TokenDecimalsMap = Record<string, number>;
 
 /** Snapshot of the validated onBeforeTrade payload (human-readable units). */
 export type ValidatedTradeSnapshot = {
@@ -25,8 +28,12 @@ export type ValidatedTradeSnapshot = {
  * Converts a human-readable decimal string ("0.1") to raw bigint
  * using the token's decimals. Returns null if conversion fails.
  */
-const unitsToRaw = (units: string, tokenAddress: string): bigint | null => {
-  const decimals = TOKEN_DECIMALS[tokenAddress.toLowerCase()];
+const unitsToRaw = (
+  units: string,
+  tokenAddress: string,
+  tokenDecimals: TokenDecimalsMap,
+): bigint | null => {
+  const decimals = tokenDecimals[tokenAddress.toLowerCase()];
   if (decimals === undefined) return null;
   if (safeParseDecimal(units) === null) return null;
   try {
@@ -48,6 +55,7 @@ const unitsToRaw = (units: string, tokenAddress: string): bigint | null => {
 export const verifyOrderAmounts = (
   order: OrderData,
   snapshot: ValidatedTradeSnapshot,
+  tokenDecimals: TokenDecimalsMap,
 ): string | null => {
   // Token addresses must match
   if (!isAddressEqual(order.sellToken, snapshot.sellToken)) {
@@ -58,8 +66,16 @@ export const verifyOrderAmounts = (
   }
 
   // Convert validated units to raw for comparison
-  const expectedSell = unitsToRaw(snapshot.sellAmountUnits, order.sellToken);
-  const expectedBuyMin = unitsToRaw(snapshot.buyAmountMinUnits, order.buyToken);
+  const expectedSell = unitsToRaw(
+    snapshot.sellAmountUnits,
+    order.sellToken,
+    tokenDecimals,
+  );
+  const expectedBuyMin = unitsToRaw(
+    snapshot.buyAmountMinUnits,
+    order.buyToken,
+    tokenDecimals,
+  );
 
   const orderSell = order.sellAmount;
   const orderBuy = order.buyAmount;

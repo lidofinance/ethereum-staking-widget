@@ -72,6 +72,7 @@ const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
     chainId: 1,
     isLedgerLive: false,
     networkTxConfig: MAINNET_TX_CONFIG,
+    appCode: 'Test App',
     verifySignedOrder: vi.fn().mockReturnValue(null),
     openTransactionGuardModal: vi.fn().mockResolvedValue(undefined),
     openSigningErrorModal: vi.fn().mockResolvedValue(undefined),
@@ -112,7 +113,7 @@ afterEach(() => {
 // request — validation
 // ---------------------------------------------------------------------------
 describe('request — validation', () => {
-  it('passes chainId, signer and networkTxConfig to validateRpcRequest', async () => {
+  it('passes chainId, signer, networkTxConfig and appCode to validateRpcRequest', async () => {
     const { provider } = setup();
     await provider.request(SIGN_REQUEST);
 
@@ -120,6 +121,7 @@ describe('request — validation', () => {
       chainId: 1,
       signer: SIGNER,
       networkTxConfig: MAINNET_TX_CONFIG,
+      appCode: 'Test App',
     });
   });
 

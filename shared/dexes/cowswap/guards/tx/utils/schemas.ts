@@ -1,7 +1,7 @@
 import { isAddress, isHex, type Address, type Hex } from 'viem';
 import { z } from 'zod';
 
-import { LIDO_APP_CODE, MAX_SLIPPAGE, PARTNER_FEE_BPS } from '../../../consts';
+import { MAX_SLIPPAGE, PARTNER_FEE_BPS } from '../../../consts';
 
 export const jsonRpcRequestSchema = z.object({
   method: z.string(),
@@ -71,7 +71,8 @@ export const AppDataHooksSchema = z.object({
 });
 
 export const AppDataSchema = z.object({
-  appCode: z.literal(LIDO_APP_CODE),
+  // checked against ValidationContext.appCode
+  appCode: z.string(),
   metadata: z.object({
     orderClass: z.object({
       orderClass: z.enum(['market']),

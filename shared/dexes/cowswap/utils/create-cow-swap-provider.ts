@@ -32,6 +32,7 @@ export type CreateCowSwapProviderParams = {
   chainId: number;
   isLedgerLive: boolean;
   networkTxConfig: NetworkTxConfig;
+  appCode: string;
   verifySignedOrder: (order: OrderData) => string | null;
   openTransactionGuardModal: (reason: string) => Promise<void>;
   openSigningErrorModal: (
@@ -47,6 +48,7 @@ export const createCowSwapProvider = ({
   chainId,
   isLedgerLive,
   networkTxConfig,
+  appCode,
   verifySignedOrder,
   openTransactionGuardModal,
   openSigningErrorModal,
@@ -61,6 +63,7 @@ export const createCowSwapProvider = ({
           chainId,
           signer: walletClient.account.address,
           networkTxConfig,
+          appCode,
         });
 
         // this prevents extra fields to be passed along with the orginal request

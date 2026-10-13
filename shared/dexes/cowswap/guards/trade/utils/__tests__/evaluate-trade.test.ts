@@ -19,6 +19,9 @@ import {
   verifyOrderAgainstSnapshot,
 } from '../evaluate-trade';
 import type { ValidatedTradeSnapshot } from '../verify-order';
+import { TEST_PROFILE } from '../../../tx/__tests__/fixtures';
+
+const TOKEN_DECIMALS = TEST_PROFILE.tokenDecimals;
 
 const STETH = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
@@ -271,7 +274,7 @@ describe('verifyOrderAgainstSnapshot', () => {
   };
 
   it('returns 1001 without snapshot', () => {
-    expect(verifyOrderAgainstSnapshot(ORDER, null)).toBe(
+    expect(verifyOrderAgainstSnapshot(ORDER, null, TOKEN_DECIMALS)).toBe(
       TRADE_BUILD_ERROR(1001),
     );
   });
@@ -281,12 +284,22 @@ describe('verifyOrderAgainstSnapshot', () => {
     ['min buy', { buyAmountMinUnits: '' }],
   ])('returns 1001 for empty %s amount in snapshot', (_, overrides) => {
     expect(
-      verifyOrderAgainstSnapshot(ORDER, { ...SNAPSHOT, ...overrides }),
+      verifyOrderAgainstSnapshot(
+        ORDER,
+        { ...SNAPSHOT, ...overrides },
+        TOKEN_DECIMALS,
+      ),
     ).toBe(TRADE_BUILD_ERROR(1001));
   });
 
+  it('fails closed for token without decimals in profile', () => {
+    expect(verifyOrderAgainstSnapshot(ORDER, SNAPSHOT, {})).not.toBeNull();
+  });
+
   it('accepts order matching snapshot', () => {
-    expect(verifyOrderAgainstSnapshot(ORDER, SNAPSHOT)).toBeNull();
+    expect(
+      verifyOrderAgainstSnapshot(ORDER, SNAPSHOT, TOKEN_DECIMALS),
+    ).toBeNull();
   });
 
   it('rejects order with lower buy amount than snapshot', () => {
@@ -294,6 +307,7 @@ describe('verifyOrderAgainstSnapshot', () => {
       verifyOrderAgainstSnapshot(
         { ...ORDER, buyAmount: 1000n * 10n ** 6n },
         SNAPSHOT,
+        TOKEN_DECIMALS,
       ),
     ).not.toBeNull();
   });

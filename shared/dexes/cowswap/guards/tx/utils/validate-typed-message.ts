@@ -108,6 +108,13 @@ export const validateCowSwapOrderMessage = async (
       appDataPrefetched ??
       (await fetchAppData(orderMessage.appData, ctx.chainId));
 
+    if (appData.appCode !== ctx.appCode) {
+      return {
+        allowed: false,
+        reason: TRANSACTION_ERROR(2038),
+      };
+    }
+
     if (!isAddressEqual(appData.metadata.partnerFee.recipient, feeRecipient)) {
       return {
         allowed: false,

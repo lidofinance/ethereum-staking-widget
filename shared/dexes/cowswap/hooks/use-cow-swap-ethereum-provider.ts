@@ -4,12 +4,10 @@ import { useConnection, useWalletClient } from 'wagmi';
 
 import { useDappStatus, useIsLedgerLive } from 'modules/web3';
 
-import { OrderData, NetworkTxConfig } from '../guards/tx';
+import type { OrderData, NetworkTxConfig } from '../guards/tx';
 import { COWSWAP_ENABLED_CHAIN_IDS } from '../consts';
 import type { SigningHelpTip } from '../guards/trade';
 import { createCowSwapProvider } from '../utils';
-
-type VerifyOrder = (order: OrderData) => string | null;
 
 const CLEANUP_SET = new Set<() => void>();
 
@@ -28,15 +26,24 @@ const cleanup = () => {
   CLEANUP_SET.clear();
 };
 
-export const useCowSwapEthereumProvider = (
-  verifySignedOrder: VerifyOrder,
-  openTransactionGuardModal: (reason: string) => Promise<void>,
+type UseCowSwapEthereumProviderOptions = {
+  verifySignedOrder: (order: OrderData) => string | null;
+  openTransactionGuardModal: (reason: string) => Promise<void>;
   openSigningErrorModal: (
     reason: string,
     helpTip?: SigningHelpTip,
-  ) => Promise<void>,
-  networkTxConfig: NetworkTxConfig,
-): EthereumProvider | undefined => {
+  ) => Promise<void>;
+  getNetworkTxConfig: (chainId: number) => NetworkTxConfig;
+  appCode: string;
+};
+
+export const useCowSwapEthereumProvider = ({
+  verifySignedOrder,
+  openTransactionGuardModal,
+  openSigningErrorModal,
+  getNetworkTxConfig,
+  appCode,
+}: UseCowSwapEthereumProviderOptions): EthereumProvider | undefined => {
   const { chainId } = useDappStatus();
   const { data: walletClient } = useWalletClient();
   const { connector } = useConnection();
@@ -66,7 +73,9 @@ export const useCowSwapEthereumProvider = (
       connector,
       chainId,
       isLedgerLive,
-      networkTxConfig,
+      // resolved from the same chainId the validators receive
+      networkTxConfig: getNetworkTxConfig(chainId),
+      appCode,
       verifySignedOrder,
       openTransactionGuardModal,
       openSigningErrorModal,
@@ -76,7 +85,8 @@ export const useCowSwapEthereumProvider = (
     walletClient,
     connector,
     chainId,
-    networkTxConfig,
+    getNetworkTxConfig,
+    appCode,
     verifySignedOrder,
     openTransactionGuardModal,
     isLedgerLive,

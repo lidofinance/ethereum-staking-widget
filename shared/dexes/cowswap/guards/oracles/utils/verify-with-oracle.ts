@@ -7,13 +7,12 @@ import { safeParseDecimal } from '../../utils';
 
 import {
   CHAINLINK_FEEDS,
-  SELL_TOKEN_FEED_MAP,
-  BUY_TOKEN_FEED_MAP,
   CHAINLINK_SCALE,
   WSTETH_SCALE,
   WSTETH_RATE_MIN,
   WSTETH_RATE_MAX,
   WSTETH_ADDRESS,
+  type ChainlinkFeedKey,
 } from '../feeds';
 import { PARTNER_FEE_PCT, FAIL_UNSUPPORTED, FAIL_UNAVAILABLE } from '../consts';
 import type { OnTradeParamsPayload, OracleResult } from '../types';
@@ -22,9 +21,18 @@ import { isValidRound, isInBounds, type RoundData } from './rounds';
 
 export type OracleClient = Pick<PublicClient, 'readContract'>;
 
+/** Lowercased mainnet token address → Chainlink USD feed. */
+export type TokenFeedMap = Record<string, ChainlinkFeedKey>;
+
+export type OracleFeedMaps = {
+  sell: TokenFeedMap;
+  buy: TokenFeedMap;
+};
+
 export const verifyWithOracle = async (
   client: OracleClient | undefined,
   params: OnTradeParamsPayload,
+  feedMaps: OracleFeedMaps,
 ): Promise<OracleResult> => {
   if (!client) return FAIL_UNAVAILABLE;
 
@@ -32,8 +40,8 @@ export const verifyWithOracle = async (
   const buyAddr = params.buyToken?.address.toLowerCase();
   if (!sellAddr || !buyAddr) return FAIL_UNSUPPORTED;
 
-  const sellFeedKey = SELL_TOKEN_FEED_MAP[sellAddr];
-  const buyFeedKey = BUY_TOKEN_FEED_MAP[buyAddr];
+  const sellFeedKey = feedMaps.sell[sellAddr];
+  const buyFeedKey = feedMaps.buy[buyAddr];
   if (!sellFeedKey || !buyFeedKey) return FAIL_UNSUPPORTED;
 
   const sellFeed = CHAINLINK_FEEDS[sellFeedKey];

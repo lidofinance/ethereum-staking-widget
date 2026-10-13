@@ -7,6 +7,15 @@ import { CowSwapGPv2OrderSchema } from './schemas';
 
 export type ContactsMap = typeof mainnetNetwork.contracts;
 
+// ERC-20 token keys of network contracts usable in CoW Swap profiles
+export type DexTokenContractKey = Extract<
+  keyof ContactsMap,
+  'lido' | 'wsteth' | 'weth' | 'usdc' | 'usdt' | 'usds' | 'wbtc'
+>;
+
+// Token contract key or native ETH placeholder
+export type DexTokenKey = DexTokenContractKey | 'eth';
+
 export type NetworkTxConfig = {
   tokens: Set<Address>;
   sellTokens: Set<Address>;
@@ -27,6 +36,8 @@ export type ValidationContext = {
   chainId: number;
   signer: Address;
   networkTxConfig: NetworkTxConfig;
+  // expected appData.appCode of the integration
+  appCode: string;
 };
 
 export type OrderData = z.infer<typeof CowSwapGPv2OrderSchema>;

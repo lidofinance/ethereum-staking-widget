@@ -6,6 +6,7 @@ import {
   TradeType,
 } from '@cowprotocol/widget-react';
 import { useCallback, useMemo } from 'react';
+import { mainnet, sepolia } from 'viem/chains';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
 import { debounce } from 'lodash';
@@ -16,13 +17,11 @@ import { useDappStatus } from 'modules/web3';
 import { LOCALE } from 'config/groups/locale';
 import { useAddressValidation } from 'providers/address-validation-provider';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 
 import {
   MAX_SLIPPAGE,
   PARTNER_FEE_BPS,
   WHEN_PRICE_IMPACT_IS_HIGH_THAN,
-  LIDO_APP_CODE,
   COWSWAP_BASE_URL,
   MAX_ORDER_AGE_MINUTES,
   TRADE_REPORT_EVENT_DEBOUNCE_MS,
@@ -35,12 +34,9 @@ import {
   useLoadingStates,
 } from './hooks';
 import { useTradeGuard, TradeGuardModal } from './guards/trade';
-import { NetworkTxConfig } from './guards/tx';
+import type { CowswapProfile } from './profile';
+import { shouldRefreshForSellToken } from './utils';
 import { LoaderStyled, DexWrapper } from './styles';
-
-const debouncedTrackQuoteViewed = debounce(() => {
-  trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteViewed);
-}, TRADE_REPORT_EVENT_DEBOUNCE_MS);
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
   baseTheme: 'dark',
@@ -73,33 +69,36 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 };
 
 export type CowswapFrameProps = {
-  sellTokenListUrl: string;
-  sellTokenListUrlFallback: string;
-  buyTokenListUrl: string;
-  buyTokenListUrlFallback: string;
+  profile: CowswapProfile;
   refetchBalances: () => void;
-  networkTxConfig: NetworkTxConfig;
 };
 
-export const CowswapFrame: React.FC<CowswapFrameProps> = (props) => {
+export const CowswapFrame: React.FC<CowswapFrameProps> = ({
+  profile,
+  refetchBalances,
+}) => {
   const {
-    sellTokenListUrl,
-    sellTokenListUrlFallback,
-    buyTokenListUrl,
-    buyTokenListUrlFallback,
-    refetchBalances,
-    networkTxConfig,
-  } = props;
+    appCode,
+    defaultPair,
+    tokenLists,
+    analytics,
+    getNetworkTxConfig,
+    tokenDecimals,
+    oracleFeeds,
+  } = profile;
 
   // throws on loading timeout/onError
   const { isLoading, isLoaded, onLoaded, onError, triggerRefresh, refreshId } =
     useLoadingStates();
 
   const { address, isTestnet } = useDappStatus();
+  // for testnets only sepolia; allowlist must match the chain the widget runs on
+  const widgetChainId = isTestnet ? sepolia.id : mainnet.id;
+  const { sellTokens } = getNetworkTxConfig(widgetChainId);
   const { validateAddress } = useAddressValidation();
   const { name: themeName } = useTheme();
   // Fall back to self-hosted token lists if GitHub is unavailable
-  const isGithubAvailable = useIsGhAvailable(sellTokenListUrl);
+  const isGithubAvailable = useIsGhAvailable(tokenLists.sell.url);
   const daoAgentAddress = useFeeRecipient();
   // throw on CSP violation
   useCspBlocked();
@@ -116,29 +115,41 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = (props) => {
     verifySignedOrder,
   } = useTradeGuard({
     isTestnet,
+    tokenDecimals,
+    oracleFeeds,
+    quoteErrorEvent: analytics.quoteError,
   });
+
+  const trackQuoteViewed = useMemo(
+    () =>
+      debounce(
+        () => trackMatomoEvent(analytics.quoteViewed),
+        TRADE_REPORT_EVENT_DEBOUNCE_MS,
+      ),
+    [analytics.quoteViewed],
+  );
 
   const validate = useCallback(async () => {
     const isValid = await validateAddress(address);
     return isValid;
   }, [validateAddress, address]);
 
-  const provider = useCowSwapEthereumProvider(
+  const provider = useCowSwapEthereumProvider({
     verifySignedOrder,
     openTransactionGuardModal,
     openSigningErrorModal,
-    networkTxConfig,
-  );
+    getNetworkTxConfig,
+    appCode,
+  });
 
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
       //
       // Core options
       //
-      appCode: LIDO_APP_CODE,
+      appCode,
       standaloneMode: false,
-      // for testnets only sepolia
-      chainId: isTestnet ? 11155111 : 1,
+      chainId: widgetChainId,
       baseUrl: COWSWAP_BASE_URL,
 
       //
@@ -148,20 +159,20 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = (props) => {
       tradeType: TradeType.SWAP,
       enabledTradeTypes: [TradeType.SWAP],
       sell: {
-        asset: 'STETH',
+        asset: defaultPair.sell,
       },
       buy: {
-        asset: 'ETH',
+        asset: defaultPair.buy,
       },
       sellTokenLists: [
         isGithubAvailable
-          ? sellTokenListUrl
-          : `${window.location.origin}/${sellTokenListUrlFallback}`,
+          ? tokenLists.sell.url
+          : `${window.location.origin}/${tokenLists.sell.fallback}`,
       ],
       buyTokenLists: [
         isGithubAvailable
-          ? buyTokenListUrl
-          : `${window.location.origin}/${buyTokenListUrlFallback}`,
+          ? tokenLists.buy.url
+          : `${window.location.origin}/${tokenLists.buy.fallback}`,
       ],
       slippage: {
         max: MAX_SLIPPAGE,
@@ -224,7 +235,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = (props) => {
         onBeforeTrade: async (payload) => {
           if (!(await validateTrade(payload))) return false;
 
-          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart);
+          trackMatomoEvent(analytics.swapStart);
           return await validate();
         },
         onBeforeOrderCancel: async () => {
@@ -238,12 +249,12 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = (props) => {
       __EXTERNAL_REFRESH_ID__: refreshId,
     }),
     [
-      isTestnet,
+      appCode,
+      defaultPair,
+      tokenLists,
+      analytics.swapStart,
+      widgetChainId,
       isGithubAvailable,
-      sellTokenListUrl,
-      sellTokenListUrlFallback,
-      buyTokenListUrl,
-      buyTokenListUrlFallback,
       daoAgentAddress,
       themeName,
       refreshId,
@@ -258,39 +269,34 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = (props) => {
       {
         event: CowWidgetEvents.ON_POSTED_ORDER,
         handler: () => {
-          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapPosted);
+          trackMatomoEvent(analytics.swapPosted);
         },
       },
       {
         event: CowWidgetEvents.ON_FULFILLED_ORDER,
         handler: () => {
           void refetchBalances();
-          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapFinish);
+          trackMatomoEvent(analytics.swapFinish);
         },
       },
       {
         event: CowWidgetEvents.ON_CANCELLED_ORDER,
         handler: () => {
-          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapCancel);
+          trackMatomoEvent(analytics.swapCancel);
         },
       },
       {
         event: CowWidgetEvents.ON_EXPIRED_ORDER,
         handler: () => {
-          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapCancel);
+          trackMatomoEvent(analytics.swapCancel);
         },
       },
       {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
         handler: (payload: OnTradeParamsPayload) => {
-          const sellTokenSymbol = payload.sellToken?.symbol?.toLowerCase();
-          debouncedTrackQuoteViewed();
-          // Force widget refresh to reset invalid token selection
-          if (
-            sellTokenSymbol &&
-            sellTokenSymbol !== 'steth' &&
-            sellTokenSymbol !== 'wsteth'
-          ) {
+          trackQuoteViewed();
+          // Force widget refresh to reset token selection outside the profile
+          if (shouldRefreshForSellToken(payload, sellTokens)) {
             triggerRefresh();
             return;
           }
@@ -300,7 +306,14 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = (props) => {
     ];
 
     return handlers;
-  }, [refetchBalances, reportTradeParams, triggerRefresh]);
+  }, [
+    analytics,
+    sellTokens,
+    trackQuoteViewed,
+    refetchBalances,
+    reportTradeParams,
+    triggerRefresh,
+  ]);
 
   return (
     <>

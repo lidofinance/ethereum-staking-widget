@@ -1,6 +1,9 @@
 import { verifyOrderAmounts } from '../verify-order';
 import type { ValidatedTradeSnapshot } from '../verify-order';
 import type { OrderData } from '../../../tx';
+import { TEST_PROFILE } from '../../../tx/__tests__/fixtures';
+
+const TOKEN_DECIMALS = TEST_PROFILE.tokenDecimals;
 
 const STETH = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84' as `0x${string}`;
 const ETH = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' as `0x${string}`;
@@ -31,64 +34,84 @@ const makeSnapshot = (
 // ---------------------------------------------------------------------------
 describe('verifyOrderAmounts', () => {
   it('returns null when amounts match exactly', () => {
-    expect(verifyOrderAmounts(makeOrder(), makeSnapshot())).toBeNull();
+    expect(
+      verifyOrderAmounts(makeOrder(), makeSnapshot(), TOKEN_DECIMALS),
+    ).toBeNull();
   });
 
   it('returns null when order sells less than validated', () => {
     const order = makeOrder({ sellAmount: 50000000000000000n }); // 0.05
-    expect(verifyOrderAmounts(order, makeSnapshot())).toBeNull();
+    expect(
+      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
+    ).toBeNull();
   });
 
   it('returns null when order buys more than validated minimum', () => {
     const order = makeOrder({ buyAmount: 200000000000000000n }); // 0.2
-    expect(verifyOrderAmounts(order, makeSnapshot())).toBeNull();
+    expect(
+      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
+    ).toBeNull();
   });
 
   it('rejects when order sells more than validated', () => {
     const order = makeOrder({ sellAmount: 200000000000000000n }); // 0.2
-    expect(verifyOrderAmounts(order, makeSnapshot())).toBeDefined();
+    expect(
+      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
+    ).toBeDefined();
   });
 
   it('rejects when order buys less than validated minimum', () => {
     const order = makeOrder({ buyAmount: 50000000000000000n }); // 0.05
-    expect(verifyOrderAmounts(order, makeSnapshot())).toBeDefined();
+    expect(
+      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
+    ).toBeDefined();
   });
 
   it('rejects sell token mismatch', () => {
     const order = makeOrder({ sellToken: USDC });
-    expect(verifyOrderAmounts(order, makeSnapshot())).toBeDefined();
+    expect(
+      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
+    ).toBeDefined();
   });
 
   it('rejects buy token mismatch', () => {
     const order = makeOrder({ buyToken: USDC });
-    expect(verifyOrderAmounts(order, makeSnapshot())).toBeDefined();
+    expect(
+      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
+    ).toBeDefined();
   });
 
   it('rejects when token decimals unknown (fail-closed)', () => {
     const order = makeOrder({ sellToken: UNKNOWN, sellAmount: 999999n });
     const snapshot = makeSnapshot({ sellToken: UNKNOWN });
-    expect(verifyOrderAmounts(order, snapshot)).toBeDefined();
+    expect(verifyOrderAmounts(order, snapshot, TOKEN_DECIMALS)).toBeDefined();
   });
 
   it('rejects when sell units string is unparseable (fail-closed)', () => {
     // Known token (decimals defined) but parseUnits throws on a bad decimal
     // string → unitsToRaw returns null → verification fails.
     const snapshot = makeSnapshot({ sellAmountUnits: 'not-a-number' });
-    expect(verifyOrderAmounts(makeOrder(), snapshot)).toBeDefined();
+    expect(
+      verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS),
+    ).toBeDefined();
   });
 
   it('rejects when buy-min units string is unparseable (fail-closed)', () => {
     // Sell units convert fine, but the buy-min units string is invalid →
     // expectedBuyMin is null → verification fails.
     const snapshot = makeSnapshot({ buyAmountMinUnits: '0.1.2' });
-    expect(verifyOrderAmounts(makeOrder(), snapshot)).toBeDefined();
+    expect(
+      verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS),
+    ).toBeDefined();
   });
 
   it.each(['.5', '1.', '1.0000000000000000001'])(
     'rejects lenient decimal formats parseUnits would accept (%p)',
     (units) => {
       const snapshot = makeSnapshot({ buyAmountMinUnits: units });
-      expect(verifyOrderAmounts(makeOrder(), snapshot)).toBeDefined();
+      expect(
+        verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS),
+      ).toBeDefined();
     },
   );
 
@@ -105,12 +128,16 @@ describe('verifyOrderAmounts', () => {
     });
 
     it('accepts exact USDC amount', () => {
-      expect(verifyOrderAmounts(usdcOrder, usdcSnapshot)).toBeNull();
+      expect(
+        verifyOrderAmounts(usdcOrder, usdcSnapshot, TOKEN_DECIMALS),
+      ).toBeNull();
     });
 
     it('rejects USDC amount below minimum', () => {
       const order = { ...usdcOrder, buyAmount: 199000000n }; // 199 USDC
-      expect(verifyOrderAmounts(order, usdcSnapshot)).toBeDefined();
+      expect(
+        verifyOrderAmounts(order, usdcSnapshot, TOKEN_DECIMALS),
+      ).toBeDefined();
     });
   });
 });

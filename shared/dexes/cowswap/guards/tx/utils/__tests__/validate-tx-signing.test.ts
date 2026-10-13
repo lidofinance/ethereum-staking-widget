@@ -26,7 +26,11 @@ import { standardFetcher } from 'utils/standardFetcher';
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
-import { MAINNET_TX_CONFIG, SEPOLIA_TX_CONFIG } from '../../__tests__/fixtures';
+import {
+  MAINNET_TX_CONFIG,
+  SEPOLIA_TX_CONFIG,
+  TEST_APP_CODE,
+} from '../../__tests__/fixtures';
 
 const CHAIN_MAINNET = 1;
 const CHAIN_SEPOLIA = 11155111;
@@ -57,11 +61,13 @@ const mainnetCtx = {
   chainId: CHAIN_MAINNET,
   signer: SIGNER,
   networkTxConfig: MAINNET_TX_CONFIG,
+  appCode: TEST_APP_CODE,
 };
 const sepoliaCtx = {
   chainId: CHAIN_SEPOLIA,
   signer: SIGNER,
   networkTxConfig: SEPOLIA_TX_CONFIG,
+  appCode: TEST_APP_CODE,
 };
 
 // ---- Order data for Settlement tests ----
@@ -526,6 +532,15 @@ describe('validateSendTransaction', () => {
         mainnetCtx,
       );
       expect(result.allowed).toBe(true);
+    });
+
+    it('rejects presign of order with appCode of another integration', async () => {
+      const result = await validateSendTransaction(
+        [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
+        { ...mainnetCtx, appCode: 'Lido Swap' },
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBe(TRANSACTION_ERROR(2038));
     });
 
     it('rejects direct call to CoW VaultRelayer (removed from allowedTargets)', async () => {

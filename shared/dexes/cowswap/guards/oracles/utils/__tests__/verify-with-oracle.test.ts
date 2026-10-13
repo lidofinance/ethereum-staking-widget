@@ -3,7 +3,12 @@ import type { Address } from 'viem';
 
 import mainnetNetwork from 'networks/mainnet.json';
 
-import { CHAINLINK_FEEDS, CHAINLINK_SCALE, WSTETH_ADDRESS } from '../../feeds';
+import {
+  CHAINLINK_FEEDS,
+  CHAINLINK_SCALE,
+  WSTETH_ADDRESS,
+  type ChainlinkFeedKey,
+} from '../../feeds';
 import {
   FAIL_UNAVAILABLE,
   FAIL_UNSUPPORTED,
@@ -11,6 +16,7 @@ import {
 } from '../../consts';
 import type { OnTradeParamsPayload } from '../../types';
 import { verifyWithOracle, type OracleClient } from '../verify-with-oracle';
+import { TEST_PROFILE } from '../../../tx/__tests__/fixtures';
 import type { RoundData } from '../rounds';
 
 const c = mainnetNetwork.contracts;
@@ -21,6 +27,7 @@ const WETH = c.weth.toLowerCase();
 const ETH = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const UNKNOWN = '0x0000000000000000000000000000000000000001';
 
+const FEEDS = TEST_PROFILE.oracleFeeds;
 const NOW_SEC = 1_700_000_000n;
 
 const round = (answer: bigint, updatedAt = NOW_SEC - 60n): RoundData => [
@@ -33,7 +40,7 @@ const round = (answer: bigint, updatedAt = NOW_SEC - 60n): RoundData => [
 
 const usd = (value: number) => BigInt(Math.round(value * 1e8));
 
-type Prices = Partial<Record<keyof typeof CHAINLINK_FEEDS, RoundData | Error>>;
+type Prices = Partial<Record<ChainlinkFeedKey, RoundData | Error>>;
 
 const makeClient = (
   prices: Prices,
@@ -41,8 +48,8 @@ const makeClient = (
 ) => {
   const byAddress = new Map<string, RoundData | Error>(
     Object.entries(prices).map(([key, value]) => [
-      CHAINLINK_FEEDS[key].address.toLowerCase(),
-      value as RoundData | Error,
+      CHAINLINK_FEEDS[key as ChainlinkFeedKey].address.toLowerCase(),
+      value,
     ]),
   );
 
@@ -96,7 +103,7 @@ afterEach(() => {
 
 describe('verifyWithOracle — inputs', () => {
   it('returns unavailable without client', async () => {
-    expect(await verifyWithOracle(undefined, makePayload())).toEqual(
+    expect(await verifyWithOracle(undefined, makePayload(), FEEDS)).toEqual(
       FAIL_UNAVAILABLE,
     );
   });
@@ -106,6 +113,7 @@ describe('verifyWithOracle — inputs', () => {
     const result = await verifyWithOracle(
       client,
       makePayload({ sellToken: undefined }),
+      FEEDS,
     );
     expect(result).toEqual(FAIL_UNSUPPORTED);
     expect(client.readContract).not.toHaveBeenCalled();
@@ -117,14 +125,26 @@ describe('verifyWithOracle — inputs', () => {
       await verifyWithOracle(
         client,
         makePayload({ buyToken: { address: UNKNOWN } }),
+        FEEDS,
       ),
     ).toEqual(FAIL_UNSUPPORTED);
     expect(
       await verifyWithOracle(
         client,
         makePayload({ sellToken: { address: USDC } }),
+        FEEDS,
       ),
     ).toEqual(FAIL_UNSUPPORTED);
+  });
+
+  it('returns unsupported for token outside passed feed maps', async () => {
+    const client = makeClient(STETH_USDC_PRICES);
+    const result = await verifyWithOracle(client, makePayload(), {
+      sell: FEEDS.sell,
+      buy: {},
+    });
+    expect(result).toEqual(FAIL_UNSUPPORTED);
+    expect(client.readContract).not.toHaveBeenCalled();
   });
 
   it('matches token addresses case-insensitively', async () => {
@@ -132,6 +152,7 @@ describe('verifyWithOracle — inputs', () => {
     const result = await verifyWithOracle(
       client,
       makePayload({ sellToken: { address: c.lido.toUpperCase() } }),
+      FEEDS,
     );
     expect(result.ok).toBe(true);
   });
@@ -142,6 +163,7 @@ describe('verifyWithOracle — deviation', () => {
     const result = await verifyWithOracle(
       makeClient(STETH_USDC_PRICES),
       makePayload(),
+      FEEDS,
     );
 
     expect(result).toEqual({
@@ -158,6 +180,7 @@ describe('verifyWithOracle — deviation', () => {
     const result = await verifyWithOracle(
       makeClient(STETH_USDC_PRICES),
       makePayload({ buyTokenAmount: { units: '2100' } }),
+      FEEDS,
     );
     expect(result.ok && result.deviation).toBeLessThan(0);
   });
@@ -176,6 +199,7 @@ describe('verifyWithOracle — deviation', () => {
         buyToken: { address: buyToken },
         buyTokenAmount: { units: '1' },
       }),
+      FEEDS,
     );
     expect(result.ok && result.deviation).toBeCloseTo(-PARTNER_FEE_PCT);
   });
@@ -188,6 +212,7 @@ describe('verifyWithOracle — deviation', () => {
         sellToken: { address: WSTETH },
         buyTokenAmount: { units: '2400' },
       }),
+      FEEDS,
     );
 
     expect(result.ok && result.sellTokenUsd).toBeCloseTo(2400);
@@ -202,7 +227,7 @@ describe('verifyWithOracle — deviation', () => {
 
   it('does not read wstETH rate for stETH', async () => {
     const client = makeClient(STETH_USDC_PRICES);
-    await verifyWithOracle(client, makePayload());
+    await verifyWithOracle(client, makePayload(), FEEDS);
     expect(client.readContract).toHaveBeenCalledTimes(2);
   });
 });
@@ -213,7 +238,7 @@ describe('verifyWithOracle — fail closed', () => {
       STETH_USD: new Error('rpc down'),
       USDC_USD: round(usd(1)),
     });
-    expect(await verifyWithOracle(client, makePayload())).toEqual(
+    expect(await verifyWithOracle(client, makePayload(), FEEDS)).toEqual(
       FAIL_UNAVAILABLE,
     );
   });
@@ -224,7 +249,7 @@ describe('verifyWithOracle — fail closed', () => {
       STETH_USD: round(usd(2000), stale),
       USDC_USD: round(usd(1)),
     });
-    expect(await verifyWithOracle(client, makePayload())).toEqual(
+    expect(await verifyWithOracle(client, makePayload(), FEEDS)).toEqual(
       FAIL_UNAVAILABLE,
     );
   });
@@ -234,7 +259,7 @@ describe('verifyWithOracle — fail closed', () => {
       STETH_USD: round(usd(2000)),
       USDC_USD: round(usd(5)),
     });
-    expect(await verifyWithOracle(client, makePayload())).toEqual(
+    expect(await verifyWithOracle(client, makePayload(), FEEDS)).toEqual(
       FAIL_UNAVAILABLE,
     );
   });
@@ -248,6 +273,7 @@ describe('verifyWithOracle — fail closed', () => {
       await verifyWithOracle(
         client,
         makePayload({ sellToken: { address: WSTETH } }),
+        FEEDS,
       ),
     ).toEqual(FAIL_UNAVAILABLE);
   });
@@ -262,6 +288,7 @@ describe('verifyWithOracle — fail closed', () => {
       await verifyWithOracle(
         makeClient(STETH_USDC_PRICES),
         makePayload(overrides),
+        FEEDS,
       ),
     ).toEqual(FAIL_UNAVAILABLE);
   });

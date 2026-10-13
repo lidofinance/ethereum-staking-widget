@@ -5,18 +5,9 @@ import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
 import { buildNetworkTxConfig } from '../network-tx-config';
-import {
-  collectTokenAddresses,
-  collectSellTokenAddresses,
-  collectBuyTokenAddresses,
-} from '../token-addresses';
-import {
-  SELL_TOKEN_KEYS,
-  BUY_TOKEN_KEYS,
-  DEX_TOKEN_KEYS,
-  MAINNET_TX_CONFIG,
-  SEPOLIA_TX_CONFIG,
-} from '../../__tests__/fixtures';
+import { collectTokenAddresses, resolveTokenAddress } from '../token-addresses';
+import type { ContactsMap } from '../types';
+import { MAINNET_TX_CONFIG, SEPOLIA_TX_CONFIG } from '../../__tests__/fixtures';
 
 const c = mainnetNetwork.contracts;
 const lower = (address: string) => address.toLowerCase() as Address;
@@ -24,52 +15,43 @@ const lower = (address: string) => address.toLowerCase() as Address;
 // ---------------------------------------------------------------------------
 // token-addresses
 // ---------------------------------------------------------------------------
+describe('resolveTokenAddress', () => {
+  it('resolves contract key to lowercased address', () => {
+    expect(resolveTokenAddress(c, 'lido')).toBe(lower(c.lido));
+  });
+
+  it('resolves eth to native placeholder', () => {
+    expect(resolveTokenAddress(c, 'eth')).toBe(ethAddress);
+  });
+
+  it('returns undefined for empty address', () => {
+    expect(resolveTokenAddress({ ...c, usds: '' }, 'usds')).toBeUndefined();
+  });
+});
+
 describe('collectTokenAddresses', () => {
   it('collects lowercased addresses for given keys', () => {
-    const result = collectTokenAddresses(c, ['lido', 'weth']);
-    expect(result).toEqual(new Set([lower(c.lido), lower(c.weth)]));
+    expect(collectTokenAddresses(c, ['lido', 'weth', 'eth'])).toEqual(
+      new Set([lower(c.lido), lower(c.weth), ethAddress]),
+    );
   });
 
   it('skips keys with empty address', () => {
     const contracts = { ...c, usds: '' };
-    const result = collectTokenAddresses(contracts, ['lido', 'usds']);
-    expect(result).toEqual(new Set([lower(c.lido)]));
+    expect(collectTokenAddresses(contracts, ['lido', 'usds'])).toEqual(
+      new Set([lower(c.lido)]),
+    );
+  });
+
+  it('skips keys missing on network', () => {
+    const contracts = sepoliaNetwork.contracts as ContactsMap;
+    expect(collectTokenAddresses(contracts, ['lido', 'usdc'])).toEqual(
+      new Set([lower(contracts.lido)]),
+    );
   });
 
   it('returns empty set for empty key list', () => {
     expect(collectTokenAddresses(c, []).size).toBe(0);
-  });
-});
-
-describe('collectSellTokenAddresses', () => {
-  it('collects only given sell keys', () => {
-    const result = collectSellTokenAddresses(c, SELL_TOKEN_KEYS);
-    expect(result).toEqual(new Set([lower(c.lido), lower(c.wsteth)]));
-  });
-
-  it('does not add ETH placeholder', () => {
-    const result = collectSellTokenAddresses(c, SELL_TOKEN_KEYS);
-    expect(result.has(ethAddress)).toBe(false);
-  });
-});
-
-describe('collectBuyTokenAddresses', () => {
-  it('collects buy keys and adds ETH placeholder', () => {
-    const result = collectBuyTokenAddresses(c, BUY_TOKEN_KEYS);
-    expect(result).toEqual(
-      new Set([
-        lower(c.weth),
-        lower(c.usdc),
-        lower(c.usdt),
-        lower(c.usds),
-        lower(c.wbtc),
-        ethAddress,
-      ]),
-    );
-  });
-
-  it('adds ETH placeholder even for empty key list', () => {
-    expect(collectBuyTokenAddresses(c, [])).toEqual(new Set([ethAddress]));
   });
 });
 
@@ -84,6 +66,16 @@ describe('buildNetworkTxConfig', () => {
     expect(MAINNET_TX_CONFIG.sellTokens).toEqual(
       new Set([lower(c.lido), lower(c.wsteth)]),
     );
+    expect(MAINNET_TX_CONFIG.buyTokens).toEqual(
+      new Set([
+        ethAddress,
+        lower(c.weth),
+        lower(c.usdc),
+        lower(c.usdt),
+        lower(c.usds),
+        lower(c.wbtc),
+      ]),
+    );
   });
 
   it('keeps sell and buy token sets disjoint', () => {
@@ -92,15 +84,9 @@ describe('buildNetworkTxConfig', () => {
     }
   });
 
-  it('includes all sell and buy tokens (except ETH) in tokens', () => {
-    for (const token of MAINNET_TX_CONFIG.sellTokens) {
-      expect(MAINNET_TX_CONFIG.tokens.has(token)).toBe(true);
-    }
-    for (const token of MAINNET_TX_CONFIG.buyTokens) {
-      if (token === ethAddress) continue;
-      expect(MAINNET_TX_CONFIG.tokens.has(token)).toBe(true);
-    }
-    expect(MAINNET_TX_CONFIG.tokens.size).toBe(DEX_TOKEN_KEYS.length);
+  it('includes contract tokens but not ETH placeholder in tokens', () => {
+    expect(MAINNET_TX_CONFIG.tokens.has(ethAddress)).toBe(false);
+    expect(MAINNET_TX_CONFIG.tokens.size).toBe(7);
   });
 
   it('builds sepolia config from sepolia contracts', () => {
@@ -112,10 +98,10 @@ describe('buildNetworkTxConfig', () => {
     expect(SEPOLIA_TX_CONFIG.sellTokens.has(lower(c.lido))).toBe(false);
   });
 
-  it('uses passed key lists instead of fixed ones', () => {
-    const config = buildNetworkTxConfig(c, ['lido'], ['lido'], ['usdc']);
-    expect(config.tokens).toEqual(new Set([lower(c.lido)]));
+  it('allows ETH only when listed', () => {
+    const config = buildNetworkTxConfig(c, ['lido'], ['usdc']);
+    expect(config.tokens).toEqual(new Set([lower(c.lido), lower(c.usdc)]));
     expect(config.sellTokens).toEqual(new Set([lower(c.lido)]));
-    expect(config.buyTokens).toEqual(new Set([lower(c.usdc), ethAddress]));
+    expect(config.buyTokens).toEqual(new Set([lower(c.usdc)]));
   });
 });

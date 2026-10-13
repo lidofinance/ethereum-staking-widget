@@ -17,7 +17,11 @@ import {
 } from '../utils';
 import type { OrderData } from '../utils';
 
-import { MAINNET_TX_CONFIG, SEPOLIA_TX_CONFIG } from './fixtures';
+import {
+  MAINNET_TX_CONFIG,
+  SEPOLIA_TX_CONFIG,
+  TEST_APP_CODE,
+} from './fixtures';
 
 const CHAIN_MAINNET = 1;
 const CHAIN_SEPOLIA = 11155111;
@@ -29,16 +33,19 @@ const mainnetCtx = {
   chainId: CHAIN_MAINNET,
   signer: SIGNER,
   networkTxConfig: MAINNET_TX_CONFIG,
+  appCode: TEST_APP_CODE,
 };
 const sepoliaCtx = {
   chainId: CHAIN_SEPOLIA,
   signer: SIGNER,
   networkTxConfig: SEPOLIA_TX_CONFIG,
+  appCode: TEST_APP_CODE,
 };
 const polygonCtx = {
   chainId: CHAIN_POLYGON,
   signer: SIGNER,
   networkTxConfig: MAINNET_TX_CONFIG,
+  appCode: TEST_APP_CODE,
 };
 
 const makeRequest = (method: string, params: unknown[] = []) => ({

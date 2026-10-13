@@ -1,4 +1,4 @@
-import { type Address, ethAddress } from 'viem';
+import type { Address } from 'viem';
 
 import mainnetConfig from 'networks/mainnet.json';
 
@@ -10,8 +10,11 @@ const c = mainnetConfig.contracts;
 
 // --- Chainlink Price Feeds (Mainnet) ---
 
+export type ChainlinkFeedKey =
+  'ETH_USD' | 'STETH_USD' | 'USDC_USD' | 'USDT_USD' | 'DAI_USD' | 'BTC_USD';
+
 // All feeds return USD price with 8 decimals unless noted
-export const CHAINLINK_FEEDS: Record<string, ChainlinkFeedConfig> = {
+export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
   ETH_USD: {
     address: c.aggregatorEthUsdPriceFeed as Address,
     maxStaleness: 3900, // 1h + 5min buffer
@@ -36,22 +39,6 @@ export const CHAINLINK_FEEDS: Record<string, ChainlinkFeedConfig> = {
     address: c.aggregatorBtcUsdPriceFeed as Address,
     maxStaleness: 3900, // 1h, used for WBTC pricing
   },
-};
-
-// Map buy token address → Chainlink feed key for USD price
-export const BUY_TOKEN_FEED_MAP: Record<string, string> = {
-  [ethAddress]: 'ETH_USD',
-  [c.weth.toLowerCase()]: 'ETH_USD',
-  [c.usdc.toLowerCase()]: 'USDC_USD',
-  [c.usdt.toLowerCase()]: 'USDT_USD',
-  [c.usds.toLowerCase()]: 'DAI_USD', // USDS → DAI proxy
-  [c.wbtc.toLowerCase()]: 'BTC_USD',
-};
-
-// Sell token address → Chainlink feed key for USD price
-export const SELL_TOKEN_FEED_MAP: Record<string, string> = {
-  [c.lido.toLowerCase()]: 'STETH_USD',
-  [c.wsteth.toLowerCase()]: 'STETH_USD', // wstETH → needs rate conversion
 };
 
 // wstETH address for detecting when extra conversion is needed
