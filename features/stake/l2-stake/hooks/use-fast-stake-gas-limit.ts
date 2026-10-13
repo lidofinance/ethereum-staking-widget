@@ -37,7 +37,7 @@ const withFallback = async (
 };
 
 export const useFastStakeGasLimit = () => {
-  const { l2Stake, chainId } = useLidoSDKL2();
+  const { l2Stake, chainId, isL2Stake } = useLidoSDKL2();
 
   const { data } = useQuery({
     queryKey: [
@@ -45,7 +45,7 @@ export const useFastStakeGasLimit = () => {
       'fast-stake-gas-limit',
       { chainId },
     ],
-
+    enabled: isL2Stake,
     ...STRATEGY_CONSTANT,
 
     queryFn: async () => {

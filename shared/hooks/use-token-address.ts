@@ -26,6 +26,10 @@ const fetchTokenAddress = async (
     invariant(address, `Do not have address for ${token} on ${chainId}`);
     return address;
   } else {
+    invariant(
+      core.chainId === chainId,
+      `Core chainId ${core.chainId} does not match expected chainId ${chainId}`,
+    );
     const address = await core.getContractAddress(
       CONTRACTS_BY_TOKENS[token as keyof typeof CONTRACTS_BY_TOKENS],
     );
@@ -34,16 +38,20 @@ const fetchTokenAddress = async (
   }
 };
 
-export const useTokenAddress = (token: string): Address | undefined => {
+export const useTokenAddress = (
+  token: string,
+  chainIdOverride?: CHAINS,
+): Address | undefined => {
   const { chainId } = useDappStatus();
+  const effectiveChainId = chainIdOverride ?? chainId;
   const { core } = useLidoSDK();
   const { isL2 } = useLidoSDKL2();
 
   const { data: address } = useQuery({
-    queryKey: ['tokenAddress', token, core, chainId, isL2],
+    queryKey: ['tokenAddress', token, core, effectiveChainId, isL2],
     enabled: !!token,
     ...STRATEGY_IMMUTABLE,
-    queryFn: () => fetchTokenAddress(token, core, chainId, isL2),
+    queryFn: () => fetchTokenAddress(token, core, effectiveChainId, isL2),
   });
 
   return address;
