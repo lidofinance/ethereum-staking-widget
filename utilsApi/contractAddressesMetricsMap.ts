@@ -29,10 +29,7 @@ import { ENSPublicResolverAbi } from 'abi/ens-public-resolver-abi';
 import { ENSUniversalResolverAbi } from 'abi/ens-universal-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
-import {
-  CowSettlementAbi,
-  CowVaultRelayerAbi,
-} from 'features/dex-withdrawals/cowswap';
+import { CowSettlementAbi, CowVaultRelayerAbi } from 'shared/dexes/cowswap';
 // Tokens ABIs
 import { wethABI } from 'abi/weth-abi';
 import { usdtABI } from 'abi/usdt-abi';

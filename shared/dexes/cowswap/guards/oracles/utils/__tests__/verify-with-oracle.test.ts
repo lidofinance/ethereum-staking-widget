@@ -1,0 +1,272 @@
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import type { Address } from 'viem';
+
+import mainnetNetwork from 'networks/mainnet.json';
+
+import { CHAINLINK_FEEDS, CHAINLINK_SCALE, WSTETH_ADDRESS } from '../../feeds';
+import {
+  FAIL_UNAVAILABLE,
+  FAIL_UNSUPPORTED,
+  PARTNER_FEE_PCT,
+} from '../../consts';
+import type { OnTradeParamsPayload } from '../../types';
+import { verifyWithOracle, type OracleClient } from '../verify-with-oracle';
+import type { RoundData } from '../rounds';
+
+const c = mainnetNetwork.contracts;
+const STETH = c.lido.toLowerCase();
+const WSTETH = c.wsteth.toLowerCase();
+const USDC = c.usdc.toLowerCase();
+const WETH = c.weth.toLowerCase();
+const ETH = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+const UNKNOWN = '0x0000000000000000000000000000000000000001';
+
+const NOW_SEC = 1_700_000_000n;
+
+const round = (answer: bigint, updatedAt = NOW_SEC - 60n): RoundData => [
+  10n,
+  answer,
+  updatedAt,
+  updatedAt,
+  10n,
+];
+
+const usd = (value: number) => BigInt(Math.round(value * 1e8));
+
+type Prices = Partial<Record<keyof typeof CHAINLINK_FEEDS, RoundData | Error>>;
+
+const makeClient = (
+  prices: Prices,
+  wstethRate: bigint | Error = 1_200_000_000_000_000_000n,
+) => {
+  const byAddress = new Map<string, RoundData | Error>(
+    Object.entries(prices).map(([key, value]) => [
+      CHAINLINK_FEEDS[key].address.toLowerCase(),
+      value as RoundData | Error,
+    ]),
+  );
+
+  const readContract = vi.fn(
+    async ({
+      address,
+      functionName,
+    }: {
+      address: Address;
+      functionName: string;
+    }) => {
+      const value =
+        functionName === 'stEthPerToken'
+          ? wstethRate
+          : byAddress.get(address.toLowerCase());
+      if (value === undefined) throw new Error(`no mock for ${address}`);
+      if (value instanceof Error) throw value;
+      return value;
+    },
+  );
+
+  return { readContract } as unknown as OracleClient & {
+    readContract: typeof readContract;
+  };
+};
+
+const makePayload = (
+  overrides: Partial<Record<string, unknown>> = {},
+): OnTradeParamsPayload =>
+  ({
+    sellToken: { address: STETH, symbol: 'stETH' },
+    buyToken: { address: USDC, symbol: 'USDC' },
+    sellTokenAmount: { units: '1' },
+    buyTokenAmount: { units: '1990' },
+    ...overrides,
+  }) as unknown as OnTradeParamsPayload;
+
+const STETH_USDC_PRICES: Prices = {
+  STETH_USD: round(usd(2000)),
+  USDC_USD: round(usd(1)),
+};
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(Number(NOW_SEC) * 1000);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+describe('verifyWithOracle — inputs', () => {
+  it('returns unavailable without client', async () => {
+    expect(await verifyWithOracle(undefined, makePayload())).toEqual(
+      FAIL_UNAVAILABLE,
+    );
+  });
+
+  it('returns unsupported when token address missing', async () => {
+    const client = makeClient(STETH_USDC_PRICES);
+    const result = await verifyWithOracle(
+      client,
+      makePayload({ sellToken: undefined }),
+    );
+    expect(result).toEqual(FAIL_UNSUPPORTED);
+    expect(client.readContract).not.toHaveBeenCalled();
+  });
+
+  it('returns unsupported for token without feed', async () => {
+    const client = makeClient(STETH_USDC_PRICES);
+    expect(
+      await verifyWithOracle(
+        client,
+        makePayload({ buyToken: { address: UNKNOWN } }),
+      ),
+    ).toEqual(FAIL_UNSUPPORTED);
+    expect(
+      await verifyWithOracle(
+        client,
+        makePayload({ sellToken: { address: USDC } }),
+      ),
+    ).toEqual(FAIL_UNSUPPORTED);
+  });
+
+  it('matches token addresses case-insensitively', async () => {
+    const client = makeClient(STETH_USDC_PRICES);
+    const result = await verifyWithOracle(
+      client,
+      makePayload({ sellToken: { address: c.lido.toUpperCase() } }),
+    );
+    expect(result.ok).toBe(true);
+  });
+});
+
+describe('verifyWithOracle — deviation', () => {
+  it('computes deviation minus partner fee for stETH → USDC', async () => {
+    const result = await verifyWithOracle(
+      makeClient(STETH_USDC_PRICES),
+      makePayload(),
+    );
+
+    expect(result).toEqual({
+      ok: true,
+      sellTokenUsd: 2000,
+      buyTokenUsd: 1,
+      deviation: expect.any(Number),
+    });
+    // (2000 - 1990) / 2000 = 0.5%
+    expect(result.ok && result.deviation).toBeCloseTo(0.5 - PARTNER_FEE_PCT);
+  });
+
+  it('reports negative deviation when user receives more than oracle price', async () => {
+    const result = await verifyWithOracle(
+      makeClient(STETH_USDC_PRICES),
+      makePayload({ buyTokenAmount: { units: '2100' } }),
+    );
+    expect(result.ok && result.deviation).toBeLessThan(0);
+  });
+
+  it.each([
+    ['ETH', ETH],
+    ['WETH', WETH],
+  ])('uses ETH/USD feed for %s', async (_, buyToken) => {
+    const client = makeClient({
+      STETH_USD: round(usd(2000)),
+      ETH_USD: round(usd(2000)),
+    });
+    const result = await verifyWithOracle(
+      client,
+      makePayload({
+        buyToken: { address: buyToken },
+        buyTokenAmount: { units: '1' },
+      }),
+    );
+    expect(result.ok && result.deviation).toBeCloseTo(-PARTNER_FEE_PCT);
+  });
+
+  it('converts wstETH price via stEthPerToken rate', async () => {
+    const client = makeClient(STETH_USDC_PRICES, 1_200_000_000_000_000_000n);
+    const result = await verifyWithOracle(
+      client,
+      makePayload({
+        sellToken: { address: WSTETH },
+        buyTokenAmount: { units: '2400' },
+      }),
+    );
+
+    expect(result.ok && result.sellTokenUsd).toBeCloseTo(2400);
+    expect(result.ok && result.deviation).toBeCloseTo(-PARTNER_FEE_PCT);
+    expect(client.readContract).toHaveBeenCalledWith(
+      expect.objectContaining({
+        address: WSTETH_ADDRESS,
+        functionName: 'stEthPerToken',
+      }),
+    );
+  });
+
+  it('does not read wstETH rate for stETH', async () => {
+    const client = makeClient(STETH_USDC_PRICES);
+    await verifyWithOracle(client, makePayload());
+    expect(client.readContract).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('verifyWithOracle — fail closed', () => {
+  it('returns unavailable on RPC error', async () => {
+    const client = makeClient({
+      STETH_USD: new Error('rpc down'),
+      USDC_USD: round(usd(1)),
+    });
+    expect(await verifyWithOracle(client, makePayload())).toEqual(
+      FAIL_UNAVAILABLE,
+    );
+  });
+
+  it('returns unavailable for stale round', async () => {
+    const stale = NOW_SEC - BigInt(CHAINLINK_FEEDS.STETH_USD.maxStaleness) - 1n;
+    const client = makeClient({
+      STETH_USD: round(usd(2000), stale),
+      USDC_USD: round(usd(1)),
+    });
+    expect(await verifyWithOracle(client, makePayload())).toEqual(
+      FAIL_UNAVAILABLE,
+    );
+  });
+
+  it('returns unavailable for price out of bounds', async () => {
+    const client = makeClient({
+      STETH_USD: round(usd(2000)),
+      USDC_USD: round(usd(5)),
+    });
+    expect(await verifyWithOracle(client, makePayload())).toEqual(
+      FAIL_UNAVAILABLE,
+    );
+  });
+
+  it.each([
+    ['below 1.0', 999_999_999_999_999_999n],
+    ['above 2.0', 2_000_000_000_000_000_001n],
+  ])('returns unavailable for wstETH rate %s', async (_, rate) => {
+    const client = makeClient(STETH_USDC_PRICES, rate);
+    expect(
+      await verifyWithOracle(
+        client,
+        makePayload({ sellToken: { address: WSTETH } }),
+      ),
+    ).toEqual(FAIL_UNAVAILABLE);
+  });
+
+  it.each([
+    ['zero sell', { sellTokenAmount: { units: '0' } }],
+    ['negative buy', { buyTokenAmount: { units: '-1' } }],
+    ['invalid sell', { sellTokenAmount: { units: 'abc' } }],
+    ['missing buy', { buyTokenAmount: undefined }],
+  ])('returns unavailable for %s amount', async (_, overrides) => {
+    expect(
+      await verifyWithOracle(
+        makeClient(STETH_USDC_PRICES),
+        makePayload(overrides),
+      ),
+    ).toEqual(FAIL_UNAVAILABLE);
+  });
+
+  it('uses Chainlink 8-decimals scale', () => {
+    expect(CHAINLINK_SCALE).toBe(10n ** 8n);
+  });
+});
