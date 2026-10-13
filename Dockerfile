@@ -81,6 +81,7 @@ COPY --from=build /app/.yarn/releases ./.yarn/releases
 COPY --from=build /app/server.mjs /app/next.config.mjs /app/env-dynamics.mjs /app/next-logger.config.cjs ./
 COPY --from=build /app/scripts ./scripts
 COPY --from=build /app/utilsApi/clamp-log-args.cjs ./utilsApi/clamp-log-args.cjs
+COPY --from=build /app/utilsApi/rpc-url-log-patterns.cjs ./utilsApi/rpc-url-log-patterns.cjs
 
 # public/runtime is where startup injects runtime env vars; the k8s chart mounts
 # an emptyDir here, so the rest of the root filesystem can stay read-only
