@@ -26,7 +26,7 @@ const themedFill = css`
   path,
   rect {
     &[fill='#273852'] {
-      fill: ${({ theme }) => (theme.name === 'dark' ? '#fff' : '#273852')};
+      fill: ${({ theme }) => (theme.name === 'dark' ? '#fff' : 'var(--custom-fill-dark)')};
     }
   }
 `;

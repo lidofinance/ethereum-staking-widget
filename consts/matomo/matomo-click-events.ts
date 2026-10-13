@@ -36,6 +36,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqRisksOfStakingImmunefiBugBounty = 'faqRisksOfStakingImmunefiBugBounty',
   faqHowCanIUnstakeStEthWithdrawals = 'faqHowCanIUnstakeStEthWithdrawals',
   faqHowCanIUnstakeStEthIntegrations = 'faqHowCanIUnstakeStEthIntegrations',
+  faqHowCanIUnstakeStEthL2Integrations = 'faqHowCanIUnstakeStEthL2Integrations',
   faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
   faqHowCanIGetWstethIntegrationsLink = 'faqHowCanIGetWstethIntegrationsLink',
   faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
@@ -260,6 +261,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «DEX Lido integrations» in FAQ How can I unstake stETH? on stake widget',
     'eth_widget_faq_howCanIUnstakeStEth_dexLidoIntegrations',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthL2Integrations]: [
+    'Ethereum_Staking_Widget',
+    'Push «DEX Lido integrations» in FAQ How can I unstake stETH? on supported L2s on stake widget',
+    'eth_widget_faq_howCanIUnstakeStEth_l2DexLidoIntegrations',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink]: [
     'Ethereum_Staking_Widget',

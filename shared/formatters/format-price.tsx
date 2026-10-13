@@ -44,7 +44,7 @@ export const FormatPrice: FC<FormatPriceComponentProps> = (props) => {
           </span>
         }
       >
-        <span {...rest}>{actual}..</span>
+        <span {...rest}>{actual}...</span>
       </Tooltip>
     );
   }

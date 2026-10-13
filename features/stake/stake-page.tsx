@@ -3,27 +3,35 @@ import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { Stake } from './stake';
 
-import type { FC } from 'react';
-import { SupportL1andL2StakingChains } from 'modules/web3';
-import { useChainId } from 'wagmi';
-import { isSupportedL2StakingChain } from 'consts/chains';
+import type { FC, PropsWithChildren } from 'react';
+import { SupportL1andL2StakingChains, useDappStatus } from 'modules/web3';
 
-export const StakePage: FC = () => {
-  const currentChainId = useChainId();
-  const isL2Staking = isSupportedL2StakingChain(currentChainId);
+/**
+ * Sub-component as useDappStatus accesses context from SupportL1andL2StakingChains
+ */
+const StakePageLayout: FC<PropsWithChildren> = ({ children }) => {
+  const { isChainIdOnL2 } = useDappStatus();
 
-  const subtitle = isL2Staking
+  const subtitle = isChainIdOnL2
     ? 'Stake ETH and receive wstETH while staking'
     : 'Stake ETH and receive stETH while staking';
 
   return (
+    <Layout title="Stake Ether" subtitle={subtitle}>
+      <Head>
+        <title>Stake with Lido | Lido</title>
+      </Head>
+      {children}
+    </Layout>
+  );
+};
+
+export const StakePage: FC = () => {
+  return (
     <SupportL1andL2StakingChains>
-      <Layout title="Stake Ether" subtitle={subtitle}>
-        <Head>
-          <title>Stake with Lido | Lido</title>
-        </Head>
+      <StakePageLayout>
         <Stake />
-      </Layout>
+      </StakePageLayout>
     </SupportL1andL2StakingChains>
   );
 };

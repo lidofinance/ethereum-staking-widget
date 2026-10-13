@@ -8,7 +8,7 @@ export const L2StakeInputGroup = () => {
   const { isWethSupported } = useL2StakeFormData();
 
   return (
-    <InputGroupHookForm errorField="amount">
+    <InputGroupHookForm errorField="amount" bottomSpacing={0}>
       {isWethSupported && <StakeTokenSelect />}
       <L2StakeAmountInput />
     </InputGroupHookForm>

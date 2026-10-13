@@ -1,29 +1,12 @@
-import styled from 'styled-components';
-
-import { getPrettyChainName, useDappStatus } from 'modules/web3';
-import { useWatch } from 'react-hook-form';
-import { L2StakeFormInputType } from './types';
-import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
-import { CHAINS, useConfig } from 'config';
 import { parseEther } from 'viem';
+import { useWatch } from 'react-hook-form';
 
-const BannerStyled = styled.div`
-  background-color: #f2f3f5;
-  border-radius: ${(props) => props.theme.borderRadiusesMap.lg}px;
+import { CHAINS, useConfig } from 'config';
+import { getPrettyChainName, useDappStatus } from 'modules/web3';
 
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
-  padding: ${(props) => props.theme.spaceMap.md}px;
-
-  color: ${(props) => props.theme.colors.text};
-  font-size: ${(props) => props.theme.fontSizesMap.xxs}px;
-`;
-
-const BannerHeader = styled.h4`
-  margin: 0;
-`;
+import { L2StakeFormInputType } from '../types';
+import { useFastStakeLiquidity } from '../hooks/use-fast-liquidity';
+import { BannerHeader, BannerStyled, InfoIconStyled } from './styles';
 
 export const L2StakeLiquidityBanner = () => {
   const inputAmount = useWatch<L2StakeFormInputType, 'amount'>({
@@ -48,6 +31,7 @@ export const L2StakeLiquidityBanner = () => {
     return (
       <BannerStyled>
         <BannerHeader>
+          <InfoIconStyled />
           This amount exceeds the remaining pool capacity on {chainName}
         </BannerHeader>
         There isn’t enough liquidity in the pool on {chainName} for this amount

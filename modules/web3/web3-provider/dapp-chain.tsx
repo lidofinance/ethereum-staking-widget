@@ -3,7 +3,6 @@ import React, {
   useContext,
   useState,
   useMemo,
-  useEffect,
   useCallback,
 } from 'react';
 import invariant from 'tiny-invariant';
@@ -137,28 +136,37 @@ const useSupportedChainLogic = (
       if (!success) {
         return setChainId(newChainId);
       }
-      // success is no-op, wagmi changes the state and we sync in effect below
+      // success is no-op, wagmi changes the state and we sync it to chainId during render below
     },
     [trySwitchChain, canSwitchChain],
   );
 
-  // smart sync wagmi state to local state
-  useEffect(() => {
+  // smart sync wagmi state to local state.
+  // Done during render (not in an effect) so that no frame is committed where the wallet
+  // is already on the new chain while `chainId` still points to the old one: such a frame
+  // flashes "wrong network" UI (isChainMatched=false) on every chain switch.
+  // https://react.dev/reference/react/useState#storing-information-from-previous-renders
+  const [prevWalletState, setPrevWalletState] = useState<{
+    walletChainId: number | undefined;
+    isConnected: boolean;
+  } | null>(null);
+  if (
+    !prevWalletState ||
+    prevWalletState.walletChainId !== walletChainId ||
+    prevWalletState.isConnected !== isConnected
+  ) {
+    setPrevWalletState({ walletChainId, isConnected });
     if (
       !walletChainId ||
       !config.supportedChains.includes(walletChainId) ||
       !isChainSupported(walletChainId)
     ) {
-      // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
-      // It also works on the first rendering, but we don't care.
+      // Resets 'chainId' to 'config.defaultChain' when the wallet is disconnected or on an unsupported chain
       setChainId(config.defaultChain);
-      return;
-    }
-
-    if (isConnected) {
+    } else if (isConnected) {
       setChainId(walletChainId);
     }
-  }, [walletChainId, isConnected, isChainSupported]);
+  }
 
   return useMemo(
     () => ({
