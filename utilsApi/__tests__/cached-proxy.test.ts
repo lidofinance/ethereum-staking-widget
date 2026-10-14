@@ -137,11 +137,11 @@ describe('createCachedProxy forwardHeaders', () => {
     }) as any;
   const makeReq = (headers: Record<string, string> = {}) =>
     ({ query: {}, headers }) as unknown as NextApiRequest;
+  // Headers lowercases names
   const sentHeaders = () =>
-    vi.mocked(standardFetcher).mock.calls[0][1]?.headers as Record<
-      string,
-      string
-    >;
+    Object.fromEntries(
+      new Headers(vi.mocked(standardFetcher).mock.calls[0][1]?.headers),
+    );
 
   beforeEach(() => {
     vi.mocked(standardFetcher).mockResolvedValue({ isValid: true });
@@ -163,21 +163,27 @@ describe('createCachedProxy forwardHeaders', () => {
     await proxy(makeReq({ 'user-agent': 'curl/8.5.0' }), res());
 
     expect(sentHeaders()).toMatchObject({
-      'X-Client-User-Agent': 'curl/8.5.0',
-      Accept: 'application/json',
+      'x-client-user-agent': 'curl/8.5.0',
+      accept: 'application/json',
     });
   });
 
-  it('cannot override the fixed upstream headers', async () => {
+  it.each<Record<string, string>>([
+    { Accept: 'text/html' },
+    { accept: 'text/html', 'content-type': 'text/plain' },
+  ])('cannot override the fixed upstream headers: %o', async (forwarded) => {
     const proxy = createCachedProxy({
       proxyUrl: 'https://upstream/check',
       cacheTTL: 1,
-      forwardHeaders: () => ({ Accept: 'text/html' }),
+      forwardHeaders: () => forwarded,
     });
 
     await proxy(makeReq(), res());
 
-    expect(sentHeaders().Accept).toBe('application/json');
+    expect(sentHeaders()).toMatchObject({
+      accept: 'application/json',
+      'content-type': 'application/json',
+    });
   });
 
   it('sends only the fixed headers without forwardHeaders', async () => {
@@ -189,8 +195,8 @@ describe('createCachedProxy forwardHeaders', () => {
     await proxy(makeReq({ 'user-agent': 'curl/8.5.0' }), res());
 
     expect(sentHeaders()).toEqual({
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+      accept: 'application/json',
+      'content-type': 'application/json',
     });
   });
 });

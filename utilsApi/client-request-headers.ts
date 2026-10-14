@@ -1,9 +1,7 @@
 import { isIP } from 'net';
 import type { NextApiRequest } from 'next';
 
-// The validation API sits behind this server, so every request it sees comes
-// from us. These headers carry what the end client sent, letting it tell
-// browsers apart from scripted pollers.
+// what the end client sent, so the validation API can tell it apart from us
 export const CLIENT_IP_HEADER = 'X-Client-IP';
 export const CLIENT_USER_AGENT_HEADER = 'X-Client-User-Agent';
 export const CLIENT_REFERER_HEADER = 'X-Client-Referer';
@@ -15,8 +13,7 @@ const firstValue = (value: string | string[] | undefined) =>
 
 const normalizeIp = (value: string) => value.trim().replace(/^::ffff:/i, '');
 
-// Printable ASCII only: fetch() rejects a request whose header value it
-// considers invalid, and that would fail the proxied call for a real user.
+// printable ASCII only: an invalid header value makes fetch() throw
 const sanitizeHeaderValue = (value: string | undefined) => {
   const clean = value
     ?.replace(/[^\u0020-\u007E]/g, '')
@@ -25,10 +22,7 @@ const sanitizeHeaderValue = (value: string | undefined) => {
   return clean || undefined;
 };
 
-// Cloudflare's header only. Unlike @lidofinance/next-ip-rate-limit there is no
-// socket fallback: behind the proxy that is one address shared by every user,
-// and a consumer limiting on it would throttle them all. X-Forwarded-For is
-// skipped too — the client controls it.
+// CF header only: the socket peer is shared by all users, XFF is client-controlled
 export const getClientIp = (req: NextApiRequest): string | undefined => {
   const cfIp = firstValue(req.headers['cf-connecting-ip'])?.split(',')[0];
   if (!cfIp) return undefined;

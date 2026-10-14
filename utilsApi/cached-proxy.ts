@@ -24,10 +24,7 @@ type ProxyOptions = {
   metricsHost?: string;
   /** Hard cap on cache entries. Default 200. */
   cacheMaxEntries?: number;
-  /**
-   * Extra headers sent upstream, built from the incoming request. A cache hit
-   * never reaches upstream, so within `cacheTTL` it only sees the first caller.
-   */
+  /** Extra upstream headers from the request; cache hits don't reach upstream. */
   forwardHeaders?: (req: NextApiRequest) => Record<string, string>;
 };
 
@@ -63,16 +60,17 @@ export const createCachedProxy = ({
     const url = proxyUrlString + (params ? `?${params.toString()}` : '');
 
     try {
+      // set() is case-insensitive, so forwarded headers can't override these
+      const headers = new Headers(forwardHeaders?.(req));
+      headers.set('Accept', 'application/json');
+      headers.set('Content-Type', 'application/json');
+
       const data = await responseTimeExternalMetricWrapper({
         payload: metricsHost || proxyUrlString,
         request: () =>
           standardFetcher(url, {
             signal: AbortSignal.timeout(timeout),
-            headers: {
-              ...forwardHeaders?.(req),
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
+            headers,
           }),
       });
 
