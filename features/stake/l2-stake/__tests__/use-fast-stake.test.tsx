@@ -60,6 +60,7 @@ const state = vi.hoisted(() => ({
   // the rate the form displays, as the conversion query hands it over
   shownRate: undefined as { feeRate: bigint; price: bigint } | undefined,
   refetchRate: vi.fn(),
+  refetchLiquidity: vi.fn(),
   wstethBalance: vi.fn(),
   sendAACalls: vi.fn(),
   txModalStages: {
@@ -78,6 +79,9 @@ vi.mock('../hooks/use-conversion', () => ({
     data: state.shownRate,
     refetch: state.refetchRate,
   }),
+}));
+vi.mock('../hooks/use-fast-liquidity', () => ({
+  useFastStakeLiquidity: () => ({ refetch: state.refetchLiquidity }),
 }));
 vi.mock('modules/web3', async () => {
   const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
@@ -258,6 +262,7 @@ describe('useL2FastStake', () => {
         TX_HASH,
       );
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
+      expect(state.refetchLiquidity).not.toHaveBeenCalled();
     });
 
     it('falls back to the configured referral when none is given', async () => {
@@ -286,6 +291,7 @@ describe('useL2FastStake', () => {
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
       expect(onConfirm).not.toHaveBeenCalled();
+      expect(state.refetchLiquidity).toHaveBeenCalledTimes(1);
     });
 
     it('reports a reverted transaction as a failure', async () => {
@@ -305,6 +311,8 @@ describe('useL2FastStake', () => {
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
       expect(onConfirm).not.toHaveBeenCalled();
+      // the pool may have moved under the form: the cap is re-read for the retry
+      expect(state.refetchLiquidity).toHaveBeenCalledTimes(1);
     });
 
     it('reports a multisig proposal without waiting for a receipt', async () => {

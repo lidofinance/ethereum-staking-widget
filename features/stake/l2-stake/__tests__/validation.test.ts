@@ -194,6 +194,89 @@ describe('L2StakeFormValidationResolver', () => {
     });
   });
 
+  describe('pool liquidity target', () => {
+    const TARGET = 25n * P;
+    const withTarget = (
+      overrides: Partial<L2StakeFormValidationContext> = {},
+    ) => context({ etherLiquidityTarget: TARGET, ...overrides });
+
+    const amountErrorEntry = async (
+      amount: bigint,
+      ctx: L2StakeFormValidationContext,
+      token?: TOKENS_TO_STAKE,
+    ) => {
+      const result = await resolve(amount, ctx, token);
+      return (result.errors as Errors).amount;
+    };
+
+    it('accepts a stake within the pool liquidity', async () => {
+      const result = await resolve(LIQUIDITY, withTarget());
+      expect(result.errors).toEqual({});
+    });
+
+    it('raises a soft, message-less error between the liquidity and the target', async () => {
+      // the banner, not the field, explains this state; the form must still
+      // be invalid
+      await expect(
+        amountErrorEntry(LIQUIDITY + 1n, withTarget()),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          message: '',
+          type: DefaultValidationErrorTypes.VALIDATE,
+        }),
+      );
+    });
+
+    it('keeps the soft error up to the target itself', async () => {
+      await expect(
+        amountErrorEntry(TARGET, withTarget()),
+      ).resolves.toMatchObject({ message: '' });
+    });
+
+    it('rejects a stake above the target as exceeding the pool capacity', async () => {
+      await expect(
+        amountErrorEntry(TARGET + 1n, withTarget()),
+      ).resolves.toMatchObject({
+        message: expect.stringMatching(/exceeds total pool capacity on Base/),
+        type: DefaultValidationErrorTypes.VALIDATE,
+      });
+    });
+
+    it('caps at the liquidity, not at a stale target below it', async () => {
+      const stale = withTarget({ etherLiquidityTarget: LIQUIDITY - P });
+      const result = await resolve(LIQUIDITY, stale);
+      expect(result.errors).toEqual({});
+      await expect(
+        amountErrorEntry(LIQUIDITY + 1n, stale),
+      ).resolves.toMatchObject({
+        message: expect.stringMatching(/exceeds total pool capacity/),
+      });
+    });
+
+    it('checks the target band before the balance', async () => {
+      await expect(
+        amountErrorEntry(
+          LIQUIDITY + 1n,
+          withTarget({ etherBalance: LIQUIDITY }),
+        ),
+      ).resolves.toMatchObject({ message: '' });
+    });
+
+    it('applies the target messaging to WETH as well', async () => {
+      const weth = TOKENS_TO_STAKE.WETH;
+      await expect(
+        amountErrorEntry(LIQUIDITY + 1n, withTarget(), weth),
+      ).resolves.toMatchObject({ message: '' });
+      await expect(
+        amountErrorEntry(TARGET + 1n, withTarget(), weth),
+      ).resolves.toMatchObject({
+        message: expect.stringMatching(
+          /Entered WETH amount exceeds total pool capacity/,
+        ),
+      });
+    });
+  });
+
   describe('per-token context', () => {
     it('validates ETH while the WETH context is still pending', async () => {
       const result = await resolve(P, context(), TOKENS_TO_STAKE.ETH, {

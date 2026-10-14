@@ -26,6 +26,7 @@ import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import { getReferralAddress } from 'utils/get-referral-address';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import { useFastStakeConversion } from './use-conversion';
+import { useFastStakeLiquidity } from './use-fast-liquidity';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
 import { useTrackStakeEvent } from './use-track-event';
 
@@ -63,6 +64,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { l2Stake, l2 } = useLidoSDKL2();
   // the rate the form is showing; the stake is checked against it
   const { data: shownRate, refetch: refetchRate } = useFastStakeConversion();
+  const { refetch: refetchLiquidity } = useFastStakeLiquidity();
   const { txModalStages } = useTxModalStagesL2FastStake();
   const txFlow = useTxFlow();
   const { featureFlags } = useConfig().externalConfig;
@@ -184,6 +186,10 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
         },
         onFailure: async ({ error, ctx }) => {
           console.warn(error);
+          // A failed stake may mean the pool moved under the form (drained
+          // or paused since the last read): refresh the cap the amount is
+          // validated against, so the field shows why before any retry
+          void refetchLiquidity({ throwOnError: false });
           // The approval settled but its confirmation read failed, so the
           // SDK never got to the stake. Not a completed stake: keep the
           // amount, refresh the allowance and offer to continue. Any other
@@ -215,6 +221,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       l2Stake,
       shownRate,
       refetchRate,
+      refetchLiquidity,
       txFlow,
       onConfirm,
       txModalStages,
