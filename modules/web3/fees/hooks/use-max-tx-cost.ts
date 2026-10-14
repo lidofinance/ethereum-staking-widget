@@ -5,13 +5,14 @@ import invariant from 'tiny-invariant';
 
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
-import { useDappStatus } from './use-dapp-status';
+import { useDappStatus } from '../../hooks/use-dapp-status';
 import { useMaxGasPrice } from './use-max-gas-price';
 import {
+  composeMaxTxCost,
   estimateTxFees,
-  isTxSpecificFeeModel,
-  type FeeEstimateTx,
-} from '../utils/tx-fees';
+  hasTxSpecificFees,
+} from '../estimate';
+import type { FeeEstimateTx } from '../types';
 
 type UseMaxTxCostArgs = {
   chainId?: number;
@@ -21,12 +22,10 @@ type UseMaxTxCostArgs = {
 };
 
 /**
- * Upper bound of a tx cost in wei for the chain's fee model:
- * - fee-history price (2x base fee + tip) times the gas limit everywhere
- * - plus the GasPriceOracle L1 data fee on OP-stack chains
- * - with the price and gas limit from linea_estimateGas on Linea
- * Without a `tx`, tx-specific parts are skipped and the result is the plain
- * fee-history cost.
+ * Upper bound of a tx cost in wei: the chain-wide max price times the gas
+ * limit, plus or replaced by the tx-specific parts the chain's fee model
+ * quotes (see modules/web3/fees). Without a `tx` the tx-specific parts are
+ * skipped and the result is the chain-wide cost.
  */
 export const useMaxTxCost = ({ chainId, gasLimit, tx }: UseMaxTxCostArgs) => {
   const { chainId: dappChainId } = useDappStatus();
@@ -34,7 +33,7 @@ export const useMaxTxCost = ({ chainId, gasLimit, tx }: UseMaxTxCostArgs) => {
   const publicClient = usePublicClient({ chainId: targetChainId });
   const feeHistory = useMaxGasPrice(targetChainId);
 
-  const isTxFeesNeeded = !!tx && isTxSpecificFeeModel(targetChainId);
+  const isTxFeesNeeded = !!tx && hasTxSpecificFees(targetChainId);
 
   const txFees = useQuery({
     queryKey: [
@@ -59,17 +58,16 @@ export const useMaxTxCost = ({ chainId, gasLimit, tx }: UseMaxTxCostArgs) => {
   const maxGasPrice = txFeesData?.maxFeePerGas ?? feeHistory.maxGasPrice;
   const l1Fee = txFeesData?.l1Fee ?? 0n;
 
-  const maxTxCost = useMemo(() => {
-    if (gasLimit === undefined || maxGasPrice === undefined) return undefined;
-    // an understated cost is worse than a late one
-    if (isTxFeesNeeded && !txFeesData) return undefined;
-    const chainGasLimit = txFeesData?.gasLimit;
-    const effectiveGasLimit =
-      chainGasLimit !== undefined && chainGasLimit > gasLimit
-        ? chainGasLimit
-        : gasLimit;
-    return effectiveGasLimit * maxGasPrice + l1Fee;
-  }, [gasLimit, maxGasPrice, isTxFeesNeeded, txFeesData, l1Fee]);
+  const maxTxCost = useMemo(
+    () =>
+      composeMaxTxCost({
+        gasLimit,
+        maxGasPrice: feeHistory.maxGasPrice,
+        txFees: txFeesData,
+        isTxFeesNeeded,
+      }),
+    [gasLimit, feeHistory.maxGasPrice, txFeesData, isTxFeesNeeded],
+  );
 
   return {
     maxGasPrice,

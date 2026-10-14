@@ -5,14 +5,21 @@ vi.mock('viem/op-stack', () => ({ estimateL1Fee: vi.fn() }));
 
 import { estimateL1Fee } from 'viem/op-stack';
 import { CHAINS } from 'config/chains';
-import { GAS_FEE_MODEL, getGasFeeModel } from '../../consts/gas-fee-model';
 import {
+  estimateSendFees,
   estimateTxFees,
-  feeHistoryToMaxFee,
-  getLineaTxFees,
-  isTxSpecificFeeModel,
-  type FeeClient,
-} from '../tx-fees';
+  hasTxSpecificFees,
+} from '../estimate';
+import { GAS_FEE_MODEL, getGasFeeModel } from '../model';
+import { feeHistoryToMaxFee } from '../models/fee-history';
+import { getLineaQuote } from '../models/linea';
+import {
+  CHAIN_FEE_PARAMS,
+  DEFAULT_FEE_PARAMS,
+  MODEL_FEE_PARAMS,
+  getFeeParams,
+} from '../params';
+import type { FeeClient } from '../types';
 
 const tx = {
   account: '0x1111111111111111111111111111111111111111' as Address,
@@ -43,20 +50,46 @@ describe('getGasFeeModel', () => {
   });
 
   it('flags chains that price txs individually', () => {
-    expect(isTxSpecificFeeModel(CHAINS.Linea)).toBe(true);
-    expect(isTxSpecificFeeModel(CHAINS.Base)).toBe(true);
-    expect(isTxSpecificFeeModel(CHAINS.Arbitrum)).toBe(false);
-    expect(isTxSpecificFeeModel(CHAINS.Mainnet)).toBe(false);
+    expect(hasTxSpecificFees(CHAINS.Linea)).toBe(true);
+    expect(hasTxSpecificFees(CHAINS.Base)).toBe(true);
+    expect(hasTxSpecificFees(CHAINS.Arbitrum)).toBe(false);
+    expect(hasTxSpecificFees(CHAINS.Mainnet)).toBe(false);
+  });
+});
+
+describe('getFeeParams', () => {
+  it('layers chain overrides over model overrides over the defaults', () => {
+    MODEL_FEE_PARAMS[GAS_FEE_MODEL.OpStack] = { l1CostBufferPercent: 50n };
+    CHAIN_FEE_PARAMS[CHAINS.Optimism] = { baseFeeMultiplier: 3n };
+    try {
+      expect(getFeeParams(CHAINS.Mainnet)).toEqual(DEFAULT_FEE_PARAMS);
+      expect(getFeeParams(CHAINS.Base)).toEqual({
+        ...DEFAULT_FEE_PARAMS,
+        l1CostBufferPercent: 50n,
+      });
+      expect(getFeeParams(CHAINS.Optimism)).toEqual({
+        ...DEFAULT_FEE_PARAMS,
+        l1CostBufferPercent: 50n,
+        baseFeeMultiplier: 3n,
+      });
+    } finally {
+      delete MODEL_FEE_PARAMS[GAS_FEE_MODEL.OpStack];
+      delete CHAIN_FEE_PARAMS[CHAINS.Optimism];
+    }
   });
 });
 
 describe('feeHistoryToMaxFee', () => {
-  it('doubles the pending base fee and adds the average sampled tip', () => {
-    const fees = feeHistoryToMaxFee({
-      baseFeePerGas: [10n, 11n],
-      reward: [[1n], [3n]],
-    });
-    expect(fees).toEqual({
+  const params = DEFAULT_FEE_PARAMS;
+
+  it('multiplies the pending base fee and adds the average sampled tip', () => {
+    expect(
+      feeHistoryToMaxFee(
+        { baseFeePerGas: [10n, 11n], reward: [[1n], [3n]] },
+        0n,
+        params,
+      ),
+    ).toEqual({
       lastBaseFeePerGas: 10n,
       maxPriorityFeePerGas: 2n,
       maxFeePerGas: 22n,
@@ -70,6 +103,7 @@ describe('feeHistoryToMaxFee', () => {
       feeHistoryToMaxFee(
         { baseFeePerGas: [10_000n], reward: [[16n]] },
         suggested,
+        params,
       ),
     ).toEqual({
       lastBaseFeePerGas: 10_000n,
@@ -78,7 +112,7 @@ describe('feeHistoryToMaxFee', () => {
     });
     // the floor never lowers a higher sampled tip
     expect(
-      feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: [[5n]] }, 2n),
+      feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: [[5n]] }, 2n, params),
     ).toEqual({
       lastBaseFeePerGas: 10n,
       maxPriorityFeePerGas: 5n,
@@ -86,9 +120,22 @@ describe('feeHistoryToMaxFee', () => {
     });
   });
 
+  it('applies the base fee multiplier from the params', () => {
+    expect(
+      feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: [[1n]] }, 0n, {
+        ...params,
+        baseFeeMultiplier: 3n,
+      }).maxFeePerGas,
+    ).toBe(31n);
+  });
+
   it('treats a missing reward as a zero tip', () => {
     expect(
-      feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: undefined }),
+      feeHistoryToMaxFee(
+        { baseFeePerGas: [10n], reward: undefined },
+        0n,
+        params,
+      ),
     ).toEqual({
       lastBaseFeePerGas: 10n,
       maxPriorityFeePerGas: 0n,
@@ -97,14 +144,16 @@ describe('feeHistoryToMaxFee', () => {
   });
 });
 
-describe('getLineaTxFees', () => {
+describe('getLineaQuote', () => {
   it('calls linea_estimateGas with the tx and parses the quote', async () => {
     const { client, request } = lineaClient({
       gasLimit: '0x30000',
       baseFeePerGas: '0x7',
       priorityFeePerGas: '0x100',
     });
-    await expect(getLineaTxFees(client, tx)).resolves.toEqual({
+    await expect(
+      getLineaQuote(client, tx, DEFAULT_FEE_PARAMS),
+    ).resolves.toEqual({
       lastBaseFeePerGas: 7n,
       maxPriorityFeePerGas: 256n,
       maxFeePerGas: 14n + 256n,
@@ -123,7 +172,7 @@ describe('estimateTxFees', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => undefined);
   });
 
-  it('linea: re-prices from linea_estimateGas with a buffered tip', async () => {
+  it('linea: re-prices from the quote with a buffered tip', async () => {
     const { client } = lineaClient({
       gasLimit: '0x30000',
       baseFeePerGas: '0x7',
@@ -156,6 +205,7 @@ describe('estimateTxFees', () => {
         account: tx.account,
         to: tx.to,
         data: tx.data,
+        gasPriceOracleAddress: '0x420000000000000000000000000000000000000F',
       }),
     );
   });
@@ -167,7 +217,7 @@ describe('estimateTxFees', () => {
     ).resolves.toEqual({ l1Fee: 0n });
   });
 
-  it('ethereum and arbitrum: no tx-specific additions and no RPC call', async () => {
+  it('ethereum and arbitrum: no tx-specific parts and no RPC call', async () => {
     const { client, request } = lineaClient({});
     await expect(estimateTxFees(client, CHAINS.Mainnet, tx)).resolves.toEqual({
       l1Fee: 0n,
@@ -177,5 +227,40 @@ describe('estimateTxFees', () => {
     });
     expect(request).not.toHaveBeenCalled();
     expect(estimateL1Fee).not.toHaveBeenCalled();
+  });
+});
+
+describe('estimateSendFees', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  });
+
+  it('linea: the exact quote, unbuffered', async () => {
+    const { client } = lineaClient({
+      gasLimit: '0x30000',
+      baseFeePerGas: '0x7',
+      priorityFeePerGas: '0x64',
+    });
+    await expect(estimateSendFees(client, CHAINS.Linea, tx)).resolves.toEqual({
+      maxFeePerGas: 14n + 100n,
+      maxPriorityFeePerGas: 100n,
+    });
+  });
+
+  it('linea: keeps the core price when the quote fails', async () => {
+    const { client } = lineaClient({}, true);
+    await expect(
+      estimateSendFees(client, CHAINS.Linea, tx),
+    ).resolves.toBeUndefined();
+  });
+
+  it('other models: keep the core price without an RPC call', async () => {
+    const { client, request } = lineaClient({});
+    for (const chainId of [CHAINS.Mainnet, CHAINS.Base, CHAINS.Arbitrum]) {
+      await expect(
+        estimateSendFees(client, chainId, tx),
+      ).resolves.toBeUndefined();
+    }
+    expect(request).not.toHaveBeenCalled();
   });
 });

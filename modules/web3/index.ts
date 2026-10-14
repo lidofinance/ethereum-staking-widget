@@ -1,4 +1,5 @@
 export * from './consts';
+export * from './fees';
 export * from './hooks';
 export * from './utils';
 export {

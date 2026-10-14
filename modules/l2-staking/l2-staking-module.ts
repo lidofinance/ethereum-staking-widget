@@ -11,11 +11,7 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/common';
 import { bridgedWstethAbi } from '@lidofinance/lido-ethereum-sdk/l2';
 import { wethABI } from 'abi/weth-abi';
-import {
-  GAS_FEE_MODEL,
-  getGasFeeModel,
-} from 'modules/web3/consts/gas-fee-model';
-import { getLineaTxFees } from 'modules/web3/utils/tx-fees';
+import { estimateSendFees } from 'modules/web3/fees';
 
 import {
   L2_STAKING_ORACLE_POOL_ABI,
@@ -280,34 +276,25 @@ export class L2StakeModule extends LidoSDKModule {
   }
 
   /**
-   * The SDK core prices every tx from a fee-history sample (2x base fee + 25th
-   * percentile tip). On Linea the base fee is fixed and the tip is the L1 data
-   * cost of this very tx: the sample is noise there and gets charged in full,
-   * so the tx is re-priced with linea_estimateGas, as wallets do. Other chains
-   * keep the core's price.
+   * The SDK core prices every tx from a fee-history sample. Chains whose fee
+   * model quotes send fees per tx (Linea) get the tx re-priced with that
+   * quote; the others keep the core's price.
    */
   private async withChainFees<T extends TransactionOptions>(
     options: T,
     tx: { to: Address; data: `0x${string}`; value?: bigint },
   ): Promise<T> {
-    if (getGasFeeModel(this.core.chain.id) !== GAS_FEE_MODEL.Linea) {
-      return options;
-    }
     const account =
       typeof options.account === 'string'
         ? options.account
         : options.account?.address;
     if (!account) return options;
-    try {
-      const { maxFeePerGas, maxPriorityFeePerGas } = await getLineaTxFees(
-        this.core.publicClient,
-        { ...tx, account },
-      );
-      return { ...options, maxFeePerGas, maxPriorityFeePerGas };
-    } catch (error) {
-      console.warn('[l2-staking::linea-fees]', error);
-      return options;
-    }
+    const sendFees = await estimateSendFees(
+      this.core.publicClient,
+      this.core.chain.id,
+      { ...tx, account },
+    );
+    return sendFees ? { ...options, ...sendFees } : options;
   }
 
   //   @Logger('Contracts:')
