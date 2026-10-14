@@ -329,6 +329,8 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
             referral,
           });
         },
+        // keeps state between L1/L2 changes
+        resetFormOn: 'walletAddress',
       }),
       [formObject, retryEvent, stake],
     );

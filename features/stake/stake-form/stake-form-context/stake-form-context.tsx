@@ -264,6 +264,8 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
             referral,
           });
         },
+        // keeps state between L1/L2 changes
+        resetFormOn: 'walletAddress',
       }),
       [stake, retryEvent, formObject],
     );

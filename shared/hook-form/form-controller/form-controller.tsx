@@ -1,12 +1,10 @@
-import { FC, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import { FC, useCallback, useEffect, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useFormControllerContext } from './form-controller-context';
 import { useWagmiConnectionChangedCallback } from 'shared/hooks/use-wagmi-connection-changed-callback';
 
-type FormControllerProps = React.ComponentProps<'form'>;
-
-export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
+export const FormController: FC<React.ComponentProps<'form'>> = ({
   children,
   ...props
 }) => {
@@ -15,6 +13,7 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
     onSubmit,
     onReset: resetCustom,
     retryEvent,
+    resetFormOn = 'all',
   } = useFormControllerContext();
 
   const reset = useMemo(() => {
@@ -47,7 +46,7 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
   }, [reset, getValues]);
 
   // Reset the form when chain id or wallet address changed or disconnected
-  useWagmiConnectionChangedCallback(resetWithValues);
+  useWagmiConnectionChangedCallback(resetWithValues, resetFormOn);
 
   return (
     <form autoComplete="off" onSubmit={doSubmit} {...props}>

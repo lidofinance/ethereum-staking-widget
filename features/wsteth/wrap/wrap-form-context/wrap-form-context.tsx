@@ -75,6 +75,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     reset,
     formState: { defaultValues },
     setValue,
+    getValues,
   } = formObject;
   useQueryParamsReferralForm<WrapFormInputType>({ setValue });
   const [token, amount] = watch(['token', 'amount']);
@@ -83,10 +84,13 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   // connecting (or before switching chains) must be normalized here, not just
   // in the connection-change reset which skips the initial connect
   useEffect(() => {
-    if (isL2Wrap && token !== TOKENS_TO_WRAP.stETH) {
-      setValue('token', TOKENS_TO_WRAP.stETH, { shouldValidate: true });
+    if (isL2Wrap) {
+      const currentToken = getValues('token');
+      if (currentToken !== TOKENS_TO_WRAP.stETH) {
+        setValue('token', TOKENS_TO_WRAP.stETH, { shouldValidate: true });
+      }
     }
-  }, [isL2Wrap, token, setValue]);
+  }, [getValues, isL2Wrap, setValue]);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
   const approvalDataOnL1 = useWrapTxOnL1Approve({
@@ -143,6 +147,8 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
         reset({ ...defaultValues, token });
       },
       retryEvent,
+      // keeps state between L1/L2 changes
+      resetFormOn: 'walletAddress',
     }),
     [onSubmit, retryEvent, reset, defaultValues],
   );
