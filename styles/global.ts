@@ -24,6 +24,7 @@ const GlobalStyle = createGlobalStyle`
     --footer-mobile-margin-bottom: 60px;
     
     --custom-background-dark: #28282f;
+    --custom-fill-dark: #273852;
   }
 
   /*

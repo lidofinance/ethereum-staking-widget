@@ -50,6 +50,7 @@ const allowedRPCMethods = [
   'eth_getBlockByNumber',
   'eth_feeHistory',
   'eth_maxPriorityFeePerGas',
+  'linea_estimateGas',
   'eth_getBalance',
   'eth_blockNumber',
   'eth_getTransactionByHash',
@@ -71,7 +72,7 @@ const rpc =
       prefix: METRICS_PREFIX,
       registry: Metrics.registry,
     },
-    defaultChain: `${appConfig.defaultChain}`,
+    defaultChain: appConfig.defaultChain,
     providers: {
       [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
       [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
@@ -81,6 +82,9 @@ const rpc =
       [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,
       [CHAINS.Unichain]: secretConfig.rpcUrls_130,
       [CHAINS.UnichainSepolia]: secretConfig.rpcUrls_1301,
+      [CHAINS.Base]: secretConfig.rpcUrls_8453,
+      [CHAINS.Linea]: secretConfig.rpcUrls_59144,
+      [CHAINS.Arbitrum]: secretConfig.rpcUrls_42161,
     },
     validation: {
       allowedRPCMethods,

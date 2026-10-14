@@ -36,12 +36,16 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqRisksOfStakingImmunefiBugBounty = 'faqRisksOfStakingImmunefiBugBounty',
   faqHowCanIUnstakeStEthWithdrawals = 'faqHowCanIUnstakeStEthWithdrawals',
   faqHowCanIUnstakeStEthIntegrations = 'faqHowCanIUnstakeStEthIntegrations',
+  faqHowCanIUnstakeStEthL2Integrations = 'faqHowCanIUnstakeStEthL2Integrations',
   faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
   faqHowCanIGetWstethIntegrationsLink = 'faqHowCanIGetWstethIntegrationsLink',
   faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
   faqHowCanIUseWstethLidoMultichain = 'faqHowCanIUseWstethLidoMultichain',
   faqHowCanIUseWstethDefiProtocols = 'faqHowCanIUseWstethDefiProtocols',
   faqDoINeedToUnwrapMyWstethWithdrawalsTabs = 'faqDoINeedToUnwrapMyWstethWithdrawalsTabs',
+
+  // L2 Stake
+  faqHowDoesDirectStakingWork = 'faqHowDoesDirectStakingWork',
 
   // Optimism
   faqHowCanIGetWstethOnOptimismWrapLink = 'faqHowCanIGetWstethOnOptimismWrapLink',
@@ -60,6 +64,10 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqHowCouldIUnwrapWstETHBackToStETHOnUnichainUnwrapLink = 'faqHowCouldIUnwrapWstETHBackToStETHOnUnichainUnwrapLink',
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack',
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim',
+
+  // /stake page
+  // token goes as a custom dimension
+  stakeTokenSelect = 'stakeTokenSelect',
 
   // /wrap page
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
@@ -254,6 +262,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push «DEX Lido integrations» in FAQ How can I unstake stETH? on stake widget',
     'eth_widget_faq_howCanIUnstakeStEth_dexLidoIntegrations',
   ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthL2Integrations]: [
+    'Ethereum_Staking_Widget',
+    'Push «DEX Lido integrations» in FAQ How can I unstake stETH? on supported L2s on stake widget',
+    'eth_widget_faq_howCanIUnstakeStEth_l2DexLidoIntegrations',
+  ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink]: [
     'Ethereum_Staking_Widget',
     'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH',
@@ -362,6 +375,17 @@ export const MATOMO_CLICK_EVENTS: Record<
       'Push «Withdrawals Request and Claim» What happens if I want to unstake ETH on Ethereum? Can I do that from Unichain?',
       'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim',
     ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowDoesDirectStakingWork]: [
+    'Ethereum_Staking_Widget',
+    'Push "How does Direct Staking on L2 work?',
+    'eth_widget_faq_howDirectStakingOnL2Works',
+  ],
+  // /stake page
+  [MATOMO_CLICK_EVENTS_TYPES.stakeTokenSelect]: [
+    'Ethereum_Staking_Widget',
+    'Select token to stake on stake page',
+    'eth_widget_stake_select_token',
+  ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectETH]: [
     'Ethereum_Staking_Widget',

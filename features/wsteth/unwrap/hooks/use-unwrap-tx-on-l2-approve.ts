@@ -50,7 +50,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
         callback: async ({ stage, payload }) => {
           switch (stage) {
             case TransactionCallbackStage.SIGN:
-              txModalStages.signApproval(amount, TOKENS_TO_WRAP.ETH);
+              txModalStages.signApproval(amount, TOKENS_TO_WRAP.wstETH);
               break;
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pendingApproval(
