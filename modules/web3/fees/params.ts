@@ -13,7 +13,10 @@ export type FeeParams = {
   feeHistoryBlockCount: number;
   feeHistoryRewardPercentile: number;
   // Buffer, in percent, on the parts that follow the L1 base fee and can move
-  // between quoting and sending: the OP-stack L1 data fee, the Linea tip
+  // between quoting and sending: the OP-stack L1 data fee, the Linea tip.
+  // That fee is an EIP-1559 base fee too, so it gets the same headroom as
+  // the chain's own base fee: measured swings between a quote and the send
+  // exceeded 25% on Optimism, where it is most of the cost
   l1CostBufferPercent: bigint;
 };
 
@@ -21,7 +24,7 @@ export const DEFAULT_FEE_PARAMS: FeeParams = {
   baseFeeMultiplier: 2n,
   feeHistoryBlockCount: 5,
   feeHistoryRewardPercentile: 25,
-  l1CostBufferPercent: 25n,
+  l1CostBufferPercent: 100n,
 };
 
 // Per-model overrides of the defaults

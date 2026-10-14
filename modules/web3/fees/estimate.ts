@@ -6,6 +6,7 @@ import type {
   FeeEstimateTx,
   FeeModelDefinition,
   MaxFeeData,
+  MaxFeeOptions,
   SendFees,
   TxFees,
 } from './types';
@@ -27,8 +28,9 @@ export const hasTxSpecificFees = (chainId?: number): boolean =>
 export const estimateMaxFee = (
   client: FeeClient,
   chainId: number,
+  options: MaxFeeOptions = {},
 ): Promise<MaxFeeData> =>
-  getFeeModel(chainId).getMaxFee(client, getFeeParams(chainId));
+  getFeeModel(chainId).getMaxFee(client, getFeeParams(chainId), options);
 
 // Tx-specific parts of the cost. Falls back to none when the chain's quote
 // fails, so the UI is never blocked; the fallback is logged

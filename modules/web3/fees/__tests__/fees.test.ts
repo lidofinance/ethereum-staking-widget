@@ -11,7 +11,10 @@ import {
   hasTxSpecificFees,
 } from '../estimate';
 import { GAS_FEE_MODEL, getGasFeeModel } from '../model';
-import { feeHistoryToMaxFee } from '../models/fee-history';
+import {
+  feeHistoryToMaxFee,
+  withPriorityFeeFloor,
+} from '../models/fee-history';
 import { getLineaQuote } from '../models/linea';
 import {
   CHAIN_FEE_PARAMS,
@@ -86,7 +89,6 @@ describe('feeHistoryToMaxFee', () => {
     expect(
       feeHistoryToMaxFee(
         { baseFeePerGas: [10n, 11n], reward: [[1n], [3n]] },
-        0n,
         params,
       ),
     ).toEqual({
@@ -96,51 +98,48 @@ describe('feeHistoryToMaxFee', () => {
     });
   });
 
-  it('floors the sampled tip at the suggested priority fee', () => {
-    // Optimism-like: base fee near zero, sampled tip near zero, node suggests 0.001 gwei
-    const suggested = 1_000_000n;
-    expect(
-      feeHistoryToMaxFee(
-        { baseFeePerGas: [10_000n], reward: [[16n]] },
-        suggested,
-        params,
-      ),
-    ).toEqual({
-      lastBaseFeePerGas: 10_000n,
-      maxPriorityFeePerGas: suggested,
-      maxFeePerGas: 20_000n + suggested,
-    });
-    // the floor never lowers a higher sampled tip
-    expect(
-      feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: [[5n]] }, 2n, params),
-    ).toEqual({
-      lastBaseFeePerGas: 10n,
-      maxPriorityFeePerGas: 5n,
-      maxFeePerGas: 25n,
-    });
-  });
-
   it('applies the base fee multiplier from the params', () => {
     expect(
-      feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: [[1n]] }, 0n, {
-        ...params,
-        baseFeeMultiplier: 3n,
-      }).maxFeePerGas,
+      feeHistoryToMaxFee(
+        { baseFeePerGas: [10n], reward: [[1n]] },
+        {
+          ...params,
+          baseFeeMultiplier: 3n,
+        },
+      ).maxFeePerGas,
     ).toBe(31n);
   });
 
   it('treats a missing reward as a zero tip', () => {
     expect(
-      feeHistoryToMaxFee(
-        { baseFeePerGas: [10n], reward: undefined },
-        0n,
-        params,
-      ),
+      feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: undefined }, params),
     ).toEqual({
       lastBaseFeePerGas: 10n,
       maxPriorityFeePerGas: 0n,
       maxFeePerGas: 20n,
     });
+  });
+});
+
+describe('withPriorityFeeFloor', () => {
+  const params = DEFAULT_FEE_PARAMS;
+  const sampled = {
+    lastBaseFeePerGas: 10_000n,
+    maxPriorityFeePerGas: 16n,
+    maxFeePerGas: 20_016n,
+  };
+
+  it('raises a low sampled tip to the floor and re-derives the max fee', () => {
+    // Optimism-like: base fee near zero, sampled tip near zero, node suggests 0.001 gwei
+    expect(withPriorityFeeFloor(sampled, 1_000_000n, params)).toEqual({
+      lastBaseFeePerGas: 10_000n,
+      maxPriorityFeePerGas: 1_000_000n,
+      maxFeePerGas: 20_000n + 1_000_000n,
+    });
+  });
+
+  it('never lowers a higher sampled tip', () => {
+    expect(withPriorityFeeFloor(sampled, 2n, params)).toBe(sampled);
   });
 });
 
@@ -178,9 +177,10 @@ describe('estimateTxFees', () => {
       baseFeePerGas: '0x7',
       priorityFeePerGas: '0x64', // 100
     });
+    // the tip follows the L1 base fee and gets the same 2x headroom
     await expect(estimateTxFees(client, CHAINS.Linea, tx)).resolves.toEqual({
-      maxPriorityFeePerGas: 125n,
-      maxFeePerGas: 14n + 125n,
+      maxPriorityFeePerGas: 200n,
+      maxFeePerGas: 14n + 200n,
       gasLimit: 0x30000n,
       l1Fee: 0n,
     });
@@ -197,7 +197,7 @@ describe('estimateTxFees', () => {
     vi.mocked(estimateL1Fee).mockResolvedValue(1000n);
     const client = {} as FeeClient;
     await expect(estimateTxFees(client, CHAINS.Base, tx)).resolves.toEqual({
-      l1Fee: 1250n,
+      l1Fee: 2000n,
     });
     expect(estimateL1Fee).toHaveBeenCalledWith(
       client,

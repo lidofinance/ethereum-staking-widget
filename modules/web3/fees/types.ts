@@ -37,6 +37,13 @@ export type SendFees = {
   maxPriorityFeePerGas: bigint;
 };
 
+// How the tx will be priced, for the models where that changes the cost
+export type MaxFeeOptions = {
+  // The wallet prices the tx itself (an EIP-5792 batch) rather than the SDK
+  // with the sampled tip; OP-stack quotes the node's suggested tip for those
+  isWalletPriced?: boolean;
+};
+
 /**
  * One fee model = how a family of chains prices transactions. Every value a
  * model applies comes from `FeeParams`, so a chain or a model is tuned in
@@ -45,7 +52,11 @@ export type SendFees = {
 export type FeeModelDefinition = {
   model: GAS_FEE_MODEL;
   // upper-bound price for any tx on the chain
-  getMaxFee: (client: FeeClient, params: FeeParams) => Promise<MaxFeeData>;
+  getMaxFee: (
+    client: FeeClient,
+    params: FeeParams,
+    options: MaxFeeOptions,
+  ) => Promise<MaxFeeData>;
   // tx-specific parts; absent when the chain-wide price is the whole story
   getTxFees?: (
     client: FeeClient,
