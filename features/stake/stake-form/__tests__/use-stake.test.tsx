@@ -304,10 +304,11 @@ describe('useStake', () => {
         AMOUNT,
         TX_HASH,
       );
-      expect(state.txModalStages.sign).toHaveBeenCalledWith(AMOUNT, WETH_TOKEN);
+      // the stake itself is in ETH, so its stages say ETH even for a WETH stake
+      expect(state.txModalStages.sign).toHaveBeenCalledWith(AMOUNT, ETH);
       expect(state.txModalStages.pending).toHaveBeenCalledWith(
         AMOUNT,
-        WETH_TOKEN,
+        ETH,
         TX_HASH,
         false,
       );
@@ -543,10 +544,10 @@ describe('useStake', () => {
       // one signature covers both calls: no separate unwrap stage
       expect(state.txModalStages.signUnwrap).not.toHaveBeenCalled();
       expect(state.txModalStages.pendingUnwrap).not.toHaveBeenCalled();
-      expect(state.txModalStages.sign).toHaveBeenCalledWith(AMOUNT, WETH_TOKEN);
+      expect(state.txModalStages.sign).toHaveBeenCalledWith(AMOUNT, ETH);
       expect(state.txModalStages.pending).toHaveBeenCalledWith(
         AMOUNT,
-        WETH_TOKEN,
+        ETH,
         CALL_ID,
         true,
       );

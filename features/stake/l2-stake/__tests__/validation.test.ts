@@ -223,11 +223,13 @@ describe('L2StakeFormValidationResolver', () => {
 });
 
 describe('getL2StakeFormValidationContext', () => {
+  const LIQUIDITY_TARGET = 25n * P;
   const deps = {
     isDappActive: true,
     isLiquidityReadable: true,
     areAuxiliaryFundsSupported: false,
     chainId: CHAIN_ID,
+    liquidityTargetEth: LIQUIDITY_TARGET,
   };
   const loaded = {
     etherBalance: 5n * P,
@@ -247,6 +249,7 @@ describe('getL2StakeFormValidationContext', () => {
       isWalletActive: true,
       etherBalance: 5n * P,
       etherLiquidity: LIQUIDITY,
+      etherLiquidityTarget: LIQUIDITY_TARGET,
       gasCostEth: GAS_ETH,
       gasCostWeth: GAS_WETH,
       wethBalance: 0n,

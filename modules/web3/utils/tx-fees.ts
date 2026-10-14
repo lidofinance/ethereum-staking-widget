@@ -7,8 +7,11 @@ import type {
   Hex,
   Transport,
 } from 'viem';
-import { getFeeHistory } from 'viem/actions';
+import { estimateMaxPriorityFeePerGas, getFeeHistory } from 'viem/actions';
 import { estimateL1Fee } from 'viem/op-stack';
+
+import { CONTRACT_NAMES } from 'config/networks/networks-map';
+import { getContractAddress } from 'config/networks/contract-address';
 
 import {
   BASE_FEE_MULTIPLIER,
@@ -52,15 +55,29 @@ export const FEE_HISTORY_REWARD_PERCENTILES = [25];
 const withBufferPercent = (value: bigint, percent: bigint) =>
   (value * (100n + percent)) / 100n;
 
-export const feeHistoryToMaxFee = ({
-  reward,
-  baseFeePerGas,
-}: Pick<GetFeeHistoryReturnType, 'reward' | 'baseFeePerGas'>): MaxFeeData => {
-  const maxPriorityFeePerGas =
+/**
+ * 2x pending base fee + tip. The tip is the sampled bottom-quartile tip
+ * floored at the node's suggested priority fee: wallets that price a tx
+ * themselves pay the suggestion, and OP-stack nodes suggest a fixed minimum
+ * (0.001 gwei) that dwarfs both the base fee and the sampled tip on chains
+ * like Optimism, where the sample alone understates the cost many times over.
+ */
+export const feeHistoryToMaxFee = (
+  {
+    reward,
+    baseFeePerGas,
+  }: Pick<GetFeeHistoryReturnType, 'reward' | 'baseFeePerGas'>,
+  suggestedPriorityFeePerGas = 0n,
+): MaxFeeData => {
+  const sampledPriorityFeePerGas =
     reward && reward.length > 0
       ? reward.map((fees) => fees[0] ?? 0n).reduce((sum, fee) => sum + fee) /
         BigInt(reward.length)
       : 0n;
+  const maxPriorityFeePerGas =
+    suggestedPriorityFeePerGas > sampledPriorityFeePerGas
+      ? suggestedPriorityFeePerGas
+      : sampledPriorityFeePerGas;
   const lastBaseFeePerGas = baseFeePerGas[0] ?? 0n;
 
   return {
@@ -73,14 +90,18 @@ export const feeHistoryToMaxFee = ({
 
 export const getFeeHistoryMaxFee = async (
   client: FeeClient,
-): Promise<MaxFeeData> =>
-  feeHistoryToMaxFee(
-    await getFeeHistory(client, {
+): Promise<MaxFeeData> => {
+  const [feeHistory, suggestedPriorityFeePerGas] = await Promise.all([
+    getFeeHistory(client, {
       blockCount: FEE_HISTORY_BLOCK_COUNT,
       blockTag: 'pending',
       rewardPercentiles: FEE_HISTORY_REWARD_PERCENTILES,
     }),
-  );
+    // a missing suggestion must not block the quote
+    estimateMaxPriorityFeePerGas(client).catch(() => 0n),
+  ]);
+  return feeHistoryToMaxFee(feeHistory, suggestedPriorityFeePerGas);
+};
 
 type LineaEstimateGasResult = {
   gasLimit: Hex;
@@ -132,6 +153,7 @@ export const getLineaTxFees = async (
  */
 export const getOpStackL1Fee = (
   client: FeeClient,
+  chainId: number,
   tx: FeeEstimateTx,
 ): Promise<bigint> =>
   estimateL1Fee(client as Client<Transport, Chain>, {
@@ -139,7 +161,10 @@ export const getOpStackL1Fee = (
     to: tx.to,
     data: tx.data,
     value: tx.value,
-    gasPriceOracleAddress: OP_STACK_GAS_PRICE_ORACLE_ADDRESS,
+    // the network config entry is what the RPC proxy allows eth_call to
+    gasPriceOracleAddress:
+      getContractAddress(chainId, CONTRACT_NAMES.L2GasPriceOracle) ??
+      OP_STACK_GAS_PRICE_ORACLE_ADDRESS,
   });
 
 /**
@@ -173,7 +198,7 @@ export const estimateTxFees = async (
     }
     case GAS_FEE_MODEL.OpStack: {
       try {
-        const l1Fee = await getOpStackL1Fee(client, tx);
+        const l1Fee = await getOpStackL1Fee(client, chainId, tx);
         return { l1Fee: withBufferPercent(l1Fee, L1_COST_BUFFER_PERCENT) };
       } catch (error) {
         console.warn('[tx-fees::op-stack]', error);

@@ -50,6 +50,7 @@ const allowedRPCMethods = [
   'eth_getBlockByNumber',
   'eth_feeHistory',
   'eth_maxPriorityFeePerGas',
+  'linea_estimateGas',
   'eth_getBalance',
   'eth_blockNumber',
   'eth_getTransactionByHash',

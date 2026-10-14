@@ -63,6 +63,29 @@ describe('feeHistoryToMaxFee', () => {
     });
   });
 
+  it('floors the sampled tip at the suggested priority fee', () => {
+    // Optimism-like: base fee near zero, sampled tip near zero, node suggests 0.001 gwei
+    const suggested = 1_000_000n;
+    expect(
+      feeHistoryToMaxFee(
+        { baseFeePerGas: [10_000n], reward: [[16n]] },
+        suggested,
+      ),
+    ).toEqual({
+      lastBaseFeePerGas: 10_000n,
+      maxPriorityFeePerGas: suggested,
+      maxFeePerGas: 20_000n + suggested,
+    });
+    // the floor never lowers a higher sampled tip
+    expect(
+      feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: [[5n]] }, 2n),
+    ).toEqual({
+      lastBaseFeePerGas: 10n,
+      maxPriorityFeePerGas: 5n,
+      maxFeePerGas: 25n,
+    });
+  });
+
   it('treats a missing reward as a zero tip', () => {
     expect(
       feeHistoryToMaxFee({ baseFeePerGas: [10n], reward: undefined }),

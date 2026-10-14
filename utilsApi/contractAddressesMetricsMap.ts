@@ -33,6 +33,7 @@ import {
   CowSettlementAbi,
   CowVaultRelayerAbi,
 } from 'features/dex-withdrawals/cowswap';
+import { opGasPriceOracleAbi } from 'abi/op-gas-price-oracle-abi';
 // Tokens ABIs
 import { wethABI } from 'abi/weth-abi';
 import { usdtABI } from 'abi/usdt-abi';
@@ -97,6 +98,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.L2stakingReceiver]: L2_STAKING_RECEIVER_ABI,
   [CONTRACT_NAMES.L2FastStakeOraclePool]: L2_STAKING_ORACLE_POOL_ABI,
   [CONTRACT_NAMES.L2FastStakeOracleFeed]: L2_STAKING_ORACLE_FEED_ABI,
+  [CONTRACT_NAMES.L2GasPriceOracle]: opGasPriceOracleAbi,
   // SI contracts
   [CONTRACT_NAMES.wstethReferralStaker]: WstethReferralStakerABI,
   // Dual Governance
