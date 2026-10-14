@@ -24,6 +24,11 @@ type ProxyOptions = {
   metricsHost?: string;
   /** Hard cap on cache entries. Default 200. */
   cacheMaxEntries?: number;
+  /**
+   * Extra headers sent upstream, built from the incoming request. A cache hit
+   * never reaches upstream, so within `cacheTTL` it only sees the first caller.
+   */
+  forwardHeaders?: (req: NextApiRequest) => Record<string, string>;
 };
 
 export const createCachedProxy = ({
@@ -35,6 +40,7 @@ export const createCachedProxy = ({
   transformData = (data) => data,
   metricsHost,
   cacheMaxEntries = DEFAULT_CACHE_MAX_ENTRIES,
+  forwardHeaders,
 }: ProxyOptions): API => {
   const cache = new LRUCache<string, any>({
     max: cacheMaxEntries,
@@ -63,6 +69,7 @@ export const createCachedProxy = ({
           standardFetcher(url, {
             signal: AbortSignal.timeout(timeout),
             headers: {
+              ...forwardHeaders?.(req),
               Accept: 'application/json',
               'Content-Type': 'application/json',
             },

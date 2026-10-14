@@ -126,3 +126,71 @@ describe('createCachedProxy error responses', () => {
     expect(res.headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
   });
 });
+
+describe('createCachedProxy forwardHeaders', () => {
+  const res = () =>
+    ({
+      setHeader: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+      end: vi.fn(),
+    }) as any;
+  const makeReq = (headers: Record<string, string> = {}) =>
+    ({ query: {}, headers }) as unknown as NextApiRequest;
+  const sentHeaders = () =>
+    vi.mocked(standardFetcher).mock.calls[0][1]?.headers as Record<
+      string,
+      string
+    >;
+
+  beforeEach(() => {
+    vi.mocked(standardFetcher).mockResolvedValue({ isValid: true });
+  });
+
+  afterEach(() => {
+    vi.mocked(standardFetcher).mockReset();
+  });
+
+  it('sends the headers built from the incoming request upstream', async () => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+      forwardHeaders: (req) => ({
+        'X-Client-User-Agent': String(req.headers['user-agent']),
+      }),
+    });
+
+    await proxy(makeReq({ 'user-agent': 'curl/8.5.0' }), res());
+
+    expect(sentHeaders()).toMatchObject({
+      'X-Client-User-Agent': 'curl/8.5.0',
+      Accept: 'application/json',
+    });
+  });
+
+  it('cannot override the fixed upstream headers', async () => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+      forwardHeaders: () => ({ Accept: 'text/html' }),
+    });
+
+    await proxy(makeReq(), res());
+
+    expect(sentHeaders().Accept).toBe('application/json');
+  });
+
+  it('sends only the fixed headers without forwardHeaders', async () => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+    });
+
+    await proxy(makeReq({ 'user-agent': 'curl/8.5.0' }), res());
+
+    expect(sentHeaders()).toEqual({
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    });
+  });
+});
