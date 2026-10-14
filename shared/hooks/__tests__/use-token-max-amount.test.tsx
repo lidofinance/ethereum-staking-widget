@@ -75,6 +75,13 @@ describe('useTokenMaxAmount', () => {
       ).toBe(BALANCE - PADDING);
     });
 
+    it('treats a zero chain-wide gas price as a price, not as missing data', () => {
+      state.maxGasPrice = 0n;
+      expect(
+        maxAmount({ balance: BALANCE, isPadded: true, gasLimit: GAS_LIMIT }),
+      ).toBe(BALANCE);
+    });
+
     it('withholds the amount until a cost is known', () => {
       state.maxGasPrice = undefined;
       expect(
