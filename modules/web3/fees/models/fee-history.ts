@@ -1,7 +1,7 @@
 import type { GetFeeHistoryReturnType } from 'viem';
 import { getFeeHistory } from 'viem/actions';
 
-import type { FeeParams } from '../params';
+import { withBufferPercent, type FeeParams } from '../params';
 import type { FeeClient, MaxFeeData } from '../types';
 
 /**
@@ -27,7 +27,8 @@ export const feeHistoryToMaxFee = (
     lastBaseFeePerGas,
     maxPriorityFeePerGas,
     maxFeePerGas:
-      lastBaseFeePerGas * params.baseFeeMultiplier + maxPriorityFeePerGas,
+      withBufferPercent(lastBaseFeePerGas, params.baseFeeBufferPercent) +
+      maxPriorityFeePerGas,
   };
 };
 
@@ -54,6 +55,8 @@ export const withPriorityFeeFloor = (
   return {
     ...maxFee,
     maxPriorityFeePerGas: floor,
-    maxFeePerGas: maxFee.lastBaseFeePerGas * params.baseFeeMultiplier + floor,
+    maxFeePerGas:
+      withBufferPercent(maxFee.lastBaseFeePerGas, params.baseFeeBufferPercent) +
+      floor,
   };
 };

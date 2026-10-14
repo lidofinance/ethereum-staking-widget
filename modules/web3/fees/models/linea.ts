@@ -51,7 +51,8 @@ export const getLineaQuote = async (
     lastBaseFeePerGas,
     maxPriorityFeePerGas,
     maxFeePerGas:
-      lastBaseFeePerGas * params.baseFeeMultiplier + maxPriorityFeePerGas,
+      withBufferPercent(lastBaseFeePerGas, params.baseFeeBufferPercent) +
+      maxPriorityFeePerGas,
     gasLimit: hexToBigInt(result.gasLimit),
   };
 };
@@ -70,8 +71,10 @@ export const lineaFeeModel: FeeModelDefinition = {
     );
     return {
       maxFeePerGas:
-        quote.lastBaseFeePerGas * params.baseFeeMultiplier +
-        maxPriorityFeePerGas,
+        withBufferPercent(
+          quote.lastBaseFeePerGas,
+          params.baseFeeBufferPercent,
+        ) + maxPriorityFeePerGas,
       maxPriorityFeePerGas,
       gasLimit: quote.gasLimit,
       l1Fee: 0n,

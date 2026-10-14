@@ -62,8 +62,9 @@ describe('getGasFeeModel', () => {
 
 describe('getFeeParams', () => {
   it('layers chain overrides over model overrides over the defaults', () => {
+    const opStackParams = MODEL_FEE_PARAMS[GAS_FEE_MODEL.OpStack];
     MODEL_FEE_PARAMS[GAS_FEE_MODEL.OpStack] = { l1CostBufferPercent: 50n };
-    CHAIN_FEE_PARAMS[CHAINS.Optimism] = { baseFeeMultiplier: 3n };
+    CHAIN_FEE_PARAMS[CHAINS.Optimism] = { baseFeeBufferPercent: 200n };
     try {
       expect(getFeeParams(CHAINS.Mainnet)).toEqual(DEFAULT_FEE_PARAMS);
       expect(getFeeParams(CHAINS.Base)).toEqual({
@@ -73,12 +74,18 @@ describe('getFeeParams', () => {
       expect(getFeeParams(CHAINS.Optimism)).toEqual({
         ...DEFAULT_FEE_PARAMS,
         l1CostBufferPercent: 50n,
-        baseFeeMultiplier: 3n,
+        baseFeeBufferPercent: 200n,
       });
     } finally {
-      delete MODEL_FEE_PARAMS[GAS_FEE_MODEL.OpStack];
+      MODEL_FEE_PARAMS[GAS_FEE_MODEL.OpStack] = opStackParams;
       delete CHAIN_FEE_PARAMS[CHAINS.Optimism];
     }
+  });
+
+  it('gives OP-stack chains less base fee headroom than Ethereum', () => {
+    expect(getFeeParams(CHAINS.Mainnet).baseFeeBufferPercent).toBe(100n);
+    expect(getFeeParams(CHAINS.Optimism).baseFeeBufferPercent).toBe(50n);
+    expect(getFeeParams(CHAINS.Base).baseFeeBufferPercent).toBe(50n);
   });
 });
 
@@ -98,16 +105,19 @@ describe('feeHistoryToMaxFee', () => {
     });
   });
 
-  it('applies the base fee multiplier from the params', () => {
+  it('applies the base fee headroom from the params', () => {
     expect(
       feeHistoryToMaxFee(
         { baseFeePerGas: [10n], reward: [[1n]] },
-        {
-          ...params,
-          baseFeeMultiplier: 3n,
-        },
+        { ...params, baseFeeBufferPercent: 200n },
       ).maxFeePerGas,
     ).toBe(31n);
+    expect(
+      feeHistoryToMaxFee(
+        { baseFeePerGas: [100n], reward: [[1n]] },
+        { ...params, baseFeeBufferPercent: 50n },
+      ).maxFeePerGas,
+    ).toBe(151n);
   });
 
   it('treats a missing reward as a zero tip', () => {
@@ -177,10 +187,10 @@ describe('estimateTxFees', () => {
       baseFeePerGas: '0x7',
       priorityFeePerGas: '0x64', // 100
     });
-    // the tip follows the L1 base fee and gets the same 2x headroom
+    // the tip follows the L1 base fee and gets the L1 cost headroom
     await expect(estimateTxFees(client, CHAINS.Linea, tx)).resolves.toEqual({
-      maxPriorityFeePerGas: 200n,
-      maxFeePerGas: 14n + 200n,
+      maxPriorityFeePerGas: 125n,
+      maxFeePerGas: 14n + 125n,
       gasLimit: 0x30000n,
       l1Fee: 0n,
     });
@@ -197,7 +207,7 @@ describe('estimateTxFees', () => {
     vi.mocked(estimateL1Fee).mockResolvedValue(1000n);
     const client = {} as FeeClient;
     await expect(estimateTxFees(client, CHAINS.Base, tx)).resolves.toEqual({
-      l1Fee: 2000n,
+      l1Fee: 1250n,
     });
     expect(estimateL1Fee).toHaveBeenCalledWith(
       client,

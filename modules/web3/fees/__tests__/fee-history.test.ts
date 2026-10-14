@@ -19,6 +19,8 @@ const sampled = {
   maxPriorityFeePerGas: 4n,
   maxFeePerGas: 204n,
 };
+// OP-stack quotes 1.5x the base fee instead of 2x
+const opStackSampled = { ...sampled, maxFeePerGas: 154n };
 
 beforeEach(() => {
   vi.mocked(getFeeHistory)
@@ -46,13 +48,20 @@ describe('getFeeHistoryMaxFee', () => {
 });
 
 describe('estimateMaxFee', () => {
-  it.each([CHAINS.Mainnet, CHAINS.Arbitrum, CHAINS.Linea, CHAINS.Optimism])(
+  it.each([CHAINS.Mainnet, CHAINS.Arbitrum, CHAINS.Linea])(
     'prices an SDK-priced tx on chain %s from the fee history alone',
     async (chainId) => {
       await expect(estimateMaxFee(client, chainId)).resolves.toEqual(sampled);
       expect(estimateMaxPriorityFeePerGas).not.toHaveBeenCalled();
     },
   );
+
+  it('op-stack: prices an SDK-priced tx from the fee history with its own headroom', async () => {
+    await expect(estimateMaxFee(client, CHAINS.Optimism)).resolves.toEqual(
+      opStackSampled,
+    );
+    expect(estimateMaxPriorityFeePerGas).not.toHaveBeenCalled();
+  });
 
   it.each([CHAINS.Mainnet, CHAINS.Arbitrum, CHAINS.Linea])(
     'ignores the node suggestion on chain %s even for a wallet-priced tx',
@@ -70,7 +79,7 @@ describe('estimateMaxFee', () => {
     ).resolves.toEqual({
       lastBaseFeePerGas: 100n,
       maxPriorityFeePerGas: 50n,
-      maxFeePerGas: 250n,
+      maxFeePerGas: 200n,
     });
     expect(estimateMaxPriorityFeePerGas).toHaveBeenCalledWith(client);
   });
@@ -79,7 +88,7 @@ describe('estimateMaxFee', () => {
     vi.mocked(estimateMaxPriorityFeePerGas).mockResolvedValue(1n);
     await expect(
       estimateMaxFee(client, CHAINS.Base, { isWalletPriced: true }),
-    ).resolves.toEqual(sampled);
+    ).resolves.toEqual(opStackSampled);
   });
 
   it('op-stack: does not block the quote when the suggestion fails', async () => {
@@ -88,12 +97,12 @@ describe('estimateMaxFee', () => {
     );
     await expect(
       estimateMaxFee(client, CHAINS.Base, { isWalletPriced: true }),
-    ).resolves.toEqual(sampled);
+    ).resolves.toEqual(opStackSampled);
   });
 
   it('applies a per-chain params override', async () => {
     CHAIN_FEE_PARAMS[CHAINS.Base] = {
-      baseFeeMultiplier: 3n,
+      baseFeeBufferPercent: 200n,
       feeHistoryBlockCount: 2,
     };
     try {
