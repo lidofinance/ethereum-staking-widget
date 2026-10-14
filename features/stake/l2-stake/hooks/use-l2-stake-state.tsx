@@ -4,6 +4,8 @@ import {
   useDappStatus,
   useIsLedgerLive,
 } from 'modules/web3';
+import { useMemo } from 'react';
+import { parseEther } from 'viem';
 
 export const useL2StakeState = () => {
   const { chainId } = useDappStatus();
@@ -17,7 +19,9 @@ export const useL2StakeState = () => {
 
   if (chainState.enabled === false) {
     isEnabled = false;
-    reason = `Staking is currently not available for ${getPrettyChainName(chainId)}`;
+    reason =
+      chainState.disableReason ??
+      `Staking is currently not available for ${getPrettyChainName(chainId)}`;
   }
 
   if (isLedgerLive && !featureFlags?.ledgerLiveL2) {
@@ -25,5 +29,13 @@ export const useL2StakeState = () => {
     reason = `Staking is currently not available for Ledger Live on ${getPrettyChainName(chainId)}`;
   }
 
-  return { isEnabled, reason, state: chainState };
+  const liquidityTargetEth = useMemo(() => {
+    try {
+      return parseEther(chainState.liquidityTarget.toFixed(18));
+    } catch {
+      return undefined;
+    }
+  }, [chainState.liquidityTarget]);
+
+  return { isEnabled, reason, state: chainState, liquidityTargetEth };
 };

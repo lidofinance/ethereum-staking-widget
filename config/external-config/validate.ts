@@ -30,7 +30,7 @@ const EarnVaultConfigApyEntrySchema = z.preprocess((obj) => {
   return undefined;
 }, EarnVaultConfigApySchema);
 
-const MAX_VAULT_TEXT_LENGTH = 250;
+const MAX_REASON_TEXT_LENGTH = 250;
 
 const EarnVaultConfigEntrySchema = z.object({
   name: EarnVaultNameSchema,
@@ -44,9 +44,9 @@ const EarnVaultConfigEntrySchema = z.object({
   deprecated: z.boolean().optional().default(false),
   disabled: z.boolean().optional().default(false),
   // Texts
-  depositPauseReasonText: z.string().max(MAX_VAULT_TEXT_LENGTH).optional(),
-  withdrawPauseReasonText: z.string().max(MAX_VAULT_TEXT_LENGTH).optional(),
-  listWarningText: z.string().max(MAX_VAULT_TEXT_LENGTH).optional(),
+  depositPauseReasonText: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
+  withdrawPauseReasonText: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
+  listWarningText: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
 });
 
 // Filter out unknown vaults and vaults with invalid schema
@@ -287,6 +287,7 @@ const L2StakeConfigurationSchema = z.object({
     .min(0)
     .optional()
     .default(DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH),
+  disableReason: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
 });
 
 // Per-chain entries carry only the keys the manifest sets: an omitted key must
@@ -294,6 +295,7 @@ const L2StakeConfigurationSchema = z.object({
 const L2StakePerChainConfigurationSchema = z.object({
   enabled: z.boolean().optional(),
   liquidityTarget: z.number().int().min(0).optional(),
+  disableReason: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
 });
 
 const sanitizeL2StakeEntry = (entry: unknown) => {
@@ -304,6 +306,8 @@ const sanitizeL2StakeEntry = (entry: unknown) => {
     ...(typeof liquidityTarget === 'number' &&
       Number.isInteger(liquidityTarget) &&
       liquidityTarget >= 0 && { liquidityTarget }),
+    ...(typeof entry.disableReason === 'string' &&
+      entry.disableReason.length > 0 && { disableReason: entry.disableReason }),
   };
 };
 

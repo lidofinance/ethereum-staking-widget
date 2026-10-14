@@ -28,6 +28,7 @@ import type {
 } from './types';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
 import { formatBalance } from 'utils/formatBalance';
+import { useL2StakeState } from './hooks/use-l2-stake-state';
 
 export const L2StakeFormValidationResolver: Resolver<
   L2StakeFormInputType,
@@ -52,6 +53,7 @@ export const L2StakeFormValidationResolver: Resolver<
       isSmartAccount,
       shouldValidateEtherBalance,
       chainId,
+      etherLiquidityTarget,
     } = await awaitWithTimeout(
       validationContextByToken[token],
       VALIDATION_CONTEXT_TIMEOUT,
@@ -60,11 +62,25 @@ export const L2StakeFormValidationResolver: Resolver<
     // The pool liquidity does not depend on a wallet, so the cap applies to
     // a visitor as well. It is absent only while the pool is not readable
     if (etherLiquidity !== undefined) {
+      // default message, only used when we don't know target liquidity level
+      let aboveLiquidityMessage = `Entered ${token} amount exceeds current staking limit on ${getPrettyChainName(chainId)} of ${formatBalance(etherLiquidity).trimmed} ETH`;
+
+      // Pool Target Liquidity messages
+      if (etherLiquidityTarget !== undefined) {
+        // when pool is below its target liquidity, we show soft-error glow and special UI banner
+        if (amount <= etherLiquidityTarget) aboveLiquidityMessage = '';
+        // when pool is at target level or MORE we show a hard error message
+        if (amount > etherLiquidityTarget)
+          aboveLiquidityMessage = `Entered ${token} amount exceeds total pool capacity on ${getPrettyChainName(chainId)}`;
+      }
+
+      // It's important that final validation compares to etherLiquidity rather than target
+      // target value can be stale and pool can have much more liquidity than the target
       validateBigintMax(
         'amount',
         amount,
         etherLiquidity,
-        `Entered ${token} amount exceeds current staking limit on ${getPrettyChainName(chainId)} of ${formatBalance(etherLiquidity).trimmed} ETH`,
+        aboveLiquidityMessage,
       );
     }
 
@@ -114,6 +130,7 @@ type L2StakeFormValidationContextDeps = {
   isLiquidityReadable: boolean;
   areAuxiliaryFundsSupported: boolean;
   chainId: number;
+  liquidityTargetEth: bigint | undefined;
 };
 
 type L2StakeFormValidationContextSource = Pick<
@@ -143,6 +160,7 @@ export const getL2StakeFormValidationContext = (
     isLiquidityReadable,
     areAuxiliaryFundsSupported,
     chainId,
+    liquidityTargetEth,
   }: L2StakeFormValidationContextDeps,
 ): L2StakeFormValidationContext | undefined => {
   // The pool liquidity is a public read: it is waited for whenever the pool
@@ -164,6 +182,7 @@ export const getL2StakeFormValidationContext = (
     chainId,
     shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
     etherLiquidity: fastStakeLiquidityEth,
+    etherLiquidityTarget: liquidityTargetEth,
     // account data; the condition above guarantees the stubs are only passed
     // while isDappActive is false, where the resolver does not reach them
     etherBalance: etherBalance ?? 0n,
@@ -181,6 +200,7 @@ export const useL2StakeFormValidationContext = (
   const { isDappActive, chainId } = useDappStatus();
   const { areAuxiliaryFundsSupported } = useAA();
   const { isL2Stake: isLiquidityReadable } = useLidoSDKL2();
+  const { liquidityTargetEth } = useL2StakeState();
   const {
     etherBalance,
     wethBalance,
@@ -207,6 +227,7 @@ export const useL2StakeFormValidationContext = (
           isLiquidityReadable,
           areAuxiliaryFundsSupported,
           chainId,
+          liquidityTargetEth,
         },
       ),
     [
@@ -220,6 +241,7 @@ export const useL2StakeFormValidationContext = (
       isLiquidityReadable,
       areAuxiliaryFundsSupported,
       chainId,
+      liquidityTargetEth,
     ],
   );
 

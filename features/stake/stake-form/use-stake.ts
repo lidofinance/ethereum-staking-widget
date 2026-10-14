@@ -155,7 +155,8 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
               txModalStages.signUnwrap(amount);
               return;
             }
-            txModalStages.sign(amount, token);
+            // we show staking ETH(even for wETH) so it correlates with
+            txModalStages.sign(amount, 'ETH');
             return applyRoundUpTxParameter(
               (payload as bigint) ?? config.STAKE_GASLIMIT_FALLBACK,
             );
@@ -165,7 +166,7 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
               return txModalStages.pendingUnwrap(amount, txHashOrCallId);
             }
             isStakeSent = true;
-            return txModalStages.pending(amount, token, txHashOrCallId, isAA);
+            return txModalStages.pending(amount, 'ETH', txHashOrCallId, isAA);
           },
           onConfirmation: () => {
             if (needsUnwrap) isUnwrapped = true;

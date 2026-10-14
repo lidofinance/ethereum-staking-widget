@@ -18,7 +18,7 @@ export const HowDoesDirectStakingWork: FC = () => {
 
   return (
     <Accordion
-      summary={`How does Direct Staking on ${chainName} work?`}
+      summary={`How does direct staking on ${chainName} work?`}
       onClick={() => {
         if (!accordionState.opened) {
           trackMatomoEvent(
@@ -29,7 +29,7 @@ export const HowDoesDirectStakingWork: FC = () => {
       }}
     >
       <p>
-        Direct Staking allows you to stake ETH on {chainName} and receive wstETH
+        Direct staking on {chainName} allows you to stake ETH and receive wstETH
         on the same network, without bridging your tokens to Ethereum and back.
       </p>
 
@@ -54,7 +54,7 @@ export const HowDoesDirectStakingWork: FC = () => {
       </p>
 
       <p>
-        Please note that Direct Staking relies on third-party infrastructure,
+        Please note that this capability relies on third-party infrastructure,
         including Chainlink CCIP and price feeds, which may involve additional
         risks. For further information, please read the{' '}
         <a
