@@ -19,6 +19,8 @@ const SPENDER: Address = '0x00000000000000000000000000000000000000dd';
 const DATA: Hex = '0xabcdef';
 const L1_CHAIN_ID = 1;
 const L2_CHAIN_ID = 10;
+// WRAP_FROM_ETH_GAS_LIMIT * EXTRA_GAS_TRANSACTION_RATIO
+const WRAP_FROM_ETH_GAS_LIMIT_PADDED = 105_000n;
 
 type PopulatedTx = { to: Address; data?: Hex };
 
@@ -47,11 +49,17 @@ const createSdk = () => ({
 });
 type Sdk = ReturnType<typeof createSdk>;
 
-type QueryArgs = { queryKey: unknown[]; queryFn: () => Promise<unknown> };
+type QueryArgs = {
+  queryKey: unknown[];
+  placeholderData?: unknown;
+  queryFn: () => Promise<unknown>;
+};
 
 type State = {
   isL2: boolean;
   data: unknown;
+  // the last fetch failed: React Query then serves no placeholder
+  failed: boolean;
   query: QueryArgs | undefined;
   sdk: Sdk | undefined;
 };
@@ -59,14 +67,19 @@ type State = {
 const state = vi.hoisted((): State => ({
   isL2: false,
   data: undefined,
+  failed: false,
   query: undefined,
   sdk: undefined,
 }));
 
+// Mirrors React Query: the placeholder stands in while the query is pending,
+// nothing does after it failed
 vi.mock('@tanstack/react-query', () => ({
   useQuery: (args: QueryArgs) => {
     state.query = args;
-    return { data: state.data };
+    return {
+      data: state.data ?? (state.failed ? undefined : args.placeholderData),
+    };
   },
 }));
 vi.mock('config', () => ({
@@ -94,10 +107,14 @@ const sdk = (): Sdk => {
   return state.sdk;
 };
 
+const query = () => {
+  if (!state.query) throw new Error('the gas limit query was not set up');
+  return state.query;
+};
+
 const runQuery = <T>(useHook: () => T) => {
   renderHook(useHook);
-  if (!state.query) throw new Error('the gas limit query was not set up');
-  return state.query.queryFn();
+  return query().queryFn();
 };
 
 const estimateProps = { value: ESTIMATE_AMOUNT, account: ACCOUNT };
@@ -108,6 +125,7 @@ let warn: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   state.isL2 = false;
   state.data = undefined;
+  state.failed = false;
   state.query = undefined;
   state.sdk = createSdk();
   warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
@@ -119,6 +137,12 @@ afterEach(() => {
 
 describe('useWrapGasLimit', () => {
   describe('on L1', () => {
+    const fallbacks = {
+      gasLimitETH: WRAP_FROM_ETH_GAS_LIMIT_PADDED,
+      gasLimitStETH: WRAP_GAS_LIMIT,
+      txStETH: undefined,
+    };
+
     it('estimates the ETH and the stETH wrap and carries no representative tx', async () => {
       await expect(runQuery(useWrapGasLimit)).resolves.toEqual({
         gasLimitETH: 90_000n,
@@ -131,31 +155,30 @@ describe('useWrapGasLimit', () => {
       );
       expect(sdk().l2.unwrapStethEstimateGas).not.toHaveBeenCalled();
       expect(sdk().l2.unwrapStethPopulateTx).not.toHaveBeenCalled();
+      expect(warn).not.toHaveBeenCalled();
     });
 
-    it('falls back to the ratio-padded ETH wrap limit when the estimate fails', async () => {
+    it('fails the query, after a warning naming the call, when the ETH estimate fails', async () => {
       sdk().wrap.wrapEthEstimateGas.mockRejectedValue(new Error('reverted'));
-      await expect(runQuery(useWrapGasLimit)).resolves.toMatchObject({
-        // WRAP_FROM_ETH_GAS_LIMIT * EXTRA_GAS_TRANSACTION_RATIO
-        gasLimitETH: 105_000n,
-        gasLimitStETH: 120_000n,
-      });
+      await expect(runQuery(useWrapGasLimit)).rejects.toThrow('reverted');
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0]?.[0]).toBe('[wrap-gas-limit::eth]');
     });
 
-    it('falls back to the L1 stETH wrap limit when the estimate fails', async () => {
+    it('fails the query when the stETH estimate fails', async () => {
       sdk().wrap.wrapStethEstimateGas.mockRejectedValue(new Error('reverted'));
-      await expect(runQuery(useWrapGasLimit)).resolves.toMatchObject({
-        gasLimitETH: 90_000n,
-        gasLimitStETH: WRAP_GAS_LIMIT,
-      });
+      await expect(runQuery(useWrapGasLimit)).rejects.toThrow('reverted');
+      expect(warn.mock.calls[0]?.[0]).toBe('[wrap-gas-limit::steth]');
     });
 
-    it('serves the L1 fallbacks until the query resolves', () => {
-      expect(renderHook(useWrapGasLimit)).toEqual({
-        gasLimitETH: WRAP_FROM_ETH_GAS_LIMIT,
-        gasLimitStETH: WRAP_GAS_LIMIT,
-        txStETH: undefined,
-      });
+    it('hands the L1 fallbacks to React Query as placeholder data, serving them while the estimates load', () => {
+      expect(renderHook(useWrapGasLimit)).toEqual(fallbacks);
+      expect(query().placeholderData).toEqual(fallbacks);
+    });
+
+    it('serves the L1 fallbacks after the estimates failed', () => {
+      state.failed = true;
+      expect(renderHook(useWrapGasLimit)).toEqual(fallbacks);
     });
   });
 
@@ -186,26 +209,37 @@ describe('useWrapGasLimit', () => {
         gasLimitStETH: 80_000n,
         txStETH: undefined,
       });
+      expect(warn).not.toHaveBeenCalled();
     });
 
-    it('drops the representative tx it cannot populate, keeping the limit', async () => {
+    it('fails the query when the stETH wrap tx cannot be populated', async () => {
       sdk().l2.unwrapStethPopulateTx.mockRejectedValue(new Error('rpc down'));
-      await expect(runQuery(useWrapGasLimit)).resolves.toMatchObject({
-        gasLimitStETH: 80_000n,
+      await expect(runQuery(useWrapGasLimit)).rejects.toThrow('rpc down');
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0]?.[0]).toBe('[wrap-gas-limit::steth-tx]');
+    });
+
+    it('fails the query when the stETH estimate fails', async () => {
+      sdk().l2.unwrapStethEstimateGas.mockRejectedValue(new Error('reverted'));
+      await expect(runQuery(useWrapGasLimit)).rejects.toThrow('reverted');
+      expect(warn.mock.calls[0]?.[0]).toBe('[wrap-gas-limit::steth]');
+    });
+
+    it('hands the L2 fallbacks to React Query as placeholder data, reading the skipped ETH limit as its fallback', () => {
+      expect(renderHook(useWrapGasLimit)).toEqual({
+        gasLimitETH: WRAP_FROM_ETH_GAS_LIMIT,
+        gasLimitStETH: WRAP_L2_GAS_LIMIT,
         txStETH: undefined,
       });
-      expect(warn).toHaveBeenCalledTimes(1);
-    });
-
-    it('falls back to the L2 stETH wrap limit when the estimate fails', async () => {
-      sdk().l2.unwrapStethEstimateGas.mockRejectedValue(new Error('reverted'));
-      await expect(runQuery(useWrapGasLimit)).resolves.toMatchObject({
+      expect(query().placeholderData).toEqual({
+        gasLimitETH: null,
         gasLimitStETH: WRAP_L2_GAS_LIMIT,
-        txStETH: representativeTx,
+        txStETH: undefined,
       });
     });
 
-    it('serves the L2 fallbacks until the query resolves', () => {
+    it('serves the L2 fallbacks after the estimates failed', () => {
+      state.failed = true;
       expect(renderHook(useWrapGasLimit)).toEqual({
         gasLimitETH: WRAP_FROM_ETH_GAS_LIMIT,
         gasLimitStETH: WRAP_L2_GAS_LIMIT,
@@ -229,19 +263,11 @@ describe('useWrapGasLimit', () => {
 
   it('keys the query on the chain and the wrap side', () => {
     renderHook(useWrapGasLimit);
-    expect(state.query?.queryKey).toEqual([
-      'wrap-gas-limit',
-      L1_CHAIN_ID,
-      false,
-    ]);
+    expect(query().queryKey).toEqual(['wrap-gas-limit', L1_CHAIN_ID, false]);
 
     state.isL2 = true;
     renderHook(useWrapGasLimit);
-    expect(state.query?.queryKey).toEqual([
-      'wrap-gas-limit',
-      L2_CHAIN_ID,
-      true,
-    ]);
+    expect(query().queryKey).toEqual(['wrap-gas-limit', L2_CHAIN_ID, true]);
   });
 });
 
@@ -259,14 +285,25 @@ describe('useApproveGasLimit', () => {
       expect(sdk().l2.approveWstethForWrapEstimateGas).not.toHaveBeenCalled();
     });
 
-    it('falls back to the L1 approve limit when the estimate fails', async () => {
+    it('fails the query, after a warning, when the estimate fails', async () => {
       sdk().wstETH.estimateApprove.mockRejectedValue(new Error('reverted'));
-      await expect(runQuery(useApproveGasLimit)).resolves.toEqual({
+      await expect(runQuery(useApproveGasLimit)).rejects.toThrow('reverted');
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0]?.[0]).toBe('[approve-wrap-gas-limit]');
+    });
+
+    it('hands the L1 fallback to React Query as placeholder data, serving it while the estimate loads', () => {
+      expect(renderHook(useApproveGasLimit)).toEqual({
+        gasLimit: WSTETH_APPROVE_GAS_LIMIT,
+        tx: undefined,
+      });
+      expect(query().placeholderData).toEqual({
         gasLimit: WSTETH_APPROVE_GAS_LIMIT,
       });
     });
 
-    it('serves the L1 fallback until the query resolves', () => {
+    it('serves the L1 fallback after the estimate failed', () => {
+      state.failed = true;
       expect(renderHook(useApproveGasLimit)).toEqual({
         gasLimit: WSTETH_APPROVE_GAS_LIMIT,
         tx: undefined,
@@ -301,17 +338,26 @@ describe('useApproveGasLimit', () => {
       });
     });
 
-    it('falls back to the L2 approve limit without a tx when either call fails', async () => {
+    it('fails the query when either call fails', async () => {
       sdk().l2.approveWstethForWrapPopulateTx.mockRejectedValue(
         new Error('rpc down'),
       );
-      await expect(runQuery(useApproveGasLimit)).resolves.toEqual({
-        gasLimit: STETH_L2_APPROVE_GAS_LIMIT,
-      });
+      await expect(runQuery(useApproveGasLimit)).rejects.toThrow('rpc down');
       expect(warn).toHaveBeenCalledTimes(1);
     });
 
-    it('serves the L2 fallback until the query resolves', () => {
+    it('hands the L2 fallback to React Query as placeholder data', () => {
+      expect(renderHook(useApproveGasLimit)).toEqual({
+        gasLimit: STETH_L2_APPROVE_GAS_LIMIT,
+        tx: undefined,
+      });
+      expect(query().placeholderData).toEqual({
+        gasLimit: STETH_L2_APPROVE_GAS_LIMIT,
+      });
+    });
+
+    it('serves the L2 fallback after the estimate failed', () => {
+      state.failed = true;
       expect(renderHook(useApproveGasLimit)).toEqual({
         gasLimit: STETH_L2_APPROVE_GAS_LIMIT,
         tx: undefined,
@@ -329,7 +375,7 @@ describe('useApproveGasLimit', () => {
 
   it('keys the query on the chain and the L2 side', () => {
     renderHook(useApproveGasLimit);
-    expect(state.query?.queryKey).toEqual([
+    expect(query().queryKey).toEqual([
       'approve-wrap-gas-limit',
       false,
       L1_CHAIN_ID,

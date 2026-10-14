@@ -21,7 +21,11 @@ export const feeHistoryToMaxFee = (
       ? reward.map((fees) => fees[0] ?? 0n).reduce((sum, fee) => sum + fee) /
         BigInt(reward.length)
       : 0n;
-  const lastBaseFeePerGas = baseFeePerGas[0] ?? 0n;
+  // an empty window would price the base fee at zero: fail the quote instead
+  const [lastBaseFeePerGas] = baseFeePerGas;
+  if (lastBaseFeePerGas === undefined) {
+    throw new Error('eth_feeHistory returned no base fee');
+  }
 
   return {
     lastBaseFeePerGas,

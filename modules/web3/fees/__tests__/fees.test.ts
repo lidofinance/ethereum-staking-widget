@@ -129,6 +129,15 @@ describe('feeHistoryToMaxFee', () => {
       maxFeePerGas: 20n,
     });
   });
+
+  it('fails on an empty base fee window instead of pricing it at zero', () => {
+    expect(() =>
+      feeHistoryToMaxFee(
+        { baseFeePerGas: [], reward: [[3n]] },
+        DEFAULT_FEE_PARAMS,
+      ),
+    ).toThrow('eth_feeHistory returned no base fee');
+  });
 });
 
 describe('withPriorityFeeFloor', () => {
@@ -196,11 +205,15 @@ describe('estimateTxFees', () => {
     });
   });
 
-  it('linea: falls back to no additions when the quote fails', async () => {
+  it('linea: fails the quote, after a warning, when linea_estimateGas fails', async () => {
     const { client } = lineaClient({}, true);
-    await expect(estimateTxFees(client, CHAINS.Linea, tx)).resolves.toEqual({
-      l1Fee: 0n,
-    });
+    await expect(estimateTxFees(client, CHAINS.Linea, tx)).rejects.toThrow(
+      'method not found',
+    );
+    expect(console.warn).toHaveBeenCalledWith(
+      '[fees::linea] tx fees quote failed',
+      expect.any(Error),
+    );
   });
 
   it('op-stack: adds the buffered L1 data fee', async () => {
@@ -220,11 +233,15 @@ describe('estimateTxFees', () => {
     );
   });
 
-  it('op-stack: falls back to no L1 fee when the oracle call fails', async () => {
+  it('op-stack: fails the quote, after a warning, when the oracle call fails', async () => {
     vi.mocked(estimateL1Fee).mockRejectedValue(new Error('oracle down'));
     await expect(
       estimateTxFees({} as FeeClient, CHAINS.Optimism, tx),
-    ).resolves.toEqual({ l1Fee: 0n });
+    ).rejects.toThrow('oracle down');
+    expect(console.warn).toHaveBeenCalledWith(
+      '[fees::op-stack] tx fees quote failed',
+      expect.any(Error),
+    );
   });
 
   it('ethereum and arbitrum: no tx-specific parts and no RPC call', async () => {

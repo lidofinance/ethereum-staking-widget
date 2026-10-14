@@ -25,6 +25,9 @@ export const useUnwrapGasLimit = () => {
   const { data } = useQuery<UnwrapGasLimitQueryResult>({
     queryKey: ['unwrap-gas-limit', isDappActiveOnL2, chainId],
     ...STRATEGY_LAZY,
+    // served while the estimate loads; a failed estimate fails the query so
+    // it is retried instead of the fallback being cached as an estimate
+    placeholderData: { gasLimit: fallback },
     queryFn: async () => {
       try {
         if (isL2Wrap) {
@@ -51,11 +54,12 @@ export const useUnwrapGasLimit = () => {
           return { gasLimit };
         }
       } catch (error) {
-        console.warn(error);
-        return { gasLimit: fallback };
+        console.warn('[unwrap-gas-limit]', error);
+        throw error;
       }
     },
   });
 
+  // the fallback also stands in after a failed estimate
   return { gasLimit: data?.gasLimit ?? fallback, tx: data?.tx };
 };

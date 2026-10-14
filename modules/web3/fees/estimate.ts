@@ -32,8 +32,9 @@ export const estimateMaxFee = (
 ): Promise<MaxFeeData> =>
   getFeeModel(chainId).getMaxFee(client, getFeeParams(chainId), options);
 
-// Tx-specific parts of the cost. Falls back to none when the chain's quote
-// fails, so the UI is never blocked; the fallback is logged
+// Tx-specific parts of the cost. A failed quote rejects, so the query holding
+// it fails and is retried rather than caching a cost short of the L1 fee; the
+// failure is logged with the model that produced it
 export const estimateTxFees = async (
   client: FeeClient,
   chainId: number,
@@ -45,7 +46,7 @@ export const estimateTxFees = async (
     return await model.getTxFees(client, tx, getFeeParams(chainId), chainId);
   } catch (error) {
     console.warn(`[fees::${model.model}] tx fees quote failed`, error);
-    return { l1Fee: 0n };
+    throw error;
   }
 };
 

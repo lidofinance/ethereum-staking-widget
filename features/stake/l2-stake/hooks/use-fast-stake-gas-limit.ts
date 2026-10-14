@@ -29,19 +29,33 @@ const stakeProps = (token: L2StakableToken) => ({
   token,
 });
 
+const approveProps = {
+  account: config.ESTIMATE_ACCOUNT,
+  amount: ESTIMATE_AMOUNT,
+};
+
+// Served while the estimates load and after they failed; never cached as an
+// estimate, see the queries below
+const FALLBACK_GAS_LIMITS = {
+  gasLimitEth: LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK,
+  gasLimitWeth: LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK,
+  gasLimitWethApprove: LIDO_L2_WETH_APPROVE_GAS_LIMIT_FALLBACK,
+};
+
 const estimateStake = (l2Stake: L2StakeModule, token: L2StakableToken) =>
   l2Stake.fastStakeEthEstimateGas(stakeProps(token));
 
-const withFallback = async (
+// Logs which call failed and lets the failure reach the query, so the query
+// fails and is retried instead of caching a fallback as an estimate
+const warnOnFailure = async <T>(
   label: string,
-  estimate: () => Promise<bigint>,
-  fallback: bigint,
-) => {
+  run: () => Promise<T>,
+): Promise<T> => {
   try {
-    return await estimate();
+    return await run();
   } catch (error) {
     console.warn(`[fast-stake-gas-limit::${label}]`, error);
-    return fallback;
+    throw error;
   }
 };
 
@@ -50,20 +64,15 @@ const populateTx = async (
   label: string,
   populate: () => Promise<{ to: Address; data?: Hex; value?: bigint }>,
 ): Promise<FeeEstimateTx | undefined> => {
-  try {
-    const { to, data, value } = await populate();
-    if (!data) return undefined;
-    return { account: config.ESTIMATE_ACCOUNT, to, data, value };
-  } catch (error) {
-    console.warn(`[fast-stake-gas-limit::${label}-tx]`, error);
-    return undefined;
-  }
+  const { to, data, value } = await warnOnFailure(`${label}-tx`, populate);
+  if (!data) return undefined;
+  return { account: config.ESTIMATE_ACCOUNT, to, data, value };
 };
 
 export const useFastStakeGasLimit = () => {
   const { l2Stake, chainId, isL2Stake } = useLidoSDKL2();
 
-  const { data } = useQuery({
+  const { data: gasLimits } = useQuery({
     queryKey: [
       LIDO_L2_STAKING_QUERY_SCOPE,
       'fast-stake-gas-limit',
@@ -71,35 +80,28 @@ export const useFastStakeGasLimit = () => {
     ],
     enabled: isL2Stake,
     ...STRATEGY_CONSTANT,
-
+    placeholderData: FALLBACK_GAS_LIMITS,
     queryFn: async () => {
-      const [
-        gasLimitEth,
-        gasLimitWeth,
-        gasLimitWethApprove,
-        txEth,
-        txWeth,
-        txWethApprove,
-      ] = await Promise.all([
-        withFallback(
-          'eth',
-          () => estimateStake(l2Stake, 'ETH'),
-          LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK,
-        ),
-        withFallback(
-          'weth',
-          () => estimateStake(l2Stake, 'WETH'),
-          LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK,
-        ),
-        withFallback(
-          'weth-approve',
-          () =>
-            l2Stake.approveWethForFastStakeEstimateGas({
-              account: config.ESTIMATE_ACCOUNT,
-              amount: ESTIMATE_AMOUNT,
-            }),
-          LIDO_L2_WETH_APPROVE_GAS_LIMIT_FALLBACK,
-        ),
+      const [gasLimitEth, gasLimitWeth, gasLimitWethApprove] =
+        await Promise.all([
+          warnOnFailure('eth', () => estimateStake(l2Stake, 'ETH')),
+          warnOnFailure('weth', () => estimateStake(l2Stake, 'WETH')),
+          warnOnFailure('weth-approve', () =>
+            l2Stake.approveWethForFastStakeEstimateGas(approveProps),
+          ),
+        ]);
+      return { gasLimitEth, gasLimitWeth, gasLimitWethApprove };
+    },
+  });
+
+  // Quoted apart from the estimates, so a failed estimate does not drop the
+  // tx-specific parts (the L1 data fee) from the cost
+  const { data: txs } = useQuery({
+    queryKey: [LIDO_L2_STAKING_QUERY_SCOPE, 'fast-stake-txs', { chainId }],
+    enabled: isL2Stake,
+    ...STRATEGY_CONSTANT,
+    queryFn: async () => {
+      const [txEth, txWeth, txWethApprove] = await Promise.all([
         populateTx('eth', () =>
           l2Stake.fastStakeEthPopulateTx(stakeProps('ETH')),
         ),
@@ -107,32 +109,18 @@ export const useFastStakeGasLimit = () => {
           l2Stake.fastStakeEthPopulateTx(stakeProps('WETH')),
         ),
         populateTx('weth-approve', () =>
-          l2Stake.approveWethForFastStakePopulateTx({
-            account: config.ESTIMATE_ACCOUNT,
-            amount: ESTIMATE_AMOUNT,
-          }),
+          l2Stake.approveWethForFastStakePopulateTx(approveProps),
         ),
       ]);
-
-      return {
-        gasLimitEth,
-        gasLimitWeth,
-        gasLimitWethApprove,
-        txEth,
-        txWeth,
-        txWethApprove,
-      };
+      return { txEth, txWeth, txWethApprove };
     },
   });
 
   return {
-    gasLimitEth: data?.gasLimitEth ?? LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK,
-    gasLimitWeth:
-      data?.gasLimitWeth ?? LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK,
-    gasLimitWethApprove:
-      data?.gasLimitWethApprove ?? LIDO_L2_WETH_APPROVE_GAS_LIMIT_FALLBACK,
-    txEth: data?.txEth,
-    txWeth: data?.txWeth,
-    txWethApprove: data?.txWethApprove,
+    // the placeholder while loading, the fallback after a failed estimate
+    ...(gasLimits ?? FALLBACK_GAS_LIMITS),
+    txEth: txs?.txEth,
+    txWeth: txs?.txWeth,
+    txWethApprove: txs?.txWethApprove,
   };
 };
