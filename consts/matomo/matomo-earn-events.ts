@@ -153,7 +153,7 @@ export const MATOMO_EARN_EVENTS: Record<
 > = {
   [MATOMO_EARN_EVENTS_TYPES.ggvDeposit]: [
     'Ethereum_Earn_Widget',
-    'Click "Deposit" on Lido GGV on the list of vaults',
+    'Click "Deposit" on Lido GGV on the list of vaults (dont merge)',
     'eth_earn_list_lido_ggv_deposit',
   ],
   [MATOMO_EARN_EVENTS_TYPES.ggvDepositTabClick]: [
