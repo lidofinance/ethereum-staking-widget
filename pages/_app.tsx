@@ -7,8 +7,6 @@ import Head from 'next/head';
 
 import { ToastContainer } from '@lidofinance/lido-ui';
 
-import { config } from 'config';
-import { withCsp } from 'config/csp';
 import { SecurityStatusBanner } from 'features/ipfs';
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient';
@@ -63,6 +61,4 @@ const AppWrapper = (
   );
 };
 
-export default config.ipfsMode || process.env.NODE_ENV === 'development'
-  ? AppWrapper
-  : withCsp(AppWrapper);
+export default AppWrapper;
