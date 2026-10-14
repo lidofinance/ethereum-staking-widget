@@ -29,6 +29,11 @@ describe('getClientIp', () => {
     expect(getClientIp(req)).toBe('94.66.119.23');
   });
 
+  it('keeps an IPv4-mapped address written in hex', () => {
+    const req = makeReq({ 'cf-connecting-ip': '::ffff:c000:0280' });
+    expect(getClientIp(req)).toBe('::ffff:c000:0280');
+  });
+
   it('has no fallback to the socket peer, which every user shares', () => {
     expect(getClientIp(makeReq({}, '127.0.0.1'))).toBeUndefined();
     expect(

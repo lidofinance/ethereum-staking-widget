@@ -11,7 +11,9 @@ const MAX_HEADER_VALUE_LENGTH = 512;
 const firstValue = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
 
-const normalizeIp = (value: string) => value.trim().replace(/^::ffff:/i, '');
+// unwrap ::ffff: only before dotted IPv4; ::ffff:c000:280 stays valid IPv6
+const normalizeIp = (value: string) =>
+  value.trim().replace(/^::ffff:(?=\d+\.\d+\.\d+\.\d+$)/i, '');
 
 // printable ASCII only: an invalid header value makes fetch() throw
 const sanitizeHeaderValue = (value: string | undefined) => {
