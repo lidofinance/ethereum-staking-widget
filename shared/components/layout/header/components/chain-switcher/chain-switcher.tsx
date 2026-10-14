@@ -1,4 +1,4 @@
-import { FC, useState, useMemo, createElement, ComponentType } from 'react';
+import { FC, useMemo, createElement, ComponentType } from 'react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 import {
   CHAIN_ICONS_MAP,
@@ -6,12 +6,13 @@ import {
   useDappStatus,
   wagmiChainMap,
 } from 'modules/web3';
+import { usePopupMenu } from 'shared/components/layout/header/components/popup';
 
 import {
   ChainSwitcherOptions,
   ChainOption,
-} from './components/chain-switcher-options/chain-switcher-options';
-import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
+} from './components/chain-switcher-options';
+import { SelectIconTooltip } from './components/select-icon-tooltip';
 import {
   ChainSwitcherWrapperStyled,
   ChainSwitcherStyled,
@@ -35,12 +36,18 @@ export const ChainSwitcher: FC = () => {
     supportedChainIds,
     requestChangeChain,
   } = useDappStatus();
-
-  const [opened, setOpened] = useState(false);
   const isLocked = useMemo(
     () => supportedChainIds.length < 2 || isSwitchChainPending,
     [supportedChainIds, isSwitchChainPending],
   );
+  const {
+    opened,
+    close,
+    wrapperProps,
+    triggerProps,
+    menuProps,
+    backdropProps,
+  } = usePopupMenu({ mode: 'button', disabled: isLocked });
 
   const iconsMap = useMemo(
     () =>
@@ -59,16 +66,14 @@ export const ChainSwitcher: FC = () => {
   );
 
   return (
-    <ChainSwitcherWrapperStyled data-testid="chainSwitcher">
+    <ChainSwitcherWrapperStyled data-testid="chainSwitcher" {...wrapperProps}>
       <ChainSwitcherStyled
+        type="button"
         data-testid={`currentChain=${chainId}`}
+        aria-disabled={isLocked}
         $disabled={isLocked}
         $loading={isSwitchChainPending}
-        onClick={() => {
-          if (!isLocked) {
-            setOpened((prev) => !prev);
-          }
-        }}
+        {...triggerProps}
       >
         <IconStyle $loading={isSwitchChainPending}>
           {iconsMap[chainId].iconComponent}
@@ -82,12 +87,13 @@ export const ChainSwitcher: FC = () => {
           <ChainSwitcherOptions
             currentChainId={chainId}
             onSelect={(chainId) => {
-              setOpened(false);
+              close();
               requestChangeChain(chainId);
             }}
-            setOpened={setOpened}
             opened={opened}
             options={iconsMap}
+            menuProps={menuProps}
+            backdropProps={backdropProps}
           />
         </>
       )}

@@ -15,7 +15,10 @@ export const SelectIconTooltipWrapper = styled.div`
 
   @media ${devicesHeaderMedia.mobile} {
     position: fixed;
-    bottom: 72px;
+    // above the mobile navigation
+    bottom: calc(
+      var(--nav-mobile-height) + var(--nav-mobile-bottom-inset) + 12px
+    );
     left: 20px;
     right: 20px;
     top: unset;

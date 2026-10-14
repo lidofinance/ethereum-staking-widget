@@ -108,6 +108,18 @@ export const useDappChain = (): UseDappChainValue => {
   }, [context, walletChain]);
 };
 
+// wallet chain the dapp can follow, undefined means fall back to the default chain
+const getFollowableWalletChain = (
+  walletChainId: number | undefined,
+  isAllowedChain: (chainId: number) => boolean,
+) => {
+  return walletChainId &&
+    config.supportedChains.includes(walletChainId) &&
+    isAllowedChain(walletChainId)
+    ? walletChainId
+    : undefined;
+};
+
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
@@ -117,7 +129,13 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
     isPending: isSwitchChainPending,
     canSwitchChain,
   } = useSwitchChain();
-  const [chainId, setChainId] = useState<number>(config.defaultChain);
+  // starts on the wallet chain: the page remounts on navigation and would flash "wrong network"
+  const [chainId, setChainId] = useState<number>(
+    () =>
+      (isConnected &&
+        getFollowableWalletChain(walletChainId, isSDKSupportedChain)) ||
+      config.defaultChain,
+  );
   const requestChangeChain = useCallback(
     async (newChainId: number) => {
       if (!canSwitchChain) {
@@ -134,11 +152,11 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   );
 
   useEffect(() => {
-    if (
-      !walletChainId ||
-      !config.supportedChains.includes(walletChainId) ||
-      !isSDKSupportedChain(walletChainId)
-    ) {
+    const followableChainId = getFollowableWalletChain(
+      walletChainId,
+      isSDKSupportedChain,
+    );
+    if (!followableChainId) {
       // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
       // It also works on the first rendering, but we don't care.
       setChainId(config.defaultChain);
@@ -146,7 +164,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
     }
 
     if (isConnected) {
-      setChainId(walletChainId);
+      setChainId(followableChainId);
     }
   }, [walletChainId, isConnected]);
 
@@ -199,7 +217,16 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
     isPending: isSwitchChainPending,
     canSwitchChain,
   } = useSwitchChain();
-  const [chainId, setChainId] = useState<number>(config.defaultChain);
+  // starts on the wallet chain: the page remounts on navigation and would flash "wrong network"
+  const [chainId, setChainId] = useState<number>(
+    () =>
+      (isConnected &&
+        getFollowableWalletChain(
+          walletChainId,
+          isSDKSupportedChainAndChainIsL1,
+        )) ||
+      config.defaultChain,
+  );
   const requestChangeChain = useCallback(
     async (newChainId: number) => {
       if (!canSwitchChain) {
@@ -216,11 +243,11 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
   );
 
   useEffect(() => {
-    if (
-      !walletChainId ||
-      !config.supportedChains.includes(walletChainId) ||
-      !isSDKSupportedChainAndChainIsL1(walletChainId)
-    ) {
+    const followableChainId = getFollowableWalletChain(
+      walletChainId,
+      isSDKSupportedChainAndChainIsL1,
+    );
+    if (!followableChainId) {
       // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
       // It also works on the first rendering, but we don't care.
       setChainId(config.defaultChain);
@@ -228,7 +255,7 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
     }
 
     if (isConnected) {
-      setChainId(walletChainId);
+      setChainId(followableChainId);
     }
   }, [walletChainId, isConnected]);
 

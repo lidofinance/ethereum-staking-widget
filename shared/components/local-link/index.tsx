@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import React, { AnchorHTMLAttributes, FC, PropsWithChildren } from 'react';
 import { useRouter } from 'next/router';
 import Link, { LinkProps } from 'next/link';
 
@@ -10,7 +10,11 @@ import { LinkIpfs } from 'shared/components/link-ipfs';
 // since routing in IPFS is using hashes like this: /#/path
 // Ideally, LocalLink must be compatible with href as object
 
-export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
+type LocalLinkProps = PropsWithChildren<
+  LinkProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps>
+>;
+
+export const LocalLink: FC<LocalLinkProps> = (props) => {
   const router = useRouter();
   const { ref, embed, app, theme, earn, forceAllowance } = router.query;
   const { href, ...restProps } = props;

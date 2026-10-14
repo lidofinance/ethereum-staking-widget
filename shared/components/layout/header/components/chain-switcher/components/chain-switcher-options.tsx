@@ -1,37 +1,42 @@
-import { FC, ReactNode, useRef } from 'react';
+import { FC, ReactNode } from 'react';
 
-import { useClickOutside } from '../../hooks/use-click-outside';
+import {
+  PopoverNoClickBackdrop,
+  PopupStyled,
+  type usePopupMenu,
+} from 'shared/components/layout/header/components/popup';
 
-import { PopoverWrapperStyled, PopupStyled, OptionStyled } from './styles';
+import { ChainOptionStyled } from '../styles';
 
 export type ChainOption = { name: string; iconComponent: ReactNode };
 
-interface ChainSwitcherOptionsProps {
+type PopupMenu = ReturnType<typeof usePopupMenu>;
+
+type ChainSwitcherOptionsProps = {
   currentChainId: number;
   onSelect: (chainId: number) => void;
   opened: boolean;
-  setOpened: (opened: boolean) => void;
   options: Record<number, ChainOption>;
-}
+  menuProps: PopupMenu['menuProps'];
+  backdropProps: PopupMenu['backdropProps'];
+};
 
 export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
   currentChainId,
   onSelect,
-  setOpened,
   opened,
   options,
+  menuProps,
+  backdropProps,
 }) => {
-  const popupRef = useRef<HTMLDivElement>(null);
-  useClickOutside(popupRef, () => setOpened(false));
-
   return (
-    // We need the 'PopoverWrapperStyled' for block any events as if you had set 'pointer-events: none' on the body
-    // while the 'PopupStyled' is opened
+    // We need the 'PopoverNoClickBackdrop' to block any events as if you had set 'pointer-events: none' on the body
     <>
-      <PopoverWrapperStyled $backdrop={opened} />
-      <PopupStyled data-testid="chainList" $opened={opened} ref={popupRef}>
+      <PopoverNoClickBackdrop {...backdropProps} />
+      <PopupStyled data-testid="chainList" $opened={opened} {...menuProps}>
         {Object.entries(options).map(([chainId, chainOption]) => (
-          <OptionStyled
+          <ChainOptionStyled
+            type="button"
             data-testid={`chainRow=${chainId}`}
             key={chainId}
             onClick={() => onSelect(Number(chainId))}
@@ -39,7 +44,7 @@ export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
           >
             {chainOption.iconComponent}{' '}
             <span data-testid="chainName">{chainOption.name}</span>
-          </OptionStyled>
+          </ChainOptionStyled>
         ))}
       </PopupStyled>
     </>
