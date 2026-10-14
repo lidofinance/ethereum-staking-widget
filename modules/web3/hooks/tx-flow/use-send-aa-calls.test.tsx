@@ -20,7 +20,7 @@ vi.mock('wagmi', () => ({
 vi.mock('config', () => ({
   config: { PROVIDER_POLLING_INTERVAL: 1, AA_TX_POLLING_TIMEOUT: 1 },
 }));
-vi.mock('../../web3-provider', () => ({
+vi.mock('../../web3-provider/lido-sdk', () => ({
   useLidoSDK: () => ({
     core: {
       web3Provider: {
@@ -29,6 +29,8 @@ vi.mock('../../web3-provider', () => ({
       },
     },
   }),
+}));
+vi.mock('../../web3-provider/lido-sdk-l2', () => ({
   useLidoSDKL2: () => ({ core: undefined, isL2: false }),
 }));
 

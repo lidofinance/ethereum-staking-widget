@@ -10,15 +10,15 @@ import { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import { useQuery } from '@tanstack/react-query';
 
 import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
-import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { isSupportedL2Chain } from 'consts/chains';
 
 const fetchTokenAddress = async (
   token: string,
   core: LidoSDKCore,
   chainId: CHAINS,
-  isL2: boolean,
 ): Promise<Address> => {
-  if (isL2) {
+  if (isSupportedL2Chain(chainId as any)) {
     const address =
       LIDO_L2_CONTRACT_ADDRESSES[chainId]?.[
         token.toLowerCase() as LIDO_L2_CONTRACT_NAMES
@@ -45,13 +45,15 @@ export const useTokenAddress = (
   const { chainId } = useDappStatus();
   const effectiveChainId = chainIdOverride ?? chainId;
   const { core } = useLidoSDK();
-  const { isL2 } = useLidoSDKL2();
 
   const { data: address } = useQuery({
-    queryKey: ['tokenAddress', token, core, effectiveChainId, isL2],
+    queryKey: [
+      'token-address',
+      { token, coreChaindId: core.chainId, effectiveChainId },
+    ],
     enabled: !!token,
     ...STRATEGY_IMMUTABLE,
-    queryFn: () => fetchTokenAddress(token, core, effectiveChainId, isL2),
+    queryFn: () => fetchTokenAddress(token, core, effectiveChainId),
   });
 
   return address;

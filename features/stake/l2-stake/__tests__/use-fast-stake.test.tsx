@@ -82,8 +82,10 @@ vi.mock('../hooks/use-conversion', () => ({
 vi.mock('modules/web3', async () => {
   const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
+  const context = await import('modules/web3/hooks/tx-flow/context');
   return {
     ...errors,
+    ...context,
     useDappStatus: () => ({ address: ACCOUNT }),
     useAA: () => ({ isAA: state.isAA }),
     useLidoSDK: () => ({ core: { publicClient: {} } }),

@@ -1,7 +1,9 @@
 export * from './consts';
-export * from './fees';
 export * from './hooks';
 export * from './utils';
+// after the hooks: the fee hooks build on them and the provider layer
+// reaches back into the hooks barrel while it initialises
+export * from './fees';
 export {
   Web3Provider,
   useMainnetOnlyWagmi,

@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
+import type { Address } from 'viem';
 
 import { useConfig } from 'config';
 import {
@@ -39,6 +40,21 @@ type StakeOptions = {
   onRetry?: () => void;
 };
 
+// the steps of a stake, the first one only for WETH short of allowance
+const STEP = { approve: 'approve', stake: 'stake' } as const;
+
+// what every stage of a stake needs, read once before the first step
+type FastStakeData = {
+  amount: bigint;
+  address: Address;
+  referralAddress: Address;
+  preStakeBalanceWsteth: bigint;
+  // The receiver pulls WETH, so it needs an allowance first. Read here rather
+  // than taken from the form state, so a retry after a confirmed approval
+  // never approves again
+  needsApprove: boolean;
+};
+
 export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { bells } = useBells();
   const { address } = useDappStatus();
@@ -57,149 +73,139 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
     async ({ amount, token, referral }: StakeArguments): Promise<boolean> => {
       const isWeth = token === TOKENS_TO_STAKE.WETH;
       trackStart({ token });
-      try {
-        invariant(amount, 'amount is null');
-        invariant(address, 'account is not defined');
 
-        const referralAddress = await getReferralAddress(
-          referral,
-          l1Core.publicClient,
-        );
-        const preStakeBalanceWsteth = await l2.wsteth.balance(address);
+      // The rate is re-read right before sending, as the last step before
+      // the wallet is reached in both signing paths. `price` is ETH per
+      // wstETH, so a higher price or a higher fee means fewer wstETH for the
+      // same ETH: only that direction stops the stake. A better rate passes
+      // and the floor the user signs for is computed from the fresh read
+      const verifyQuote = async (amount: bigint): Promise<bigint> => {
+        const rate = await l2Stake.fetchFastStakeRate();
+        if (
+          shownRate &&
+          (rate.price > shownRate.price || rate.feeRate > shownRate.feeRate)
+        ) {
+          void refetchRate();
+          throw new QuoteMismatchError();
+        }
+        return calcFastStakeWstethByEth(amount, rate.feeRate, rate.price);
+      };
+      // the verified floor, kept for the sign stage of the modal
+      let minReceiveAmount = 0n;
 
-        const onStakeTxConfirmed = async () => {
+      const { isSuccess } = await txFlow<FastStakeData>({
+        prepare: async () => {
+          invariant(amount, 'amount is null');
+          invariant(address, 'account is not defined');
+          return {
+            amount,
+            address,
+            referralAddress: await getReferralAddress(
+              referral,
+              l1Core.publicClient,
+            ),
+            preStakeBalanceWsteth: await l2.wsteth.balance(address),
+            needsApprove:
+              isWeth &&
+              (await l2Stake.getWethAllowanceForFastStake(address)) < amount,
+          };
+        },
+        // the approval joins the batch for AA wallets and goes as a separate
+        // transaction otherwise. A batch is signed as built, so it carries
+        // the verified floor; a stepwise send re-quotes right before the stake
+        callsFn: async ({ isAA, data }) => {
+          if (isAA) minReceiveAmount = await verifyQuote(data.amount);
+          return [
+            data.needsApprove && {
+              stepId: STEP.approve,
+              ...(await l2Stake.approveWethForFastStakePopulateTx({
+                amount: data.amount,
+              })),
+            },
+            {
+              stepId: STEP.stake,
+              ...(await l2Stake.fastStakeEthPopulateTx({
+                amount: data.amount,
+                token,
+                referral: data.referralAddress,
+                minReceiveAmount,
+              })),
+            },
+          ];
+        },
+        sendStep: async (step, txStagesCallback, { data }) => {
+          if (step.stepId === STEP.approve) {
+            await l2Stake.approveWethForFastStake({
+              amount: data.amount,
+              callback: txStagesCallback,
+            });
+            return;
+          }
+          minReceiveAmount = await verifyQuote(data.amount);
+          await l2Stake.fastStakeEth({
+            amount: data.amount,
+            callback: txStagesCallback,
+            referral: data.referralAddress,
+            minReceiveAmount,
+            token,
+          });
+        },
+        onSign: async ({ payload, ctx: { stepId, data } }) => {
+          if (stepId === STEP.approve) {
+            txModalStages.signApproval(data.amount);
+            return;
+          }
+          txModalStages.sign(data.amount, token, minReceiveAmount);
+          return applyRoundUpTxParameter(
+            (payload as bigint) ??
+              (isWeth
+                ? LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK
+                : LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK),
+          );
+        },
+        onReceipt: ({ txHashOrCallId, ctx: { stepId, data } }) =>
+          stepId === STEP.approve
+            ? txModalStages.pendingApproval(data.amount, txHashOrCallId)
+            : txModalStages.pending(data.amount, token, txHashOrCallId, isAA),
+        onSuccess: async ({ txHash, ctx: { stepId, data } }) => {
+          if (stepId !== STEP.stake) return;
           const [, balance] = await Promise.all([
             onConfirm?.(),
-            l2.wsteth.balance(address),
+            l2.wsteth.balance(data.address),
           ]);
-          return balance;
-        };
-
-        // The rate is re-read right before sending, as the last step before
-        // the wallet is reached in both signing paths. `price` is ETH per
-        // wstETH, so a higher price or a higher fee means fewer wstETH for the
-        // same ETH: only that direction stops the stake. A better rate passes
-        // and the floor the user signs for is computed from the fresh read
-        const verifyQuote = async (): Promise<bigint> => {
-          const rate = await l2Stake.fetchFastStakeRate();
-          if (
-            shownRate &&
-            (rate.price > shownRate.price || rate.feeRate > shownRate.feeRate)
-          ) {
-            void refetchRate();
-            throw new QuoteMismatchError();
+          if (featureFlags.holidayDecorEnabled) {
+            bells();
           }
-          return calcFastStakeWstethByEth(amount, rate.feeRate, rate.price);
-        };
-        // the verified floor, kept for the sign stage of the modal
-        let minReceiveAmount = 0n;
-
-        const populateStakeCall = (minReceiveAmount: bigint) =>
-          l2Stake.fastStakeEthPopulateTx({
-            amount,
-            token,
-            referral: referralAddress,
-            minReceiveAmount,
-          });
-
-        // The receiver pulls WETH, so it needs an allowance first: in the same
-        // batch for AA wallets, as a separate transaction otherwise. The
-        // allowance is read here rather than taken from the form state, so a
-        // retry after a confirmed approval never approves again. The flag tells
-        // the stage callbacks which of the chained transactions is reporting
-        let needsApprove =
-          isWeth &&
-          (await l2Stake.getWethAllowanceForFastStake(address)) < amount;
-        // Set when the approval landed but the stake was never sent: the flow
-        // then resolves (its last receipt was a success) although nothing was
-        // staked
-        let isFlowInterrupted = false;
-
-        await txFlow({
-          callsFn: async () => {
-            const approveCall = needsApprove
-              ? await l2Stake.approveWethForFastStakePopulateTx({ amount })
-              : null;
-            minReceiveAmount = await verifyQuote();
-            const stakeCall = await populateStakeCall(minReceiveAmount);
-            needsApprove = false;
-            return approveCall ? [approveCall, stakeCall] : [stakeCall];
-          },
-          sendTransaction: async (txStagesCallback) => {
-            if (needsApprove) {
-              await l2Stake.approveWethForFastStake({
-                amount,
-                callback: txStagesCallback,
-              });
-              needsApprove = false;
-            }
-            minReceiveAmount = await verifyQuote();
-            await l2Stake.fastStakeEth({
-              amount,
-              callback: txStagesCallback,
-              referral: referralAddress,
-              minReceiveAmount,
-              token,
-            });
-          },
-          onSign: async ({ payload }) => {
-            if (needsApprove) {
-              txModalStages.signApproval(amount);
-              return;
-            }
-            txModalStages.sign(amount, token, minReceiveAmount);
-            return applyRoundUpTxParameter(
-              (payload as bigint) ??
-                (isWeth
-                  ? LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK
-                  : LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK),
+          txModalStages.success(balance, data.preStakeBalanceWsteth, txHash);
+          trackEnd({ token });
+        },
+        onMultisigDone: ({ ctx }) => {
+          if (ctx.stepId === STEP.stake) txModalStages.successMultisig();
+        },
+        onFailure: async ({ error, ctx }) => {
+          console.warn(error);
+          // The approval settled but its confirmation read failed, so the
+          // SDK never got to the stake. Not a completed stake: keep the
+          // amount, refresh the allowance and offer to continue. Any other
+          // failure after the approval shows as is: a retry reads the
+          // allowance and goes straight to the stake
+          if (ctx.stepId === STEP.approve && error instanceof TxSettledError) {
+            await onConfirm?.();
+            txModalStages.failed(
+              new TxFlowInterruptedError(
+                ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
+                error.cause,
+              ),
+              onRetry,
             );
-          },
-          onReceipt: ({ txHashOrCallId }) => {
-            if (needsApprove) {
-              return txModalStages.pendingApproval(amount, txHashOrCallId);
-            }
-            return txModalStages.pending(amount, token, txHashOrCallId, isAA);
-          },
-          onSuccess: async ({ txHash }) => {
-            if (needsApprove) return;
-            const balance = await onStakeTxConfirmed();
-            if (featureFlags.holidayDecorEnabled) {
-              bells();
-            }
-            txModalStages.success(balance, preStakeBalanceWsteth, txHash);
-            trackEnd({ token });
-          },
-          onFailure: async ({ error }) => {
-            // The approval settled but its confirmation read failed, so the
-            // SDK never got to the stake. Not a completed stake: keep the
-            // amount, refresh the allowance and offer to continue
-            if (needsApprove && error instanceof TxSettledError) {
-              isFlowInterrupted = true;
-              await onConfirm?.();
-              txModalStages.failed(
-                new TxFlowInterruptedError(
-                  ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
-                  error.cause,
-                ),
-                onRetry,
-              );
-              return;
-            }
-            txModalStages.failed(error, onRetry);
-          },
-          onMultisigDone: () => {
-            if (needsApprove) return;
-            txModalStages.successMultisig();
-          },
-        });
+            return;
+          }
+          txModalStages.failed(error, onRetry);
+        },
+      });
 
-        return !isFlowInterrupted;
-      } catch (error) {
-        console.warn(error);
-        txModalStages.failed(error, onRetry);
-        return false;
-      }
+      // staked (or proposed to a multisig): the form resets
+      return isSuccess;
     },
     [
       trackStart,

@@ -65,8 +65,10 @@ const state = vi.hoisted(() => ({
 vi.mock('modules/web3', async () => {
   const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
+  const context = await import('modules/web3/hooks/tx-flow/context');
   return {
     ...errors,
+    ...context,
     useDappStatus: () => ({ address: ACCOUNT }),
     useAA: () => ({ isAA: state.isAA }),
     useLidoSDK: () => state.sdk,
@@ -597,6 +599,7 @@ describe('stake call construction', () => {
     expect(stakeEthPopulateTx).not.toHaveBeenCalled();
     const [, stakeCall] = sentAACalls(state.sendAACalls);
     expect(stakeCall).toEqual({
+      stepId: 'stake',
       to: STETH,
       data: encodeFunctionData({
         abi: StethAbi,

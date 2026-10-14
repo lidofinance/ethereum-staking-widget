@@ -11,7 +11,9 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/common';
 import { bridgedWstethAbi } from '@lidofinance/lido-ethereum-sdk/l2';
 import { wethABI } from 'abi/weth-abi';
-import { estimateSendFees } from 'modules/web3/fees';
+// the estimate file, not the fees barrel: that one carries the hooks, which
+// lead back to the SDK provider this module is created in
+import { estimateSendFees } from 'modules/web3/fees/estimate';
 
 import {
   L2_STAKING_ORACLE_POOL_ABI,

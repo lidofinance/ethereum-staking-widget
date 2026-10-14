@@ -3,7 +3,9 @@ import invariant from 'tiny-invariant';
 import { useConnection } from 'wagmi';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { config } from 'config';
-import { useLidoSDK, useLidoSDKL2 } from '../../web3-provider';
+// the concrete files, not the provider barrel: that one leads back here
+import { useLidoSDK } from '../../web3-provider/lido-sdk';
+import { useLidoSDKL2 } from '../../web3-provider/lido-sdk-l2';
 import { AACall, TxCallbackProps } from './types';
 
 export class SendCallsError extends Error {}
