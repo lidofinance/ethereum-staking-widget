@@ -80,6 +80,9 @@ import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 import {
+  CCIP_ONRAMP_ABI,
+  CCIP_ROUTER_ABI,
+  CCIP_TOKEN_POOL_ABI,
   L2_STAKING_ORACLE_FEED_ABI,
   L2_STAKING_ORACLE_POOL_ABI,
   L2_STAKING_RECEIVER_ABI,
@@ -98,6 +101,9 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.L2stakingReceiver]: L2_STAKING_RECEIVER_ABI,
   [CONTRACT_NAMES.L2FastStakeOraclePool]: L2_STAKING_ORACLE_POOL_ABI,
   [CONTRACT_NAMES.L2FastStakeOracleFeed]: L2_STAKING_ORACLE_FEED_ABI,
+  [CONTRACT_NAMES.L2CcipRouter]: CCIP_ROUTER_ABI,
+  [CONTRACT_NAMES.L2CcipOnRamp]: CCIP_ONRAMP_ABI,
+  [CONTRACT_NAMES.L2CcipWethPool]: CCIP_TOKEN_POOL_ABI,
   [CONTRACT_NAMES.L2GasPriceOracle]: opGasPriceOracleAbi,
   // SI contracts
   [CONTRACT_NAMES.wstethReferralStaker]: WstethReferralStakerABI,

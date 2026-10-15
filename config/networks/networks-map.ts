@@ -49,6 +49,9 @@ export const CONTRACT_NAMES = {
   L2stakingReceiver: 'L2stakingReceiver',
   L2FastStakeOraclePool: 'L2FastStakeOraclePool',
   L2FastStakeOracleFeed: 'L2FastStakeOracleFeed',
+  L2CcipRouter: 'L2CcipRouter',
+  L2CcipOnRamp: 'L2CcipOnRamp',
+  L2CcipWethPool: 'L2CcipWethPool',
   // OP-stack predeploy quoting the L1 data fee of a tx
   L2GasPriceOracle: 'L2GasPriceOracle',
   // 3rd party contracts

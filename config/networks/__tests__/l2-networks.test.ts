@@ -28,6 +28,10 @@ const L2_STAKING_CONTRACTS = [
   'L2FastStakeOraclePool',
   'L2FastStakeOracleFeed',
   'weth',
+  // the slow stake reads go through the RPC proxy allowlist built from here
+  'L2CcipRouter',
+  'L2CcipOnRamp',
+  'L2CcipWethPool',
 ];
 
 describe('networks/l2', () => {

@@ -12,10 +12,7 @@ import {
 import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import {
-  L2StakeModule,
-  calcFastStakeWstethByEth,
-} from 'modules/l2-staking/l2-staking-module';
+import { L2StakeModule } from 'modules/l2-staking/l2-staking-module';
 import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
 import { wethABI } from 'abi/weth-abi';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
@@ -48,7 +45,7 @@ const P = 10n ** 18n;
 const FEE = 10n ** 15n;
 const PRICE = 12n * 10n ** 17n;
 const AMOUNT = 2n * P;
-const MIN_RECEIVE = calcFastStakeWstethByEth(AMOUNT, FEE, PRICE);
+const MIN_RECEIVE = L2StakeModule.calcFastStakeWstethByEth(AMOUNT, FEE, PRICE);
 const BALANCE_BEFORE = 5n * P;
 const BALANCE_AFTER = BALANCE_BEFORE + MIN_RECEIVE;
 
