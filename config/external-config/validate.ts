@@ -207,6 +207,7 @@ export const ManifestConfigPages = {
   Rewards: '/rewards',
   Settings: '/settings',
   Earn: '/earn',
+  Swap: '/swap',
 } as const;
 
 export const PageNameSchema = z.enum(Object.values(ManifestConfigPages));

@@ -47,6 +47,7 @@ export const WIDGET_PAGES = [
   '/earn/usd/withdraw',
   '/earn/eth/deposit',
   '/earn/eth/withdraw',
+  '/swap',
 ];
 
 // cache control

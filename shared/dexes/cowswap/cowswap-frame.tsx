@@ -1,0 +1,339 @@
+import {
+  CowSwapWidget,
+  CowSwapWidgetPalette,
+  CowSwapWidgetParams,
+  CowSwapWidgetProps,
+  TradeType,
+} from '@cowprotocol/widget-react';
+import { useCallback, useMemo } from 'react';
+import { mainnet, sepolia } from 'viem/chains';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
+import { debounce } from 'lodash';
+import { useTheme } from 'styled-components';
+import { themeDark, themeLight } from '@lidofinance/lido-ui';
+
+import { useDappStatus } from 'modules/web3';
+import { LOCALE } from 'config/groups/locale';
+import { useAddressValidation } from 'providers/address-validation-provider';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
+import {
+  MAX_SLIPPAGE,
+  PARTNER_FEE_BPS,
+  WHEN_PRICE_IMPACT_IS_HIGH_THAN,
+  COWSWAP_BASE_URL,
+  MAX_ORDER_AGE_MINUTES,
+  TRADE_REPORT_EVENT_DEBOUNCE_MS,
+} from './consts';
+import {
+  useCowSwapEthereumProvider,
+  useCspBlocked,
+  useFeeRecipient,
+  useIsGhAvailable,
+  useLoadingStates,
+} from './hooks';
+import { useTradeGuard, TradeGuardModal } from './guards/trade';
+import type { CowswapProfile } from './profile';
+import { shouldRefreshForSellToken } from './utils';
+import { LoaderStyled, DexWrapper } from './styles';
+
+const cowSwapThemeDark: CowSwapWidgetPalette = {
+  baseTheme: 'dark',
+  primary: themeDark.colors.primary,
+  background: themeDark.colors.background,
+  paper: '#2D2D35',
+  text: themeDark.colors.text,
+  warning: themeDark.colors.warning,
+  alert: themeDark.colors.warningBackground,
+  danger: themeDark.colors.error,
+  info: themeDark.colors.warning,
+  success: themeDark.colors.success,
+  // boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)', // TODO: wait fix from CowSwap team
+  boxShadow: 'none',
+};
+
+const cowSwapThemeLight: CowSwapWidgetPalette = {
+  baseTheme: 'light',
+  primary: themeLight.colors.primary,
+  background: '#F2F2F2',
+  paper: themeLight.colors.foreground,
+  text: themeLight.colors.text,
+  warning: themeLight.colors.warning,
+  alert: themeLight.colors.warning,
+  danger: themeLight.colors.error,
+  info: themeLight.colors.warning,
+  success: themeLight.colors.success,
+  // boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)', // TODO: wait fix from CowSwap team
+  boxShadow: 'none',
+};
+
+export type CowswapFrameProps = {
+  profile: CowswapProfile;
+  refetchBalances: () => void;
+  // cancel the host Block bottom padding once loaded
+  consumeBottomSpace?: boolean;
+};
+
+export const CowswapFrame: React.FC<CowswapFrameProps> = ({
+  profile,
+  refetchBalances,
+  consumeBottomSpace = true,
+}) => {
+  const {
+    appCode,
+    defaultPair,
+    tokenLists,
+    analytics,
+    getNetworkTxConfig,
+    tokenDecimals,
+    oracleFeeds,
+  } = profile;
+
+  // throws on loading timeout/onError
+  const { isLoading, isLoaded, onLoaded, onError, triggerRefresh, refreshId } =
+    useLoadingStates();
+
+  const { address, isTestnet } = useDappStatus();
+  // for testnets only sepolia; allowlist must match the chain the widget runs on
+  const widgetChainId = isTestnet ? sepolia.id : mainnet.id;
+  const { sellTokens } = getNetworkTxConfig(widgetChainId);
+  const { validateAddress } = useAddressValidation();
+  const { name: themeName } = useTheme();
+  // Fall back to self-hosted token lists if GitHub is unavailable
+  const isGithubAvailable = useIsGhAvailable(tokenLists.sell.url);
+  const daoAgentAddress = useFeeRecipient();
+  // throw on CSP violation
+  useCspBlocked();
+  // throw on loading timeout
+
+  const {
+    modalState,
+    handleModalClose,
+    validateTrade,
+    validateApproval,
+    reportTradeParams,
+    openTransactionGuardModal,
+    openSigningErrorModal,
+    verifySignedOrder,
+  } = useTradeGuard({
+    isTestnet,
+    tokenDecimals,
+    oracleFeeds,
+    quoteErrorEvent: analytics.quoteError,
+  });
+
+  const trackQuoteViewed = useMemo(
+    () =>
+      debounce(
+        () => trackMatomoEvent(analytics.quoteViewed),
+        TRADE_REPORT_EVENT_DEBOUNCE_MS,
+      ),
+    [analytics.quoteViewed],
+  );
+
+  const validate = useCallback(async () => {
+    const isValid = await validateAddress(address);
+    return isValid;
+  }, [validateAddress, address]);
+
+  const provider = useCowSwapEthereumProvider({
+    verifySignedOrder,
+    openTransactionGuardModal,
+    openSigningErrorModal,
+    getNetworkTxConfig,
+    appCode,
+  });
+
+  const params = useMemo<CowSwapWidgetParams>(
+    () => ({
+      //
+      // Core options
+      //
+      appCode,
+      standaloneMode: false,
+      chainId: widgetChainId,
+      baseUrl: COWSWAP_BASE_URL,
+
+      //
+      // Trading options
+      //
+
+      tradeType: TradeType.SWAP,
+      enabledTradeTypes: [TradeType.SWAP],
+      sell: {
+        asset: defaultPair.sell,
+      },
+      buy: {
+        asset: defaultPair.buy,
+      },
+      sellTokenLists: [
+        isGithubAvailable
+          ? tokenLists.sell.url
+          : `${window.location.origin}/${tokenLists.sell.fallback}`,
+      ],
+      buyTokenLists: [
+        isGithubAvailable
+          ? tokenLists.buy.url
+          : `${window.location.origin}/${tokenLists.buy.fallback}`,
+      ],
+      slippage: {
+        max: MAX_SLIPPAGE,
+      },
+      partnerFee: {
+        bps: PARTNER_FEE_BPS,
+        recipient: daoAgentAddress,
+      },
+      disableTrade: {
+        whenPriceImpactIsUnknown: true,
+        whenPriceImpactIsHigherThan: WHEN_PRICE_IMPACT_IS_HIGH_THAN,
+      },
+      disableCrossChainSwap: true,
+      disableCustomRecipient: true,
+      disableEIP2612Permits: true,
+      disableInfiniteApprove: true,
+      forcedOrderDeadline: MAX_ORDER_AGE_MINUTES,
+
+      //
+      // UI options
+      //
+
+      width: '100%',
+      rootStyle: {
+        height: 'var(--dynamicHeight, 432px)',
+      },
+
+      theme: themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight,
+      // enables opening explorer and `powered by cowswap` links
+      // ONLY safe when used with pinned IPFS cowswap UI,
+      // otherwise prone to security risks during domain takeover
+      disableWindowOpen: false,
+      disableSwitchingTokens: true,
+      disablePostedOrderConfirmationModal: true,
+      disableTokenImport: true,
+      disablePostTradeTips: true,
+      hideRecentTokens: true,
+      hideFavoriteTokens: true,
+      disableToastMessages: true,
+      disableProgressBar: false,
+      sounds: {
+        postOrder: null,
+        orderExecuted: null,
+        orderError: null,
+      },
+      hideBridgeInfo: false,
+      hideOrdersTable: false,
+      hideNetworkSelector: true,
+      locale: LOCALE,
+
+      hooks: {
+        onBeforeApproval: async () => {
+          if (!(await validateApproval())) return false;
+          return await validate();
+        },
+        // wETH unwrap/wrap is not allowed and not needed for withdrawal dex
+        onBeforeWrapOrUnwrap: async () => {
+          return false;
+        },
+        onBeforeTrade: async (payload) => {
+          if (!(await validateTrade(payload))) return false;
+
+          trackMatomoEvent(analytics.swapStart);
+          return await validate();
+        },
+        onBeforeOrderCancel: async () => {
+          return await validate();
+        },
+        onBeforeOrdersCancel: async () => {
+          return await validate();
+        },
+      },
+      //ignored by widget but triggers refresh
+      __EXTERNAL_REFRESH_ID__: refreshId,
+    }),
+    [
+      appCode,
+      defaultPair,
+      tokenLists,
+      analytics.swapStart,
+      widgetChainId,
+      isGithubAvailable,
+      daoAgentAddress,
+      themeName,
+      refreshId,
+      validateApproval,
+      validate,
+      validateTrade,
+    ],
+  );
+
+  const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
+    const handlers: CowSwapWidgetProps['listeners'] = [
+      {
+        event: CowWidgetEvents.ON_POSTED_ORDER,
+        handler: () => {
+          trackMatomoEvent(analytics.swapPosted);
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_FULFILLED_ORDER,
+        handler: () => {
+          void refetchBalances();
+          trackMatomoEvent(analytics.swapFinish);
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_CANCELLED_ORDER,
+        handler: () => {
+          trackMatomoEvent(analytics.swapCancel);
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_EXPIRED_ORDER,
+        handler: () => {
+          trackMatomoEvent(analytics.swapCancel);
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
+        handler: (payload: OnTradeParamsPayload) => {
+          trackQuoteViewed();
+          // Force widget refresh to reset token selection outside the profile
+          if (shouldRefreshForSellToken(payload, sellTokens)) {
+            triggerRefresh();
+            return;
+          }
+          reportTradeParams(payload);
+        },
+      },
+    ];
+
+    return handlers;
+  }, [
+    analytics,
+    sellTokens,
+    trackQuoteViewed,
+    refetchBalances,
+    reportTradeParams,
+    triggerRefresh,
+  ]);
+
+  return (
+    <>
+      <DexWrapper $consumeBottomSpace={consumeBottomSpace && isLoaded}>
+        <CowSwapWidget
+          provider={provider}
+          params={params}
+          listeners={listeners}
+          enableSafeSdkBridge={false}
+          onLoadingError={() =>
+            onError(new Error('Failed to load CoW Swap widget'))
+          }
+          onReady={onLoaded}
+        />
+        <LoaderStyled $isVisible={isLoading} />
+      </DexWrapper>
+      <TradeGuardModal state={modalState} onClose={handleModalClose} />
+    </>
+  );
+};

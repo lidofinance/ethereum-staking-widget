@@ -1,26 +1,24 @@
 import invariant from 'tiny-invariant';
+import { z } from 'zod';
 
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useLidoSDK } from 'modules/web3';
 
-type APR_RECORD = { timeUnix: number; apr: number };
+const SMA_APR_RESPONSE_SCHEMA = z.object({
+  data: z.object({
+    smaApr: z.number(),
+    aprs: z
+      .array(z.object({ timeUnix: z.number(), apr: z.number() }))
+      .optional(),
+  }),
+  meta: z.looseObject({}).optional(),
+});
 
-type SMA_APR_RESPONSE = {
-  data: {
-    smaApr: number;
-    aprs?: APR_RECORD[];
-  };
-  meta?: {
-    symbol: 'stETH';
-    address: string;
-    chainId: CHAINS;
-  };
-};
+type SMA_APR_RESPONSE = z.infer<typeof SMA_APR_RESPONSE_SCHEMA>;
 
 type UseLidoAprResult = UseQueryResult<SMA_APR_RESPONSE> & {
   apr?: string;
@@ -32,11 +30,14 @@ export const useLidoApr = (): UseLidoAprResult => {
 
   const result = useQuery<SMA_APR_RESPONSE>({
     queryKey: ['lido-apr', url],
-    ...STRATEGY_LAZY,
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       try {
         invariant(url, 'Missing URL for fetching the SMA APR');
-        return await standardFetcher<SMA_APR_RESPONSE>(url);
+        // a malformed response falls through to the SDK like a failed request
+        return SMA_APR_RESPONSE_SCHEMA.parse(
+          await standardFetcher<unknown>(url),
+        );
       } catch (error) {
         // Fallback from SDK
         const lastApr = await statistics.apr.getSmaApr({ days: 7 });

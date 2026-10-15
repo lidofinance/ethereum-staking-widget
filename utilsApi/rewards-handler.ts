@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { API } from '@lidofinance/next-api-wrapper';
 
+import { CACHE_DEFAULT_ERROR_HEADERS } from 'config/groups/cache';
+
 import { rewardsQuerySchema } from './rewards-query-schema';
 
 /**
@@ -13,6 +15,7 @@ export const createRewardsHandler =
   (req: NextApiRequest, res: NextApiResponse) => {
     const parsed = rewardsQuerySchema.safeParse(req.query);
     if (!parsed.success) {
+      res.setHeader('Cache-Control', CACHE_DEFAULT_ERROR_HEADERS);
       res.status(400).json({
         error: 'Invalid query parameters',
         details: parsed.error.issues.map((i) => ({

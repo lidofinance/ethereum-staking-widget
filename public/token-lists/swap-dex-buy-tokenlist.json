@@ -1,0 +1,116 @@
+{
+  "name": "Lido swap buy",
+  "timestamp": "2026-10-15T00:00:00.000Z",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
+  "keywords": [],
+  "tokens": [
+    {
+      "symbol": "ETH",
+      "name": "Ether",
+      "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/logo.png"
+    },
+    {
+      "symbol": "stETH",
+      "name": "Liquid staked Ether 2.0",
+      "address": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xae7ab96520de3a18e5e111b5eaab095312d7fe84/logo.png"
+    },
+    {
+      "symbol": "wstETH",
+      "name": "Wrapped liquid staked Ether 2.0",
+      "address": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0/logo.png"
+    },
+    {
+      "symbol": "LDO",
+      "name": "Lido DAO Token",
+      "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x5a98fcbea516cf06857215779fd812ca3bef1b32/logo.png"
+    },
+    {
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/logo.png"
+    },
+    {
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "decimals": 6,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/logo.png"
+    },
+    {
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "decimals": 6,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xdac17f958d2ee523a2206206994597c13d831ec7/logo.png"
+    },
+    {
+      "symbol": "USDe",
+      "name": "USDe",
+      "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/logo.png"
+    },
+    {
+      "symbol": "DAI",
+      "name": "Dai Stablecoin",
+      "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x6b175474e89094c44da98b954eedeac495271d0f/logo.png"
+    },
+    {
+      "symbol": "USDS",
+      "name": "USDS Stablecoin",
+      "address": "0xdc035d45d973e3ec169d2276ddab16f1e407384f",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xdc035d45d973e3ec169d2276ddab16f1e407384f/logo.png"
+    },
+    {
+      "symbol": "PYUSD",
+      "name": "PayPal USD",
+      "address": "0x6c3ea9036406852006290770bedfcaba0e23a0e8",
+      "decimals": 6,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x6c3ea9036406852006290770bedfcaba0e23a0e8/logo.png"
+    },
+    {
+      "symbol": "WBTC",
+      "name": "Wrapped BTC",
+      "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "decimals": 8,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/logo.png"
+    },
+    {
+      "symbol": "cbBTC",
+      "name": "Coinbase Wrapped BTC",
+      "address": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+      "decimals": 8,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf/logo.png"
+    }
+  ]
+}

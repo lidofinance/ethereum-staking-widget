@@ -5,7 +5,7 @@ import type { Address } from 'viem';
 
 import { unixTimestampToMs } from 'utils/unix-timestamp-to-ms';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { useEthVaultStats } from 'features/earn/vault-eth/hooks/use-vault-stats';
 import { useUsdVaultStats } from 'features/earn/vault-usd/hooks/use-vault-stats';
 
@@ -44,7 +44,7 @@ export const useMetavaultChartData = ({
       vaultAddress,
       fromTimestamp,
     ],
-    ...STRATEGY_LAZY,
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       if (!vaultAddress) return null;
 
