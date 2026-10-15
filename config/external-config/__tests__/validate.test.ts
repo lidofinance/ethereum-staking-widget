@@ -693,9 +693,14 @@ describe('baseConfig.l2Stake', () => {
 
   it('applies defaults to every chain when omitted', () => {
     const result = parseL2Stake(undefined);
-    expect(result.common).toEqual({ enabled: true, liquidityTarget: 25 });
+    expect(result.common).toEqual({
+      enabled: true,
+      mode: 'all',
+      liquidityTarget: 25,
+    });
     expect(result.perChain[BASE]).toEqual({
       enabled: true,
+      mode: 'all',
       liquidityTarget: 25,
     });
   });
@@ -707,10 +712,12 @@ describe('baseConfig.l2Stake', () => {
     });
     expect(result.perChain[BASE]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 40,
     });
     expect(result.perChain[LINEA]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 40,
     });
   });
@@ -722,10 +729,12 @@ describe('baseConfig.l2Stake', () => {
     });
     expect(result.perChain[BASE]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 10,
     });
     expect(result.perChain[LINEA]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 25,
     });
   });
@@ -737,6 +746,7 @@ describe('baseConfig.l2Stake', () => {
     });
     expect(result.perChain[BASE]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 40,
     });
   });
@@ -748,6 +758,7 @@ describe('baseConfig.l2Stake', () => {
     });
     expect(result.perChain[BASE]).toEqual({
       enabled: true,
+      mode: 'all',
       liquidityTarget: 5,
     });
   });
@@ -759,6 +770,7 @@ describe('baseConfig.l2Stake', () => {
     });
     expect(result.perChain[BASE]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 10,
     });
   });
@@ -767,10 +779,12 @@ describe('baseConfig.l2Stake', () => {
     const result = parseL2Stake({ common: { enabled: false } });
     expect(result.perChain[BASE]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 25,
     });
     expect(result.perChain[LINEA]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 25,
     });
   });
@@ -779,10 +793,12 @@ describe('baseConfig.l2Stake', () => {
     const result = parseL2Stake({ perChain: { [BASE]: { enabled: false } } });
     expect(result.perChain[BASE]).toEqual({
       enabled: false,
+      mode: 'all',
       liquidityTarget: 25,
     });
     expect(result.perChain[LINEA]).toEqual({
       enabled: true,
+      mode: 'all',
       liquidityTarget: 25,
     });
   });
@@ -816,8 +832,30 @@ describe('baseConfig.l2Stake', () => {
     expect(result.perChain[LINEA].liquidityTarget).toBe(40);
     expect(parseL2Stake({ common: { liquidityTarget: 2.5 } }).common).toEqual({
       enabled: true,
+      mode: 'all',
       liquidityTarget: 25,
     });
+  });
+
+  it('offers both lanes unless a mode says otherwise', () => {
+    expect(parseL2Stake(undefined).perChain[BASE].mode).toBe('all');
+    const result = parseL2Stake({
+      common: { mode: 'fastLaneOnly' },
+      perChain: { [BASE]: { mode: 'slowLaneOnly' } },
+    });
+    expect(result.common.mode).toBe('fastLaneOnly');
+    expect(result.perChain[BASE].mode).toBe('slowLaneOnly');
+    expect(result.perChain[LINEA].mode).toBe('fastLaneOnly');
+  });
+
+  it('falls through to common on an unknown mode', () => {
+    const result = parseL2Stake({
+      common: { mode: 'slowLaneOnly' },
+      perChain: { [BASE]: { mode: 'bothLanes' }, [LINEA]: { mode: 1 } },
+    });
+    expect(result.perChain[BASE].mode).toBe('slowLaneOnly');
+    expect(result.perChain[LINEA].mode).toBe('slowLaneOnly');
+    expect(parseL2Stake({ common: { mode: 'off' } }).common.mode).toBe('all');
   });
 
   it('drops chain keys that are not a positive integer or not a known chain', () => {
