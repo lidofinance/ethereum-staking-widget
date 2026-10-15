@@ -52,7 +52,7 @@ export const useWrapFormData = () => {
 // Data provider
 //
 export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { isL2 } = useLidoSDKL2();
+  const { isL2Wrap } = useLidoSDKL2();
   const networkData = useWrapFormNetworkData();
   const validationContextPromise = useWrapFormValidationContext({
     networkData,
@@ -75,6 +75,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     reset,
     formState: { defaultValues },
     setValue,
+    getValues,
   } = formObject;
   useQueryParamsReferralForm<WrapFormInputType>({ setValue });
   const [token, amount] = watch(['token', 'amount']);
@@ -83,10 +84,13 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   // connecting (or before switching chains) must be normalized here, not just
   // in the connection-change reset which skips the initial connect
   useEffect(() => {
-    if (isL2 && token !== TOKENS_TO_WRAP.stETH) {
-      setValue('token', TOKENS_TO_WRAP.stETH, { shouldValidate: true });
+    if (isL2Wrap) {
+      const currentToken = getValues('token');
+      if (currentToken !== TOKENS_TO_WRAP.stETH) {
+        setValue('token', TOKENS_TO_WRAP.stETH, { shouldValidate: true });
+      }
     }
-  }, [isL2, token, setValue]);
+  }, [getValues, isL2Wrap, setValue]);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
   const approvalDataOnL1 = useWrapTxOnL1Approve({
@@ -130,6 +134,8 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       wrapGasLimit: isSteth
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,
+      // ETH wrap is L1-only, the fee-history price is enough there
+      wrapTx: isSteth ? networkData.txStETH : undefined,
     }),
     [networkData, approvalDataOnL1, isSteth],
   );
@@ -141,6 +147,8 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
         reset({ ...defaultValues, token });
       },
       retryEvent,
+      // keeps state between L1/L2 changes
+      resetFormOn: 'walletAddress',
     }),
     [onSubmit, retryEvent, reset, defaultValues],
   );

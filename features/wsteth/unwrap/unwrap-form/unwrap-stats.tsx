@@ -22,20 +22,20 @@ export const UnwrapStats = () => {
     useUnwrapFormData();
   const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
 
-  const unwrapGasLimit = useUnwrapGasLimit();
+  const { gasLimit: unwrapGasLimit, tx: unwrapTx } = useUnwrapGasLimit();
   // The 'unwrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainMatched' case
   //
   // Using the chainId (chainId from the chain switcher) for TX calculation (and below for 'approveTxCostInUsd'),
   // because the statistics here are shown for the chain from the chain switcher
   const { txCostUsd: unwrapTxCostInUsd, isLoading: isUnwrapTxCostLoading } =
-    useTxCostInUsd(unwrapGasLimit, chainId);
+    useTxCostInUsd(unwrapGasLimit, chainId, unwrapTx);
 
-  const approveGasLimit = useApproveGasLimit();
+  const { gasLimit: approveGasLimit, tx: approveTx } = useApproveGasLimit();
   // The 'approveGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainMatched' case
   const { txCostUsd: approveTxCostInUsd, isLoading: isApproveCostLoading } =
-    useTxCostInUsd(approveGasLimit, chainId);
+    useTxCostInUsd(approveGasLimit, chainId, approveTx);
 
   const { data: willReceiveStETH, isLoading: isWillReceiveStETHLoading } =
     useDebouncedStethByWsteth(amount);

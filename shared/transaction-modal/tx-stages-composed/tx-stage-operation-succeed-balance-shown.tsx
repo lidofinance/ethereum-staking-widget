@@ -10,6 +10,7 @@ import { SuccessText } from '../tx-stages-parts/success-text';
 import { TxStageSuccess } from '../tx-stages-basic';
 
 import { TokenToWallet } from '../../components';
+import { useDappStatus } from 'modules/web3';
 
 export const SkeletonBalance = styled(InlineLoader).attrs({
   color: 'text',
@@ -38,6 +39,7 @@ export const TxStageOperationSucceedBalanceShown = ({
   txHash,
   footer,
 }: TxStageOperationSucceedBalanceShownProps) => {
+  const { walletChainId } = useDappStatus();
   const tokenToWalletAddress = useTokenAddress(balanceToken);
 
   const balanceNode = balance ? (
@@ -66,7 +68,11 @@ export const TxStageOperationSucceedBalanceShown = ({
         </>
       }
       description={
-        <SuccessText operationText={operationText} txHash={txHash} />
+        <SuccessText
+          operationText={operationText}
+          txHash={txHash}
+          chainId={walletChainId}
+        />
       }
       showEtherscan={false}
       footer={footer}

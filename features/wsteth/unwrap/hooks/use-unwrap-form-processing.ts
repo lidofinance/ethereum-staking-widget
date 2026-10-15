@@ -30,7 +30,7 @@ export const useUnwrapFormProcessor = ({
   const { address } = useDappStatus();
   const { txModalStages } = useTxModalStagesUnwrap();
   const { stETH, wrap } = useLidoSDK();
-  const { l2, isL2 } = useLidoSDKL2();
+  const { l2, isL2Wrap } = useLidoSDKL2();
   const txFlow = useTxFlow();
 
   const {
@@ -44,14 +44,14 @@ export const useUnwrapFormProcessor = ({
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
 
-        const willReceive = await (isL2
+        const willReceive = await (isL2Wrap
           ? l2.steth.convertToSteth(amount)
           : wrap.convertWstethToSteth(amount));
 
         const onUnwrapConfirm = async () => {
           const [, balance] = await Promise.all([
             onConfirm?.(),
-            isL2 ? l2.steth.balance(address) : stETH.balance(address),
+            isL2Wrap ? l2.steth.balance(address) : stETH.balance(address),
           ]);
           return balance;
         };
@@ -62,7 +62,7 @@ export const useUnwrapFormProcessor = ({
             const args = {
               value: amount,
             };
-            if (isL2) {
+            if (isL2Wrap) {
               calls = await Promise.all([
                 needsApproveL2 && l2.approveWstethForWrapPopulateTx(args),
                 l2.wrapWstethToStethPopulateTx(args),
@@ -73,11 +73,11 @@ export const useUnwrapFormProcessor = ({
             return calls;
           },
           sendTransaction: async (txStagesCallback) => {
-            if (isL2 && needsApproveL2) {
+            if (isL2Wrap && needsApproveL2) {
               await processApproveTxOnL2({ onRetry });
             }
 
-            if (isL2) {
+            if (isL2Wrap) {
               // The operation 'wstETH to stETH' on L2 is 'wrap'
               await l2.wrapWstethToSteth({
                 value: amount,
@@ -117,7 +117,7 @@ export const useUnwrapFormProcessor = ({
     },
     [
       address,
-      isL2,
+      isL2Wrap,
       l2,
       wrap,
       txFlow,

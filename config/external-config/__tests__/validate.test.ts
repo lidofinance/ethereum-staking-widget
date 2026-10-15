@@ -683,3 +683,162 @@ describe('ManifestSchema', () => {
     });
   });
 });
+
+describe('baseConfig.l2Stake', () => {
+  const BASE = 8453;
+  const LINEA = 59144;
+
+  const parseL2Stake = (l2Stake?: unknown) =>
+    ManifestSchema.parse({ baseConfig: { l2Stake } }).baseConfig.l2Stake;
+
+  it('applies defaults to every chain when omitted', () => {
+    const result = parseL2Stake(undefined);
+    expect(result.common).toEqual({ enabled: true, liquidityTarget: 25 });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: true,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('fills chains without an entry from common', () => {
+    const result = parseL2Stake({
+      common: { enabled: false, liquidityTarget: 40 },
+      perChain: {},
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 40,
+    });
+    expect(result.perChain[LINEA]).toEqual({
+      enabled: false,
+      liquidityTarget: 40,
+    });
+  });
+
+  it('keeps the common disable switch for a chain that only overrides liquidity', () => {
+    const result = parseL2Stake({
+      common: { enabled: false },
+      perChain: { [BASE]: { liquidityTarget: 10 } },
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 10,
+    });
+    expect(result.perChain[LINEA]).toEqual({
+      enabled: false,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('keeps the common liquidity target for a chain that only overrides enabled', () => {
+    const result = parseL2Stake({
+      common: { liquidityTarget: 40 },
+      perChain: { [BASE]: { enabled: false } },
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 40,
+    });
+  });
+
+  it('lets an explicit per-chain value override common', () => {
+    const result = parseL2Stake({
+      common: { enabled: false, liquidityTarget: 40 },
+      perChain: { [BASE]: { enabled: true, liquidityTarget: 5 } },
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: true,
+      liquidityTarget: 5,
+    });
+  });
+
+  it('does not let an undefined per-chain value override common', () => {
+    const result = parseL2Stake({
+      common: { enabled: false },
+      perChain: { [BASE]: { enabled: undefined, liquidityTarget: 10 } },
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 10,
+    });
+  });
+
+  it('accepts common alone: the natural shape of an incident toggle', () => {
+    const result = parseL2Stake({ common: { enabled: false } });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 25,
+    });
+    expect(result.perChain[LINEA]).toEqual({
+      enabled: false,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('accepts perChain alone and keeps the other chains at the defaults', () => {
+    const result = parseL2Stake({ perChain: { [BASE]: { enabled: false } } });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 25,
+    });
+    expect(result.perChain[LINEA]).toEqual({
+      enabled: true,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('treats an empty or non-object section like an omitted one', () => {
+    expect(parseL2Stake({})).toEqual(parseL2Stake(undefined));
+    expect(parseL2Stake('off')).toEqual(parseL2Stake(undefined));
+    expect(parseL2Stake(null)).toEqual(parseL2Stake(undefined));
+  });
+
+  it('fails closed on a malformed kill switch instead of rejecting the manifest', () => {
+    const perChain = parseL2Stake({
+      perChain: { [BASE]: { enabled: 'yes' } },
+    });
+    expect(perChain.perChain[BASE].enabled).toBe(false);
+    expect(perChain.perChain[LINEA].enabled).toBe(true);
+
+    const common = parseL2Stake({ common: { enabled: 'false' } });
+    expect(common.perChain[BASE].enabled).toBe(false);
+  });
+
+  it('falls through to common on a malformed liquidity target', () => {
+    const result = parseL2Stake({
+      common: { liquidityTarget: 40 },
+      perChain: {
+        [BASE]: { liquidityTarget: -1 },
+        [LINEA]: { liquidityTarget: '10' },
+      },
+    });
+    expect(result.perChain[BASE].liquidityTarget).toBe(40);
+    expect(result.perChain[LINEA].liquidityTarget).toBe(40);
+    expect(parseL2Stake({ common: { liquidityTarget: 2.5 } }).common).toEqual({
+      enabled: true,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('drops chain keys that are not a positive integer or not a known chain', () => {
+    const result = parseL2Stake({
+      perChain: {
+        base: { enabled: false },
+        '0': { enabled: false },
+        '8453 ': { enabled: false },
+        '137': { enabled: false },
+        [BASE]: null,
+      },
+    });
+    expect(result.perChain[BASE].enabled).toBe(true);
+    expect(Object.keys(result.perChain)).not.toContain('137');
+  });
+
+  it('is carried into every network entry', () => {
+    const manifest = ManifestSchema.parse({
+      baseConfig: { l2Stake: { common: { enabled: false } } },
+      '1': { leastSafeVersion: '1.0.0' },
+    });
+    expect(manifest['1']?.config.l2Stake.perChain[BASE].enabled).toBe(false);
+  });
+});

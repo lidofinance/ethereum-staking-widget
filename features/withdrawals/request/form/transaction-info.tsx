@@ -43,7 +43,7 @@ export const TransactionInfo = () => {
     });
 
   const { txCostUsd: approveTxCostInUsd, isLoading: isApproveTxCostLoading } =
-    useTxCostInUsd(useApproveGasLimit());
+    useTxCostInUsd(useApproveGasLimit().gasLimit);
 
   const unlockCostTooltip = isApprovalFlow ? undefined : (
     <>Lido leverages gasless token unlocks via ERC-2612 permits</>

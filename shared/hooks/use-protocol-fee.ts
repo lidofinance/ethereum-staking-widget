@@ -19,7 +19,7 @@ export const useProtocolFee = () => {
         LIDO_CONTRACT_NAMES.stakingRouter,
       );
 
-      return await core.rpcProvider.readContract({
+      return await core.publicClient.readContract({
         address,
         abi: PartialStakingRouterAbi,
         functionName: 'getStakingFeeAggregateDistribution',

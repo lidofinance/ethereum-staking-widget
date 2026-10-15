@@ -38,9 +38,9 @@ export const useTxFlow = () => {
   }, []);
 
   return useCallback(
-    (args: TxFlowArgs) => {
+    <TData = undefined>(args: TxFlowArgs<TData>) => {
       const operation = ++operationRef.current;
-      return runTxFlow(args, {
+      return runTxFlow<TData>(args, {
         isAA,
         address,
         validateAddress,
