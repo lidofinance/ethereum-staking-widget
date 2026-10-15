@@ -5,12 +5,12 @@ import { DATA_UNAVAILABLE } from 'consts/text';
 import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { ONE_stETH } from 'modules/web3';
-import { useFastStakeConversion } from './hooks/use-conversion';
+import { useFastStakeConversion } from './fast-lane/use-conversion';
 
 import { useL2StakeFormData } from './l2-stake-form-context';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 
-import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
+import { useFastStakeLiquidity } from './fast-lane/use-fast-liquidity';
 
 import type { L2StakeFormInputType } from './types';
 

@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { parseEther } from 'viem';
 
 import { useL2StakeOnChainState } from './use-l2-stake-on-chain-state';
+import { useMockedL2StakeMode } from './l2-stake-qa';
 
 export type L2StakeLaneState = {
   isAvailable: boolean;
@@ -25,8 +26,8 @@ type LaneGate = {
 };
 
 // The state of the two staking lanes on the current L2, from the remote
-// config (kill switch, mode) and the chain (pauses). `isEnabled` and
-// `reason` are the fast lane's: the one the stake form offers today
+// config (kill switch, mode) and the chain (pauses). The form is enabled
+// while either lane is open; `reason` says why when neither is
 export const useL2StakeState = () => {
   const { chainId } = useDappStatus();
   const isLedgerLive = useIsLedgerLive();
@@ -36,6 +37,8 @@ export const useL2StakeState = () => {
   const chainName = getPrettyChainName(chainId);
   const { data: onChainState, isLoading: isOnChainStateLoading } =
     useL2StakeOnChainState();
+  // a QA override outranks the remote config, on stands with the helpers on
+  const mode = useMockedL2StakeMode() ?? chainState.mode;
 
   // gates that close both lanes at once
   let isEnabled = true;
@@ -70,16 +73,14 @@ export const useL2StakeState = () => {
   };
 
   const fastLane = gateLane({
-    isAllowedByMode:
-      chainState.mode !== ManifestConfigL2StakeModes.slowLaneOnly,
+    isAllowedByMode: mode !== ManifestConfigL2StakeModes.slowLaneOnly,
     modeReason: `Staking is currently not available for ${chainName}`,
     isOpenOnChain: onChainState?.isFastLaneAvailable,
     pausedReason: `Staking on ${chainName} is temporarily paused`,
   });
 
   const slowLane = gateLane({
-    isAllowedByMode:
-      chainState.mode !== ManifestConfigL2StakeModes.fastLaneOnly,
+    isAllowedByMode: mode !== ManifestConfigL2StakeModes.fastLaneOnly,
     modeReason: `Staking via Shuttle is currently not available for ${chainName}`,
     isOpenOnChain: onChainState?.isSlowLaneAvailable,
     pausedReason: `Staking via Shuttle on ${chainName} is temporarily paused`,
@@ -93,9 +94,11 @@ export const useL2StakeState = () => {
     }
   }, [chainState.liquidityTarget]);
 
+  const isAnyLaneAvailable = fastLane.isAvailable || slowLane.isAvailable;
+
   return {
-    isEnabled: fastLane.isAvailable,
-    reason: fastLane.reason,
+    isEnabled: isAnyLaneAvailable,
+    reason: isAnyLaneAvailable ? null : fastLane.reason,
     fastLane,
     slowLane,
     isOnChainStateLoading,

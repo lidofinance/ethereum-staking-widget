@@ -23,6 +23,8 @@ type QueryArgs = {
 };
 
 type State = {
+  // what the QA helper pins, null for none
+  mockedMode: ChainState['mode'] | null;
   chainState: ChainState;
   featureFlags: { ledgerLiveL2?: boolean };
   isLedgerLive: boolean;
@@ -34,6 +36,7 @@ type State = {
 };
 
 const state = vi.hoisted((): State => ({
+  mockedMode: null,
   chainState: { enabled: true, mode: 'all', liquidityTarget: 25 },
   featureFlags: {},
   isLedgerLive: false,
@@ -43,6 +46,9 @@ const state = vi.hoisted((): State => ({
   fetchStakeState: vi.fn(),
 }));
 
+vi.mock('../hooks/l2-stake-qa', () => ({
+  useMockedL2StakeMode: () => state.mockedMode,
+}));
 vi.mock('@tanstack/react-query', () => ({
   useQuery: (args: QueryArgs) => {
     state.query = args;
@@ -76,6 +82,7 @@ import { useL2StakeState } from '../hooks/use-l2-stake-state';
 const render = () => renderHook(() => useL2StakeState());
 
 beforeEach(() => {
+  state.mockedMode = null;
   state.chainState = { enabled: true, mode: 'all', liquidityTarget: 25 };
   state.featureFlags = {};
   state.isLedgerLive = false;
@@ -144,19 +151,30 @@ describe('useL2StakeState', () => {
     expect(result.slowLane.reason).toContain(CHAIN_NAME);
   });
 
-  it('closes the fast lane, and with it the form, in slowLaneOnly mode', () => {
+  it('closes the fast lane but keeps the form open in slowLaneOnly mode', () => {
     state.chainState = { ...state.chainState, mode: 'slowLaneOnly' };
     const result = render();
-    expect(result.isEnabled).toBe(false);
-    expect(result.reason).toContain(CHAIN_NAME);
+    expect(result.isEnabled).toBe(true);
+    expect(result.reason).toBeNull();
+    expect(result.fastLane.isAvailable).toBe(false);
+    expect(result.fastLane.reason).toContain(CHAIN_NAME);
+    expect(result.slowLane.isAvailable).toBe(true);
+  });
+
+  it('lets a QA override outrank the remote config mode', () => {
+    state.chainState = { ...state.chainState, mode: 'fastLaneOnly' };
+    state.mockedMode = 'slowLaneOnly';
+    const result = render();
+    expect(result.fastLane.isAvailable).toBe(false);
     expect(result.slowLane.isAvailable).toBe(true);
   });
 
   it('closes a lane paused on chain and keeps the other open', () => {
     state.onChain = { isFastLaneAvailable: false, isSlowLaneAvailable: true };
     let result = render();
-    expect(result.isEnabled).toBe(false);
-    expect(result.reason).toBe(
+    expect(result.isEnabled).toBe(true);
+    expect(result.fastLane.isAvailable).toBe(false);
+    expect(result.fastLane.reason).toBe(
       `Staking on ${CHAIN_NAME} is temporarily paused`,
     );
     expect(result.slowLane.isAvailable).toBe(true);
@@ -166,6 +184,13 @@ describe('useL2StakeState', () => {
     expect(result.isEnabled).toBe(true);
     expect(result.slowLane.isAvailable).toBe(false);
     expect(result.slowLane.reason).toContain('paused');
+  });
+
+  it('closes the form only when both lanes are closed', () => {
+    state.onChain = { isFastLaneAvailable: false, isSlowLaneAvailable: false };
+    const result = render();
+    expect(result.isEnabled).toBe(false);
+    expect(result.reason).toBe(result.fastLane.reason);
   });
 
   it('keeps both lanes open while the on-chain state is unknown', () => {

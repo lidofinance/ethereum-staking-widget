@@ -16,7 +16,7 @@ vi.mock('modules/web3', () => ({
   }),
 }));
 
-import { useFastStakeConversion } from '../hooks/use-conversion';
+import { useFastStakeConversion } from '../use-conversion';
 
 type Conversion = {
   feeRate: bigint;

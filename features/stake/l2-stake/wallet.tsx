@@ -13,7 +13,7 @@ import { useDappStatus, useWstethBalance } from 'modules/web3';
 
 import { WalletLidoApr } from '../shared/wallet-lido-apr';
 import { useL2StakeFormData } from './l2-stake-form-context';
-import { useFastStakeConversion } from './hooks/use-conversion';
+import { useFastStakeConversion } from './fast-lane/use-conversion';
 import { useL2StakeState } from './hooks/use-l2-stake-state';
 
 const WalletComponent = () => {

@@ -5,7 +5,7 @@ import { CHAINS, useConfig } from 'config';
 import { getPrettyChainName, useDappStatus } from 'modules/web3';
 
 import { L2StakeFormInputType } from '../types';
-import { useFastStakeLiquidity } from '../hooks/use-fast-liquidity';
+import { useFastStakeLiquidity } from '../fast-lane/use-fast-liquidity';
 import { BannerHeader, BannerStyled, InfoIconStyled } from './styles';
 
 export const L2StakeLiquidityBanner = () => {

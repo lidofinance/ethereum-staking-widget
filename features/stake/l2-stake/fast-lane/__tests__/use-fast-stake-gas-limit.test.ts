@@ -92,7 +92,7 @@ vi.mock('modules/web3', () => ({
   }),
 }));
 
-import { useFastStakeGasLimit } from '../hooks/use-fast-stake-gas-limit';
+import { useFastStakeGasLimit } from '../use-fast-stake-gas-limit';
 
 const render = () => renderHook(() => useFastStakeGasLimit());
 

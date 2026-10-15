@@ -71,13 +71,13 @@ const state = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../hooks/use-conversion', () => ({
+vi.mock('../use-conversion', () => ({
   useFastStakeConversion: () => ({
     data: state.shownRate,
     refetch: state.refetchRate,
   }),
 }));
-vi.mock('../hooks/use-fast-liquidity', () => ({
+vi.mock('../use-fast-liquidity', () => ({
   useFastStakeLiquidity: () => ({ refetch: state.refetchLiquidity }),
 }));
 vi.mock('modules/web3', async () => {
@@ -118,14 +118,14 @@ vi.mock('config', () => ({
 vi.mock('features/stake/stake-form/hooks/use-bells', () => ({
   useBells: () => ({ bells: vi.fn() }),
 }));
-vi.mock('../hooks/use-tx-modal-stages-fast-stake', () => ({
+vi.mock('../use-tx-modal-stages-fast-stake', () => ({
   useTxModalStagesL2FastStake: () => ({ txModalStages: state.txModalStages }),
 }));
-vi.mock('../hooks/use-track-event', () => ({
+vi.mock('../../hooks/use-track-event', () => ({
   useTrackStakeEvent: () => vi.fn(),
 }));
 
-import { useL2FastStake } from '../hooks/use-fast-stake';
+import { useL2FastStake } from '../use-fast-stake';
 
 const createModule = (
   performTransaction: ReturnType<typeof legacyPerformTransaction>,

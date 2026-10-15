@@ -19,6 +19,13 @@ export const LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK = 275_000n;
 export const LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK = 285_000n;
 export const LIDO_L2_WETH_APPROVE_GAS_LIMIT_FALLBACK = 65_000n;
 
+// The slow stake's L2 gas: wrap or pull, the CCIP send and the refund. Not
+// estimated by the form (the send fronts the CCIP fee in value), so these
+// stand in for every chain. Sized from the one measured send (261k on
+// Optimism, 2026-08) with headroom; re-measure once the lane sees traffic
+export const LIDO_L2_SLOW_STAKE_ETH_GAS_LIMIT_FALLBACK = 400_000n;
+export const LIDO_L2_SLOW_STAKE_WETH_GAS_LIMIT_FALLBACK = 400_000n;
+
 export const isSupportedLidoL2StakingChain = (chainId: number) => {
   return LIDO_L2_STAKING_CHAIN_IDS.includes(chainId);
 };

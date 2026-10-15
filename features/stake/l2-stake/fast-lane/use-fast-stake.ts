@@ -28,7 +28,7 @@ import { ErrorMessage } from 'utils/getErrorMessage';
 import { useFastStakeConversion } from './use-conversion';
 import { useFastStakeLiquidity } from './use-fast-liquidity';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
-import { useTrackStakeEvent } from './use-track-event';
+import { useTrackStakeEvent } from '../hooks/use-track-event';
 
 type StakeArguments = {
   amount: bigint | null;
