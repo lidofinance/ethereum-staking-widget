@@ -14,8 +14,8 @@ const c = mainnetNetwork.contracts;
 const lower = (address: string) => address.toLowerCase() as Address;
 
 describe('WITHDRAWALS_COWSWAP_PROFILE', () => {
-  it('uses Lido Staking Widget appCode', () => {
-    expect(profile.appCode).toBe('Lido Staking Widget');
+  it('uses Lido dApp Staking appCode', () => {
+    expect(profile.appCode).toBe('Lido dApp Staking');
   });
 
   it('sells stETH/wstETH and buys ETH, WETH and stables/BTC on mainnet', () => {

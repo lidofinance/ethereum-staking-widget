@@ -75,12 +75,12 @@ const sepoliaCtx = {
 // The appData document the order API returns, keyed by partner fee recipient.
 const buildFullAppData = (feeRecipient: string): string =>
   JSON.stringify({
-    appCode: 'Lido Staking Widget',
+    appCode: 'Lido dApp Staking',
     metadata: {
       orderClass: { orderClass: 'market' },
       partnerFee: { recipient: feeRecipient, volumeBps: 30 },
       quote: { slippageBips: 100, smartSlippage: false },
-      widget: { appCode: 'Lido Staking Widget', environment: 'mainnet' },
+      widget: { appCode: 'Lido dApp Staking', environment: 'mainnet' },
     },
     version: '1.0.0',
   });

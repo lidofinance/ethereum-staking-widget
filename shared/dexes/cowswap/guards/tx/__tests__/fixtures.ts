@@ -10,7 +10,7 @@ import {
 } from '../../../profile';
 import type { ContactsMap } from '../utils/types';
 
-export const TEST_APP_CODE = 'Lido Staking Widget';
+export const TEST_APP_CODE = 'Lido dApp Staking';
 
 // Mirrors the withdrawals DEX profile
 export const TEST_PROFILE_CONFIG: CowswapProfileConfig = {

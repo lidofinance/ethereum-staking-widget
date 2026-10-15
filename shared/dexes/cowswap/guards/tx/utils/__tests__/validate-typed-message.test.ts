@@ -86,7 +86,7 @@ const buildAppDataResponse = (
   overrides: AppDataOverrides = {},
 ) => {
   const fullAppData = JSON.stringify({
-    appCode: overrides.appCode ?? 'Lido Staking Widget',
+    appCode: overrides.appCode ?? 'Lido dApp Staking',
     metadata: {
       orderClass: { orderClass: overrides.orderClass ?? 'market' },
       partnerFee: {
@@ -98,7 +98,7 @@ const buildAppDataResponse = (
         smartSlippage: overrides.smartSlippage ?? false,
       },
       widget: {
-        appCode: 'Lido Staking Widget',
+        appCode: 'Lido dApp Staking',
         environment: 'mainnet',
       },
     },
@@ -337,7 +337,8 @@ describe('validateSignTypedData', () => {
       });
       const result = await validateSignTypedData(
         buildTypedDataParams({ appData: REAL_APP_DATA_HASH }),
-        mainnetCtx,
+        // hash is from a real order placed under the legacy appCode
+        { ...mainnetCtx, appCode: 'Lido Staking Widget' },
       );
       expect(result.allowed).toBe(true);
     });
@@ -507,6 +508,24 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toBeDefined();
     });
 
+    it('rejects order selling a token for itself', async () => {
+      const ctx = {
+        ...mainnetCtx,
+        networkTxConfig: {
+          ...MAINNET_TX_CONFIG,
+          buyTokens: new Set([...MAINNET_TX_CONFIG.buyTokens, STETH]),
+        },
+      } as typeof mainnetCtx;
+      const result = await validateSignTypedData(
+        buildTypedDataParams({ sellToken: STETH, buyToken: STETH }),
+        ctx,
+      );
+      expect(result).toEqual({
+        allowed: false,
+        reason: TRANSACTION_ERROR(2039),
+      });
+    });
+
     it('rejects arbitrary attacker address as sell token', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: ATTACKER }),
@@ -543,7 +562,7 @@ describe('validateSignTypedData', () => {
     it('rejects real stETH→ETH order with receiver replaced by attacker', async () => {
       vi.mocked(standardFetcher).mockResolvedValue({
         fullAppData: JSON.stringify({
-          appCode: 'Lido Staking Widget',
+          appCode: 'Lido dApp Staking',
           metadata: {
             orderClass: { orderClass: 'market' },
             partnerFee: {
@@ -798,12 +817,12 @@ describe('validateCowSwapOrderMessage — hooks in appData', () => {
     hooks: { pre?: (typeof validHook)[]; post?: (typeof validHook)[] },
   ) => {
     const fullAppData = JSON.stringify({
-      appCode: 'Lido Staking Widget',
+      appCode: 'Lido dApp Staking',
       metadata: {
         orderClass: { orderClass: 'market' },
         partnerFee: { recipient: feeRecipient, volumeBps: 30 },
         quote: { slippageBips: 100, smartSlippage: false },
-        widget: { appCode: 'Lido Staking Widget', environment: 'mainnet' },
+        widget: { appCode: 'Lido dApp Staking', environment: 'mainnet' },
         hooks,
       },
       version: '1.0.0',

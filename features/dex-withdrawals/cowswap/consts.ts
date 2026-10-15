@@ -1,13 +1,12 @@
-import { mainnet, sepolia } from 'viem/chains';
+import { mainnet } from 'viem/chains';
 
 import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
-import { createCowswapProfile, type ContactsMap } from 'shared/dexes/cowswap';
+import { createCowswapProfile } from 'shared/dexes/cowswap';
 import mainnetNetwork from 'networks/mainnet.json';
-import sepoliaNetwork from 'networks/sepolia.json';
 
 export const WITHDRAWALS_COWSWAP_PROFILE = createCowswapProfile({
-  appCode: 'Lido Staking Widget',
+  appCode: 'Lido dApp Staking',
   sellTokens: [
     { key: 'lido', decimals: 18, oracleFeed: 'STETH_USD' },
     // wstETH is converted to stETH via stEthPerToken
@@ -36,7 +35,7 @@ export const WITHDRAWALS_COWSWAP_PROFILE = createCowswapProfile({
   networks: {
     [mainnet.id]: mainnetNetwork.contracts,
     // Most tokens are missing on Sepolia, so validation is partial and support for this testnet is limited
-    [sepolia.id]: sepoliaNetwork.contracts as ContactsMap,
+    // [sepolia.id]: sepoliaNetwork.contracts as ContactsMap,
   },
   analytics: {
     quoteViewed: MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteViewed,
