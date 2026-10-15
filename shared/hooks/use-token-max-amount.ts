@@ -34,7 +34,9 @@ export const useTokenMaxAmount = ({
       }
       const cost =
         gasCost ??
-        (gasLimit && maxGasPrice ? gasLimit * maxGasPrice : undefined);
+        (gasLimit !== undefined && maxGasPrice !== undefined
+          ? gasLimit * maxGasPrice
+          : undefined);
       // we return undefined if we should pad but don't have data
       if (cost !== undefined) {
         maxAmount = maxAmount - cost;

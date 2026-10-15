@@ -1,6 +1,7 @@
 import { config } from 'config';
 import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
 import { mainnet, sepolia } from 'viem/chains';
+import { DEFAULT_COWSWAP_WIDGET_BASE_URL } from 'scripts/csp/content-security-policy.mjs';
 
 export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
   // read-only
@@ -41,7 +42,7 @@ export const COWSWAP_ENABLED_CHAIN_IDS = new Set<number>([
 ]); // mainnet, sepolia
 
 export const COWSWAP_BASE_URL =
-  config.cowswapWidgetBaseUrl || 'https://cow-ipfs.testnet.fi/';
+  config.cowswapWidgetBaseUrl || DEFAULT_COWSWAP_WIDGET_BASE_URL;
 
 // there is barn.api.cow.fi staging for API, but UI(even staging) uses prod API
 const COWSWAP_API_BASE_URL = 'https://api.cow.fi';

@@ -27,11 +27,17 @@ const createSdk = () => ({
 });
 type Sdk = ReturnType<typeof createSdk>;
 
-type QueryArgs = { queryKey: unknown[]; queryFn: () => Promise<unknown> };
+type QueryArgs = {
+  queryKey: unknown[];
+  placeholderData?: unknown;
+  queryFn: () => Promise<unknown>;
+};
 
 type State = {
   isL2: boolean;
   data: unknown;
+  // the last fetch failed: React Query then serves no placeholder
+  failed: boolean;
   query: QueryArgs | undefined;
   sdk: Sdk | undefined;
 };
@@ -39,14 +45,19 @@ type State = {
 const state = vi.hoisted((): State => ({
   isL2: false,
   data: undefined,
+  failed: false,
   query: undefined,
   sdk: undefined,
 }));
 
+// Mirrors React Query: the placeholder stands in while the query is pending,
+// nothing does after it failed
 vi.mock('@tanstack/react-query', () => ({
   useQuery: (args: QueryArgs) => {
     state.query = args;
-    return { data: state.data };
+    return {
+      data: state.data ?? (state.failed ? undefined : args.placeholderData),
+    };
   },
 }));
 vi.mock('config', () => ({ config: { ESTIMATE_ACCOUNT: ACCOUNT } }));
@@ -67,10 +78,14 @@ const sdk = (): Sdk => {
   return state.sdk;
 };
 
+const query = () => {
+  if (!state.query) throw new Error('the gas limit query was not set up');
+  return state.query;
+};
+
 const runQuery = () => {
   renderHook(useUnwrapGasLimit);
-  if (!state.query) throw new Error('the gas limit query was not set up');
-  return state.query.queryFn();
+  return query().queryFn();
 };
 
 const estimateProps = { value: ESTIMATE_AMOUNT, account: ACCOUNT };
@@ -81,6 +96,7 @@ let warn: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   state.isL2 = false;
   state.data = undefined;
+  state.failed = false;
   state.query = undefined;
   state.sdk = createSdk();
   warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
@@ -98,13 +114,23 @@ describe('useUnwrapGasLimit', () => {
       expect(sdk().l2.wrapWstethToStethEstimateGas).not.toHaveBeenCalled();
     });
 
-    it('falls back to the L1 unwrap limit when the estimate fails', async () => {
+    it('fails the query, after a warning, when the estimate fails', async () => {
       sdk().wrap.unwrapEstimateGas.mockRejectedValue(new Error('reverted'));
-      await expect(runQuery()).resolves.toEqual({ gasLimit: UNWRAP_GAS_LIMIT });
+      await expect(runQuery()).rejects.toThrow('reverted');
       expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0]?.[0]).toBe('[unwrap-gas-limit]');
     });
 
-    it('serves the L1 fallback until the query resolves', () => {
+    it('hands the L1 fallback to React Query as placeholder data, serving it while the estimate loads', () => {
+      expect(renderHook(useUnwrapGasLimit)).toEqual({
+        gasLimit: UNWRAP_GAS_LIMIT,
+        tx: undefined,
+      });
+      expect(query().placeholderData).toEqual({ gasLimit: UNWRAP_GAS_LIMIT });
+    });
+
+    it('serves the L1 fallback after the estimate failed', () => {
+      state.failed = true;
       expect(renderHook(useUnwrapGasLimit)).toEqual({
         gasLimit: UNWRAP_GAS_LIMIT,
         tx: undefined,
@@ -139,16 +165,26 @@ describe('useUnwrapGasLimit', () => {
       });
     });
 
-    it('falls back to the L2 unwrap limit without a tx when either call fails', async () => {
+    it('fails the query when either call fails', async () => {
       sdk().l2.wrapWstethToStethPopulateTx.mockRejectedValue(
         new Error('rpc down'),
       );
-      await expect(runQuery()).resolves.toEqual({
+      await expect(runQuery()).rejects.toThrow('rpc down');
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('hands the L2 fallback to React Query as placeholder data', () => {
+      expect(renderHook(useUnwrapGasLimit)).toEqual({
+        gasLimit: UNWRAP_L2_GAS_LIMIT,
+        tx: undefined,
+      });
+      expect(query().placeholderData).toEqual({
         gasLimit: UNWRAP_L2_GAS_LIMIT,
       });
     });
 
-    it('serves the L2 fallback until the query resolves', () => {
+    it('serves the L2 fallback after the estimate failed', () => {
+      state.failed = true;
       expect(renderHook(useUnwrapGasLimit)).toEqual({
         gasLimit: UNWRAP_L2_GAS_LIMIT,
         tx: undefined,
@@ -166,18 +202,10 @@ describe('useUnwrapGasLimit', () => {
 
   it('keys the query on the L2 side and the chain', () => {
     renderHook(useUnwrapGasLimit);
-    expect(state.query?.queryKey).toEqual([
-      'unwrap-gas-limit',
-      false,
-      L1_CHAIN_ID,
-    ]);
+    expect(query().queryKey).toEqual(['unwrap-gas-limit', false, L1_CHAIN_ID]);
 
     state.isL2 = true;
     renderHook(useUnwrapGasLimit);
-    expect(state.query?.queryKey).toEqual([
-      'unwrap-gas-limit',
-      true,
-      L2_CHAIN_ID,
-    ]);
+    expect(query().queryKey).toEqual(['unwrap-gas-limit', true, L2_CHAIN_ID]);
   });
 });

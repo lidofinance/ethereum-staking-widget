@@ -81,11 +81,11 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const { maxGasPrice, isLoading: isMaxGasPriceLoading } = useMaxGasPrice();
 
   const gasCostEth = useMemo(
-    () => (maxGasPrice ? gasLimitEth * maxGasPrice : undefined),
+    () => (maxGasPrice !== undefined ? gasLimitEth * maxGasPrice : undefined),
     [gasLimitEth, maxGasPrice],
   );
   const gasCostWeth = useMemo(
-    () => (maxGasPrice ? gasLimitWeth * maxGasPrice : undefined),
+    () => (maxGasPrice !== undefined ? gasLimitWeth * maxGasPrice : undefined),
     [gasLimitWeth, maxGasPrice],
   );
 
