@@ -18,6 +18,7 @@ import {
   useWstethBalance,
   useMaxTxCost,
   BALANCE_PADDING_L2,
+  ESTIMATE_AMOUNT_L2,
   useDappStatus,
 } from 'modules/web3';
 
@@ -78,10 +79,12 @@ export const useL2StakeFormData = () => {
 };
 
 type UseL2StakeFormNetworkDataArgs = {
+  isFastLaneAvailable: boolean;
   isSlowLaneAvailable: boolean;
 };
 
 const useL2StakeFormNetworkData = ({
+  isFastLaneAvailable,
   isSlowLaneAvailable,
 }: UseL2StakeFormNetworkDataArgs): L2StakeFormNetworkData => {
   const { isWethSupported } = useL2WethAddresses();
@@ -195,15 +198,40 @@ const useL2StakeFormNetworkData = ({
     return minBN(wethBalance, stakeCap);
   }, [wethBalance, stakeCap]);
 
-  // the slow lane fronts more than gas, so the max leaves room for the
-  // larger of the two lanes' costs; the cap for the amount is the lane's
+  // The max leaves room for the cost of the lane the max itself lands on.
+  // On the slow lane that is more than gas: the CCIP cap and the return
+  // budget are fronted too, so they are quoted for the stakeable amount
+  const maxLane = resolveL2StakeLane({
+    amount: stakeableEther ?? null,
+    fastLaneLiquidity: fastStakeLiquidityEth,
+    isFastLaneAvailable,
+    isSlowLaneAvailable,
+  });
+  const isMaxOnSlowLane = maxLane === L2_STAKE_LANE.slow;
+  const { data: slowStakeCapFee, isLoading: isSlowStakeCapFeeLoading } =
+    useSlowStakeFee({
+      amount: stakeableEther ?? null,
+      enabled: isMaxOnSlowLane,
+    });
+  const maxCostEthSlow = useMemo(
+    () =>
+      gasCostEthSlow !== undefined && slowStakeCapFee !== undefined
+        ? gasCostEthSlow +
+          slowStakeCapFee.maxFee +
+          slowStakeCapFee.feeAmountDtoO
+        : undefined,
+    [gasCostEthSlow, slowStakeCapFee],
+  );
   const maxAmountEth = useTokenMaxAmount({
     balance: etherBalance,
     limit: stakeCap,
     isPadded: !isSmartAccount,
     padding: BALANCE_PADDING_L2,
-    gasCost: isSlowLaneAvailable ? gasCostEthSlow : gasCostEth,
-    isLoading: isSmartAccountLoading || isStakeCapLoading,
+    gasCost: isMaxOnSlowLane ? maxCostEthSlow : gasCostEth,
+    isLoading:
+      isSmartAccountLoading ||
+      isStakeCapLoading ||
+      (isMaxOnSlowLane && isSlowStakeCapFeeLoading),
   });
 
   // gas is paid from the ETH balance, so the whole WETH balance can be staked
@@ -286,6 +314,7 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const l2StakeState = useL2StakeState();
   const { fastLane, slowLane } = l2StakeState;
   const networkData = useL2StakeFormNetworkData({
+    isFastLaneAvailable: fastLane.isAvailable,
     isSlowLaneAvailable: slowLane.isAvailable,
   });
   const validationContextByToken = useL2StakeFormValidationContext(networkData);
@@ -307,9 +336,20 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     mode: 'onChange',
     disabled: !l2StakeState.isEnabled,
   });
-  const { setValue, control } = formObject;
+  const { setValue, control, trigger, getValues } = formObject;
   useQueryParamsReferralForm<L2StakeFormInputType>({ setValue });
   useQueryParamsAmountForm<L2StakeFormInputType>({ setValue });
+
+  // The amount survives a chain switch (the form resets on the wallet
+  // address only), but what it is validated against does not: another
+  // chain brings its own pool, bucket and lane set, and the data moves on
+  // the same chain as well. The context object changes whenever its data
+  // does, after the awaiter has been replaced, so keying on it rather than
+  // on the chain id alone never re-validates against the previous chain
+  useEffect(() => {
+    if (getValues('amount') === null) return;
+    void trigger('amount');
+  }, [chainId, validationContextByToken, trigger, getValues]);
 
   const [token, amount, referral] = useWatch({
     control,
@@ -330,10 +370,33 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   // the quote shown for the amount; the validation and the send read the
   // same query for it
-  const { data: slowStakeFee, refetch: refetchSlowStakeFee } = useSlowStakeFee({
-    amount,
-    enabled: isSlowLane,
-  });
+  // With no amount yet, the quote is for the estimate amount, as the fast
+  // lane's gas estimate is: the cost row has a figure before the first
+  // keystroke on a chain that only offers the slow lane
+  const quotedAmount = amount && amount > 0n ? amount : ESTIMATE_AMOUNT_L2;
+  const {
+    data: slowStakeFee,
+    isLoading: isSlowStakeFeeLoading,
+    // the previous amount's quote stands in while this one loads
+    isPlaceholderData: isSlowStakeFeeStale,
+    refetch: refetchSlowStakeFee,
+  } = useSlowStakeFee({ amount: quotedAmount, enabled: isSlowLane });
+  // The upper bound of what the stake costs on top of the amount. On the
+  // slow lane the send fronts the CCIP cap and the return budget with the
+  // gas; the cap's unspent part comes back in the same transaction, so the
+  // bound is a bound, not the expected cost (that is the quote's `total`)
+  const maxTxCost = useMemo(() => {
+    const gasCost = isSlowLane
+      ? isWeth
+        ? networkData.gasCostWethSlow
+        : networkData.gasCostEthSlow
+      : isWeth
+        ? networkData.gasCostWeth
+        : networkData.gasCostEth;
+    if (!isSlowLane) return gasCost;
+    if (gasCost === undefined || slowStakeFee === undefined) return undefined;
+    return gasCost + slowStakeFee.maxFee + slowStakeFee.feeAmountDtoO;
+  }, [isSlowLane, isWeth, networkData, slowStakeFee]);
 
   // communicate the amount between L1 and L2 staking forms
   useEffect(() => {
@@ -363,7 +426,9 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const slowStake = useL2SlowStake({
     onConfirm,
     onRetry: retryFire,
-    shownFee: slowStakeFee,
+    // only a quote for the amount itself is a reference for the send; a
+    // stand-in from another amount is not held against the live one
+    shownFee: isSlowStakeFeeStale ? undefined : slowStakeFee,
     refetchFee: refetchSlowStakeFee,
   });
   // dispatched by the lane of this render, the one the form is showing
@@ -437,14 +502,13 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
         ? networkData.loading.isStakeableWethLoading
         : networkData.loading.isStakeableEtherLoading,
       maxAmount: isWeth ? networkData.maxAmountWeth : networkData.maxAmountEth,
-      gasCost: isSlowLane
-        ? isWeth
-          ? networkData.gasCostWethSlow
-          : networkData.gasCostEthSlow
-        : isWeth
-          ? networkData.gasCostWeth
-          : networkData.gasCostEth,
-      loading: networkData.loading,
+      gasCost: maxTxCost,
+      loading: {
+        ...networkData.loading,
+        isMaxGasPriceLoading:
+          networkData.loading.isMaxGasPriceLoading ||
+          (isSlowLane && isSlowStakeFeeLoading),
+      },
       shouldShowUnlockRequirement: approvalData.shouldShowUnlockRequirement,
     }),
     [
@@ -453,6 +517,8 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
       lane,
       isSlowLane,
       slowStakeFee,
+      isSlowStakeFeeLoading,
+      maxTxCost,
       networkData,
       approvalData.shouldShowUnlockRequirement,
     ],
