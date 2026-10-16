@@ -1,5 +1,5 @@
 import { AccordionTransparent } from '@lidofinance/lido-ui';
-import { ComponentProps, useCallback } from 'react';
+import { ComponentProps, useCallback, useEffect } from 'react';
 import { useInpageNavigation } from 'providers/inpage-navigation';
 import { FaqItemContainer } from './styles';
 import { useFaqGroup } from './faq-group';
@@ -18,6 +18,16 @@ export const FaqItem = ({
     if (id) resetSpecificAnchor(id);
     onCollapse?.();
   }, [resetSpecificAnchor, id, onCollapse]);
+
+  // The FAQ tab mounts only after the hash changes, so navigateInpageAnchor
+  // can't find the element yet. Scroll to it once it is the hash target.
+  useEffect(() => {
+    if (!id || hashNav !== id) return;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [id, hashNav]);
 
   // When a hash targets an item in this group, it fully controls expansion:
   // only the matching item opens, all others (including defaultExpanded ones) stay closed.
