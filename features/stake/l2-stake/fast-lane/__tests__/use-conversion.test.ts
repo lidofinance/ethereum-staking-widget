@@ -1,7 +1,4 @@
-import {
-  calcFastStakeEthByWsteth,
-  calcFastStakeWstethByEth,
-} from 'modules/l2-staking/l2-staking-module';
+import { L2StakeModule } from 'modules/l2-staking/l2-staking-module';
 
 const P = 10n ** 18n;
 const FEE = 10n ** 15n;
@@ -19,7 +16,7 @@ vi.mock('modules/web3', () => ({
   }),
 }));
 
-import { useFastStakeConversion } from '../hooks/use-conversion';
+import { useFastStakeConversion } from '../use-conversion';
 
 type Conversion = {
   feeRate: bigint;
@@ -51,10 +48,10 @@ describe('useFastStakeConversion', () => {
     useFastStakeConversion();
     const conversion = await conversionFromQuery();
     expect(conversion.ethToWsteth(P)).toBe(
-      calcFastStakeWstethByEth(P, FEE, PRICE),
+      L2StakeModule.calcFastStakeWstethByEth(P, FEE, PRICE),
     );
     expect(conversion.wstethToEth(P)).toBe(
-      calcFastStakeEthByWsteth(P, FEE, PRICE),
+      L2StakeModule.calcFastStakeEthByWsteth(P, FEE, PRICE),
     );
   });
 
@@ -62,10 +59,10 @@ describe('useFastStakeConversion', () => {
     useFastStakeConversion();
     const conversion = await conversionFromQuery();
     expect(conversion.ethToWsteth(P, { includeFee: false })).toBe(
-      calcFastStakeWstethByEth(P, 0n, PRICE),
+      L2StakeModule.calcFastStakeWstethByEth(P, 0n, PRICE),
     );
     expect(conversion.wstethToEth(P, { includeFee: false })).toBe(
-      calcFastStakeEthByWsteth(P, 0n, PRICE),
+      L2StakeModule.calcFastStakeEthByWsteth(P, 0n, PRICE),
     );
     expect(conversion.wstethToEth(P, { includeFee: false })).toBeLessThan(
       conversion.wstethToEth(P),

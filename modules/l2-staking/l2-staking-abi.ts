@@ -1,4 +1,9 @@
+import { CCIP_RATE_LIMITER_ERRORS_ABI } from './ccip-abi';
+
+// The sender's own ABI plus the rate limiter reverts a slow stake can bubble
+// up from the CCIP WETH pool, so they decode on a failed send
 export const L2_STAKING_RECEIVER_ABI = [
+  ...CCIP_RATE_LIMITER_ERRORS_ABI,
   { inputs: [], name: 'AccessControlBadConfirmation', type: 'error' },
   {
     inputs: [

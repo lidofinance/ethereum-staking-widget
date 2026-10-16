@@ -15,7 +15,7 @@ import {
 } from 'modules/web3';
 import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import {
-  calcFastStakeWstethByEth,
+  L2StakeModule,
   LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK,
   LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK,
 } from 'modules/l2-staking';
@@ -28,7 +28,7 @@ import { ErrorMessage } from 'utils/getErrorMessage';
 import { useFastStakeConversion } from './use-conversion';
 import { useFastStakeLiquidity } from './use-fast-liquidity';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
-import { useTrackStakeEvent } from './use-track-event';
+import { useTrackStakeEvent } from '../hooks/use-track-event';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -90,7 +90,11 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
           void refetchRate();
           throw new QuoteMismatchError();
         }
-        return calcFastStakeWstethByEth(amount, rate.feeRate, rate.price);
+        return L2StakeModule.calcFastStakeWstethByEth(
+          amount,
+          rate.feeRate,
+          rate.price,
+        );
       };
       // the verified floor, kept for the sign stage of the modal
       let minReceiveAmount = 0n;
@@ -108,8 +112,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
             ),
             preStakeBalanceWsteth: await l2.wsteth.balance(address),
             needsApprove:
-              isWeth &&
-              (await l2Stake.getWethAllowanceForFastStake(address)) < amount,
+              isWeth && (await l2Stake.getWethAllowance(address)) < amount,
           };
         },
         // the approval joins the batch for AA wallets and goes as a separate
@@ -120,7 +123,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
           return [
             data.needsApprove && {
               stepId: STEP.approve,
-              ...(await l2Stake.approveWethForFastStakePopulateTx({
+              ...(await l2Stake.approveWethPopulateTx({
                 amount: data.amount,
               })),
             },
@@ -137,7 +140,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
         },
         sendStep: async (step, txStagesCallback, { data }) => {
           if (step.stepId === STEP.approve) {
-            await l2Stake.approveWethForFastStake({
+            await l2Stake.approveWeth({
               amount: data.amount,
               callback: txStagesCallback,
             });

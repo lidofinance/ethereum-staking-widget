@@ -87,7 +87,7 @@ export const useFastStakeGasLimit = () => {
           warnOnFailure('eth', () => estimateStake(l2Stake, 'ETH')),
           warnOnFailure('weth', () => estimateStake(l2Stake, 'WETH')),
           warnOnFailure('weth-approve', () =>
-            l2Stake.approveWethForFastStakeEstimateGas(approveProps),
+            l2Stake.approveWethEstimateGas(approveProps),
           ),
         ]);
       return { gasLimitEth, gasLimitWeth, gasLimitWethApprove };
@@ -109,7 +109,7 @@ export const useFastStakeGasLimit = () => {
           l2Stake.fastStakeEthPopulateTx(stakeProps('WETH')),
         ),
         populateTx('weth-approve', () =>
-          l2Stake.approveWethForFastStakePopulateTx(approveProps),
+          l2Stake.approveWethPopulateTx(approveProps),
         ),
       ]);
       return { txEth, txWeth, txWethApprove };
