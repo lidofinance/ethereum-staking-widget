@@ -81,11 +81,12 @@ const getTxModalStagesSlowStake = (
     transitStage(
       <TxStageSuccess
         txHash={txHash}
-        title="Stake sent to Ethereum"
+        title="Staking shuttle sent"
         description={
           <>
             Your <FormatToken amount={amount} symbol={token} /> is being staked
-            on Ethereum. The wstETH arrives on {chainName} in about an hour.
+            on Ethereum. The wstETH arrives back to you on {chainName} in about
+            an 1.5 hours.
             {messageId && (
               <>
                 {' '}
