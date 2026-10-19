@@ -65,6 +65,7 @@ const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
     account: { address: SIGNER },
     request: vi.fn().mockResolvedValue('0xresult'),
     getChainId: vi.fn().mockResolvedValue(1),
+    getAddresses: vi.fn().mockResolvedValue([SIGNER]),
   };
   const connector = makeConnector();
   const cleanups: (() => void)[] = [];
@@ -239,9 +240,37 @@ describe('request — validation', () => {
     expect(walletClient.request).not.toHaveBeenCalled();
   });
 
-  it('does not check the chain for read-only requests', async () => {
+  it('blocks signing when the wallet switched to another account', async () => {
+    const { provider, params, walletClient } = setup();
+    walletClient.getAddresses.mockResolvedValue([
+      '0x00000000000000000000000000000000000000a1',
+    ]);
+
+    await expect(provider.request(SIGN_REQUEST)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(params.openTransactionGuardModal).toHaveBeenCalledWith(
+      TRANSACTION_ERROR(2051),
+    );
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('blocks signing when the wallet exposes no account', async () => {
+    const { provider, params, walletClient } = setup();
+    walletClient.getAddresses.mockResolvedValue([]);
+
+    await expect(provider.request(SIGN_REQUEST)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(params.openTransactionGuardModal).toHaveBeenCalledWith(
+      TRANSACTION_ERROR(2051),
+    );
+  });
+
+  it('does not check the chain or account for read-only requests', async () => {
     const { provider, walletClient } = setup();
     walletClient.getChainId.mockResolvedValue(8453);
+    walletClient.getAddresses.mockResolvedValue([]);
 
     await provider.request(rpc('eth_chainId', []));
     expect(walletClient.request).toHaveBeenCalledTimes(1);

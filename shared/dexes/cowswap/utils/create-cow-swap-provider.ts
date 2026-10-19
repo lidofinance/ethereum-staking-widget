@@ -5,6 +5,7 @@ import type {
 import type { Connector } from 'wagmi';
 import {
   InvalidRequestRpcError,
+  isAddressEqual,
   toHex,
   UserRejectedRequestError,
   type Account,
@@ -96,12 +97,21 @@ export const createCowSwapProvider = ({
           if (error) throw new Error(error);
         }
 
-        // the wallet may have switched chains after validation config was resolved
-        if (
-          WALLET_SIGNING_METHODS.has(payload.method) &&
-          (await walletClient.getChainId()) !== chainId
-        ) {
-          throw new Error(TRANSACTION_ERROR(2049));
+        // the wallet may have switched chain or account after validation
+        if (WALLET_SIGNING_METHODS.has(payload.method)) {
+          const [liveChainId, [liveAccount]] = await Promise.all([
+            walletClient.getChainId(),
+            walletClient.getAddresses(),
+          ]);
+          if (liveChainId !== chainId) {
+            throw new Error(TRANSACTION_ERROR(2049));
+          }
+          if (
+            !liveAccount ||
+            !isAddressEqual(liveAccount, walletClient.account.address)
+          ) {
+            throw new Error(TRANSACTION_ERROR(2051));
+          }
         }
       } catch (error) {
         if (error instanceof Error) {
