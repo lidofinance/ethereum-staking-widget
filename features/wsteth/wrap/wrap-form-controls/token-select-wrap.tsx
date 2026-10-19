@@ -7,12 +7,10 @@ import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook
 import { useDappStatus } from 'modules/web3';
 
 const OPTION_STETH = {
-  label: 'Lido (stETH)',
   token: TOKENS_TO_WRAP.stETH,
 };
 
 const OPTION_ETH = {
-  label: 'Ethereum (ETH)',
   token: TOKENS_TO_WRAP.ETH,
 };
 
