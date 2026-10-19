@@ -522,6 +522,33 @@ describe('validateSendTransaction', () => {
       expect(result.allowed).toBe(true);
     });
 
+    it('rejects presign of order with a non-zero fee', async () => {
+      // Settlement would debit sellAmount + feeAmount
+      const feeAmount = 100n * 10n ** 18n;
+      const uid = calculateOrderUID(
+        hashCowswapOrder(
+          { ...TEST_ORDER, feeAmount },
+          CHAIN_MAINNET,
+          COW_SETTLEMENT as `0x${string}`,
+        ),
+        SIGNER,
+        TEST_VALID_TO,
+      );
+      vi.mocked(standardFetcher).mockResolvedValue({
+        ...buildOrderApiResponse(FEE_RECIPIENT, STETH, uid),
+        feeAmount: feeAmount.toString(),
+      });
+
+      const result = await validateSendTransaction(
+        [{ to: COW_SETTLEMENT, data: buildSetPreSignature(uid) }],
+        mainnetCtx,
+      );
+      expect(result).toEqual({
+        allowed: false,
+        reason: TRANSACTION_ERROR(2050),
+      });
+    });
+
     it('rejects presign of order with appCode of another integration', async () => {
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],

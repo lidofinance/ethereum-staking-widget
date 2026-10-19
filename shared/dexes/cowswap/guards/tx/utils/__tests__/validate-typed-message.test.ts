@@ -526,6 +526,20 @@ describe('validateSignTypedData', () => {
       });
     });
 
+    it.each([
+      ['1 wei', '1'],
+      ['100 stETH', '100000000000000000000'],
+    ])('rejects order with %s signed fee', async (_, feeAmount) => {
+      const result = await validateSignTypedData(
+        buildTypedDataParams({ feeAmount }),
+        mainnetCtx,
+      );
+      expect(result).toEqual({
+        allowed: false,
+        reason: TRANSACTION_ERROR(2050),
+      });
+    });
+
     it('rejects arbitrary attacker address as sell token', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: ATTACKER }),

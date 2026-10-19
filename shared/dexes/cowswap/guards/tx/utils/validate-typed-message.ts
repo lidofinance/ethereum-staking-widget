@@ -79,6 +79,14 @@ export const validateCowSwapOrderMessage = async (
     };
   }
 
+  // Settlement debits sellAmount + feeAmount; CoW orders are zero-fee
+  if (orderMessage.feeAmount !== 0n) {
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2050),
+    };
+  }
+
   if (!isAddressEqual(orderMessage.receiver, ctx.signer)) {
     return {
       allowed: false,
