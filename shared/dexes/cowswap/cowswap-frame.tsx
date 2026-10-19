@@ -125,6 +125,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     openSigningErrorModal,
     verifySignedOrder,
     verifyApproval,
+    rejectWrapOrUnwrap,
   } = useTradeGuard({
     isTestnet,
     tokenDecimals,
@@ -241,10 +242,8 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
           if (!(await validateApproval())) return false;
           return await validate();
         },
-        // wETH unwrap/wrap is not allowed and not needed for withdrawal dex
-        onBeforeWrapOrUnwrap: async () => {
-          return false;
-        },
+        // ETH ↔ WETH wrap/unwrap is not allowed; explain instead of failing silently
+        onBeforeWrapOrUnwrap: rejectWrapOrUnwrap,
         onBeforeTrade: async (payload) => {
           if (!(await validateTrade(payload))) return false;
 
@@ -274,6 +273,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       validateApproval,
       validate,
       validateTrade,
+      rejectWrapOrUnwrap,
     ],
   );
 

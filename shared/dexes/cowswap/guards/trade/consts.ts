@@ -37,4 +37,8 @@ export const TRADE_ORACLE_DEVIATION_ERROR = (
 ) =>
   `Oracle price differs from trade one by ${deviationPercent.toFixed(1)}%. Maximum is ${oracleDeviationThreshold.toFixed(1)}%`;
 
+export const WRAP_UNAVAILABLE_TITLE = 'Wrapping is not available';
+export const WRAP_UNAVAILABLE_ERROR =
+  'Wrapping ETH to WETH and unwrapping WETH to ETH are not supported here. Choose another token pair.';
+
 export const LEVEL_ORDER: TradeGuardLevel[] = ['safe', 'blocked'];

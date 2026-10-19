@@ -25,6 +25,7 @@ import {
   type SigningHelpTip,
   type TradeGuardModalState,
 } from '../trade-guard-modal';
+import { WRAP_UNAVAILABLE_ERROR, WRAP_UNAVAILABLE_TITLE } from '../consts';
 
 // ---------------------------------------------------------------------------
 // Hook
@@ -198,6 +199,17 @@ export const useTradeGuard = ({
     [showModal],
   );
 
+  // ETH ↔ WETH goes through the CoW wrap flow, which this integration does not allow
+  const rejectWrapOrUnwrap = useCallback(async (): Promise<false> => {
+    await showModal(
+      'blocked',
+      [WRAP_UNAVAILABLE_ERROR],
+      false,
+      WRAP_UNAVAILABLE_TITLE,
+    );
+    return false;
+  }, [showModal]);
+
   // The CoW iframe cannot render custom error texts — we show them ourselves
   const openSigningErrorModal = useCallback(
     async (reason: string, helpTip?: SigningHelpTip) => {
@@ -216,5 +228,6 @@ export const useTradeGuard = ({
     openSigningErrorModal,
     verifySignedOrder,
     verifyApproval,
+    rejectWrapOrUnwrap,
   };
 };
