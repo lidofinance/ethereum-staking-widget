@@ -1,4 +1,8 @@
 import { SendCallsError } from 'modules/web3';
+import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { TxFlowInterruptedError } from 'modules/web3/utils/tx-flow-interrupted-error';
+import { TxStaleError } from 'modules/web3/utils/tx-stale-error';
+import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import { UnknownBundleIdError, UserRejectedRequestError } from 'viem';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import debounce from 'lodash/debounce';
@@ -20,6 +24,10 @@ export enum ErrorMessage {
   SITE_BLOCKED = 'Your wallet has temporarily blocked requests from this site.\nUnblock this site in your wallet or try again later.',
   PROVIDER_DISCONNECTED = 'Your wallet is disconnected.\nReconnect your wallet and try again.',
   CHAIN_DISCONNECTED = 'Your wallet is not connected to the selected network.\nSwitch to the selected network in your wallet and try again.',
+  TX_SETTLED_DATA_UNAVAILABLE = 'Your transaction was completed, but the updated data could not be loaded. Refresh the page to see the latest state.',
+  QUOTE_CHANGED = 'The exchange rate has changed. Check the updated amount and try again.',
+  STAKE_WETH_INTERRUPTED = 'Your WETH was unwrapped, but the stake was not sent. Retry to stake the ETH.',
+  STAKE_WETH_L2_INTERRUPTED = 'Your WETH was approved, but the stake was not sent. Retry to stake it.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -74,6 +82,8 @@ export const getError = (error: unknown): ErrorMessage | string => {
 };
 
 export const getErrorMessage = (error: unknown): ErrorMessage | string => {
+  // the UI that would show this is gone; nothing to log or track
+  if (error instanceof TxStaleError) return ErrorMessage.SOMETHING_WRONG;
   try {
     console.error('TX_ERROR:', {
       error,
@@ -189,6 +199,16 @@ const describeCauseChain = (
 
 // extracts message from Errors made by us
 const extractHumaneMessage = (error: unknown) => {
+  // Checked first: the wrapped cause may carry a provider code of its own
+  if (error instanceof TxSettledError) {
+    return ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE;
+  }
+  if (error instanceof TxFlowInterruptedError) {
+    return error.message;
+  }
+  if (error instanceof QuoteMismatchError) {
+    return ErrorMessage.QUOTE_CHANGED;
+  }
   if (error instanceof SendCallsError) {
     return error.message;
   }
@@ -334,6 +354,13 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
     MATOMO_ERROR_EVENTS_TYPES.PROVIDER_DISCONNECTED,
   [ErrorMessage.CHAIN_DISCONNECTED]:
     MATOMO_ERROR_EVENTS_TYPES.CHAIN_DISCONNECTED,
+  [ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE]:
+    MATOMO_ERROR_EVENTS_TYPES.TX_SETTLED_DATA_UNAVAILABLE,
+  [ErrorMessage.QUOTE_CHANGED]: MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED,
+  [ErrorMessage.STAKE_WETH_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED,
+  [ErrorMessage.STAKE_WETH_L2_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_L2_INTERRUPTED,
 };
 
 const trackErrorDebounced = debounce((errorMessage: string) => {

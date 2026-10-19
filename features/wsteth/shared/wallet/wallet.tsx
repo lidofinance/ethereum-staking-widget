@@ -1,5 +1,4 @@
-import { Divider, Text } from '@lidofinance/lido-ui';
-import styled from 'styled-components';
+import { Divider } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
@@ -12,17 +11,18 @@ import {
   useStETHByWstETH,
   useIsLedgerLive,
 } from 'modules/web3';
-import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
+import {
+  CardBalance,
+  CardRow,
+  Fallback,
+  CardNetwork,
+  MultiChainWalletBackdrop,
+} from 'shared/wallet';
 
-import { StyledCard } from './styles';
 import { useConfig } from 'config';
 
-const SecondaryBalanceText = styled(Text).attrs({ size: 'xxs' })`
-  color: var(--lido-color-accentContrastSecondary);
-`;
-
 const WalletComponent = () => {
-  const { chainType } = useDappStatus();
+  const { chainId } = useDappStatus();
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
@@ -31,7 +31,10 @@ const WalletComponent = () => {
   const stethByWsteth = useStETHByWstETH(wstethBalance?.data);
 
   return (
-    <StyledCard data-testid="wrapCardSection" $chainType={chainType}>
+    <MultiChainWalletBackdrop
+      data-testid="wrapCardSection"
+      multiChainId={chainId}
+    >
       <CardRow>
         <CardBalance
           title="ETH balance"
@@ -44,7 +47,7 @@ const WalletComponent = () => {
             />
           }
         />
-        <CardAccount />
+        <CardNetwork />
       </CardRow>
       <Divider />
       <CardRow>
@@ -52,6 +55,14 @@ const WalletComponent = () => {
           small
           title="stETH balance"
           loading={stethBalance.isLoading || wstethBySteth.isLoading}
+          extra={
+            <FormatToken
+              data-testid="wstEthBalanceOption"
+              amount={wstethBySteth.data}
+              symbol="wstETH"
+              approx={true}
+            />
+          }
           value={
             <>
               <FormatToken
@@ -63,14 +74,6 @@ const WalletComponent = () => {
                 data-testid="addStethToWalletBtn"
                 address={stethBalance.tokenAddress}
               />
-              <SecondaryBalanceText>
-                <FormatToken
-                  data-testid="wstEthBalanceOption"
-                  amount={wstethBySteth.data}
-                  symbol="wstETH"
-                  approx={true}
-                />
-              </SecondaryBalanceText>
             </>
           }
         />
@@ -78,6 +81,14 @@ const WalletComponent = () => {
           small
           title="wstETH balance"
           loading={wstethBalance.isLoading || stethByWsteth.isLoading}
+          extra={
+            <FormatToken
+              data-testid="stethBalanceOption"
+              amount={stethByWsteth.data}
+              symbol="stETH"
+              approx={true}
+            />
+          }
           value={
             <>
               <FormatToken
@@ -89,19 +100,11 @@ const WalletComponent = () => {
                 data-testid="addWstethToWalletBtn"
                 address={wstethBalance.tokenAddress}
               />
-              <SecondaryBalanceText>
-                <FormatToken
-                  data-testid="stethBalanceOption"
-                  amount={stethByWsteth.data}
-                  symbol="stETH"
-                  approx={true}
-                />
-              </SecondaryBalanceText>
             </>
           }
         />
       </CardRow>
-    </StyledCard>
+    </MultiChainWalletBackdrop>
   );
 };
 

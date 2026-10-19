@@ -14,6 +14,7 @@ export const Wrap = styled.div`
 
 export const Title = styled(Text).attrs({
   size: 'sm',
+  forwardedAs: 'div',
 })`
   margin-top: ${({ theme }) => theme.spaceMap.xxl}px;
   font-weight: 800;

@@ -4,14 +4,14 @@ import Head from 'next/head';
 
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
-import { SupportL2Chains } from 'modules/web3';
+import { SupportL1AndL2WrapChains } from 'modules/web3';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 import { LegalDisclaimer } from 'shared/components/legal-disclaimer';
 import { DisclaimerSection } from 'shared/components/disclaimer-section';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
   return (
-    <SupportL2Chains>
+    <SupportL1AndL2WrapChains>
       <Layout
         title="Wrap & Unwrap"
         subtitle="Stable-balance stETH wrapper for DeFi"
@@ -24,7 +24,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
           <LegalDisclaimer />
         </DisclaimerSection>
       </Layout>
-    </SupportL2Chains>
+    </SupportL1AndL2WrapChains>
   );
 };
 

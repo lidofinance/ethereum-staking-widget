@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 
 const APY_STALE_THRESHOLD_MS = 2 * 24 * 60 * 60 * 1000; // 2 days
 
@@ -16,6 +17,7 @@ export const useVaultApy = ({
 }) => {
   const { data, isLoading } = useQuery({
     queryKey: [queryScope, 'apy'],
+    ...STRATEGY_CONSTANT,
     queryFn,
   });
 

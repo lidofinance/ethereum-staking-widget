@@ -23,7 +23,7 @@ const LevelSafe = () => (
   <LevelContainer>
     <LevelText>
       <span>Staking limit level:</span>
-      <GreenSpan>Safe to stake</GreenSpan>
+      <GreenSpan data-testid="stakeLimitIndicator">Safe to stake</GreenSpan>
     </LevelText>
     <Bars>
       <GreenBar />
@@ -37,7 +37,7 @@ const LevelWarn = () => (
   <LevelContainer>
     <LevelText>
       <span>Staking limit level:</span>
-      <YellowSpan>Almost reached</YellowSpan>
+      <YellowSpan data-testid="stakeLimitIndicator">Almost reached</YellowSpan>
     </LevelText>
     <Bars>
       <YellowBar />
@@ -51,7 +51,7 @@ const LevelReached = () => (
   <LevelContainer>
     <LevelText>
       <span>Staking limit level:</span>
-      <RedSpan>Reached</RedSpan>
+      <RedSpan data-testid="stakeLimitIndicator">Reached</RedSpan>
     </LevelText>
     <Bars>
       <RedBar />
@@ -104,7 +104,7 @@ export const LimitHelp: LimitComponent = ({ limitLevel }) => {
         </div>
       }
     >
-      <IconWrapper>
+      <IconWrapper data-testid="stakeLimitIndicator">
         <LimitIcon limitLevel={limitLevel} />
       </IconWrapper>
     </TooltipHoverable>

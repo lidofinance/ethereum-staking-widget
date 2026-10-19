@@ -12,6 +12,15 @@ const showTestEnvBanner = overrideWithQAMockBoolean(
 export const TestEnvBanner = () => {
   if (!showTestEnvBanner) return null;
   return (
-    <NoSsrWrapper>{showTestEnvBanner && <LidoTestEnvBanner />}</NoSsrWrapper>
+    <NoSsrWrapper>
+      {showTestEnvBanner && (
+        <LidoTestEnvBanner
+          dataTestId={{
+            root: 'testInstanceBanner',
+            label: 'testInstanceBannerText',
+          }}
+        />
+      )}
+    </NoSsrWrapper>
   );
 };

@@ -1,18 +1,12 @@
-import { LidoTransfer, TotalReward } from '.';
+import type {
+  EVENT_SCHEMA,
+  REWARD_EVENT_SCHEMA,
+  TRANSFER_EVENT_SCHEMA,
+} from '../fetchers/backend';
+import type { z } from 'zod';
 
-export type SubgraphData = LidoTransfer | TotalReward;
+export type RewardEvent = z.infer<typeof REWARD_EVENT_SCHEMA>;
+export type TransferEvent = z.infer<typeof TRANSFER_EVENT_SCHEMA>;
 
-export type AdditionalData = {
-  type: string;
-  change: string;
-  currencyChange?: string;
-  apr?: string;
-  balance: string;
-  direction?: string;
-  epochDays?: string;
-  epochFullDays?: string;
-  rewards?: string;
-  reportShares?: string;
-};
-
-export type Event = SubgraphData & AdditionalData;
+export type Event = z.infer<typeof EVENT_SCHEMA>;
+export type EventType = Event['type'];

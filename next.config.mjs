@@ -1,4 +1,4 @@
-import NextBundleAnalyzer from '@next/bundle-analyzer';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'url';
 import buildDynamics from './scripts/build-dynamics.mjs';
 import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs';
@@ -7,11 +7,17 @@ import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 import { startupCheckValidationFile } from './scripts/startup-checks/validation-file.mjs';
 import { startupCheckManifestFile } from './scripts/startup-checks/config-manifest.mjs';
 
+const require = createRequire(import.meta.url);
+
 logEnvironmentVariables();
 buildDynamics();
 
 if (process.env.RUN_STARTUP_CHECKS === 'true') {
-  void startupCheckRPCs();
+  // next.config is plain ESM loaded before the build, so it cannot import the
+  // TS config — keep this in sync with USER_AGENT in config/groups/app.ts
+  void startupCheckRPCs({
+    userAgent: `lido-staking-widget/${require('./build-info.json').version}`,
+  });
   void startupCheckValidationFile();
   void startupCheckManifestFile();
 }
@@ -50,13 +56,20 @@ export const CACHE_CONTROL_PAGES = [
   '/manifest.json',
   '/favicon:size*',
   '/runtime/window-env.js',
+  // unhashed public assets referenced from _document and feature code
+  '/apple-touch-icon.png',
+  '/lido-preview.png',
+  '/bells.mp3',
+  '/honk.mp3',
 ];
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
-const withBundleAnalyzer = NextBundleAnalyzer({
-  enabled: process.env.ANALYZE_BUNDLE ?? false,
-});
+// Required lazily: @next/bundle-analyzer is a devDependency and the production
+// image ships prod deps only, but next.config.mjs is also loaded at runtime.
+const withBundleAnalyzer = process.env.ANALYZE_BUNDLE
+  ? require('@next/bundle-analyzer')({ enabled: true })
+  : (nextConfig) => nextConfig;
 
 export default withBundleAnalyzer({
   basePath,
@@ -104,10 +117,32 @@ export default withBundleAnalyzer({
       // from JS/TS code only. SVGs referenced from CSS (e.g. url(...) inside
       // @lidofinance/lido-app-ui styles) fall through to Next.js built-in
       // asset handling instead of being broken by svgr.
+      // Mirrors svgr's default SVGO config (preset-default + prefixIds) with
+      // one override: `removeViewBox` is disabled, because SVGO strips `viewBox`
+      // when it equals `0 0 <width> <height>`, which breaks scaling whenever
+      // the icon is resized via CSS or width/height props. `prefixIds` must
+      // stay, otherwise minified ids (`#a`, `#b`) collide between icons on
+      // the same page and clipPath/gradient references resolve to the wrong element.
       {
         test: /\.svg$/,
         issuer: /\.[jt]sx?$/,
-        use: ['@svgr/webpack', 'url-loader'],
+        use: [
+          {
+            loader: '@svgr/webpack',
+            options: {
+              svgoConfig: {
+                plugins: [
+                  {
+                    name: 'preset-default',
+                    params: { overrides: { removeViewBox: false } },
+                  },
+                  'prefixIds',
+                ],
+              },
+            },
+          },
+          'url-loader',
+        ],
       },
       {
         test: /\.md$/,
@@ -281,10 +316,10 @@ export default withBundleAnalyzer({
     developmentMode,
     devnetOverrides,
 
-    // ETH rpcs
     defaultChain: process.env.DEFAULT_CHAIN,
     manifestOverride: process.env.MANIFEST_OVERRIDE,
     configManifestPath: process.env.CONFIG_MANIFEST_PATH,
+    // ETH rpcs
     rpcUrls_1: process.env.EL_RPC_URLS_1,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     rpcUrls_11155111: process.env.EL_RPC_URLS_11155111,
@@ -295,6 +330,12 @@ export default withBundleAnalyzer({
     // Unichain rpcs
     rpcUrls_130: process.env.EL_RPC_URLS_130,
     rpcUrls_1301: process.env.EL_RPC_URLS_1301,
+    // Base rpcs
+    rpcUrls_8453: process.env.EL_RPC_URLS_8453,
+    // Linea rpcs
+    rpcUrls_59144: process.env.EL_RPC_URLS_59144,
+    // Arbitrum rpcs
+    rpcUrls_42161: process.env.EL_RPC_URLS_42161,
 
     cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
     cspReportUri: process.env.CSP_REPORT_URI,
@@ -304,6 +345,7 @@ export default withBundleAnalyzer({
     rateLimitTimeFrame: process.env.RATE_LIMIT_TIME_FRAME,
 
     ethAPIBasePath: process.env.ETH_API_BASE_PATH,
+    oneInchAPIKey: process.env.ONE_INCH_API_KEY,
     rewardsBackendAPI: process.env.REWARDS_BACKEND,
     validationAPI: process.env.VALIDATION_SERVICE_BASE_PATH,
     validationFilePath: process.env.VALIDATION_FILE_PATH,

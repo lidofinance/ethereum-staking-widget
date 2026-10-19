@@ -4,6 +4,7 @@ import mainnetConfig from 'networks/mainnet.json';
 
 import type { OrderData } from '../../validate-tx';
 import { TRADE_VERIFICATION_ERROR } from '../consts';
+import { safeParseDecimal } from './safe-parse-decimal';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -45,6 +46,7 @@ const TOKEN_DECIMALS: Record<string, number> = {
 const unitsToRaw = (units: string, tokenAddress: string): bigint | null => {
   const decimals = TOKEN_DECIMALS[tokenAddress.toLowerCase()];
   if (decimals === undefined) return null;
+  if (safeParseDecimal(units) === null) return null;
   try {
     return parseUnits(units, decimals);
   } catch {

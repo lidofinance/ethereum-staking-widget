@@ -6,7 +6,6 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   disconnectWalletManually = 'disconnectWalletManually',
   clickShowMoreWallets = 'clickShowMoreWallets',
   clickShowLessWallets = 'clickShowLessWallets',
-  clickCurvePool = 'clickCurvePool',
   clickBalancerPool = 'clickBalancerPool',
   clickExploreDeFi = 'clickExploreDeFi',
 
@@ -37,12 +36,16 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqRisksOfStakingImmunefiBugBounty = 'faqRisksOfStakingImmunefiBugBounty',
   faqHowCanIUnstakeStEthWithdrawals = 'faqHowCanIUnstakeStEthWithdrawals',
   faqHowCanIUnstakeStEthIntegrations = 'faqHowCanIUnstakeStEthIntegrations',
+  faqHowCanIUnstakeStEthL2Integrations = 'faqHowCanIUnstakeStEthL2Integrations',
   faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
   faqHowCanIGetWstethIntegrationsLink = 'faqHowCanIGetWstethIntegrationsLink',
   faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
   faqHowCanIUseWstethLidoMultichain = 'faqHowCanIUseWstethLidoMultichain',
   faqHowCanIUseWstethDefiProtocols = 'faqHowCanIUseWstethDefiProtocols',
   faqDoINeedToUnwrapMyWstethWithdrawalsTabs = 'faqDoINeedToUnwrapMyWstethWithdrawalsTabs',
+
+  // L2 Stake
+  faqHowDoesDirectStakingWork = 'faqHowDoesDirectStakingWork',
 
   // Optimism
   faqHowCanIGetWstethOnOptimismWrapLink = 'faqHowCanIGetWstethOnOptimismWrapLink',
@@ -62,6 +65,10 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainBridgeYourWstETHOrStETHBack',
   faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim',
 
+  // /stake page
+  // token goes as a custom dimension
+  stakeTokenSelect = 'stakeTokenSelect',
+
   // /wrap page
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
   wrapTokenSelectETH = 'wrapTokenSelectEth',
@@ -77,7 +84,6 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
   withdrawalGoToParaswap = 'withdrawalGoToParaswap',
   withdrawalGoToOpenOcean = 'withdrawalGoToOpenOcean',
-  withdrawalGoToJumper = 'withdrawalGoToJumper',
   withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
   withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
 
@@ -123,11 +129,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Less wallets" on wallet modal',
     'eth_widget_less_wallets',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.clickCurvePool]: [
-    'Ethereum_Staking_Widget',
-    'Push «Explore» in Curve section on Transaction success banner',
-    'eth_widget_banner_curve_explore',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.clickBalancerPool]: [
     'Ethereum_Staking_Widget',
@@ -261,6 +262,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push «DEX Lido integrations» in FAQ How can I unstake stETH? on stake widget',
     'eth_widget_faq_howCanIUnstakeStEth_dexLidoIntegrations',
   ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthL2Integrations]: [
+    'Ethereum_Staking_Widget',
+    'Push «DEX Lido integrations» in FAQ How can I unstake stETH? on supported L2s on stake widget',
+    'eth_widget_faq_howCanIUnstakeStEth_l2DexLidoIntegrations',
+  ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink]: [
     'Ethereum_Staking_Widget',
     'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH',
@@ -369,6 +375,17 @@ export const MATOMO_CLICK_EVENTS: Record<
       'Push «Withdrawals Request and Claim» What happens if I want to unstake ETH on Ethereum? Can I do that from Unichain?',
       'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromUnichainWithdrawalsRequestAndClaim',
     ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowDoesDirectStakingWork]: [
+    'Ethereum_Staking_Widget',
+    'Push "How does Direct Staking on L2 work?',
+    'eth_widget_faq_howDirectStakingOnL2Works',
+  ],
+  // /stake page
+  [MATOMO_CLICK_EVENTS_TYPES.stakeTokenSelect]: [
+    'Ethereum_Staking_Widget',
+    'Select token to stake on stake page',
+    'eth_widget_stake_select_token',
+  ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectETH]: [
     'Ethereum_Staking_Widget',
@@ -431,11 +448,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
     'Click on «Go to OpenOcean in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_OpenOcean',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToJumper]: [
-    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
-    'Click on «Go to Jumper» in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_Jumper',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate]: [
     'Ethereum_Withdrawals_Widget',

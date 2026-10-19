@@ -1,5 +1,4 @@
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
-import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
 import { rpcFactory } from '@lidofinance/next-pages';
 
 // Aliased: `config` is reserved below for Next's route config export.
@@ -16,6 +15,7 @@ import {
   HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
+import { trackedFetchRpc } from 'utilsApi/tracked-fetch-rpc';
 import {
   METRIC_CONTRACT_ADDRESSES,
   METRIC_CONTRACT_EVENT_ADDRESSES,
@@ -50,6 +50,7 @@ const allowedRPCMethods = [
   'eth_getBlockByNumber',
   'eth_feeHistory',
   'eth_maxPriorityFeePerGas',
+  'linea_estimateGas',
   'eth_getBalance',
   'eth_blockNumber',
   'eth_getTransactionByHash',
@@ -66,15 +67,12 @@ const g = globalThis as any;
 const rpc =
   g.__rpcSingleton__ ??
   rpcFactory({
-    fetchRPC: trackedFetchRpcFactory({
-      registry: Metrics.registry,
-      prefix: METRICS_PREFIX,
-    }),
+    fetchRPC: trackedFetchRpc,
     metrics: {
       prefix: METRICS_PREFIX,
       registry: Metrics.registry,
     },
-    defaultChain: `${appConfig.defaultChain}`,
+    defaultChain: appConfig.defaultChain,
     providers: {
       [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
       [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
@@ -84,6 +82,9 @@ const rpc =
       [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,
       [CHAINS.Unichain]: secretConfig.rpcUrls_130,
       [CHAINS.UnichainSepolia]: secretConfig.rpcUrls_1301,
+      [CHAINS.Base]: secretConfig.rpcUrls_8453,
+      [CHAINS.Linea]: secretConfig.rpcUrls_59144,
+      [CHAINS.Arbitrum]: secretConfig.rpcUrls_42161,
     },
     validation: {
       allowedRPCMethods,

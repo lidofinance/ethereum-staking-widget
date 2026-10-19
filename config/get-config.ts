@@ -1,5 +1,6 @@
 import { getPreConfig, PreConfigType } from './get-preconfig';
 import { KNOWN_CHAIN_IDS } from './known-chain-ids';
+import * as app from './groups/app';
 import * as cache from './groups/cache';
 import * as ipfs from './groups/ipfs';
 import * as locale from './groups/locale';
@@ -11,7 +12,8 @@ import * as withdrawalQueueEstimate from './groups/withdrawal-queue-estimate';
 export type ConfigType = {
   isClientSide: boolean;
   isServerSide: boolean;
-} & typeof cache &
+} & typeof app &
+  typeof cache &
   typeof ipfs &
   typeof web3 &
   typeof locale &
@@ -26,6 +28,7 @@ export const getConfig = (): ConfigType => {
     isClientSide: typeof window !== 'undefined',
     isServerSide: typeof window === 'undefined',
 
+    ...app,
     ...cache,
     ...web3,
     ...ipfs,

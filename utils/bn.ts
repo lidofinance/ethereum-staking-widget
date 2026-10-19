@@ -29,15 +29,16 @@ export const maxBN = (
 export const bnAmountToNumber = (
   amount?: bigint | null,
   decimals?: number,
-  precision = 4,
+  precision = 10,
 ): number => {
   if (amount == null || amount === 0n) return 0;
 
   if (!decimals) throw new Error('Decimals must be defined');
 
-  if (decimals < precision)
-    throw new Error('Decimals must be greater than or equal to precision');
+  // A token cannot carry more fractional digits than its own decimals, so a
+  // low-decimal token (USDC/USDT: 6, the collector TVL: 8) keeps full precision
+  const effectivePrecision = Math.min(precision, decimals);
 
-  const amountP4 = amount / 10n ** BigInt(decimals - precision);
-  return Number(amountP4) / 10 ** precision;
+  const scaled = amount / 10n ** BigInt(decimals - effectivePrecision);
+  return Number(scaled) / 10 ** effectivePrecision;
 };

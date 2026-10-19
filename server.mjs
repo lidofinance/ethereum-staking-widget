@@ -8,6 +8,15 @@ import {
   registerSecretsRotationRestart,
   registerShutdownSignals,
 } from './scripts/shutdown.mjs';
+import { markReady } from './scripts/readiness.mjs';
+import {
+  createContentSecurityPolicy,
+  cspInputsFromEnv,
+} from './scripts/csp/content-security-policy.mjs';
+import {
+  createCspHeader,
+  setCspHeaderOnHtml,
+} from './scripts/csp/csp-header.mjs';
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -49,12 +58,27 @@ app.prepare().then(async () => {
     ]);
   }
 
+  // The CSP header of every page. Set here, not in the app: the pages are
+  // static (ISR), so nothing in the app runs for a page served from the
+  // cache, and next.config headers are fixed at build time while the policy
+  // reads runtime env. Built once, on first use, after the env is loaded
+  let cspHeader;
+  const getCspHeader = () =>
+    (cspHeader ??= createCspHeader(
+      createContentSecurityPolicy({
+        ...cspInputsFromEnv(),
+        developmentMode: process.env.NODE_ENV === 'development',
+        ipfsMode: false,
+      }),
+    ));
+
   const server = createServer(async (req, res) => {
     // Be sure to pass `true` as the second argument to `url.parse`.
     // This tells it to parse the query portion of the URL.
     const parsedUrl = parse(req.url, true);
 
     overrideSetHeader(res);
+    setCspHeaderOnHtml(res, getCspHeader);
 
     await handle(req, res, parsedUrl);
   })
@@ -63,6 +87,7 @@ app.prepare().then(async () => {
       process.exit(1);
     })
     .listen(port, () => {
+      markReady();
       console.debug(`> Ready on http://${hostname}:${port}`);
     });
   // prevents malicious client from slowly sending headers and rest of request

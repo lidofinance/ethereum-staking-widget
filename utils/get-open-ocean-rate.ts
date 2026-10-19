@@ -1,41 +1,28 @@
 import { formatEther } from 'viem';
+import { z } from 'zod';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { getTokenAddress } from 'config/networks/token-address';
 import { standardFetcher } from './standardFetcher';
+import { BIGINT_STRING_SCHEMA } from './zod';
 import {
   calculateRateReceive,
   RateCalculationResult,
 } from './calculate-rate-to-receive';
 import { type Token, type TokenSymbol } from 'consts/tokens';
 
-type OpenOceanGetGasPartial = {
-  without_decimals: {
-    standard: {
-      maxFeePerGas: string;
-      legacyGasPrice: string;
-    };
-  };
-};
+const OPEN_OCEAN_GAS_SCHEMA = z.object({
+  without_decimals: z.object({
+    standard: z.object({ maxFeePerGas: z.string() }),
+  }),
+});
 
-type OpenOceanGetQuotePartial = {
-  data: {
-    inToken: {
-      symbol: string;
-      name: string;
-      address: string;
-      decimals: number;
-    };
-    outToken: {
-      symbol: string;
-      name: string;
-      address: string;
-      decimals: number;
-    };
-    inAmount: string;
-    outAmount: string;
-  };
-};
+const OPEN_OCEAN_QUOTE_SCHEMA = z.object({
+  data: z.object({
+    inAmount: BIGINT_STRING_SCHEMA,
+    outAmount: BIGINT_STRING_SCHEMA,
+  }),
+});
 
 export const getOpenOceanRate = async (
   amount: bigint,
@@ -43,8 +30,8 @@ export const getOpenOceanRate = async (
   toToken: Token | TokenSymbol,
 ): Promise<RateCalculationResult> => {
   const basePath = 'https://open-api.openocean.finance/v3/1';
-  const gasData = await standardFetcher<OpenOceanGetGasPartial>(
-    `${basePath}/gasPrice`,
+  const gasData = OPEN_OCEAN_GAS_SCHEMA.parse(
+    await standardFetcher<unknown>(`${basePath}/gasPrice`),
   );
 
   const params = new URLSearchParams({
@@ -54,8 +41,8 @@ export const getOpenOceanRate = async (
     amount: formatEther(amount),
   });
 
-  const quote = await standardFetcher<OpenOceanGetQuotePartial>(
-    `${basePath}/quote?${params.toString()}`,
+  const quote = OPEN_OCEAN_QUOTE_SCHEMA.parse(
+    await standardFetcher<unknown>(`${basePath}/quote?${params.toString()}`),
   );
 
   return calculateRateReceive(

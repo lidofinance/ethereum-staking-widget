@@ -3,7 +3,7 @@ import { config, useConfig } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { Backend } from 'features/rewards/types';
 
-import { standardFetcher } from 'utils/standardFetcher';
+import { backendRequest } from 'features/rewards/fetchers/backend';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 
 type UseRewardsDataLoad = (props: {
@@ -40,29 +40,18 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     limit,
   };
 
-  const params = new URLSearchParams();
-  Object.entries(requestOptions).forEach(([k, v]) =>
-    params.append(k, v.toString()),
-  );
-
-  let apiRewardsUrl;
-  if (config.ipfsMode) {
-    apiRewardsUrl = `${config.rewardsBackendBasePath}?${params.toString()}`;
-  } else {
-    apiRewardsUrl = `/api/rewards?${params.toString()}`;
-  }
-
   const { featureFlags } = useConfig().externalConfig;
 
-  const { data, error, isFetching, isLoading } = useQuery<Backend>({
-    queryKey: ['rewards-data', address, apiRewardsUrl],
+  const { data, error, isFetching, isLoading } = useQuery({
+    queryKey: [
+      'rewards-data',
+      { address, ipfsMode: config.ipfsMode, requestOptions },
+    ],
     enabled: !!address && !featureFlags.rewardsMaintenance,
     ...STRATEGY_LAZY,
-    queryFn: ({ signal }) =>
-      // The 'react-query' has AbortController support built in,
-      // and it automatically cancels requests when
-      // the component is unmounted or the queryKey changes.
-      standardFetcher(apiRewardsUrl, { signal }),
+    queryFn: async ({ signal }) => {
+      return backendRequest(requestOptions, { signal });
+    },
   });
 
   const { isLagging, dataOrLaggyData } = useLaggyDataWrapper(data);

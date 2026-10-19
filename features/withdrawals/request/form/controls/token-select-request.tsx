@@ -15,6 +15,7 @@ export const TokenSelectRequest = () => {
 
   return (
     <TokenSelectHookForm
+      resetAmount={false}
       disabled={isWalletConnected && !isDappActive}
       options={OPTIONS}
     />

@@ -1,33 +1,36 @@
-import { useMemo } from 'react';
-
-import { useMaxGasPrice } from 'modules/web3';
+import { useMaxTxCost, type FeeEstimateTx } from 'modules/web3';
 import { useEthUsd } from './use-eth-usd';
 
-export const useTxCostInUsd = (gasLimit?: bigint, chainId?: number) => {
-  const { maxGasPrice, ...maxGasPriceState } = useMaxGasPrice(chainId);
+// `tx` is the representative transaction; on chains that price txs
+// individually (OP-stack L1 data fee, Linea) the cost is understated without it
+export const useTxCostInUsd = (
+  gasLimit?: bigint,
+  chainId?: number,
+  tx?: FeeEstimateTx,
+) => {
+  const { maxGasPrice, maxTxCost, ...maxTxCostState } = useMaxTxCost({
+    chainId,
+    gasLimit,
+    tx,
+  });
 
-  const ethAmount = useMemo(
-    () => (maxGasPrice && gasLimit ? maxGasPrice * gasLimit : undefined),
-    [gasLimit, maxGasPrice],
-  );
-
-  const { usdAmount, ...ethUsdState } = useEthUsd(ethAmount);
+  const { usdAmount, ...ethUsdState } = useEthUsd(maxTxCost);
 
   return {
-    maxGasPrice: maxGasPrice,
+    maxGasPrice,
     txCostUsd: usdAmount,
 
     get isLoading() {
-      return maxGasPriceState.isLoading || ethUsdState.isLoading;
+      return maxTxCostState.isLoading || ethUsdState.isLoading;
     },
     get error() {
-      return maxGasPriceState.error || ethUsdState.error;
+      return maxTxCostState.error || ethUsdState.error;
     },
     get isFetching() {
-      return maxGasPriceState.isFetching || ethUsdState.isFetching;
+      return maxTxCostState.isFetching || ethUsdState.isFetching;
     },
     update() {
-      return Promise.all([maxGasPriceState.update(), ethUsdState.update()]);
+      return Promise.all([maxTxCostState.update(), ethUsdState.update()]);
     },
   };
 };

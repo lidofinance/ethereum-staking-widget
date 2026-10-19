@@ -17,8 +17,13 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
 export const WrapFormStats = () => {
   const { isDappActive, chainId } = useDappStatus();
-  const { allowance, isShowAllowance, wrapGasLimit, isAllowanceLoading } =
-    useWrapFormData();
+  const {
+    allowance,
+    isShowAllowance,
+    wrapGasLimit,
+    wrapTx,
+    isAllowanceLoading,
+  } = useWrapFormData();
 
   const { watch } = useFormContext<WrapFormInputType>();
   const [token, amount] = watch(['token', 'amount']);
@@ -36,14 +41,14 @@ export const WrapFormStats = () => {
   //
   // Using the chainId (chainId from the chain switcher) for TX calculation (and below for 'wrapTxCostInUsd'),
   // because the statistics here are shown for the chain from the chain switcher
-  const approveGasLimit = useApproveGasLimit();
+  const { gasLimit: approveGasLimit, tx: approveTx } = useApproveGasLimit();
   const { txCostUsd: approveTxCostInUsd, isLoading: isApproveCostLoading } =
-    useTxCostInUsd(approveGasLimit, chainId);
+    useTxCostInUsd(approveGasLimit, chainId, approveTx);
 
   // The 'wrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainMatched' case
   const { txCostUsd: wrapTxCostInUsd, isLoading: isWrapCostLoading } =
-    useTxCostInUsd(wrapGasLimit, chainId);
+    useTxCostInUsd(wrapGasLimit, chainId, wrapTx);
 
   return (
     <DataTable data-testid="wrapStats">

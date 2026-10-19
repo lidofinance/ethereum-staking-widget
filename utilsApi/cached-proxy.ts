@@ -2,6 +2,8 @@ import type { NextApiRequest } from 'next';
 import { API } from '@lidofinance/next-api-wrapper';
 import { LRUCache } from 'lru-cache';
 
+import { CACHE_DEFAULT_ERROR_HEADERS } from 'config/groups/cache';
+
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 import { FetcherError } from 'utils/fetcherError';
@@ -22,6 +24,8 @@ type ProxyOptions = {
   metricsHost?: string;
   /** Hard cap on cache entries. Default 200. */
   cacheMaxEntries?: number;
+  /** Extra upstream headers from the request; cache hits don't reach upstream. */
+  forwardHeaders?: (req: NextApiRequest) => Record<string, string>;
 };
 
 export const createCachedProxy = ({
@@ -33,6 +37,7 @@ export const createCachedProxy = ({
   transformData = (data) => data,
   metricsHost,
   cacheMaxEntries = DEFAULT_CACHE_MAX_ENTRIES,
+  forwardHeaders,
 }: ProxyOptions): API => {
   const cache = new LRUCache<string, any>({
     max: cacheMaxEntries,
@@ -55,15 +60,17 @@ export const createCachedProxy = ({
     const url = proxyUrlString + (params ? `?${params.toString()}` : '');
 
     try {
+      // set() is case-insensitive, so forwarded headers can't override these
+      const headers = new Headers(forwardHeaders?.(req));
+      headers.set('Accept', 'application/json');
+      headers.set('Content-Type', 'application/json');
+
       const data = await responseTimeExternalMetricWrapper({
         payload: metricsHost || proxyUrlString,
         request: () =>
           standardFetcher(url, {
             signal: AbortSignal.timeout(timeout),
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
+            headers,
           }),
       });
 
@@ -72,6 +79,8 @@ export const createCachedProxy = ({
       cache.set(cacheKey, transformedData);
       res.json(transformedData);
     } catch (e) {
+      // route-level cacheControl set public caching before the handler ran
+      res.setHeader('Cache-Control', CACHE_DEFAULT_ERROR_HEADERS);
       if (e instanceof FetcherError && e.status >= 400 && e.status < 500) {
         console.warn(`[CachedProxy]Forwarding ${e.status} error from ${url}`);
         res.status(e.status);

@@ -38,6 +38,9 @@ declare module 'next/config' {
       rpcUrls_11155420: string | undefined;
       rpcUrls_130: string | undefined;
       rpcUrls_1301: string | undefined;
+      rpcUrls_8453: string | undefined;
+      rpcUrls_59144: string | undefined;
+      rpcUrls_42161: string | undefined;
 
       cspTrustedHosts: string | undefined;
       cspReportUri: string | undefined;
@@ -47,6 +50,7 @@ declare module 'next/config' {
       rateLimitTimeFrame: string;
 
       ethAPIBasePath: string;
+      oneInchAPIKey: string | undefined;
       rewardsBackendAPI: string | undefined;
       validationAPI: string | undefined;
       validationFilePath: string | undefined;
