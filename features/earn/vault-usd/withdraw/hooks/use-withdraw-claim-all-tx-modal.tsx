@@ -29,14 +29,15 @@ import type { TokenClaim } from '../claim-all-utils';
 
 const statuses: Record<
   TokenClaim['status'],
-  { label: string; color: TextColors }
+  { label: string; color: TextColors } | null
 > = {
   'not-started': { label: 'Not started', color: 'secondary' },
   rejected: { label: 'Rejected in wallet', color: 'secondary' }, // reject is a deliberate choice, not a fault to flag in red
   submitted: { label: 'Awaiting multisig approval', color: 'secondary' },
-  claimed: { label: 'Claimed', color: 'success' },
+  claimed: null, // the modal title and the Etherscan link already show success
   failed: { label: 'Failed', color: 'error' },
 };
+
 const BatchLink = ({ callId }: { callId: string }) => {
   const { mutate: showCallsStatus, isPending } = useShowCallsStatus();
   return (
@@ -48,6 +49,34 @@ const BatchLink = ({ callId }: { callId: string }) => {
     >
       Show transactions in wallet
     </Link>
+  );
+};
+
+const ClaimResult = ({ claim }: { claim: TokenClaim }) => {
+  const status = statuses[claim.status];
+  const link = claim.txHash && (
+    <TxLinkEtherscan txHash={claim.txHash} text="View on Etherscan" />
+  );
+
+  return (
+    <ClaimResultItem>
+      <ClaimAmounts amounts={[claim]} />
+      {(status || link) && (
+        <ClaimStatus>
+          {status && (
+            <ClaimStatusLabel color={status.color}>
+              {status.label}
+            </ClaimStatusLabel>
+          )}
+          {link && (
+            <span>
+              {status && <span aria-hidden="true">· </span>}
+              {link}
+            </span>
+          )}
+        </ClaimStatus>
+      )}
+    </ClaimResultItem>
   );
 };
 
@@ -111,23 +140,7 @@ const getStages = (transitStage: TransactionModalTransitStage) => ({
         description={
           <ClaimDescription>
             {claims.map((claim) => (
-              <ClaimResultItem key={claim.token}>
-                <ClaimAmounts amounts={[claim]} />
-                <ClaimStatus>
-                  <ClaimStatusLabel color={statuses[claim.status].color}>
-                    {statuses[claim.status].label}
-                  </ClaimStatusLabel>
-                  {claim.txHash && (
-                    <span>
-                      <span aria-hidden="true">· </span>
-                      <TxLinkEtherscan
-                        txHash={claim.txHash}
-                        text="View on Etherscan"
-                      />
-                    </span>
-                  )}
-                </ClaimStatus>
-              </ClaimResultItem>
+              <ClaimResult key={claim.token} claim={claim} />
             ))}
             {options.error && <ClaimDetail>{options.error}</ClaimDetail>}
           </ClaimDescription>
