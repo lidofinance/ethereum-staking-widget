@@ -4,7 +4,7 @@ import { useConnection, useWalletClient } from 'wagmi';
 
 import { useDappStatus, useIsLedgerLive } from 'modules/web3';
 
-import type { OrderData, NetworkTxConfig } from '../guards/tx';
+import type { ApprovalData, OrderData, NetworkTxConfig } from '../guards/tx';
 import { COWSWAP_ENABLED_CHAIN_IDS } from '../consts';
 import type { SigningHelpTip } from '../guards/trade';
 import { createCowSwapProvider } from '../utils';
@@ -28,6 +28,7 @@ const cleanup = () => {
 
 type UseCowSwapEthereumProviderOptions = {
   verifySignedOrder: (order: OrderData) => string | null;
+  verifyApproval: (approval: ApprovalData) => string | null;
   openTransactionGuardModal: (reason: string) => Promise<void>;
   openSigningErrorModal: (
     reason: string,
@@ -39,6 +40,7 @@ type UseCowSwapEthereumProviderOptions = {
 
 export const useCowSwapEthereumProvider = ({
   verifySignedOrder,
+  verifyApproval,
   openTransactionGuardModal,
   openSigningErrorModal,
   getNetworkTxConfig,
@@ -77,6 +79,7 @@ export const useCowSwapEthereumProvider = ({
       networkTxConfig: getNetworkTxConfig(chainId),
       appCode,
       verifySignedOrder,
+      verifyApproval,
       openTransactionGuardModal,
       openSigningErrorModal,
       addCleanup,
@@ -88,6 +91,7 @@ export const useCowSwapEthereumProvider = ({
     getNetworkTxConfig,
     appCode,
     verifySignedOrder,
+    verifyApproval,
     openTransactionGuardModal,
     isLedgerLive,
     openSigningErrorModal,

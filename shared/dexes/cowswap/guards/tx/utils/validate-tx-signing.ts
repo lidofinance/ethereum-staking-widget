@@ -6,13 +6,10 @@ import {
   Hex,
   hexToBigInt,
   maxUint256,
-  parseEther,
 } from 'viem';
 import { z } from 'zod';
 
 import { CowSettlementAbi } from '../../../abi';
-
-import { readThresholds } from '../../trade/utils';
 
 import { TRANSACTION_ERROR } from '../consts';
 
@@ -30,6 +27,7 @@ import {
   hexSchema,
 } from './schemas';
 import type {
+  ApprovalData,
   CancelOrderData,
   OrderData,
   ValidationContext,
@@ -132,17 +130,7 @@ const validateApproveSpender = (
       };
     }
 
-    const maxAllowedSellAmount = parseEther(
-      readThresholds().maxAllowedSellAmount.toFixed(0),
-    );
-
-    if (amount > maxAllowedSellAmount) {
-      return {
-        allowed: false,
-        reason: TRANSACTION_ERROR(2025),
-      };
-    }
-
+    // amount is capped by the trade guard approval snapshot, see extractApprovals
     return { allowed: true };
   } catch {
     return { allowed: false, reason: TRANSACTION_ERROR(2026) };
@@ -199,7 +187,7 @@ const validateSettlerSignature = async (
  * - Unknown target address: blocked
  * - no ETH value allowed in any transaction(as withdrawal flow should not require sending ETH)
  * - CoW Protocol contract (Settlement): only allow setPreSignature() calls with valid orderUID and signature
- * - Other tokens: approve() only, spender must be VaultRelayer,
+ * - Other tokens: approve() only, spender must be VaultRelayer, amount checked by the trade guard
  */
 export const validateSendTransaction = async (
   params: unknown,
@@ -314,4 +302,41 @@ export const validateSendCalls = async (
   }
 
   return { allowed: true, result: order };
+};
+
+// Approve calls of an already validated eth_sendTransaction / wallet_sendCalls request
+export const extractApprovals = (
+  method: string,
+  params: unknown,
+): ApprovalData[] => {
+  let calls: { to: Address; data: Hex }[] = [];
+  if (method === 'eth_sendTransaction') {
+    const parsed = sendTransactionParamsSchema.safeParse(params);
+    if (!parsed.success) throw new Error(TRANSACTION_ERROR(2040));
+    calls = [parsed.data[0]];
+  } else if (method === 'wallet_sendCalls') {
+    const parsed = sendCallsParamsSchema.safeParse(params);
+    if (!parsed.success) throw new Error(TRANSACTION_ERROR(2040));
+    calls = parsed.data[0].calls;
+  }
+
+  const approvals: ApprovalData[] = [];
+  for (const { to, data } of calls) {
+    try {
+      const { functionName, args } = decodeFunctionData({
+        abi: erc20Abi,
+        data,
+      });
+      if (functionName === 'approve') {
+        approvals.push({
+          token: to.toLowerCase() as Address,
+          amount: args[1],
+        });
+      }
+    } catch {
+      // not an ERC-20 call, e.g. setPreSignature
+    }
+  }
+
+  return approvals;
 };

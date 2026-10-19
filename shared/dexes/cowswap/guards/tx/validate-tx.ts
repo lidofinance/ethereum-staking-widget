@@ -3,8 +3,10 @@ import { mainnet, sepolia } from 'viem/chains';
 import { COWSWAP_WIDGET_ALLOWED_RPC_METHODS } from '../../consts';
 
 import {
+  ApprovalData,
   OrderData,
   ValidationContext,
+  extractApprovals,
   isCancelOrder,
   jsonRpcRequestSchema,
   validateSendCalls,
@@ -99,8 +101,11 @@ export const validateRpcRequest = async (
     throw new Error(TRANSACTION_ERROR(2002));
   }
 
+  const approvals: ApprovalData[] = extractApprovals(method, params);
+
   return {
     order,
+    approvals,
     sanitizedRequest,
   };
 };

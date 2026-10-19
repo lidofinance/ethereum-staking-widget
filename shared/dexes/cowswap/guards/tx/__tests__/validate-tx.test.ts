@@ -3,6 +3,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 vi.mock('../utils/validate-tx-signing', () => ({
   validateSendTransaction: vi.fn(),
   validateSendCalls: vi.fn(),
+  extractApprovals: vi.fn(() => []),
 }));
 
 vi.mock('../utils/validate-typed-message', () => ({
@@ -11,6 +12,7 @@ vi.mock('../utils/validate-typed-message', () => ({
 
 import { validateRpcRequest } from '../validate-tx';
 import {
+  extractApprovals,
   validateSendTransaction,
   validateSendCalls,
   validateSignTypedData,
@@ -349,5 +351,28 @@ describe('validateTx', () => {
       );
       expect(order).toBeUndefined();
     });
+  });
+});
+
+describe('validateRpcRequest — approvals', () => {
+  it('returns approves of an allowed transaction', async () => {
+    const approval = {
+      token: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84' as `0x${string}`,
+      amount: 1n,
+    };
+    vi.mocked(validateSendTransaction).mockResolvedValue({
+      allowed: true,
+      result: undefined,
+    });
+    vi.mocked(extractApprovals).mockReturnValueOnce([approval]);
+    const request = makeRequest('eth_sendTransaction');
+
+    const { approvals } = await validateRpcRequest(request, mainnetCtx);
+
+    expect(approvals).toEqual([approval]);
+    expect(extractApprovals).toHaveBeenCalledWith(
+      'eth_sendTransaction',
+      request.params,
+    );
   });
 });

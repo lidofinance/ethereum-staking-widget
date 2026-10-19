@@ -8,11 +8,12 @@ import { safeParseDecimal } from '../../utils';
 import {
   CHAINLINK_FEEDS,
   CHAINLINK_SCALE,
+  ORACLE_PRICES,
   WSTETH_SCALE,
   WSTETH_RATE_MIN,
   WSTETH_RATE_MAX,
   WSTETH_ADDRESS,
-  type ChainlinkFeedKey,
+  type OraclePriceKey,
 } from '../feeds';
 import { PARTNER_FEE_PCT, FAIL_UNSUPPORTED, FAIL_UNAVAILABLE } from '../consts';
 import type { OnTradeParamsPayload, OracleResult } from '../types';
@@ -21,12 +22,101 @@ import { isValidRound, isInBounds, type RoundData } from './rounds';
 
 export type OracleClient = Pick<PublicClient, 'readContract'>;
 
-/** Lowercased mainnet token address → Chainlink USD feed. */
-export type TokenFeedMap = Record<string, ChainlinkFeedKey>;
+/** Lowercased mainnet token address → Chainlink USD price. */
+export type TokenFeedMap = Record<string, OraclePriceKey>;
 
 export type OracleFeedMaps = {
   sell: TokenFeedMap;
   buy: TokenFeedMap;
+};
+
+// USD price with 8 decimals, null on invalid or out-of-bounds round
+const readUsdPrice = async (
+  client: OracleClient,
+  priceKey: OraclePriceKey,
+  nowSec: bigint,
+): Promise<bigint | null> => {
+  const feedKeys = ORACLE_PRICES[priceKey];
+  const rounds = await Promise.all(
+    feedKeys.map(
+      (key) =>
+        client.readContract({
+          address: CHAINLINK_FEEDS[key].address,
+          abi: AggregatorAbi,
+          functionName: 'latestRoundData',
+        }) as Promise<RoundData>,
+    ),
+  );
+
+  let numerator = CHAINLINK_SCALE;
+  let denominator = 1n;
+  for (const [index, key] of feedKeys.entries()) {
+    const feed = CHAINLINK_FEEDS[key];
+    const roundData = rounds[index];
+    if (!roundData || !isValidRound(roundData, feed.maxStaleness, nowSec))
+      return null;
+
+    if (!isInBounds(roundData[1], key)) return null;
+
+    numerator *= roundData[1];
+    denominator *= 10n ** BigInt(feed.decimals);
+  }
+
+  return numerator / denominator;
+};
+
+// USD price of one token unit with 8 decimals; wstETH via stEthPerToken
+const readTokenUsdPrice = async (
+  client: OracleClient,
+  tokenAddress: string,
+  priceKey: OraclePriceKey,
+  nowSec: bigint,
+): Promise<bigint | null> => {
+  const isWsteth = tokenAddress === WSTETH_ADDRESS;
+
+  // Individual readContract calls — Multicall3 is not in /api/rpc allowlist
+  const [usdPrice, wstethRate] = await Promise.all([
+    readUsdPrice(client, priceKey, nowSec),
+    isWsteth
+      ? client.readContract({
+          address: WSTETH_ADDRESS,
+          abi: WstethABI,
+          functionName: 'stEthPerToken',
+        })
+      : Promise.resolve(null),
+  ] as const);
+
+  if (usdPrice === null) return null;
+  if (!isWsteth) return usdPrice;
+
+  if (wstethRate == null) return null;
+  if (wstethRate < WSTETH_RATE_MIN || wstethRate > WSTETH_RATE_MAX) return null;
+
+  return (usdPrice * wstethRate) / WSTETH_SCALE;
+};
+
+const toUsdNumber = (price: bigint) => Number(price) / Number(CHAINLINK_SCALE);
+
+// USD price of one sell token unit, null if unsupported or unavailable
+export const readSellTokenUsd = async (
+  client: OracleClient | undefined,
+  params: OnTradeParamsPayload,
+  feedMaps: OracleFeedMaps,
+): Promise<number | null> => {
+  const sellAddr = params.sellToken?.address.toLowerCase();
+  if (!client || !sellAddr) return null;
+
+  const priceKey = feedMaps.sell[sellAddr];
+  if (!priceKey || !ORACLE_PRICES[priceKey]) return null;
+
+  try {
+    const nowSec = BigInt(Math.floor(Date.now() / 1000));
+    const price = await readTokenUsdPrice(client, sellAddr, priceKey, nowSec);
+
+    return price === null ? null : toUsdNumber(price);
+  } catch {
+    return null;
+  }
 };
 
 export const verifyWithOracle = async (
@@ -40,60 +130,20 @@ export const verifyWithOracle = async (
   const buyAddr = params.buyToken?.address.toLowerCase();
   if (!sellAddr || !buyAddr) return FAIL_UNSUPPORTED;
 
-  const sellFeedKey = feedMaps.sell[sellAddr];
-  const buyFeedKey = feedMaps.buy[buyAddr];
-  if (!sellFeedKey || !buyFeedKey) return FAIL_UNSUPPORTED;
-
-  const sellFeed = CHAINLINK_FEEDS[sellFeedKey];
-  const buyFeed = CHAINLINK_FEEDS[buyFeedKey];
-  if (!sellFeed || !buyFeed) return FAIL_UNSUPPORTED;
+  const sellPriceKey = feedMaps.sell[sellAddr];
+  const buyPriceKey = feedMaps.buy[buyAddr];
+  if (!sellPriceKey || !buyPriceKey) return FAIL_UNSUPPORTED;
+  if (!ORACLE_PRICES[sellPriceKey] || !ORACLE_PRICES[buyPriceKey])
+    return FAIL_UNSUPPORTED;
 
   try {
-    const isWsteth = sellAddr === WSTETH_ADDRESS;
-
-    // Individual readContract calls — Multicall3 is not in /api/rpc allowlist
-    const [sellRoundData, buyRoundData, wstethRate] = await Promise.all([
-      client.readContract({
-        address: sellFeed.address,
-        abi: AggregatorAbi,
-        functionName: 'latestRoundData',
-      }) as Promise<RoundData>,
-      client.readContract({
-        address: buyFeed.address,
-        abi: AggregatorAbi,
-        functionName: 'latestRoundData',
-      }) as Promise<RoundData>,
-      isWsteth
-        ? client.readContract({
-            address: WSTETH_ADDRESS,
-            abi: WstethABI,
-            functionName: 'stEthPerToken',
-          })
-        : Promise.resolve(null),
-    ] as const);
-
-    // Validate rounds
     const nowSec = BigInt(Math.floor(Date.now() / 1000));
-    if (!isValidRound(sellRoundData, sellFeed.maxStaleness, nowSec))
-      return FAIL_UNAVAILABLE;
-    if (!isValidRound(buyRoundData, buyFeed.maxStaleness, nowSec))
-      return FAIL_UNAVAILABLE;
+    const [sellPrice, buyPrice] = await Promise.all([
+      readTokenUsdPrice(client, sellAddr, sellPriceKey, nowSec),
+      readTokenUsdPrice(client, buyAddr, buyPriceKey, nowSec),
+    ]);
 
-    const sellAnswer = sellRoundData[1];
-    const buyAnswer = buyRoundData[1];
-
-    // Sanity bounds
-    if (!isInBounds(sellAnswer, sellFeedKey)) return FAIL_UNAVAILABLE;
-    if (!isInBounds(buyAnswer, buyFeedKey)) return FAIL_UNAVAILABLE;
-
-    // wstETH → stETH conversion
-    let sellPriceScaled = sellAnswer;
-    if (isWsteth) {
-      if (wstethRate == null) return FAIL_UNAVAILABLE;
-      if (wstethRate < WSTETH_RATE_MIN || wstethRate > WSTETH_RATE_MAX)
-        return FAIL_UNAVAILABLE;
-      sellPriceScaled = (sellPriceScaled * wstethRate) / WSTETH_SCALE;
-    }
+    if (sellPrice === null || buyPrice === null) return FAIL_UNAVAILABLE;
 
     // Compute deviation
     const sellUnits = safeParseDecimal(
@@ -109,8 +159,8 @@ export const verifyWithOracle = async (
 
     if (isInvalidUnits) return FAIL_UNAVAILABLE;
 
-    const sellTokenUsd = Number(sellPriceScaled) / Number(CHAINLINK_SCALE);
-    const buyTokenUsd = Number(buyAnswer) / Number(CHAINLINK_SCALE);
+    const sellTokenUsd = toUsdNumber(sellPrice);
+    const buyTokenUsd = toUsdNumber(buyPrice);
     const expectedSellUsd = sellUnits * sellTokenUsd;
     const actualBuyUsd = buyUnits * buyTokenUsd;
     if (expectedSellUsd <= 0) return FAIL_UNAVAILABLE;

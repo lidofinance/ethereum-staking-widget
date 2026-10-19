@@ -10,17 +10,17 @@ import type {
   DexTokenKey,
   NetworkTxConfig,
 } from './guards/tx/utils/types';
-import type { ChainlinkFeedKey } from './guards/oracles/feeds';
+import type { OraclePriceKey } from './guards/oracles/feeds';
 import type { OracleFeedMaps } from './guards/oracles/utils/verify-with-oracle';
 import type { TokenDecimalsMap } from './guards/trade/utils/verify-order';
 
-export type { ContactsMap, DexTokenKey, NetworkTxConfig, ChainlinkFeedKey };
+export type { ContactsMap, DexTokenKey, NetworkTxConfig, OraclePriceKey };
 
 export type CowswapToken = {
   key: DexTokenKey;
   decimals: number;
   // tokens without a feed are blocked by the oracle check on mainnet
-  oracleFeed: ChainlinkFeedKey;
+  oracleFeed: OraclePriceKey;
 };
 
 export type CowswapTokenList = {
@@ -98,10 +98,16 @@ export const createCowswapProfile = ({
   );
   // native ETH cannot be approved or presigned
   invariant(!sellKeys.includes('eth'), 'CoW Swap profile cannot sell ETH');
-  invariant(
-    !sellKeys.some((key) => buyKeys.includes(key)),
-    'CoW Swap profile sell and buy tokens overlap',
-  );
+  // a token listed on both sides must use one price and one decimals
+  for (const sellToken of sellTokens) {
+    const buyToken = buyTokens.find((token) => token.key === sellToken.key);
+    invariant(
+      !buyToken ||
+        (buyToken.decimals === sellToken.decimals &&
+          buyToken.oracleFeed === sellToken.oracleFeed),
+      `CoW Swap profile token ${sellToken.key} differs between sell and buy`,
+    );
+  }
 
   const txConfigs = new Map<number, NetworkTxConfig>();
   for (const [chainId, contracts] of Object.entries(networks)) {
@@ -118,12 +124,12 @@ export const createCowswapProfile = ({
     (token) => token.decimals,
   );
   const oracleFeeds: OracleFeedMaps = {
-    sell: toAddressMap<ChainlinkFeedKey>(
+    sell: toAddressMap<OraclePriceKey>(
       mainnetContracts,
       sellTokens,
       (token) => token.oracleFeed,
     ),
-    buy: toAddressMap<ChainlinkFeedKey>(
+    buy: toAddressMap<OraclePriceKey>(
       mainnetContracts,
       buyTokens,
       (token) => token.oracleFeed,

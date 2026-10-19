@@ -10,4 +10,5 @@ export type { OnTradeParamsPayload };
 export type ChainlinkFeedConfig = {
   address: Address;
   maxStaleness: number; // seconds
+  decimals: number;
 };

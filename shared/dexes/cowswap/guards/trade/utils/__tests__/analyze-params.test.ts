@@ -1,5 +1,6 @@
 import { resolveLevel } from '../resolve-level';
 import { analyzeParams } from '../analyze-params';
+import { TRADE_BUILD_ERROR } from '../../consts';
 import type { OnTradeParamsPayload } from '../../types';
 
 // stETH and ETH addresses for test fixtures
@@ -116,6 +117,18 @@ describe('analyzeParams', () => {
       expect(result.isStructural).toBe(true);
     });
 
+    it('returns blocked when sell and buy token match', () => {
+      const payload = makePayload({
+        buyToken: { address: STETH, symbol: 'stETH' },
+      } as Partial<OnTradeParamsPayload>);
+      const result = analyzeParams(payload);
+      expect(result).toEqual({
+        level: 'blocked',
+        messages: [TRADE_BUILD_ERROR(1009)],
+        isStructural: true,
+      });
+    });
+
     it('returns blocked when buy token is missing', () => {
       const payload = makePayload({ buyToken: undefined });
       const result = analyzeParams(payload);
@@ -140,22 +153,13 @@ describe('analyzeParams', () => {
   });
 
   describe('max sell amount', () => {
-    it('blocks sell amount > 5000', () => {
+    it('leaves the USD limit to evaluateTrade', () => {
       const payload = makePayload({
-        sellTokenAmount: { units: '5001' } as never,
+        sellTokenAmount: { units: '1000000' } as never,
+        buyTokenAmount: { units: '1000000' } as never,
+        minimumReceiveBuyAmount: { units: '990000' } as never,
       });
-      const result = analyzeParams(payload);
-      expect(result.level).toBe('blocked');
-      expect(result.isStructural).toBe(true);
-      expect(result.messages[0]).toContain('capped at');
-    });
-
-    it('allows sell amount = 5000', () => {
-      const payload = makePayload({
-        sellTokenAmount: { units: '5000' } as never,
-      });
-      const result = analyzeParams(payload);
-      expect(result.level).toBe('safe');
+      expect(analyzeParams(payload).level).toBe('safe');
     });
   });
 });

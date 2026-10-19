@@ -21,6 +21,7 @@ import {
   validateRpcRequest,
   SIGN_DECLINED_MESSAGE,
   SIGN_DECLINED_HELP_TIP,
+  type ApprovalData,
   type OrderData,
   type NetworkTxConfig,
 } from '../guards/tx';
@@ -34,6 +35,7 @@ export type CreateCowSwapProviderParams = {
   networkTxConfig: NetworkTxConfig;
   appCode: string;
   verifySignedOrder: (order: OrderData) => string | null;
+  verifyApproval: (approval: ApprovalData) => string | null;
   openTransactionGuardModal: (reason: string) => Promise<void>;
   openSigningErrorModal: (
     reason: string,
@@ -50,6 +52,7 @@ export const createCowSwapProvider = ({
   networkTxConfig,
   appCode,
   verifySignedOrder,
+  verifyApproval,
   openTransactionGuardModal,
   openSigningErrorModal,
   addCleanup,
@@ -59,12 +62,15 @@ export const createCowSwapProvider = ({
     try {
       // validation block, opens modal and throws error if validation fails
       try {
-        const { order, sanitizedRequest } = await validateRpcRequest(payload, {
-          chainId,
-          signer: walletClient.account.address,
-          networkTxConfig,
-          appCode,
-        });
+        const { order, approvals, sanitizedRequest } = await validateRpcRequest(
+          payload,
+          {
+            chainId,
+            signer: walletClient.account.address,
+            networkTxConfig,
+            appCode,
+          },
+        );
 
         // this prevents extra fields to be passed along with the orginal request
         payload = sanitizedRequest as typeof payload;
@@ -72,6 +78,13 @@ export const createCowSwapProvider = ({
         // Validate order trade  params, order can be recovered from different signing methods
         if (order) {
           const error = verifySignedOrder(order);
+
+          if (error) throw new Error(error);
+        }
+
+        // Approve amount is bounded by the validated approval snapshot
+        for (const approval of approvals) {
+          const error = verifyApproval(approval);
 
           if (error) throw new Error(error);
         }

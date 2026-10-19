@@ -3,15 +3,18 @@ import { useCallback, useRef, useState } from 'react';
 import type { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
-import type { OrderData } from '../../tx';
+import type { ApprovalData, OrderData } from '../../tx';
 import { useOracleRates } from '../../oracles';
 import type { OracleFeedMaps } from '../../oracles/utils';
 
 import {
+  approvalSnapshotFromTrade,
   evaluateTrade,
   evaluateApproval,
+  verifyApprovalAgainstSnapshot,
   verifyOrderAgainstSnapshot,
   type TokenDecimalsMap,
+  type ValidatedApprovalSnapshot,
   type ValidatedTradeSnapshot,
 } from '../utils';
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
@@ -43,7 +46,11 @@ export const useTradeGuard = ({
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
   const lastValidatedTradeRef = useRef<ValidatedTradeSnapshot | null>(null);
-  const { verifyWithOracle } = useOracleRates(oracleFeeds);
+  const lastValidatedApprovalRef = useRef<ValidatedApprovalSnapshot | null>(
+    null,
+  );
+  const approvalCallIdRef = useRef(0);
+  const { verifyWithOracle, readSellTokenUsd } = useOracleRates(oracleFeeds);
 
   const handleModalClose = useCallback((result: boolean) => {
     resolveRef.current?.(result);
@@ -114,20 +121,53 @@ export const useTradeGuard = ({
 
   /** Call from ON_CHANGE_TRADE_PARAMS to track current params. */
   const reportTradeParams = useCallback((payload: OnTradeParamsPayload) => {
+    const previous = lastTradeParamsRef.current;
+    // Approval snapshot belongs to the sell token and amount it was made for
+    if (
+      previous?.sellToken?.address.toLowerCase() !==
+        payload.sellToken?.address.toLowerCase() ||
+      previous?.sellTokenAmount?.units !== payload.sellTokenAmount?.units
+    ) {
+      lastValidatedApprovalRef.current = null;
+    }
     lastTradeParamsRef.current = payload;
   }, []);
 
-  /** Structural pre-check on approval — uses last ON_CHANGE_TRADE_PARAMS data. */
+  /** Approval gate — uses last ON_CHANGE_TRADE_PARAMS data. */
   const validateApproval = useCallback(async (): Promise<boolean> => {
-    const rejection = evaluateApproval(lastTradeParamsRef.current);
+    // Invalidate previous snapshot — prevents stale data if this call fails
+    lastValidatedApprovalRef.current = null;
+    const callId = ++approvalCallIdRef.current;
 
-    if (rejection) {
-      await showModal(rejection.level, rejection.messages, false);
+    const decision = await evaluateApproval(lastTradeParamsRef.current, {
+      isTestnet,
+      readSellTokenUsd,
+      tokenDecimals,
+    });
+
+    // A newer approval check owns the snapshot
+    if (callId !== approvalCallIdRef.current) return false;
+
+    if (!decision.ok) {
+      await showModal(decision.level, decision.messages, false);
       return false;
     }
 
+    // Store validated approval for provider-level approve verification
+    lastValidatedApprovalRef.current = decision.snapshot;
+
     return true;
-  }, [showModal]);
+  }, [isTestnet, readSellTokenUsd, tokenDecimals, showModal]);
+
+  /** Verify approve calldata against the last validated approval or trade. */
+  const verifyApproval = useCallback(
+    (approval: ApprovalData): string | null =>
+      verifyApprovalAgainstSnapshot(approval, [
+        lastValidatedApprovalRef.current,
+        approvalSnapshotFromTrade(lastValidatedTradeRef.current, tokenDecimals),
+      ]),
+    [tokenDecimals],
+  );
 
   /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
   const verifySignedOrder = useCallback(
@@ -168,5 +208,6 @@ export const useTradeGuard = ({
     openTransactionGuardModal,
     openSigningErrorModal,
     verifySignedOrder,
+    verifyApproval,
   };
 };

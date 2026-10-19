@@ -14,8 +14,8 @@ const QA_KEY_LEVEL = 'mock-qa-helpers-trade-guard-level';
 
 const QA_THRESHOLD_KEYS: Record<keyof Thresholds, string> = {
   oracleDeviationBlock: 'mock-qa-helpers-trade-guard-oracle-block',
-  maxAllowedSellAmount: 'mock-qa-helpers-trade-guard-max-sell',
-  minSellUnitsToTriggerOracle: 'mock-qa-helpers-trade-guard-min-sell',
+  maxSellUsd: 'mock-qa-helpers-trade-guard-max-sell',
+  minSellUsdToTriggerOracle: 'mock-qa-helpers-trade-guard-min-sell',
 };
 
 export const applyQALevelOverride = (

@@ -128,14 +128,24 @@ describe('createCowswapProfile', () => {
       'cannot sell ETH',
     ],
     [
-      'overlapping sell and buy tokens',
+      'token decimals differing between sides',
       {
         buyTokens: [
           ...TEST_PROFILE_CONFIG.buyTokens,
-          { key: 'wsteth', decimals: 18, oracleFeed: 'STETH_USD' },
+          { key: 'wsteth', decimals: 6, oracleFeed: 'STETH_USD' },
         ],
       },
-      'sell and buy tokens overlap',
+      'token wsteth differs between sell and buy',
+    ],
+    [
+      'token price differing between sides',
+      {
+        buyTokens: [
+          ...TEST_PROFILE_CONFIG.buyTokens,
+          { key: 'wsteth', decimals: 18, oracleFeed: 'ETH_USD' },
+        ],
+      },
+      'token wsteth differs between sell and buy',
     ],
   ] as const)('throws for %s', (_, overrides, message) => {
     expect(() =>
@@ -144,5 +154,20 @@ describe('createCowswapProfile', () => {
         ...(overrides as Partial<CowswapProfileConfig>),
       }),
     ).toThrow(message);
+  });
+
+  it('allows the same token on both sides', () => {
+    const profile = createCowswapProfile({
+      ...TEST_PROFILE_CONFIG,
+      buyTokens: [
+        ...TEST_PROFILE_CONFIG.buyTokens,
+        { key: 'wsteth', decimals: 18, oracleFeed: 'STETH_USD' },
+      ],
+    });
+    const { sellTokens, buyTokens } = profile.getNetworkTxConfig(mainnet.id);
+
+    expect(sellTokens.has(lower(c.wsteth))).toBe(true);
+    expect(buyTokens.has(lower(c.wsteth))).toBe(true);
+    expect(profile.oracleFeeds.buy[lower(c.wsteth)]).toBe('STETH_USD');
   });
 });

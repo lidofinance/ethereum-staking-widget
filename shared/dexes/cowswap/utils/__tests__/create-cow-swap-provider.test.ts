@@ -74,6 +74,7 @@ const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
     networkTxConfig: MAINNET_TX_CONFIG,
     appCode: 'Test App',
     verifySignedOrder: vi.fn().mockReturnValue(null),
+    verifyApproval: vi.fn().mockReturnValue(null),
     openTransactionGuardModal: vi.fn().mockResolvedValue(undefined),
     openSigningErrorModal: vi.fn().mockResolvedValue(undefined),
     addCleanup: (fn: () => void) => cleanups.push(fn),
@@ -100,7 +101,7 @@ const SIGN_REQUEST = rpc('eth_signTypedData_v4', [SIGNER, '{}']);
 beforeEach(() => {
   vi.mocked(validateRpcRequest).mockImplementation(
     async (payload) =>
-      ({ order: undefined, sanitizedRequest: payload }) as never,
+      ({ order: undefined, approvals: [], sanitizedRequest: payload }) as never,
   );
   vi.mocked(extractCodeFromError).mockReturnValue(0);
 });
@@ -129,6 +130,7 @@ describe('request — validation', () => {
     const sanitized = rpc('eth_chainId');
     vi.mocked(validateRpcRequest).mockResolvedValue({
       order: undefined,
+      approvals: [],
       sanitizedRequest: sanitized,
     });
     const { provider, walletClient } = setup();
@@ -172,6 +174,7 @@ describe('request — validation', () => {
   it('verifies recovered order and blocks when verification fails', async () => {
     vi.mocked(validateRpcRequest).mockResolvedValue({
       order: ORDER,
+      approvals: [],
       sanitizedRequest: SIGN_REQUEST,
     });
     const verifySignedOrder = vi.fn().mockReturnValue('amount mismatch');
@@ -187,9 +190,44 @@ describe('request — validation', () => {
     expect(walletClient.request).not.toHaveBeenCalled();
   });
 
+  it('verifies each approve and blocks when verification fails', async () => {
+    const approval = { token: ORDER.sellToken, amount: 10n };
+    vi.mocked(validateRpcRequest).mockResolvedValue({
+      order: undefined,
+      approvals: [approval],
+      sanitizedRequest: SIGN_REQUEST,
+    });
+    const verifyApproval = vi.fn().mockReturnValue('approve too large');
+    const { provider, params, walletClient } = setup({ verifyApproval });
+
+    await expect(provider.request(SIGN_REQUEST)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(verifyApproval).toHaveBeenCalledWith(approval);
+    expect(params.openTransactionGuardModal).toHaveBeenCalledWith(
+      'approve too large',
+    );
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('sends request when approve passes verification', async () => {
+    const approval = { token: ORDER.sellToken, amount: 10n };
+    vi.mocked(validateRpcRequest).mockResolvedValue({
+      order: undefined,
+      approvals: [approval],
+      sanitizedRequest: SIGN_REQUEST,
+    });
+    const { provider, params, walletClient } = setup();
+
+    await provider.request(SIGN_REQUEST);
+    expect(params.verifyApproval).toHaveBeenCalledWith(approval);
+    expect(walletClient.request).toHaveBeenCalledTimes(1);
+  });
+
   it('sends request when recovered order passes verification', async () => {
     vi.mocked(validateRpcRequest).mockResolvedValue({
       order: ORDER,
+      approvals: [],
       sanitizedRequest: SIGN_REQUEST,
     });
     const { provider, walletClient } = setup();

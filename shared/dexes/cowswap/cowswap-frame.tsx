@@ -116,6 +116,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     openTransactionGuardModal,
     openSigningErrorModal,
     verifySignedOrder,
+    verifyApproval,
   } = useTradeGuard({
     isTestnet,
     tokenDecimals,
@@ -139,6 +140,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
 
   const provider = useCowSwapEthereumProvider({
     verifySignedOrder,
+    verifyApproval,
     openTransactionGuardModal,
     openSigningErrorModal,
     getNetworkTxConfig,

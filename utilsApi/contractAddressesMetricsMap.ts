@@ -1,4 +1,4 @@
-import type { Address, Abi } from 'viem';
+import { erc20Abi, type Address, type Abi } from 'viem';
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
@@ -99,6 +99,12 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.aggregatorUsdtUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorDaiUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorBtcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdeUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdsUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorPyusdUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorCbbtcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorLdoEthPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorWbtcBtcPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSPublicResolverAbi,
@@ -113,6 +119,10 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.usds]: usdsABI,
   [CONTRACT_NAMES.wbtc]: wbtcABI,
   [CONTRACT_NAMES.usde]: usdeABI,
+  [CONTRACT_NAMES.ldo]: erc20Abi,
+  [CONTRACT_NAMES.dai]: erc20Abi,
+  [CONTRACT_NAMES.pyusd]: erc20Abi,
+  [CONTRACT_NAMES.cbbtc]: erc20Abi,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,

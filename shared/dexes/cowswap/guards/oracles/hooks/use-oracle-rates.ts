@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 
 import {
+  readSellTokenUsd as readSellTokenUsdClient,
   verifyWithOracle as verifyWithOracleClient,
   type OracleFeedMaps,
 } from '../utils';
@@ -17,5 +18,11 @@ export const useOracleRates = (feedMaps: OracleFeedMaps) => {
     [publicClientMainnet, feedMaps],
   );
 
-  return { verifyWithOracle };
+  const readSellTokenUsd = useCallback(
+    (params: OnTradeParamsPayload): Promise<number | null> =>
+      readSellTokenUsdClient(publicClientMainnet, params, feedMaps),
+    [publicClientMainnet, feedMaps],
+  );
+
+  return { verifyWithOracle, readSellTokenUsd };
 };

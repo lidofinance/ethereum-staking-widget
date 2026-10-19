@@ -10,13 +10,21 @@ import { overrideWithQAMockString } from 'utils/qa';
 
 import type { OrderData } from '../../../tx';
 import type { OracleResult } from '../../../oracles/types';
-import { DEFAULT_THRESHOLDS, TRADE_BUILD_ERROR } from '../../consts';
+import {
+  DEFAULT_THRESHOLDS,
+  TRADE_BUILD_ERROR,
+  TRADE_SIZE_ERROR,
+  TRADE_VERIFICATION_ERROR,
+} from '../../consts';
 import type { OnTradeParamsPayload } from '../../types';
 import { applyOracleResult } from '../apply-oracle-result';
 import {
+  approvalSnapshotFromTrade,
   evaluateTrade,
   evaluateApproval,
+  verifyApprovalAgainstSnapshot,
   verifyOrderAgainstSnapshot,
+  type ValidatedApprovalSnapshot,
 } from '../evaluate-trade';
 import type { ValidatedTradeSnapshot } from '../verify-order';
 import { TEST_PROFILE } from '../../../tx/__tests__/fixtures';
@@ -25,6 +33,7 @@ const TOKEN_DECIMALS = TEST_PROFILE.tokenDecimals;
 
 const STETH = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+const LDO = '0x5a98fcbea516cf06857215779fd812ca3bef1b32';
 
 const makePayload = (
   overrides: Partial<Record<string, unknown>> = {},
@@ -145,14 +154,53 @@ describe('evaluateTrade', () => {
   it('blocks structural issues without oracle check', async () => {
     const { options, verifyWithOracle, onSnapshotInvalidated } = setup();
     const result = await evaluateTrade(
-      makePayload({ sellTokenAmount: { units: '100000' } }),
+      makePayload({ buyToken: { address: STETH, symbol: 'stETH' } }),
       options,
     );
 
-    expect(result).toMatchObject({ ok: false, level: 'blocked' });
-    expect(!result.ok && result.messages[0]).toContain('capped at');
+    expect(result).toEqual({
+      ok: false,
+      level: 'blocked',
+      messages: [TRADE_BUILD_ERROR(1009)],
+      oracleVerified: false,
+    });
     expect(verifyWithOracle).not.toHaveBeenCalled();
     expect(onSnapshotInvalidated).toHaveBeenCalledTimes(1);
+  });
+
+  it('blocks sell above max USD', async () => {
+    const { options } = setup();
+    // 2600 stETH × $2000 = $5.2M
+    const result = await evaluateTrade(
+      makePayload({
+        sellTokenAmount: { units: '2600' },
+        buyTokenAmount: { units: '5200000' },
+        minimumReceiveBuyAmount: { units: '5148000' },
+      }),
+      options,
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      level: 'blocked',
+      messages: [TRADE_SIZE_ERROR(DEFAULT_THRESHOLDS.maxSellUsd)],
+      oracleVerified: true,
+    });
+  });
+
+  it('allows sell at max USD', async () => {
+    const { options } = setup();
+    // 2500 stETH × $2000 = $5M
+    const result = await evaluateTrade(
+      makePayload({
+        sellTokenAmount: { units: '2500' },
+        buyTokenAmount: { units: '5000000' },
+        minimumReceiveBuyAmount: { units: '4950000' },
+      }),
+      options,
+    );
+
+    expect(result.ok).toBe(true);
   });
 
   it('blocks with 1007 for zero sell amount', async () => {
@@ -174,20 +222,43 @@ describe('evaluateTrade', () => {
     });
   });
 
-  it('skips oracle below min sell threshold', async () => {
-    const { options, verifyWithOracle } = setup();
-    const units = String(DEFAULT_THRESHOLDS.minSellUnitsToTriggerOracle / 2);
+  it('skips deviation check below USD trigger', async () => {
+    const { options, verifyWithOracle } = setup({
+      ...ORACLE_OK,
+      deviation: 10,
+    });
+    // 0.4 stETH × $2000 = $800
     const result = await evaluateTrade(
       makePayload({
-        sellTokenAmount: { units },
-        buyTokenAmount: { units: '500' },
-        minimumReceiveBuyAmount: { units: '495' },
+        sellTokenAmount: { units: '0.4' },
+        buyTokenAmount: { units: '720' },
+        minimumReceiveBuyAmount: { units: '713' },
       }),
       options,
     );
 
+    expect(DEFAULT_THRESHOLDS.minSellUsdToTriggerOracle).toBe(1000);
     expect(result.ok).toBe(true);
-    expect(verifyWithOracle).not.toHaveBeenCalled();
+    expect(verifyWithOracle).toHaveBeenCalledTimes(1);
+  });
+
+  it('blocks small trade when oracle is unavailable', async () => {
+    const { options } = setup({ ok: false, reason: 'unavailable' });
+    const result = await evaluateTrade(
+      makePayload({
+        sellTokenAmount: { units: '0.01' },
+        buyTokenAmount: { units: '20' },
+        minimumReceiveBuyAmount: { units: '19.8' },
+      }),
+      options,
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      level: 'blocked',
+      messages: [TRADE_BUILD_ERROR(1004)],
+      oracleVerified: false,
+    });
   });
 
   it('skips oracle on testnet', async () => {
@@ -234,8 +305,17 @@ describe('evaluateTrade', () => {
 // evaluateApproval
 // ---------------------------------------------------------------------------
 describe('evaluateApproval', () => {
-  it('blocks with 1003 when no trade params reported', () => {
-    expect(evaluateApproval(null)).toEqual({
+  const setupApproval = (price: number | null = 2000, isTestnet = false) => {
+    const readSellTokenUsd = vi.fn().mockResolvedValue(price);
+    return {
+      readSellTokenUsd,
+      options: { isTestnet, readSellTokenUsd, tokenDecimals: TOKEN_DECIMALS },
+    };
+  };
+
+  it('blocks with 1003 when no trade params reported', async () => {
+    const { options } = setupApproval();
+    expect(await evaluateApproval(null, options)).toEqual({
       ok: false,
       level: 'blocked',
       messages: [TRADE_BUILD_ERROR(1003)],
@@ -243,15 +323,166 @@ describe('evaluateApproval', () => {
     });
   });
 
-  it('passes safe params', () => {
-    expect(evaluateApproval(makePayload())).toBeNull();
+  it('returns snapshot with exact sell amount', async () => {
+    const { options, readSellTokenUsd } = setupApproval();
+    const payload = makePayload();
+
+    expect(await evaluateApproval(payload, options)).toEqual({
+      ok: true,
+      snapshot: { token: STETH, maxRaw: 1_000_000_000_000_000_000n },
+    });
+    expect(readSellTokenUsd).toHaveBeenCalledWith(payload);
   });
 
-  it('blocks structural issues', () => {
-    const result = evaluateApproval(
-      makePayload({ sellTokenAmount: { units: '100000' } }),
+  it('blocks structural issues', async () => {
+    const { options, readSellTokenUsd } = setupApproval();
+    const result = await evaluateApproval(
+      makePayload({ buyToken: { address: STETH, symbol: 'stETH' } }),
+      options,
     );
+
     expect(result).toMatchObject({ ok: false, level: 'blocked' });
+    expect(readSellTokenUsd).not.toHaveBeenCalled();
+  });
+
+  it('blocks approval above max USD', async () => {
+    const { options } = setupApproval();
+    expect(
+      await evaluateApproval(
+        makePayload({
+          sellTokenAmount: { units: '2600' },
+          buyTokenAmount: { units: '5200000' },
+          minimumReceiveBuyAmount: { units: '5148000' },
+        }),
+        options,
+      ),
+    ).toEqual({
+      ok: false,
+      level: 'blocked',
+      messages: [TRADE_SIZE_ERROR(DEFAULT_THRESHOLDS.maxSellUsd)],
+      oracleVerified: false,
+    });
+  });
+
+  it('blocks with 1004 when price is unavailable', async () => {
+    const { options } = setupApproval(null);
+    expect(await evaluateApproval(makePayload(), options)).toEqual({
+      ok: false,
+      level: 'blocked',
+      messages: [TRADE_BUILD_ERROR(1004)],
+      oracleVerified: false,
+    });
+  });
+
+  it('skips price on testnet but still returns snapshot', async () => {
+    const { options, readSellTokenUsd } = setupApproval(null, true);
+    const result = await evaluateApproval(makePayload(), options);
+
+    expect(result.ok).toBe(true);
+    expect(readSellTokenUsd).not.toHaveBeenCalled();
+  });
+
+  it('blocks with 1010 for token without known decimals', async () => {
+    const { options } = setupApproval();
+    expect(
+      await evaluateApproval(
+        makePayload({ sellToken: { address: LDO, symbol: 'LDO' } }),
+        options,
+      ),
+    ).toEqual({
+      ok: false,
+      level: 'blocked',
+      messages: [TRADE_BUILD_ERROR(1010)],
+      oracleVerified: false,
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// verifyApprovalAgainstSnapshot
+// ---------------------------------------------------------------------------
+describe('verifyApprovalAgainstSnapshot', () => {
+  const STETH_SNAPSHOT: ValidatedApprovalSnapshot = {
+    token: STETH,
+    maxRaw: 1_000n,
+  };
+  const USDC_SNAPSHOT: ValidatedApprovalSnapshot = {
+    token: USDC,
+    maxRaw: 50n,
+  };
+  const approve = (token: string, amount: bigint) => ({
+    token: token as `0x${string}`,
+    amount,
+  });
+
+  it('blocks with 1007 without snapshots', () => {
+    expect(
+      verifyApprovalAgainstSnapshot(approve(STETH, 1n), [null, null]),
+    ).toBe(TRADE_VERIFICATION_ERROR(1007));
+  });
+
+  it('blocks with 1008 for another token', () => {
+    expect(
+      verifyApprovalAgainstSnapshot(approve(USDC, 1n), [STETH_SNAPSHOT, null]),
+    ).toBe(TRADE_VERIFICATION_ERROR(1008));
+  });
+
+  it('blocks with 1009 above every matching snapshot', () => {
+    expect(
+      verifyApprovalAgainstSnapshot(approve(STETH, 1_001n), [
+        STETH_SNAPSHOT,
+        USDC_SNAPSHOT,
+      ]),
+    ).toBe(TRADE_VERIFICATION_ERROR(1009));
+  });
+
+  it('allows approve covered by the trade snapshot', () => {
+    expect(
+      verifyApprovalAgainstSnapshot(approve(USDC, 50n), [
+        STETH_SNAPSHOT,
+        USDC_SNAPSHOT,
+      ]),
+    ).toBeNull();
+  });
+
+  it('allows approve up to snapshot amount, any address case', () => {
+    expect(
+      verifyApprovalAgainstSnapshot(
+        approve(STETH.replace('ae7ab', 'AE7AB'), 1_000n),
+        [STETH_SNAPSHOT],
+      ),
+    ).toBeNull();
+  });
+});
+
+describe('approvalSnapshotFromTrade', () => {
+  it('converts validated trade sell amount to raw units', () => {
+    expect(
+      approvalSnapshotFromTrade(
+        {
+          sellToken: STETH,
+          buyToken: USDC,
+          sellAmountUnits: '1.5',
+          buyAmountMinUnits: '2900',
+        },
+        TOKEN_DECIMALS,
+      ),
+    ).toEqual({ token: STETH, maxRaw: 1_500_000_000_000_000_000n });
+  });
+
+  it('returns null without trade or decimals', () => {
+    expect(approvalSnapshotFromTrade(null, TOKEN_DECIMALS)).toBeNull();
+    expect(
+      approvalSnapshotFromTrade(
+        {
+          sellToken: LDO,
+          buyToken: USDC,
+          sellAmountUnits: '1',
+          buyAmountMinUnits: '1',
+        },
+        TOKEN_DECIMALS,
+      ),
+    ).toBeNull();
   });
 });
 

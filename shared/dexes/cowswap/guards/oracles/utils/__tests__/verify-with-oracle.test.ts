@@ -6,6 +6,8 @@ import mainnetNetwork from 'networks/mainnet.json';
 import {
   CHAINLINK_FEEDS,
   CHAINLINK_SCALE,
+  ORACLE_PRICES,
+  PRICE_BOUNDS,
   WSTETH_ADDRESS,
   type ChainlinkFeedKey,
 } from '../../feeds';
@@ -15,7 +17,12 @@ import {
   PARTNER_FEE_PCT,
 } from '../../consts';
 import type { OnTradeParamsPayload } from '../../types';
-import { verifyWithOracle, type OracleClient } from '../verify-with-oracle';
+import {
+  readSellTokenUsd,
+  verifyWithOracle,
+  type OracleClient,
+  type OracleFeedMaps,
+} from '../verify-with-oracle';
 import { TEST_PROFILE } from '../../../tx/__tests__/fixtures';
 import type { RoundData } from '../rounds';
 
@@ -24,6 +31,8 @@ const STETH = c.lido.toLowerCase();
 const WSTETH = c.wsteth.toLowerCase();
 const USDC = c.usdc.toLowerCase();
 const WETH = c.weth.toLowerCase();
+const LDO = c.ldo.toLowerCase();
+const WBTC = c.wbtc.toLowerCase();
 const ETH = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const UNKNOWN = '0x0000000000000000000000000000000000000001';
 
@@ -86,6 +95,12 @@ const makePayload = (
     buyTokenAmount: { units: '1990' },
     ...overrides,
   }) as unknown as OnTradeParamsPayload;
+
+// Mainnet tokens of the swap tab that need composite or buy-side pricing
+const SWAP_FEEDS: OracleFeedMaps = {
+  sell: { [STETH]: 'STETH_USD', [LDO]: 'LDO_USD', [WBTC]: 'WBTC_USD' },
+  buy: { [USDC]: 'USDC_USD', [WSTETH]: 'STETH_USD', [LDO]: 'LDO_USD' },
+};
 
 const STETH_USDC_PRICES: Prices = {
   STETH_USD: round(usd(2000)),
@@ -230,6 +245,152 @@ describe('verifyWithOracle — deviation', () => {
     await verifyWithOracle(client, makePayload(), FEEDS);
     expect(client.readContract).toHaveBeenCalledTimes(2);
   });
+
+  it('converts wstETH buy price via stEthPerToken rate', async () => {
+    const client = makeClient(
+      { STETH_USD: round(usd(2000)) },
+      1_200_000_000_000_000_000n,
+    );
+    const result = await verifyWithOracle(
+      client,
+      makePayload({
+        buyToken: { address: WSTETH },
+        buyTokenAmount: { units: '0.8' },
+      }),
+      SWAP_FEEDS,
+    );
+
+    expect(result.ok && result.buyTokenUsd).toBeCloseTo(2400);
+    // 0.8 wstETH × 2400 = 1920 USD for 2000 USD of stETH = 4%
+    expect(result.ok && result.deviation).toBeCloseTo(4 - PARTNER_FEE_PCT);
+  });
+
+  it('applies wstETH rate only to the wstETH side of stETH → wstETH', async () => {
+    const client = makeClient(
+      { STETH_USD: round(usd(2000)) },
+      1_250_000_000_000_000_000n,
+    );
+    const result = await verifyWithOracle(
+      client,
+      makePayload({
+        buyToken: { address: WSTETH },
+        buyTokenAmount: { units: '0.8' },
+      }),
+      SWAP_FEEDS,
+    );
+
+    expect(result.ok && result.sellTokenUsd).toBeCloseTo(2000);
+    expect(result.ok && result.buyTokenUsd).toBeCloseTo(2500);
+    expect(result.ok && result.deviation).toBeCloseTo(-PARTNER_FEE_PCT);
+  });
+
+  it('prices LDO as LDO/ETH × ETH/USD', async () => {
+    const client = makeClient({
+      LDO_ETH: round(250_000_000_000_000n), // 0.00025 ETH, 18 decimals
+      ETH_USD: round(usd(4000)),
+      USDC_USD: round(usd(1)),
+    });
+    const result = await verifyWithOracle(
+      client,
+      makePayload({
+        sellToken: { address: LDO },
+        sellTokenAmount: { units: '1000' },
+        buyTokenAmount: { units: '1000' },
+      }),
+      SWAP_FEEDS,
+    );
+
+    expect(result.ok && result.sellTokenUsd).toBeCloseTo(1);
+    expect(result.ok && result.deviation).toBeCloseTo(-PARTNER_FEE_PCT);
+  });
+
+  it('prices WBTC as WBTC/BTC × BTC/USD', async () => {
+    const client = makeClient({
+      WBTC_BTC: round(usd(0.99)),
+      BTC_USD: round(usd(100_000)),
+      USDC_USD: round(usd(1)),
+    });
+    const result = await verifyWithOracle(
+      client,
+      makePayload({
+        sellToken: { address: WBTC },
+        buyTokenAmount: { units: '99000' },
+      }),
+      SWAP_FEEDS,
+    );
+
+    expect(result.ok && result.sellTokenUsd).toBeCloseTo(99_000);
+    expect(result.ok && result.deviation).toBeCloseTo(-PARTNER_FEE_PCT);
+  });
+});
+
+describe('readSellTokenUsd', () => {
+  it('returns USD price of one sell token unit', async () => {
+    expect(
+      await readSellTokenUsd(
+        makeClient({ STETH_USD: round(usd(2000)) }),
+        makePayload(),
+        FEEDS,
+      ),
+    ).toBeCloseTo(2000);
+  });
+
+  it('applies wstETH rate', async () => {
+    expect(
+      await readSellTokenUsd(
+        makeClient({ STETH_USD: round(usd(2000)) }, 1_250_000_000_000_000_000n),
+        makePayload({ sellToken: { address: WSTETH } }),
+        FEEDS,
+      ),
+    ).toBeCloseTo(2500);
+  });
+
+  it('prices composite tokens', async () => {
+    expect(
+      await readSellTokenUsd(
+        makeClient({
+          LDO_ETH: round(250_000_000_000_000n),
+          ETH_USD: round(usd(4000)),
+        }),
+        makePayload({ sellToken: { address: LDO } }),
+        SWAP_FEEDS,
+      ),
+    ).toBeCloseTo(1);
+  });
+
+  it.each([
+    ['no client', undefined, makePayload()],
+    [
+      'unknown token',
+      makeClient(STETH_USDC_PRICES),
+      makePayload({ sellToken: { address: UNKNOWN } }),
+    ],
+    [
+      'stale round',
+      makeClient({ STETH_USD: round(usd(2000), NOW_SEC - 10_000n) }),
+      makePayload(),
+    ],
+    [
+      'RPC error',
+      makeClient({ STETH_USD: new Error('rpc down') }),
+      makePayload(),
+    ],
+  ])('returns null for %s', async (_, client, payload) => {
+    expect(await readSellTokenUsd(client, payload, FEEDS)).toBeNull();
+  });
+});
+
+describe('oracle price config', () => {
+  it.each(Object.entries(ORACLE_PRICES))(
+    '%s uses known feeds with bounds',
+    (_, feedKeys) => {
+      expect(feedKeys.length).toBeGreaterThan(0);
+      for (const key of feedKeys) {
+        expect(CHAINLINK_FEEDS[key]).toBeDefined();
+        expect(PRICE_BOUNDS[key]).toBeDefined();
+      }
+    },
+  );
 });
 
 describe('verifyWithOracle — fail closed', () => {
@@ -262,6 +423,56 @@ describe('verifyWithOracle — fail closed', () => {
     expect(await verifyWithOracle(client, makePayload(), FEEDS)).toEqual(
       FAIL_UNAVAILABLE,
     );
+  });
+
+  it.each([
+    ['stale', 'LDO_ETH' as const],
+    ['stale', 'ETH_USD' as const],
+  ])('returns unavailable when composite part is %s (%s)', async (_, key) => {
+    const stale = NOW_SEC - BigInt(CHAINLINK_FEEDS[key].maxStaleness) - 1n;
+    const prices: Prices = {
+      LDO_ETH: round(250_000_000_000_000n),
+      ETH_USD: round(usd(4000)),
+      USDC_USD: round(usd(1)),
+    };
+    const staleRound = prices[key] as RoundData;
+    prices[key] = round(staleRound[1], stale);
+    expect(
+      await verifyWithOracle(
+        makeClient(prices),
+        makePayload({ sellToken: { address: LDO } }),
+        SWAP_FEEDS,
+      ),
+    ).toEqual(FAIL_UNAVAILABLE);
+  });
+
+  it('returns unavailable when composite part is out of bounds', async () => {
+    const client = makeClient({
+      LDO_ETH: round(10n ** 17n), // 0.1 ETH, above max
+      ETH_USD: round(usd(4000)),
+      USDC_USD: round(usd(1)),
+    });
+    expect(
+      await verifyWithOracle(
+        client,
+        makePayload({ sellToken: { address: LDO } }),
+        SWAP_FEEDS,
+      ),
+    ).toEqual(FAIL_UNAVAILABLE);
+  });
+
+  it('returns unavailable for wstETH buy rate out of range', async () => {
+    const client = makeClient(
+      { STETH_USD: round(usd(2000)) },
+      2_000_000_000_000_000_001n,
+    );
+    expect(
+      await verifyWithOracle(
+        client,
+        makePayload({ buyToken: { address: WSTETH } }),
+        SWAP_FEEDS,
+      ),
+    ).toEqual(FAIL_UNAVAILABLE);
   });
 
   it.each([

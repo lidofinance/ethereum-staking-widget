@@ -4,12 +4,7 @@ import { MAX_SLIPPAGE, SLIPPAGE_TOTAL_BPS } from '../../../consts';
 
 import { safeParseDecimal } from '../../utils';
 
-import {
-  DEFAULT_THRESHOLDS,
-  TRADE_BUILD_ERROR,
-  TRADE_SIZE_ERROR,
-  type Thresholds,
-} from '../consts';
+import { TRADE_BUILD_ERROR } from '../consts';
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
 
 type AnalysisResult = {
@@ -19,12 +14,9 @@ type AnalysisResult = {
   isStructural: boolean;
 };
 
-// Structural validation: token whitelist, sell limit. Signing validation is handled by tx validation
-// All price verification is delegated to the Chainlink oracle.
-export const analyzeParams = (
-  params: OnTradeParamsPayload,
-  t: Thresholds = DEFAULT_THRESHOLDS,
-): AnalysisResult => {
+// Structural validation: tokens, amounts, slippage. Signing validation is handled by tx validation
+// USD limits and price verification need the Chainlink oracle, see evaluateTrade
+export const analyzeParams = (params: OnTradeParamsPayload): AnalysisResult => {
   const sellAddr = params.sellToken?.address.toLowerCase();
   const buyAddr = params.buyToken?.address.toLowerCase();
   const sellUnits = safeParseDecimal(params.sellTokenAmount?.units?.toString());
@@ -32,15 +24,13 @@ export const analyzeParams = (
   const minReceiveUnits = safeParseDecimal(
     params.minimumReceiveBuyAmount?.units?.toString(),
   );
-  const symbol = params.sellToken?.symbol;
 
   if (
     !sellAddr ||
     !isAddress(sellAddr) ||
     !buyAddr ||
     !isAddress(buyAddr) ||
-    sellUnits === null ||
-    !symbol
+    sellUnits === null
   ) {
     return {
       level: 'blocked',
@@ -49,12 +39,10 @@ export const analyzeParams = (
     };
   }
 
-  // Max sell amount
-
-  if (sellUnits > t.maxAllowedSellAmount) {
+  if (sellAddr === buyAddr) {
     return {
       level: 'blocked',
-      messages: [TRADE_SIZE_ERROR(t.maxAllowedSellAmount, symbol)],
+      messages: [TRADE_BUILD_ERROR(1009)],
       isStructural: true,
     };
   }

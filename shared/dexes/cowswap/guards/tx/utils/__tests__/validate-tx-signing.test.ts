@@ -6,6 +6,7 @@ vi.mock('utils/standardFetcher', () => ({
 }));
 
 import {
+  extractApprovals,
   validateSendTransaction,
   validateSendCalls,
 } from '../validate-tx-signing';
@@ -443,28 +444,12 @@ describe('validateSendTransaction', () => {
       expect(result.reason).toBeDefined();
     });
 
-    it('rejects approve above maxAllowedSellAmount (5000) on stETH', async () => {
-      // maxAllowedSellAmount is 5000 ether — an approval of 6000 is finite
-      // (not maxUint256) but exceeds the per-tx sell cap.
+    it('leaves finite approve amount to the trade guard', async () => {
       const result = await validateSendTransaction(
         [
           {
             to: STETH,
             data: buildApproveAmount(COW_VAULT_RELAYER, parseEther('6000')),
-          },
-        ],
-        mainnetCtx,
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toBeDefined();
-    });
-
-    it('allows approve at the maxAllowedSellAmount (5000) boundary on stETH', async () => {
-      const result = await validateSendTransaction(
-        [
-          {
-            to: STETH,
-            data: buildApproveAmount(COW_VAULT_RELAYER, parseEther('5000')),
           },
         ],
         mainnetCtx,
@@ -899,5 +884,62 @@ describe('validateSendCalls', () => {
       );
       expect(result.allowed).toBe(true);
     });
+  });
+});
+
+describe('extractApprovals', () => {
+  const approveData = buildApproveAmount(COW_VAULT_RELAYER, parseEther('2'));
+
+  it('returns approve of eth_sendTransaction', () => {
+    expect(
+      extractApprovals('eth_sendTransaction', [
+        { to: STETH.toUpperCase().replace('0X', '0x'), data: approveData },
+      ]),
+    ).toEqual([{ token: STETH, amount: parseEther('2') }]);
+  });
+
+  it('returns approves of wallet_sendCalls and skips other calls', () => {
+    expect(
+      extractApprovals('wallet_sendCalls', [
+        {
+          calls: [
+            { to: STETH, data: approveData },
+            { to: COW_SETTLEMENT, data: buildSetPreSignature() },
+          ],
+        },
+      ]),
+    ).toEqual([{ token: STETH, amount: parseEther('2') }]);
+  });
+
+  it('returns every approve of a batch', () => {
+    const usdcApprove = buildApproveAmount(COW_VAULT_RELAYER, 5n);
+    expect(
+      extractApprovals('wallet_sendCalls', [
+        {
+          calls: [
+            { to: STETH, data: approveData },
+            { to: USDC, data: usdcApprove },
+          ],
+        },
+      ]),
+    ).toEqual([
+      { token: STETH, amount: parseEther('2') },
+      { token: USDC, amount: 5n },
+    ]);
+  });
+
+  it('throws on unparsable transaction params', () => {
+    expect(() => extractApprovals('eth_sendTransaction', [{}])).toThrow(
+      TRANSACTION_ERROR(2040),
+    );
+    expect(() => extractApprovals('wallet_sendCalls', [{ calls: [] }])).toThrow(
+      TRANSACTION_ERROR(2040),
+    );
+  });
+
+  it('returns nothing for other methods', () => {
+    expect(extractApprovals('eth_signTypedData_v4', [SIGNER, '{}'])).toEqual(
+      [],
+    );
   });
 });

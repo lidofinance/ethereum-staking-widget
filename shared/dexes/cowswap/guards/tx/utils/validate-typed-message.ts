@@ -71,6 +71,13 @@ export const validateCowSwapOrderMessage = async (
     };
   }
 
+  if (isAddressEqual(orderMessage.sellToken, orderMessage.buyToken)) {
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2039),
+    };
+  }
+
   if (!isAddressEqual(orderMessage.receiver, ctx.signer)) {
     return {
       allowed: false,

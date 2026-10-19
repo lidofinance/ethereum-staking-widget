@@ -5,15 +5,16 @@ import type { TradeGuardLevel } from './types';
 // --- Thresholds ---
 export type Thresholds = {
   oracleDeviationBlock: number;
-  maxAllowedSellAmount: number;
-  minSellUnitsToTriggerOracle: number;
+  maxSellUsd: number;
+  minSellUsdToTriggerOracle: number;
 };
 
+// USD limits, same for every token (ADR 0004)
 export const DEFAULT_THRESHOLDS: Thresholds = {
   oracleDeviationBlock: 4,
-  maxAllowedSellAmount: 5_000,
-  // Minimum sell amount (in token units) to trigger Chainlink oracle verification
-  minSellUnitsToTriggerOracle: 0.5,
+  maxSellUsd: 5_000_000,
+  // Below it the network fee alone can exceed the deviation block
+  minSellUsdToTriggerOracle: 1_000,
 };
 
 // Trade build/verification errors
@@ -27,8 +28,8 @@ export const TRADE_VERIFICATION_ERROR = (code?: number) =>
     code ? ` (code ${code})` : ''
   }`;
 
-export const TRADE_SIZE_ERROR = (amount: number, symbol: string) =>
-  `Single transactions are capped at ${amount.toLocaleString(LOCALE)} ${symbol}. This limit exists to protect you from outsized losses due to slippage, MEV, and execution risk. Split your order into smaller trades to continue.`;
+export const TRADE_SIZE_ERROR = (maxUsd: number) =>
+  `Single transactions are capped at $${maxUsd.toLocaleString(LOCALE)}. This limit exists to protect you from outsized losses due to slippage, MEV, and execution risk. Split your order into smaller trades to continue.`;
 
 export const TRADE_ORACLE_DEVIATION_ERROR = (
   deviationPercent: number,

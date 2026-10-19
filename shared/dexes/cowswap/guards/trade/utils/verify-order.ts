@@ -28,7 +28,7 @@ export type ValidatedTradeSnapshot = {
  * Converts a human-readable decimal string ("0.1") to raw bigint
  * using the token's decimals. Returns null if conversion fails.
  */
-const unitsToRaw = (
+export const unitsToRaw = (
   units: string,
   tokenAddress: string,
   tokenDecimals: TokenDecimalsMap,

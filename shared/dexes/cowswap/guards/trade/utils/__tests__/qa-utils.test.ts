@@ -74,39 +74,37 @@ describe('readThresholds', () => {
     );
   });
 
-  it('allows lowering maxAllowedSellAmount (tighter)', () => {
+  it('allows lowering maxSellUsd (tighter)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
       key.includes('max-sell') ? 1000 : v,
     );
     const t = readThresholds();
-    expect(t.maxAllowedSellAmount).toBe(1000);
+    expect(t.maxSellUsd).toBe(1000);
   });
 
-  it('blocks raising maxAllowedSellAmount (looser)', () => {
+  it('blocks raising maxSellUsd (looser)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('max-sell') ? 99999 : v,
+      key.includes('max-sell') ? 99_000_000 : v,
     );
     const t = readThresholds();
-    expect(t.maxAllowedSellAmount).toBe(
-      DEFAULT_THRESHOLDS.maxAllowedSellAmount,
-    );
+    expect(t.maxSellUsd).toBe(DEFAULT_THRESHOLDS.maxSellUsd);
   });
 
-  it('allows lowering minSellUnitsToTriggerOracle (tighter)', () => {
+  it('allows lowering minSellUsdToTriggerOracle (tighter)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('min-sell') ? 0.1 : v,
+      key.includes('min-sell') ? 10 : v,
     );
     const t = readThresholds();
-    expect(t.minSellUnitsToTriggerOracle).toBe(0.1);
+    expect(t.minSellUsdToTriggerOracle).toBe(10);
   });
 
-  it('blocks raising minSellUnitsToTriggerOracle (looser)', () => {
+  it('blocks raising minSellUsdToTriggerOracle (looser)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('min-sell') ? 100 : v,
+      key.includes('min-sell') ? 100_000 : v,
     );
     const t = readThresholds();
-    expect(t.minSellUnitsToTriggerOracle).toBe(
-      DEFAULT_THRESHOLDS.minSellUnitsToTriggerOracle,
+    expect(t.minSellUsdToTriggerOracle).toBe(
+      DEFAULT_THRESHOLDS.minSellUsdToTriggerOracle,
     );
   });
 });
