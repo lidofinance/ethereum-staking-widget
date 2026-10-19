@@ -1,10 +1,11 @@
-import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
+import { LIDO_MULTICHAIN_CHAINS, CHAINS } from 'consts/chains';
 import { Card } from 'shared/wallet/card';
 import styled, { css } from 'styled-components';
 
 type MultiChainWalletBackdropProps = React.ComponentProps<typeof Card> & {
-  multiChainId?: LIDO_MULTICHAIN_CHAINS;
+  multiChainId?: LIDO_MULTICHAIN_CHAINS | CHAINS;
 };
+
 export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
   <Card {...props} />
 ))<MultiChainWalletBackdropProps>`
@@ -12,6 +13,8 @@ export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
   ${({ multiChainId }) => {
     if (!multiChainId) return '';
     switch (multiChainId) {
+      // L2s and unsupported but recognized L2s
+      case CHAINS.OptimismSepolia:
       case LIDO_MULTICHAIN_CHAINS.Optimism:
         return css`
           background: linear-gradient(
@@ -49,6 +52,16 @@ export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
         return css`
           background: linear-gradient(52.01deg, #00cfff 0.01%, #1d3fd4 100%);
         `;
+
+      // Ethereum mainnet + testnets
+      case CHAINS.Hoodi:
+      case CHAINS.Holesky:
+      case CHAINS.Sepolia:
+      case CHAINS.Mainnet:
+        return css`
+          background: linear-gradient(65.21deg, #37394a 19.1%, #3e4b4f 100%);
+        `;
+      // Unrecognized chains
       default:
         return css`
           background: linear-gradient(
