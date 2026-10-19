@@ -19,6 +19,7 @@ import { MATOMO_ERROR_EVENTS_TYPES } from 'consts/matomo';
 
 import {
   validateRpcRequest,
+  TRANSACTION_ERROR,
   SIGN_DECLINED_MESSAGE,
   SIGN_DECLINED_HELP_TIP,
   type ApprovalData,
@@ -26,6 +27,12 @@ import {
   type NetworkTxConfig,
 } from '../guards/tx';
 import type { SigningHelpTip } from '../guards/trade';
+
+const WALLET_SIGNING_METHODS = new Set([
+  'eth_signTypedData_v4',
+  'eth_sendTransaction',
+  'wallet_sendCalls',
+]);
 
 export type CreateCowSwapProviderParams = {
   walletClient: WalletClient<Transport, Chain, Account>;
@@ -87,6 +94,14 @@ export const createCowSwapProvider = ({
           const error = verifyApproval(approval);
 
           if (error) throw new Error(error);
+        }
+
+        // the wallet may have switched chains after validation config was resolved
+        if (
+          WALLET_SIGNING_METHODS.has(payload.method) &&
+          (await walletClient.getChainId()) !== chainId
+        ) {
+          throw new Error(TRANSACTION_ERROR(2049));
         }
       } catch (error) {
         if (error instanceof Error) {

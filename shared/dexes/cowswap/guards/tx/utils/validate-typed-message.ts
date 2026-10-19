@@ -1,9 +1,9 @@
 import { isAddressEqual } from 'viem';
-import { sepolia } from 'viem/chains';
 import { z } from 'zod';
 
 import {
   MAX_ORDER_AGE_SECONDS,
+  COWSWAP_API_NETWORKS,
   COWSWAP_APPDATA_API,
   COWSWAP_API_TIMEOUT_MS,
 } from '../../../consts';
@@ -35,7 +35,8 @@ const fetchAppData = async (
   appDataHex: string,
   chainId: number,
 ): Promise<z.infer<typeof AppDataApiResponseSchema>['fullAppData']> => {
-  const environment = chainId === sepolia.id ? 'sepolia' : 'mainnet';
+  const environment = COWSWAP_API_NETWORKS[chainId];
+  if (!environment) throw new Error(TRANSACTION_ERROR(2001));
 
   const result = await standardFetcher(
     COWSWAP_APPDATA_API(appDataHex, environment),

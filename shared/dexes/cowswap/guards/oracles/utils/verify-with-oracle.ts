@@ -13,6 +13,7 @@ import {
   WSTETH_RATE_MIN,
   WSTETH_RATE_MAX,
   WSTETH_ADDRESS,
+  WSTETH_PRICE_KEY,
   type OraclePriceKey,
 } from '../feeds';
 import { PARTNER_FEE_PCT, FAIL_UNSUPPORTED, FAIL_UNAVAILABLE } from '../consts';
@@ -68,11 +69,10 @@ const readUsdPrice = async (
 // USD price of one token unit with 8 decimals; wstETH via stEthPerToken
 const readTokenUsdPrice = async (
   client: OracleClient,
-  tokenAddress: string,
   priceKey: OraclePriceKey,
   nowSec: bigint,
 ): Promise<bigint | null> => {
-  const isWsteth = tokenAddress === WSTETH_ADDRESS;
+  const isWsteth = priceKey === WSTETH_PRICE_KEY;
 
   // Individual readContract calls — Multicall3 is not in /api/rpc allowlist
   const [usdPrice, wstethRate] = await Promise.all([
@@ -111,7 +111,7 @@ export const readSellTokenUsd = async (
 
   try {
     const nowSec = BigInt(Math.floor(Date.now() / 1000));
-    const price = await readTokenUsdPrice(client, sellAddr, priceKey, nowSec);
+    const price = await readTokenUsdPrice(client, priceKey, nowSec);
 
     return price === null ? null : toUsdNumber(price);
   } catch {
@@ -139,8 +139,8 @@ export const verifyWithOracle = async (
   try {
     const nowSec = BigInt(Math.floor(Date.now() / 1000));
     const [sellPrice, buyPrice] = await Promise.all([
-      readTokenUsdPrice(client, sellAddr, sellPriceKey, nowSec),
-      readTokenUsdPrice(client, buyAddr, buyPriceKey, nowSec),
+      readTokenUsdPrice(client, sellPriceKey, nowSec),
+      readTokenUsdPrice(client, buyPriceKey, nowSec),
     ]);
 
     if (sellPrice === null || buyPrice === null) return FAIL_UNAVAILABLE;

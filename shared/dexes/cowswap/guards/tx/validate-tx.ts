@@ -1,6 +1,7 @@
-import { mainnet, sepolia } from 'viem/chains';
-
-import { COWSWAP_WIDGET_ALLOWED_RPC_METHODS } from '../../consts';
+import {
+  COWSWAP_API_NETWORKS,
+  COWSWAP_WIDGET_ALLOWED_RPC_METHODS,
+} from '../../consts';
 
 import {
   ApprovalData,
@@ -40,8 +41,7 @@ export const validateRpcRequest = async (
       'eth_sendTransaction',
       'wallet_sendCalls',
     ].includes(method) &&
-    ctx.chainId !== mainnet.id &&
-    ctx.chainId !== sepolia.id
+    !COWSWAP_API_NETWORKS[ctx.chainId]
   ) {
     throw new Error(TRANSACTION_ERROR(2001));
   }

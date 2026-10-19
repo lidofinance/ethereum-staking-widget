@@ -29,7 +29,6 @@ import {
 import {
   useCowSwapEthereumProvider,
   useCspBlocked,
-  useFeeRecipient,
   useIsGhAvailable,
   useLoadingStates,
 } from './hooks';
@@ -94,15 +93,22 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   const { isLoading, isLoaded, onLoaded, onError, triggerRefresh, refreshId } =
     useLoadingStates();
 
-  const { address, isTestnet } = useDappStatus();
-  // for testnets only sepolia; allowlist must match the chain the widget runs on
-  const widgetChainId = isTestnet ? sepolia.id : mainnet.id;
-  const { sellTokens } = getNetworkTxConfig(widgetChainId);
+  const { address, chainId, isTestnet } = useDappStatus();
+  // dapp chain if the profile enables it, else mainnet (sepolia on testnets)
+  const widgetChainId = profile.chainIds.includes(chainId)
+    ? chainId
+    : isTestnet
+      ? sepolia.id
+      : mainnet.id;
+  const networkTxConfig = getNetworkTxConfig(widgetChainId);
+  // shown as the error boundary fallback
+  if (!networkTxConfig)
+    throw new Error('CoW Swap is not enabled on this network');
+  const { sellTokens, feeRecipient } = networkTxConfig;
   const { validateAddress } = useAddressValidation();
   const { name: themeName } = useTheme();
   // Fall back to self-hosted token lists if GitHub is unavailable
   const isGithubAvailable = useIsGhAvailable(tokenLists.sell.url);
-  const daoAgentAddress = useFeeRecipient();
   // throw on CSP violation
   useCspBlocked();
   // throw on loading timeout
@@ -184,7 +190,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       },
       partnerFee: {
         bps: PARTNER_FEE_BPS,
-        recipient: daoAgentAddress,
+        recipient: feeRecipient,
       },
       disableTrade: {
         whenPriceImpactIsUnknown: true,
@@ -260,7 +266,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       analytics.swapStart,
       widgetChainId,
       isGithubAvailable,
-      daoAgentAddress,
+      feeRecipient,
       themeName,
       refreshId,
       validateApproval,

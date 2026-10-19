@@ -1,17 +1,14 @@
 import { ethAddress, type Address } from 'viem';
 
 import { collectTokenAddresses } from './token-addresses';
-import type { ContactsMap, DexTokenKey, NetworkTxConfig } from './types';
+import type { CowswapNetwork, DexTokenKey, NetworkTxConfig } from './types';
 
 export const buildNetworkTxConfig = (
-  contracts: ContactsMap,
+  contracts: CowswapNetwork & { partnerFeeRecipient: string },
   sellTokenKeys: readonly DexTokenKey[],
   buyTokenKeys: readonly DexTokenKey[],
 ): NetworkTxConfig => {
-  // optional: not every network config has EthFlow
-  const ethFlow = (
-    contracts.cowEthFlow as string | undefined
-  )?.toLowerCase() as Address | undefined;
+  const ethFlow = contracts.cowEthFlow?.toLowerCase() as Address | undefined;
   const sellTokens = collectTokenAddresses(contracts, sellTokenKeys);
   if (!ethFlow) sellTokens.delete(ethAddress);
 
@@ -27,6 +24,6 @@ export const buildNetworkTxConfig = (
     cowSettlement: contracts.cowSettlement.toLowerCase() as Address,
     cowEthFlow: ethFlow,
     weth: contracts.weth.toLowerCase() as Address,
-    feeRecipient: contracts.daoAgent.toLowerCase() as Address,
+    feeRecipient: contracts.partnerFeeRecipient.toLowerCase() as Address,
   };
 };

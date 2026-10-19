@@ -1,10 +1,10 @@
 import { ethAddress, type Address } from 'viem';
 
-import type { ContactsMap, DexTokenKey } from './types';
+import type { CowswapNetwork, DexTokenKey } from './types';
 
 // 'eth' is the native ETH placeholder (0xeeee...), same on every chain
 export const resolveTokenAddress = (
-  contracts: ContactsMap,
+  contracts: CowswapNetwork,
   key: DexTokenKey,
 ): Address | undefined => {
   if (key === 'eth') return ethAddress;
@@ -15,7 +15,7 @@ export const resolveTokenAddress = (
 };
 
 export const collectTokenAddresses = (
-  contracts: ContactsMap,
+  contracts: CowswapNetwork,
   keys: readonly DexTokenKey[],
 ): Set<Address> => {
   const addresses = new Set<Address>();

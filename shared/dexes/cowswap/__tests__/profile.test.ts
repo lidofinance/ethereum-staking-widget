@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { type Address, ethAddress } from 'viem';
-import { mainnet, sepolia } from 'viem/chains';
+import { arbitrum, mainnet, sepolia } from 'viem/chains';
 
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
+import { COWSWAP_NETWORKS } from '../networks';
 import { createCowswapProfile, type CowswapProfileConfig } from '../profile';
 import {
   TEST_PROFILE,
@@ -15,6 +16,29 @@ const c = mainnetNetwork.contracts;
 const s = sepoliaNetwork.contracts;
 const lower = (address: string) => address.toLowerCase() as Address;
 
+const MAINNET = COWSWAP_NETWORKS[mainnet.id];
+const SEPOLIA = COWSWAP_NETWORKS[sepolia.id];
+// L2-shaped network with its own addresses
+const L2_WSTETH = '0x00000000000000000000000000000000000000a1';
+const L2_USDC = '0x00000000000000000000000000000000000000a2';
+const L2_NETWORK = {
+  ...MAINNET,
+  lido: undefined,
+  wsteth: L2_WSTETH,
+  usdc: L2_USDC,
+  usdt: undefined,
+  usds: undefined,
+  wbtc: undefined,
+  weth: '0x00000000000000000000000000000000000000a3',
+  partnerFeeRecipient: '0x00000000000000000000000000000000000000a4',
+};
+
+const configTx = (profile = TEST_PROFILE, chainId: number = mainnet.id) => {
+  const config = profile.getNetworkTxConfig(chainId);
+  if (!config) throw new Error(`no config for ${chainId}`);
+  return config;
+};
+
 describe('createCowswapProfile', () => {
   it('keeps plain config fields', () => {
     expect(TEST_PROFILE.appCode).toBe(TEST_PROFILE_CONFIG.appCode);
@@ -24,21 +48,18 @@ describe('createCowswapProfile', () => {
   });
 
   it('resolves network tx config per chain', () => {
-    expect(TEST_PROFILE.getNetworkTxConfig(mainnet.id).cowSettlement).toBe(
-      lower(c.cowSettlement),
-    );
-    expect(TEST_PROFILE.getNetworkTxConfig(sepolia.id).feeRecipient).toBe(
+    expect(configTx().cowSettlement).toBe(lower(c.cowSettlement));
+    expect(configTx(TEST_PROFILE, sepolia.id).feeRecipient).toBe(
       lower(s.daoAgent),
     );
     expect(
-      TEST_PROFILE.getNetworkTxConfig(sepolia.id).sellTokens.has(lower(s.lido)),
+      configTx(TEST_PROFILE, sepolia.id).sellTokens.has(lower(s.lido)),
     ).toBe(true);
   });
 
-  it('falls back to mainnet config for unknown chains', () => {
-    expect(TEST_PROFILE.getNetworkTxConfig(137)).toBe(
-      TEST_PROFILE.getNetworkTxConfig(mainnet.id),
-    );
+  it('has no config for chains outside the profile', () => {
+    expect(TEST_PROFILE.chainIds).toEqual([mainnet.id, sepolia.id]);
+    expect(TEST_PROFILE.getNetworkTxConfig(137)).toBeUndefined();
   });
 
   it('returns stable config references', () => {
@@ -47,7 +68,21 @@ describe('createCowswapProfile', () => {
     );
   });
 
-  it('builds token decimals by mainnet address', () => {
+  it('disables networks without a partner fee recipient', () => {
+    const profile = createCowswapProfile({
+      ...TEST_PROFILE_CONFIG,
+      networks: {
+        [mainnet.id]: MAINNET,
+        [arbitrum.id]: { ...L2_NETWORK, partnerFeeRecipient: undefined },
+      },
+    });
+
+    expect(profile.chainIds).toEqual([mainnet.id]);
+    expect(profile.getNetworkTxConfig(arbitrum.id)).toBeUndefined();
+    expect(profile.tokenDecimals[L2_USDC]).toBeUndefined();
+  });
+
+  it('builds token decimals by address on every network', () => {
     expect(TEST_PROFILE.tokenDecimals).toEqual({
       [lower(c.lido)]: 18,
       [lower(c.wsteth)]: 18,
@@ -57,14 +92,19 @@ describe('createCowswapProfile', () => {
       [lower(c.usdt)]: 6,
       [lower(c.usds)]: 18,
       [lower(c.wbtc)]: 8,
+      [lower(s.lido)]: 18,
+      [lower(s.wsteth)]: 18,
+      [lower(s.weth)]: 18,
     });
   });
 
-  it('builds oracle feed maps by mainnet address', () => {
+  it('builds oracle price maps by address on every network', () => {
     expect(TEST_PROFILE.oracleFeeds).toEqual({
       sell: {
         [lower(c.lido)]: 'STETH_USD',
-        [lower(c.wsteth)]: 'STETH_USD',
+        [lower(c.wsteth)]: 'WSTETH_USD',
+        [lower(s.lido)]: 'STETH_USD',
+        [lower(s.wsteth)]: 'WSTETH_USD',
       },
       buy: {
         [ethAddress]: 'ETH_USD',
@@ -73,18 +113,38 @@ describe('createCowswapProfile', () => {
         [lower(c.usdt)]: 'USDT_USD',
         [lower(c.usds)]: 'DAI_USD',
         [lower(c.wbtc)]: 'BTC_USD',
+        [lower(s.weth)]: 'ETH_USD',
       },
     });
+  });
+
+  it('prices L2 tokens like their mainnet counterparts', () => {
+    const profile = createCowswapProfile({
+      ...TEST_PROFILE_CONFIG,
+      networks: { [mainnet.id]: MAINNET, [arbitrum.id]: L2_NETWORK },
+    });
+
+    expect(profile.chainIds).toEqual([mainnet.id, arbitrum.id]);
+    expect(profile.oracleFeeds.sell[L2_WSTETH]).toBe('WSTETH_USD');
+    expect(profile.oracleFeeds.buy[L2_USDC]).toBe('USDC_USD');
+    expect(profile.tokenDecimals[L2_USDC]).toBe(6);
+    expect(configTx(profile, arbitrum.id).sellTokens).toEqual(
+      new Set([L2_WSTETH]),
+    );
+    expect(configTx(profile, arbitrum.id).feeRecipient).toBe(
+      L2_NETWORK.partnerFeeRecipient,
+    );
   });
 
   it('builds a profile with another token set', () => {
     const profile = createCowswapProfile({
       ...TEST_PROFILE_CONFIG,
       appCode: 'Lido Swap',
-      sellTokens: [{ key: 'wsteth', decimals: 18, oracleFeed: 'STETH_USD' }],
+      sellTokens: [{ key: 'wsteth', decimals: 18, oracleFeed: 'WSTETH_USD' }],
       buyTokens: [{ key: 'usdc', decimals: 6, oracleFeed: 'USDC_USD' }],
+      networks: { [mainnet.id]: MAINNET },
     });
-    const config = profile.getNetworkTxConfig(mainnet.id);
+    const config = configTx(profile);
 
     expect(profile.appCode).toBe('Lido Swap');
     expect(config.sellTokens).toEqual(new Set([lower(c.wsteth)]));
@@ -92,15 +152,6 @@ describe('createCowswapProfile', () => {
     expect(config.buyTokens.has(ethAddress)).toBe(false);
     expect(Object.keys(profile.tokenDecimals)).toHaveLength(2);
     expect(profile.oracleFeeds.sell[lower(c.lido)]).toBeUndefined();
-  });
-
-  it('throws without mainnet contracts', () => {
-    expect(() =>
-      createCowswapProfile({
-        ...TEST_PROFILE_CONFIG,
-        networks: { [sepolia.id]: TEST_PROFILE_CONFIG.networks[sepolia.id] },
-      }),
-    ).toThrow('CoW Swap profile requires mainnet contracts');
   });
 
   it.each([
@@ -118,24 +169,30 @@ describe('createCowswapProfile', () => {
       'has duplicate tokens',
     ],
     [
-      'ETH as sell token without EthFlow',
+      'no enabled networks',
       {
-        sellTokens: [
-          ...TEST_PROFILE_CONFIG.sellTokens,
-          { key: 'eth', decimals: 18, oracleFeed: 'ETH_USD' },
-        ],
         networks: {
-          [mainnet.id]: { ...c, cowEthFlow: undefined } as unknown as typeof c,
+          [mainnet.id]: { ...MAINNET, partnerFeeRecipient: undefined },
         },
       },
-      'cannot sell ETH without EthFlow',
+      'has no enabled networks',
+    ],
+    [
+      'one address mapped to different tokens',
+      {
+        networks: {
+          [mainnet.id]: MAINNET,
+          [arbitrum.id]: { ...L2_NETWORK, wsteth: undefined, usdc: c.wsteth },
+        },
+      },
+      `address ${lower(c.wsteth)} maps to different tokens`,
     ],
     [
       'token decimals differing between sides',
       {
         buyTokens: [
           ...TEST_PROFILE_CONFIG.buyTokens,
-          { key: 'wsteth', decimals: 6, oracleFeed: 'STETH_USD' },
+          { key: 'wsteth', decimals: 6, oracleFeed: 'WSTETH_USD' },
         ],
       },
       'token wsteth differs between sell and buy',
@@ -164,14 +221,14 @@ describe('createCowswapProfile', () => {
       ...TEST_PROFILE_CONFIG,
       buyTokens: [
         ...TEST_PROFILE_CONFIG.buyTokens,
-        { key: 'wsteth', decimals: 18, oracleFeed: 'STETH_USD' },
+        { key: 'wsteth', decimals: 18, oracleFeed: 'WSTETH_USD' },
       ],
     });
-    const { sellTokens, buyTokens } = profile.getNetworkTxConfig(mainnet.id);
+    const { sellTokens, buyTokens } = configTx(profile);
 
     expect(sellTokens.has(lower(c.wsteth))).toBe(true);
     expect(buyTokens.has(lower(c.wsteth))).toBe(true);
-    expect(profile.oracleFeeds.buy[lower(c.wsteth)]).toBe('STETH_USD');
+    expect(profile.oracleFeeds.buy[lower(c.wsteth)]).toBe('WSTETH_USD');
   });
 
   it('sells ETH only on networks with EthFlow', () => {
@@ -181,13 +238,13 @@ describe('createCowswapProfile', () => {
         ...TEST_PROFILE_CONFIG.sellTokens,
         { key: 'eth', decimals: 18, oracleFeed: 'ETH_USD' },
       ],
+      networks: { [mainnet.id]: MAINNET, [sepolia.id]: SEPOLIA },
     });
 
-    const mainnetConfig = profile.getNetworkTxConfig(mainnet.id);
-    expect(mainnetConfig.sellTokens.has(ethAddress)).toBe(true);
-    expect(mainnetConfig.cowEthFlow).toBe(lower(c.cowEthFlow));
-    expect(
-      profile.getNetworkTxConfig(sepolia.id).sellTokens.has(ethAddress),
-    ).toBe(false);
+    expect(configTx(profile).sellTokens.has(ethAddress)).toBe(true);
+    expect(configTx(profile).cowEthFlow).toBe(lower(c.cowEthFlow));
+    expect(configTx(profile, sepolia.id).sellTokens.has(ethAddress)).toBe(
+      false,
+    );
   });
 });

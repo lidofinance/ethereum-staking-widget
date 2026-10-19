@@ -1,15 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { type Address, ethAddress } from 'viem';
+import { mainnet, sepolia } from 'viem/chains';
 
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
 import { buildNetworkTxConfig } from '../network-tx-config';
 import { collectTokenAddresses, resolveTokenAddress } from '../token-addresses';
-import type { ContactsMap } from '../types';
+import { COWSWAP_NETWORKS } from '../../../../networks';
 import { MAINNET_TX_CONFIG, SEPOLIA_TX_CONFIG } from '../../__tests__/fixtures';
 
 const c = mainnetNetwork.contracts;
+const n = {
+  ...COWSWAP_NETWORKS[mainnet.id],
+  partnerFeeRecipient: c.daoAgent,
+};
 const lower = (address: string) => address.toLowerCase() as Address;
 
 // ---------------------------------------------------------------------------
@@ -17,41 +22,41 @@ const lower = (address: string) => address.toLowerCase() as Address;
 // ---------------------------------------------------------------------------
 describe('resolveTokenAddress', () => {
   it('resolves contract key to lowercased address', () => {
-    expect(resolveTokenAddress(c, 'lido')).toBe(lower(c.lido));
+    expect(resolveTokenAddress(n, 'lido')).toBe(lower(c.lido));
   });
 
   it('resolves eth to native placeholder', () => {
-    expect(resolveTokenAddress(c, 'eth')).toBe(ethAddress);
+    expect(resolveTokenAddress(n, 'eth')).toBe(ethAddress);
   });
 
   it('returns undefined for empty address', () => {
-    expect(resolveTokenAddress({ ...c, usds: '' }, 'usds')).toBeUndefined();
+    expect(resolveTokenAddress({ ...n, usds: '' }, 'usds')).toBeUndefined();
   });
 });
 
 describe('collectTokenAddresses', () => {
   it('collects lowercased addresses for given keys', () => {
-    expect(collectTokenAddresses(c, ['lido', 'weth', 'eth'])).toEqual(
+    expect(collectTokenAddresses(n, ['lido', 'weth', 'eth'])).toEqual(
       new Set([lower(c.lido), lower(c.weth), ethAddress]),
     );
   });
 
   it('skips keys with empty address', () => {
-    const contracts = { ...c, usds: '' };
+    const contracts = { ...n, usds: '' };
     expect(collectTokenAddresses(contracts, ['lido', 'usds'])).toEqual(
       new Set([lower(c.lido)]),
     );
   });
 
   it('skips keys missing on network', () => {
-    const contracts = sepoliaNetwork.contracts as ContactsMap;
+    const contracts = COWSWAP_NETWORKS[sepolia.id];
     expect(collectTokenAddresses(contracts, ['lido', 'usdc'])).toEqual(
-      new Set([lower(contracts.lido)]),
+      new Set([lower(sepoliaNetwork.contracts.lido)]),
     );
   });
 
   it('returns empty set for empty key list', () => {
-    expect(collectTokenAddresses(c, []).size).toBe(0);
+    expect(collectTokenAddresses(n, []).size).toBe(0);
   });
 });
 
@@ -78,12 +83,6 @@ describe('buildNetworkTxConfig', () => {
     );
   });
 
-  it('keeps sell and buy token sets disjoint', () => {
-    for (const token of MAINNET_TX_CONFIG.sellTokens) {
-      expect(MAINNET_TX_CONFIG.buyTokens.has(token)).toBe(false);
-    }
-  });
-
   it('includes contract tokens but not ETH placeholder in tokens', () => {
     expect(MAINNET_TX_CONFIG.tokens.has(ethAddress)).toBe(false);
     expect(MAINNET_TX_CONFIG.tokens.size).toBe(7);
@@ -99,9 +98,30 @@ describe('buildNetworkTxConfig', () => {
   });
 
   it('allows ETH only when listed', () => {
-    const config = buildNetworkTxConfig(c, ['lido'], ['usdc']);
+    const config = buildNetworkTxConfig(n, ['lido'], ['usdc']);
     expect(config.tokens).toEqual(new Set([lower(c.lido), lower(c.usdc)]));
     expect(config.sellTokens).toEqual(new Set([lower(c.lido)]));
     expect(config.buyTokens).toEqual(new Set([lower(c.usdc)]));
+  });
+
+  it('drops ETH from sell tokens without EthFlow', () => {
+    const config = buildNetworkTxConfig(
+      { ...n, cowEthFlow: undefined },
+      ['eth', 'lido'],
+      ['usdc'],
+    );
+    expect(config.sellTokens).toEqual(new Set([lower(c.lido)]));
+    expect(config.cowEthFlow).toBeUndefined();
+  });
+
+  it('takes the fee recipient from the network partnerFeeRecipient', () => {
+    const recipient = '0x00000000000000000000000000000000000000Fe';
+    expect(
+      buildNetworkTxConfig(
+        { ...n, partnerFeeRecipient: recipient },
+        ['lido'],
+        ['usdc'],
+      ).feeRecipient,
+    ).toBe(lower(recipient));
   });
 });

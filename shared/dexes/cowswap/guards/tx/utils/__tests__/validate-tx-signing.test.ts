@@ -1213,6 +1213,7 @@ describe('sanitizeTransactionParams', () => {
         {
           version: '2.0.0',
           chainId: '0x1',
+          capabilities: { paymasterService: { url: 'https://evil.example' } },
           calls: [{ to: STETH, data: approveData, input: '0xdeadbeef' }],
         },
       ]),
@@ -1247,5 +1248,34 @@ describe('validateSendTransaction — from', () => {
         mainnetCtx,
       ),
     ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2047) });
+  });
+});
+
+describe('validateSendCalls — batch fields', () => {
+  const presignBatch = (extra: Record<string, unknown>) => [
+    {
+      ...extra,
+      calls: [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
+    },
+  ];
+
+  it('blocks a batch for another chain', async () => {
+    expect(
+      await validateSendCalls(presignBatch({ chainId: '0x2105' }), mainnetCtx),
+    ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2048) });
+  });
+
+  it('blocks a batch from another account', async () => {
+    expect(
+      await validateSendCalls(presignBatch({ from: ATTACKER }), mainnetCtx),
+    ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2047) });
+  });
+
+  it('allows a batch for the guarded chain and account', async () => {
+    const result = await validateSendCalls(
+      presignBatch({ chainId: '0x1', from: SIGNER }),
+      mainnetCtx,
+    );
+    expect(result.allowed).toBe(true);
   });
 });

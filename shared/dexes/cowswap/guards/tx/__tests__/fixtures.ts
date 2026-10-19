@@ -1,14 +1,14 @@
 import { mainnet, sepolia } from 'viem/chains';
 
-import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
-import mainnetNetwork from 'networks/mainnet.json';
-import sepoliaNetwork from 'networks/sepolia.json';
+import invariant from 'tiny-invariant';
 
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+
+import { COWSWAP_NETWORKS } from '../../../networks';
 import {
   createCowswapProfile,
   type CowswapProfileConfig,
 } from '../../../profile';
-import type { ContactsMap } from '../utils/types';
 
 export const TEST_APP_CODE = 'Lido dApp Staking';
 
@@ -17,7 +17,7 @@ export const TEST_PROFILE_CONFIG: CowswapProfileConfig = {
   appCode: TEST_APP_CODE,
   sellTokens: [
     { key: 'lido', decimals: 18, oracleFeed: 'STETH_USD' },
-    { key: 'wsteth', decimals: 18, oracleFeed: 'STETH_USD' },
+    { key: 'wsteth', decimals: 18, oracleFeed: 'WSTETH_USD' },
   ],
   buyTokens: [
     { key: 'eth', decimals: 18, oracleFeed: 'ETH_USD' },
@@ -33,8 +33,8 @@ export const TEST_PROFILE_CONFIG: CowswapProfileConfig = {
     buy: { url: 'https://example.com/buy.json', fallback: 'buy.json' },
   },
   networks: {
-    [mainnet.id]: mainnetNetwork.contracts,
-    [sepolia.id]: sepoliaNetwork.contracts as ContactsMap,
+    [mainnet.id]: COWSWAP_NETWORKS[mainnet.id],
+    [sepolia.id]: COWSWAP_NETWORKS[sepolia.id],
   },
   analytics: {
     quoteViewed: MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteViewed,
@@ -48,5 +48,11 @@ export const TEST_PROFILE_CONFIG: CowswapProfileConfig = {
 
 export const TEST_PROFILE = createCowswapProfile(TEST_PROFILE_CONFIG);
 
-export const MAINNET_TX_CONFIG = TEST_PROFILE.getNetworkTxConfig(mainnet.id);
-export const SEPOLIA_TX_CONFIG = TEST_PROFILE.getNetworkTxConfig(sepolia.id);
+const txConfig = (chainId: number) => {
+  const config = TEST_PROFILE.getNetworkTxConfig(chainId);
+  invariant(config, `no CoW Swap test config for chain ${chainId}`);
+  return config;
+};
+
+export const MAINNET_TX_CONFIG = txConfig(mainnet.id);
+export const SEPOLIA_TX_CONFIG = txConfig(sepolia.id);

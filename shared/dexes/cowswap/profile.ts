@@ -1,12 +1,11 @@
 import invariant from 'tiny-invariant';
-import { mainnet } from 'viem/chains';
 
 import type { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 
 import { buildNetworkTxConfig } from './guards/tx/utils/network-tx-config';
 import { resolveTokenAddress } from './guards/tx/utils/token-addresses';
 import type {
-  ContactsMap,
+  CowswapNetwork,
   DexTokenKey,
   NetworkTxConfig,
 } from './guards/tx/utils/types';
@@ -14,7 +13,7 @@ import type { OraclePriceKey } from './guards/oracles/feeds';
 import type { OracleFeedMaps } from './guards/oracles/utils/verify-with-oracle';
 import type { TokenDecimalsMap } from './guards/trade/utils/verify-order';
 
-export type { ContactsMap, DexTokenKey, NetworkTxConfig, OraclePriceKey };
+export type { CowswapNetwork, DexTokenKey, NetworkTxConfig, OraclePriceKey };
 
 export type CowswapToken = {
   key: DexTokenKey;
@@ -45,8 +44,8 @@ export type CowswapProfileConfig = {
   // widget asset symbols selected on load
   defaultPair: { sell: string; buy: string };
   tokenLists: { sell: CowswapTokenList; buy: CowswapTokenList };
-  // must include mainnet: oracle feeds and decimals are resolved by mainnet addresses
-  networks: Record<number, ContactsMap>;
+  // token decimals and prices apply on every network, prices come from mainnet Chainlink
+  networks: Record<number, CowswapNetwork>;
   analytics: CowswapAnalyticsEvents;
 };
 
@@ -54,21 +53,32 @@ export type CowswapProfile = Omit<
   CowswapProfileConfig,
   'networks' | 'sellTokens' | 'buyTokens'
 > & {
-  // unknown chains fall back to mainnet
-  getNetworkTxConfig: (chainId: number) => NetworkTxConfig;
+  // networks with a partner fee recipient; undefined disables the swap
+  chainIds: readonly number[];
+  getNetworkTxConfig: (chainId: number) => NetworkTxConfig | undefined;
+  // lowercased token address on any enabled network → decimals / price
   tokenDecimals: TokenDecimalsMap;
   oracleFeeds: OracleFeedMaps;
 };
 
 const toAddressMap = <T>(
-  contracts: ContactsMap,
+  networks: readonly CowswapNetwork[],
   tokens: readonly CowswapToken[],
   pick: (token: CowswapToken) => T,
 ): Record<string, T> => {
   const map: Record<string, T> = {};
-  for (const token of tokens) {
-    const address = resolveTokenAddress(contracts, token.key);
-    if (address) map[address] = pick(token);
+  for (const contracts of networks) {
+    for (const token of tokens) {
+      const address = resolveTokenAddress(contracts, token.key);
+      if (!address) continue;
+      const value = pick(token);
+      // one address must mean one token on every network
+      invariant(
+        map[address] === undefined || map[address] === value,
+        `CoW Swap profile address ${address} maps to different tokens`,
+      );
+      map[address] = value;
+    }
   }
 
   return map;
@@ -80,8 +90,6 @@ export const createCowswapProfile = ({
   buyTokens,
   ...rest
 }: CowswapProfileConfig): CowswapProfile => {
-  const mainnetContracts = networks[mainnet.id];
-  invariant(mainnetContracts, 'CoW Swap profile requires mainnet contracts');
   invariant(rest.appCode.trim(), 'CoW Swap profile requires appCode');
 
   const sellKeys = sellTokens.map((token) => token.key);
@@ -96,11 +104,6 @@ export const createCowswapProfile = ({
       new Set(buyKeys).size === buyKeys.length,
     'CoW Swap profile has duplicate tokens',
   );
-  // native ETH cannot be approved or presigned, it is sold through EthFlow
-  invariant(
-    !sellKeys.includes('eth') || mainnetContracts.cowEthFlow,
-    'CoW Swap profile cannot sell ETH without EthFlow',
-  );
   // a token listed on both sides must use one price and one decimals
   for (const sellToken of sellTokens) {
     const buyToken = buyTokens.find((token) => token.key === sellToken.key);
@@ -112,28 +115,41 @@ export const createCowswapProfile = ({
     );
   }
 
-  const txConfigs = new Map<number, NetworkTxConfig>();
-  for (const [chainId, contracts] of Object.entries(networks)) {
-    txConfigs.set(
-      Number(chainId),
+  // a network without a partner fee recipient stays disabled
+  const enabled = Object.entries(networks).flatMap(([chainId, contracts]) => {
+    const { partnerFeeRecipient } = contracts;
+    return partnerFeeRecipient
+      ? [
+          {
+            chainId: Number(chainId),
+            contracts: { ...contracts, partnerFeeRecipient },
+          },
+        ]
+      : [];
+  });
+  invariant(enabled.length > 0, 'CoW Swap profile has no enabled networks');
+
+  const txConfigs = new Map<number, NetworkTxConfig>(
+    enabled.map(({ chainId, contracts }) => [
+      chainId,
       buildNetworkTxConfig(contracts, sellKeys, buyKeys),
-    );
-  }
-  const mainnetTxConfig = txConfigs.get(mainnet.id) as NetworkTxConfig;
+    ]),
+  );
+  const enabledContracts = enabled.map(({ contracts }) => contracts);
 
   const tokenDecimals: TokenDecimalsMap = toAddressMap(
-    mainnetContracts,
+    enabledContracts,
     [...sellTokens, ...buyTokens],
     (token) => token.decimals,
   );
   const oracleFeeds: OracleFeedMaps = {
     sell: toAddressMap<OraclePriceKey>(
-      mainnetContracts,
+      enabledContracts,
       sellTokens,
       (token) => token.oracleFeed,
     ),
     buy: toAddressMap<OraclePriceKey>(
-      mainnetContracts,
+      enabledContracts,
       buyTokens,
       (token) => token.oracleFeed,
     ),
@@ -141,7 +157,8 @@ export const createCowswapProfile = ({
 
   return {
     ...rest,
-    getNetworkTxConfig: (chainId) => txConfigs.get(chainId) ?? mainnetTxConfig,
+    chainIds: enabled.map(({ chainId }) => chainId),
+    getNetworkTxConfig: (chainId) => txConfigs.get(chainId),
     tokenDecimals,
     oracleFeeds,
   };

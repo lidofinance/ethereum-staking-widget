@@ -246,6 +246,31 @@ export const SupportL1andL2StakingChains: React.FC<React.PropsWithChildren> = ({
 };
 
 /**
+ * Enables L1 chains and the given L2 chains, for pages with their own L2 set
+ * @param l2ChainIds must be a stable reference
+ */
+export const SupportL1AndCustomL2Chains: React.FC<
+  React.PropsWithChildren<{ l2ChainIds: readonly number[] }>
+> = ({ l2ChainIds, children }) => {
+  const isChainSupported = useCallback(
+    (chainId: number) =>
+      isSupportedL1Chain(chainId) ||
+      (isSupportedL2StakingChain(chainId) && l2ChainIds.includes(chainId)),
+    [l2ChainIds],
+  );
+  const contextValue = useSupportedChainLogic(isChainSupported);
+
+  return (
+    <DappChainContext.Provider value={contextValue}>
+      <LidoSDKL2Provider>
+        {/* Some modals depend on the LidoSDKL2Provider */}
+        <ModalProvider>{children}</ModalProvider>
+      </LidoSDKL2Provider>
+    </DappChainContext.Provider>
+  );
+};
+
+/**
  * Enables only L1 chains - Ethereum Mainnet and testnets
  * @remarks
  * Value of this context only allows L1 chains and no chain switch

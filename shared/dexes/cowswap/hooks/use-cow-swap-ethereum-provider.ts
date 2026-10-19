@@ -5,7 +5,6 @@ import { useConnection, useWalletClient } from 'wagmi';
 import { useDappStatus, useIsLedgerLive } from 'modules/web3';
 
 import type { ApprovalData, OrderData, NetworkTxConfig } from '../guards/tx';
-import { COWSWAP_ENABLED_CHAIN_IDS } from '../consts';
 import type { SigningHelpTip } from '../guards/trade';
 import { createCowSwapProvider } from '../utils';
 
@@ -34,7 +33,7 @@ type UseCowSwapEthereumProviderOptions = {
     reason: string,
     helpTip?: SigningHelpTip,
   ) => Promise<void>;
-  getNetworkTxConfig: (chainId: number) => NetworkTxConfig;
+  getNetworkTxConfig: (chainId: number) => NetworkTxConfig | undefined;
   appCode: string;
 };
 
@@ -59,11 +58,13 @@ export const useCowSwapEthereumProvider = ({
   }, []);
 
   return useMemo(() => {
+    // resolved from the same chainId the validators receive
+    const networkTxConfig = getNetworkTxConfig(chainId);
     if (
       !walletClient ||
       !connector ||
       walletClient.chain.id !== chainId ||
-      !COWSWAP_ENABLED_CHAIN_IDS.has(chainId)
+      !networkTxConfig
     ) {
       return undefined;
     }
@@ -75,8 +76,7 @@ export const useCowSwapEthereumProvider = ({
       connector,
       chainId,
       isLedgerLive,
-      // resolved from the same chainId the validators receive
-      networkTxConfig: getNetworkTxConfig(chainId),
+      networkTxConfig,
       appCode,
       verifySignedOrder,
       verifyApproval,

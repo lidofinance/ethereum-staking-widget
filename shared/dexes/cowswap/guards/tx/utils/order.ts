@@ -1,10 +1,14 @@
 import { encodePacked, hashTypedData, type Address, type Hex } from 'viem';
-import { sepolia } from 'viem/chains';
 import { z } from 'zod';
 
 import { standardFetcher } from 'utils/standardFetcher';
 
-import { COWSWAP_API_TIMEOUT_MS, COWSWAP_ORDER_API } from '../../../consts';
+import {
+  COWSWAP_API_NETWORKS,
+  COWSWAP_API_TIMEOUT_MS,
+  COWSWAP_ORDER_API,
+} from '../../../consts';
+import { TRANSACTION_ERROR } from '../consts';
 
 import {
   CowSwapGPv2OrderSchema,
@@ -69,7 +73,8 @@ export const isCancelOrder = (
 };
 
 export const fetchOrderByUID = async (orderUID: Hex, chainId: number) => {
-  const environment = chainId === sepolia.id ? 'sepolia' : 'mainnet';
+  const environment = COWSWAP_API_NETWORKS[chainId];
+  if (!environment) throw new Error(TRANSACTION_ERROR(2001));
   const result = await standardFetcher(
     COWSWAP_ORDER_API(orderUID, environment),
     { timeoutMs: COWSWAP_API_TIMEOUT_MS },

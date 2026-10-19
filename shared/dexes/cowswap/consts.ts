@@ -1,6 +1,6 @@
 import { config } from 'config';
 // import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
-import { mainnet, sepolia } from 'viem/chains';
+import { arbitrum, base, linea, mainnet, sepolia } from 'viem/chains';
 import { DEFAULT_COWSWAP_WIDGET_BASE_URL } from 'scripts/csp/content-security-policy.mjs';
 
 export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
@@ -35,10 +35,14 @@ export const MAX_ORDER_AGE_SECONDS = 60 * 30; // 30 minutes
 export const MAX_ORDER_AGE_MINUTES = Math.floor(MAX_ORDER_AGE_SECONDS / 60);
 export const TRADE_REPORT_EVENT_DEBOUNCE_MS = 3_000; // 3 seconds
 
-export const COWSWAP_ENABLED_CHAIN_IDS = new Set<number>([
-  mainnet.id,
-  sepolia.id,
-]); // mainnet, sepolia
+// CoW API network names; signing on other chains is blocked
+export const COWSWAP_API_NETWORKS: Record<number, string> = {
+  [mainnet.id]: 'mainnet',
+  [sepolia.id]: 'sepolia',
+  [arbitrum.id]: 'arbitrum_one',
+  [base.id]: 'base',
+  [linea.id]: 'linea',
+};
 
 export const COWSWAP_BASE_URL =
   config.cowswapWidgetBaseUrl || DEFAULT_COWSWAP_WIDGET_BASE_URL;

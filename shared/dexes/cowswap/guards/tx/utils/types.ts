@@ -1,15 +1,10 @@
 import { type Address, type Hex } from 'viem';
 import { z } from 'zod';
 
-import mainnetNetwork from 'networks/mainnet.json';
-
 import { CowSwapGPv2OrderSchema } from './schemas';
 
-export type ContactsMap = typeof mainnetNetwork.contracts;
-
-// ERC-20 token keys of network contracts usable in CoW Swap profiles
-export type DexTokenContractKey = Extract<
-  keyof ContactsMap,
+// ERC-20 token keys usable in CoW Swap profiles
+export type DexTokenContractKey =
   | 'lido'
   | 'wsteth'
   | 'ldo'
@@ -21,8 +16,17 @@ export type DexTokenContractKey = Extract<
   | 'usds'
   | 'pyusd'
   | 'wbtc'
-  | 'cbbtc'
->;
+  | 'cbbtc';
+
+// CoW contracts and tokens of one network; a token without an address is not traded there
+export type CowswapNetwork = Partial<Record<DexTokenContractKey, string>> & {
+  cowSettlement: string;
+  cowVaultRelayer: string;
+  cowEthFlow?: string;
+  weth: string;
+  // swap stays disabled on a network without it
+  partnerFeeRecipient?: string;
+};
 
 // Token contract key or native ETH placeholder
 export type DexTokenKey = DexTokenContractKey | 'eth';

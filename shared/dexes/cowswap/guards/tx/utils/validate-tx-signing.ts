@@ -321,8 +321,13 @@ export const validateSendTransaction = async (
   };
 };
 
+// EIP-5792 batch; unknown top-level keys (e.g. capabilities) are dropped
 const sendCallsParamsSchema = z.tuple([
   z.object({
+    version: z.string().optional(),
+    chainId: hexSchema.optional(),
+    from: addressSchema.optional(),
+    atomicRequired: z.boolean().optional(),
     calls: z
       .array(
         z.object({
@@ -353,7 +358,21 @@ export const validateSendCalls = async (
     };
   }
 
-  const calls = parseResult.data[0].calls;
+  const { calls, chainId, from } = parseResult.data[0];
+
+  // the batch must run on the guarded chain and account
+  if (chainId !== undefined && hexToBigInt(chainId) !== BigInt(ctx.chainId)) {
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2048),
+    };
+  }
+  if (from && !isAddressEqual(from, ctx.signer)) {
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2047),
+    };
+  }
 
   let order: OrderData | CancelOrderData | undefined = undefined;
 
@@ -441,8 +460,7 @@ export const sanitizeTransactionParams = (
     return sendTransactionParamsSchema.parse(params);
   }
   if (method === 'wallet_sendCalls') {
-    const [batch] = sendCallsParamsSchema.parse(params);
-    return [{ ...(params?.[0] as object), calls: batch.calls }];
+    return sendCallsParamsSchema.parse(params);
   }
 
   return params;

@@ -4,7 +4,6 @@ import { mainnet, sepolia } from 'viem/chains';
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import mainnetNetwork from 'networks/mainnet.json';
-import sepoliaNetwork from 'networks/sepolia.json';
 
 import { TEST_PROFILE } from 'shared/dexes/cowswap/guards/tx/__tests__/fixtures';
 
@@ -20,6 +19,7 @@ describe('WITHDRAWALS_COWSWAP_PROFILE', () => {
 
   it('sells stETH/wstETH and buys ETH, WETH and stables/BTC on mainnet', () => {
     const config = profile.getNetworkTxConfig(mainnet.id);
+    if (!config) throw new Error('no mainnet config');
     expect(config.cowSettlement).toBe(lower(c.cowSettlement));
     expect(config.cowVaultRelayer).toBe(lower(c.cowVaultRelayer));
     expect(config.feeRecipient).toBe(lower(c.daoAgent));
@@ -38,18 +38,10 @@ describe('WITHDRAWALS_COWSWAP_PROFILE', () => {
     );
   });
 
-  it('resolves sepolia config', () => {
-    const config = profile.getNetworkTxConfig(sepolia.id);
-    const s = sepoliaNetwork.contracts;
-    expect(config.cowSettlement).toBe(lower(s.cowSettlement));
-    expect(config.feeRecipient).toBe(lower(s.daoAgent));
-    expect(config.sellTokens.has(lower(s.lido))).toBe(true);
-  });
-
-  it('falls back to mainnet config for other chains', () => {
-    expect(profile.getNetworkTxConfig(137)).toBe(
-      profile.getNetworkTxConfig(mainnet.id),
-    );
+  it('is enabled on mainnet only', () => {
+    expect(profile.chainIds).toEqual([mainnet.id]);
+    expect(profile.getNetworkTxConfig(sepolia.id)).toBeUndefined();
+    expect(profile.getNetworkTxConfig(137)).toBeUndefined();
   });
 
   it('has decimals for every token by mainnet address', () => {
@@ -69,7 +61,7 @@ describe('WITHDRAWALS_COWSWAP_PROFILE', () => {
     expect(profile.oracleFeeds).toEqual({
       sell: {
         [lower(c.lido)]: 'STETH_USD',
-        [lower(c.wsteth)]: 'STETH_USD',
+        [lower(c.wsteth)]: 'WSTETH_USD',
       },
       buy: {
         [ethAddress]: 'ETH_USD',
@@ -82,9 +74,15 @@ describe('WITHDRAWALS_COWSWAP_PROFILE', () => {
     });
   });
 
-  it('matches shared test fixture profile', () => {
-    expect(profile.tokenDecimals).toEqual(TEST_PROFILE.tokenDecimals);
-    expect(profile.oracleFeeds).toEqual(TEST_PROFILE.oracleFeeds);
+  it('matches shared test fixture profile on mainnet', () => {
+    for (const [address, decimals] of Object.entries(profile.tokenDecimals)) {
+      expect(TEST_PROFILE.tokenDecimals[address]).toBe(decimals);
+    }
+    for (const side of ['sell', 'buy'] as const) {
+      for (const [address, key] of Object.entries(profile.oracleFeeds[side])) {
+        expect(TEST_PROFILE.oracleFeeds[side][address]).toBe(key);
+      }
+    }
     expect(profile.appCode).toBe(TEST_PROFILE.appCode);
   });
 

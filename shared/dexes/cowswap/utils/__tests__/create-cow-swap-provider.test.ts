@@ -24,6 +24,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { extractCodeFromError } from 'utils/getErrorMessage';
 
 import {
+  TRANSACTION_ERROR,
   validateRpcRequest,
   SIGN_DECLINED_MESSAGE,
   SIGN_DECLINED_HELP_TIP,
@@ -63,6 +64,7 @@ const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
   const walletClient = {
     account: { address: SIGNER },
     request: vi.fn().mockResolvedValue('0xresult'),
+    getChainId: vi.fn().mockResolvedValue(1),
   };
   const connector = makeConnector();
   const cleanups: (() => void)[] = [];
@@ -221,6 +223,27 @@ describe('request — validation', () => {
 
     await provider.request(SIGN_REQUEST);
     expect(params.verifyApproval).toHaveBeenCalledWith(approval);
+    expect(walletClient.request).toHaveBeenCalledTimes(1);
+  });
+
+  it('blocks signing when the wallet switched to another chain', async () => {
+    const { provider, params, walletClient } = setup();
+    walletClient.getChainId.mockResolvedValue(8453);
+
+    await expect(provider.request(SIGN_REQUEST)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(params.openTransactionGuardModal).toHaveBeenCalledWith(
+      TRANSACTION_ERROR(2049),
+    );
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('does not check the chain for read-only requests', async () => {
+    const { provider, walletClient } = setup();
+    walletClient.getChainId.mockResolvedValue(8453);
+
+    await provider.request(rpc('eth_chainId', []));
     expect(walletClient.request).toHaveBeenCalledTimes(1);
   });
 

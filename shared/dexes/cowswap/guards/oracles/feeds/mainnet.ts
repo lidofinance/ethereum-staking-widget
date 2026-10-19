@@ -91,7 +91,10 @@ export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
 
 // Token USD price as a product of feeds, e.g. LDO/ETH × ETH/USD
 export type OraclePriceKey =
-  Exclude<ChainlinkFeedKey, 'LDO_ETH' | 'WBTC_BTC'> | 'LDO_USD' | 'WBTC_USD';
+  | Exclude<ChainlinkFeedKey, 'LDO_ETH' | 'WBTC_BTC'>
+  | 'WSTETH_USD'
+  | 'LDO_USD'
+  | 'WBTC_USD';
 
 export const ORACLE_PRICES: Record<
   OraclePriceKey,
@@ -99,6 +102,8 @@ export const ORACLE_PRICES: Record<
 > = {
   ETH_USD: ['ETH_USD'],
   STETH_USD: ['STETH_USD'],
+  // × stEthPerToken of mainnet wstETH, see WSTETH_PRICE_KEY
+  WSTETH_USD: ['STETH_USD'],
   USDC_USD: ['USDC_USD'],
   USDT_USD: ['USDT_USD'],
   DAI_USD: ['DAI_USD'],
@@ -111,7 +116,9 @@ export const ORACLE_PRICES: Record<
   WBTC_USD: ['WBTC_BTC', 'BTC_USD'],
 };
 
-// wstETH address for detecting when extra conversion is needed
+// Price key that applies the wstETH rate, on any network
+export const WSTETH_PRICE_KEY: OraclePriceKey = 'WSTETH_USD';
+// Mainnet wstETH, source of stEthPerToken for every network
 export const WSTETH_ADDRESS = c.wsteth.toLowerCase() as Address;
 
 //

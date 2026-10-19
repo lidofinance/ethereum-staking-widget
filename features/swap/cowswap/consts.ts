@@ -1,21 +1,17 @@
-import { mainnet, sepolia } from 'viem/chains';
-
 // import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import {
+  COWSWAP_NETWORKS,
   createCowswapProfile,
-  type ContactsMap,
   type CowswapToken,
 } from 'shared/dexes/cowswap';
-import mainnetNetwork from 'networks/mainnet.json';
-import sepoliaNetwork from 'networks/sepolia.json';
 
 // Any-to-any: every token is listed on both sides; ETH is sold through EthFlow
 const SWAP_TOKENS: CowswapToken[] = [
   { key: 'eth', decimals: 18, oracleFeed: 'ETH_USD' },
   { key: 'lido', decimals: 18, oracleFeed: 'STETH_USD' },
-  // wstETH is converted to stETH via stEthPerToken
-  { key: 'wsteth', decimals: 18, oracleFeed: 'STETH_USD' },
+  // wstETH is priced as stETH × stEthPerToken
+  { key: 'wsteth', decimals: 18, oracleFeed: 'WSTETH_USD' },
   { key: 'ldo', decimals: 18, oracleFeed: 'LDO_USD' },
   { key: 'weth', decimals: 18, oracleFeed: 'ETH_USD' },
   { key: 'usdc', decimals: 6, oracleFeed: 'USDC_USD' },
@@ -45,11 +41,8 @@ export const SWAP_COWSWAP_PROFILE = createCowswapProfile({
       fallback: 'token-lists/swap-dex-buy-tokenlist.json',
     },
   },
-  networks: {
-    [mainnet.id]: mainnetNetwork.contracts,
-    // Most tokens are missing on Sepolia, so validation is partial and support for this testnet is limited
-    [sepolia.id]: sepoliaNetwork.contracts as ContactsMap,
-  },
+  // every network with CoW contracts and a partner fee recipient
+  networks: COWSWAP_NETWORKS,
   analytics: {
     quoteViewed: MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteViewed,
     quoteError: MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteError,

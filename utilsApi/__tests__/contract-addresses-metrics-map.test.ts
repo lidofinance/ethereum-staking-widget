@@ -47,13 +47,34 @@ describe('METRIC_CONTRACT_ADDRESSES', () => {
   it.each([
     ['withdrawals', WITHDRAWALS_COWSWAP_PROFILE],
     ['swap', SWAP_COWSWAP_PROFILE],
-  ])('allows eth_call to every %s CoW Swap token', (_, profile) => {
-    const missing = [...profile.getNetworkTxConfig(mainnet.id).tokens].filter(
-      (address) => address !== ethAddress && !allowed.has(address),
-    );
+  ])(
+    'allows eth_call to every %s CoW Swap token and contract on its networks',
+    (_, profile) => {
+      // same mapping the proxy builds per chain, without the supportedChains filter
+      for (const chainId of profile.chainIds) {
+        const chainAllowed = new Set(
+          Object.values(CONTRACT_NAMES).flatMap((name) => {
+            const address = getContractAddress(chainId, name);
+            return address ? [address.toLowerCase()] : [];
+          }),
+        );
+        const config = profile.getNetworkTxConfig(chainId);
+        const addresses = config
+          ? [
+              ...config.tokens,
+              config.cowSettlement,
+              config.cowVaultRelayer,
+              ...(config.cowEthFlow ? [config.cowEthFlow] : []),
+            ]
+          : [];
+        const missing = addresses.filter(
+          (address) => address !== ethAddress && !chainAllowed.has(address),
+        );
 
-    expect(missing).toEqual([]);
-  });
+        expect({ chainId, missing }).toEqual({ chainId, missing: [] });
+      }
+    },
+  );
 });
 
 describe('GasPriceOracle predeploy', () => {

@@ -99,7 +99,7 @@ const makePayload = (
 // Mainnet tokens of the swap tab that need composite or buy-side pricing
 const SWAP_FEEDS: OracleFeedMaps = {
   sell: { [STETH]: 'STETH_USD', [LDO]: 'LDO_USD', [WBTC]: 'WBTC_USD' },
-  buy: { [USDC]: 'USDC_USD', [WSTETH]: 'STETH_USD', [LDO]: 'LDO_USD' },
+  buy: { [USDC]: 'USDC_USD', [WSTETH]: 'WSTETH_USD', [LDO]: 'LDO_USD' },
 };
 
 const STETH_USDC_PRICES: Prices = {
