@@ -117,10 +117,28 @@ export default withBundleAnalyzer({
       // from JS/TS code only. SVGs referenced from CSS (e.g. url(...) inside
       // @lidofinance/lido-app-ui styles) fall through to Next.js built-in
       // asset handling instead of being broken by svgr.
+      // `removeViewBox` is disabled: SVGO's default preset strips `viewBox`
+      // when it equals `0 0 <width> <height>`, which breaks scaling whenever
+      // the icon is resized via CSS or width/height props.
       {
         test: /\.svg$/,
         issuer: /\.[jt]sx?$/,
-        use: ['@svgr/webpack', 'url-loader'],
+        use: [
+          {
+            loader: '@svgr/webpack',
+            options: {
+              svgoConfig: {
+                plugins: [
+                  {
+                    name: 'preset-default',
+                    params: { overrides: { removeViewBox: false } },
+                  },
+                ],
+              },
+            },
+          },
+          'url-loader',
+        ],
       },
       {
         test: /\.md$/,
