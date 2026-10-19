@@ -88,8 +88,8 @@ const getStages = (transitStage: TransactionModalTransitStage) => ({
         title={`Claim ${claims.length === 1 ? claims[0].token + ' ' : ''}withdrawals`}
         description={
           <ClaimDescription>
-            <ClaimAmounts amounts={claims} />
             {step && <ClaimDetail>{step}</ClaimDetail>}
+            <ClaimAmounts amounts={claims} />
           </ClaimDescription>
         }
       />,
@@ -105,8 +105,8 @@ const getStages = (transitStage: TransactionModalTransitStage) => ({
         title={`Claiming ${claims.length === 1 ? claims[0].token + ' ' : ''}withdrawals`}
         description={
           <ClaimDescription>
-            <ClaimAmounts amounts={claims} />
             {step && <ClaimDetail>{step}</ClaimDetail>}
+            <ClaimAmounts amounts={claims} />
           </ClaimDescription>
         }
         txHash={txHash}
