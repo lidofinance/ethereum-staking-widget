@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { TransactionCallbackStage as Stage } from '@lidofinance/lido-ethereum-sdk/core';
 import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type {
+  LegacyTxFlowArgs,
+  TxFlowContext,
+} from 'modules/web3/hooks/tx-flow/types';
 import type { Hash, TransactionReceipt } from 'viem';
 import type { TokenClaim } from '../claim-all-utils';
 
@@ -71,22 +74,31 @@ vi.mock('modules/web3', () => ({
     core: { performTransaction: mocks.perform, walletClient: {} },
   }),
   applyRoundUpTxParameter: (value: bigint) => value,
-  useTxFlow: () => async (args: TxFlowArgs) => {
+  // The hook uses the legacy flow, so the fake accepts only its arguments.
+  useTxFlow: () => async (args: LegacyTxFlowArgs) => {
     if (mocks.skipFlow) return;
 
+    const ctx: TxFlowContext = {
+      calls: [],
+      status: {},
+      isAA: mocks.aa,
+      data: undefined,
+    };
+
     if (mocks.aa) {
-      await args.callsFn?.();
-      await args.onSign?.({ stage: Stage.SIGN, isAA: true });
+      const common = { isAA: true, ctx } as const;
+      await args.callsFn?.(ctx);
+      await args.onSign?.({ ...common, stage: Stage.SIGN });
       if (mocks.batchError?.stage === 'sign') throw mocks.batchError.error;
       await args.onReceipt?.({
+        ...common,
         stage: Stage.RECEIPT,
-        isAA: true,
         txHashOrCallId: callId,
       });
       if (mocks.batchError?.stage === 'receipt') throw mocks.batchError.error;
       await args.onSuccess?.({
+        ...common,
         stage: Stage.DONE,
-        isAA: true,
         txHash: batchHash,
       });
       return;
@@ -96,7 +108,7 @@ vi.mock('modules/web3', () => ({
     // DONE, which is what makes a later mined hash worth preferring.
     let submitted: Hash | undefined;
     await args.sendTransaction(async (stage) => {
-      const common = { isAA: false } as const;
+      const common = { isAA: false, ctx } as const;
       if (stage.stage === Stage.SIGN)
         await args.onSign?.({ ...common, stage: Stage.SIGN });
       if (stage.stage === Stage.RECEIPT) {
