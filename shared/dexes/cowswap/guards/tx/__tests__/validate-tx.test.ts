@@ -4,6 +4,9 @@ vi.mock('../utils/validate-tx-signing', () => ({
   validateSendTransaction: vi.fn(),
   validateSendCalls: vi.fn(),
   extractApprovals: vi.fn(() => []),
+  sanitizeTransactionParams: vi.fn(
+    (_method: string, params: unknown) => params,
+  ),
 }));
 
 vi.mock('../utils/validate-typed-message', () => ({
@@ -13,6 +16,7 @@ vi.mock('../utils/validate-typed-message', () => ({
 import { validateRpcRequest } from '../validate-tx';
 import {
   extractApprovals,
+  sanitizeTransactionParams,
   validateSendTransaction,
   validateSendCalls,
   validateSignTypedData,
@@ -371,6 +375,25 @@ describe('validateRpcRequest — approvals', () => {
 
     expect(approvals).toEqual([approval]);
     expect(extractApprovals).toHaveBeenCalledWith(
+      'eth_sendTransaction',
+      request.params,
+    );
+  });
+});
+
+describe('validateRpcRequest — sanitized params', () => {
+  it('forwards params sanitized for the method', async () => {
+    vi.mocked(validateSendTransaction).mockResolvedValue({
+      allowed: true,
+      result: undefined,
+    });
+    vi.mocked(sanitizeTransactionParams).mockReturnValueOnce(['clean']);
+    const request = makeRequest('eth_sendTransaction', [{ dirty: true }]);
+
+    const { sanitizedRequest } = await validateRpcRequest(request, mainnetCtx);
+
+    expect(sanitizedRequest.params).toEqual(['clean']);
+    expect(sanitizeTransactionParams).toHaveBeenCalledWith(
       'eth_sendTransaction',
       request.params,
     );

@@ -33,6 +33,9 @@ export type NetworkTxConfig = {
   buyTokens: Set<Address>;
   cowVaultRelayer: Address;
   cowSettlement: Address;
+  // native ETH is sold only through EthFlow; absent on networks without it
+  cowEthFlow?: Address;
+  weth: Address;
   feeRecipient: Address;
 };
 

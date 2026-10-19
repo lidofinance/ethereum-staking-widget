@@ -118,14 +118,17 @@ describe('createCowswapProfile', () => {
       'has duplicate tokens',
     ],
     [
-      'ETH as sell token',
+      'ETH as sell token without EthFlow',
       {
         sellTokens: [
           ...TEST_PROFILE_CONFIG.sellTokens,
           { key: 'eth', decimals: 18, oracleFeed: 'ETH_USD' },
         ],
+        networks: {
+          [mainnet.id]: { ...c, cowEthFlow: undefined } as unknown as typeof c,
+        },
       },
-      'cannot sell ETH',
+      'cannot sell ETH without EthFlow',
     ],
     [
       'token decimals differing between sides',
@@ -169,5 +172,22 @@ describe('createCowswapProfile', () => {
     expect(sellTokens.has(lower(c.wsteth))).toBe(true);
     expect(buyTokens.has(lower(c.wsteth))).toBe(true);
     expect(profile.oracleFeeds.buy[lower(c.wsteth)]).toBe('STETH_USD');
+  });
+
+  it('sells ETH only on networks with EthFlow', () => {
+    const profile = createCowswapProfile({
+      ...TEST_PROFILE_CONFIG,
+      sellTokens: [
+        ...TEST_PROFILE_CONFIG.sellTokens,
+        { key: 'eth', decimals: 18, oracleFeed: 'ETH_USD' },
+      ],
+    });
+
+    const mainnetConfig = profile.getNetworkTxConfig(mainnet.id);
+    expect(mainnetConfig.sellTokens.has(ethAddress)).toBe(true);
+    expect(mainnetConfig.cowEthFlow).toBe(lower(c.cowEthFlow));
+    expect(
+      profile.getNetworkTxConfig(sepolia.id).sellTokens.has(ethAddress),
+    ).toBe(false);
   });
 });

@@ -1,15 +1,17 @@
 import {
   decodeFunctionData,
   erc20Abi,
+  ethAddress,
   isAddressEqual,
   Address,
   Hex,
   hexToBigInt,
   maxUint256,
+  maxUint32,
 } from 'viem';
 import { z } from 'zod';
 
-import { CowSettlementAbi } from '../../../abi';
+import { CowEthFlowAbi, CowSettlementAbi } from '../../../abi';
 
 import { TRANSACTION_ERROR } from '../consts';
 
@@ -179,13 +181,85 @@ const validateSettlerSignature = async (
   }
 };
 
+// EthFlow sells native ETH: createOrder carries the order and the ETH, invalidateOrder cancels it
+const validateEthFlowCall = async (
+  data: Hex,
+  value: bigint,
+  ctx: ValidationContext,
+): Promise<ValidationResult<OrderData | CancelOrderData>> => {
+  const { cowEthFlow, cowSettlement, weth } = ctx.networkTxConfig;
+  if (!cowEthFlow) return { allowed: false, reason: TRANSACTION_ERROR(2041) };
+
+  let decoded;
+  try {
+    decoded = decodeFunctionData({ abi: CowEthFlowAbi, data });
+  } catch {
+    return { allowed: false, reason: TRANSACTION_ERROR(2041) };
+  }
+
+  const [ethFlowOrder] = decoded.args;
+  const order: OrderData = {
+    sellToken: ethAddress,
+    buyToken: ethFlowOrder.buyToken.toLowerCase() as Address,
+    receiver: ethFlowOrder.receiver.toLowerCase() as Address,
+    sellAmount: ethFlowOrder.sellAmount,
+    buyAmount: ethFlowOrder.buyAmount,
+    validTo: ethFlowOrder.validTo,
+    appData: ethFlowOrder.appData,
+    feeAmount: ethFlowOrder.feeAmount,
+    kind: 'sell',
+    partiallyFillable: false,
+    sellTokenBalance: 'erc20',
+    buyTokenBalance: 'erc20',
+  };
+
+  if (decoded.functionName === 'invalidateOrder') {
+    if (value > 0n) return { allowed: false, reason: TRANSACTION_ERROR(2042) };
+
+    // EthFlow places the order as WETH, owned by the contract, never expiring
+    const settlementOrder = {
+      ...order,
+      sellToken: weth,
+      validTo: Number(maxUint32),
+    };
+    const orderUid = calculateOrderUID(
+      hashCowswapOrder(settlementOrder, ctx.chainId, cowSettlement),
+      cowEthFlow,
+      Number(maxUint32),
+    );
+    // we allow to cancel any order, same as Settlement.invalidateOrder
+    return { allowed: true, result: { isCancel: true, orderUid } };
+  }
+
+  if (ethFlowOrder.partiallyFillable) {
+    return { allowed: false, reason: TRANSACTION_ERROR(2043) };
+  }
+  if (ethFlowOrder.feeAmount !== 0n) {
+    return { allowed: false, reason: TRANSACTION_ERROR(2044) };
+  }
+  // the contract takes exactly sellAmount + feeAmount
+  if (value !== ethFlowOrder.sellAmount) {
+    return { allowed: false, reason: TRANSACTION_ERROR(2045) };
+  }
+  // ETH to WETH is a wrap, not a trade
+  if (isAddressEqual(order.buyToken, weth)) {
+    return { allowed: false, reason: TRANSACTION_ERROR(2046) };
+  }
+
+  // same checks as a signed order: tokens, receiver, validTo, appData
+  const messageResult = await validateCowSwapOrderMessage(order, ctx);
+  if (!messageResult.allowed) return messageResult;
+
+  return { allowed: true, result: order };
+};
+
 /**
  * Validates eth_sendTransaction parameters.
  *
  * Rules:
  * - Contract creation (no `to`): blocked
  * - Unknown target address: blocked
- * - no ETH value allowed in any transaction(as withdrawal flow should not require sending ETH)
+ * - ETH value only for EthFlow.createOrder, equal to the order sell amount
  * - CoW Protocol contract (Settlement): only allow setPreSignature() calls with valid orderUID and signature
  * - Other tokens: approve() only, spender must be VaultRelayer, amount checked by the trade guard
  */
@@ -202,17 +276,34 @@ export const validateSendTransaction = async (
     };
   }
 
-  const { to: txTo, data, value } = parseResult.data[0];
+  const { to: txTo, from, data, value } = parseResult.data[0];
 
-  if (value && hexToBigInt(value) > 0n) {
+  if (from && !isAddressEqual(from, ctx.signer)) {
+    return {
+      allowed: false,
+      reason: TRANSACTION_ERROR(2047),
+    };
+  }
+
+  const txValue = value ? hexToBigInt(value) : 0n;
+  const { sellTokens, cowVaultRelayer, cowSettlement, cowEthFlow } =
+    ctx.networkTxConfig;
+
+  if (cowEthFlow && isAddressEqual(txTo, cowEthFlow)) {
+    return validateEthFlowCall(data, txValue, ctx);
+  }
+
+  if (txValue > 0n) {
     return {
       allowed: false,
       reason: TRANSACTION_ERROR(2031),
     };
   }
 
-  const { sellTokens, cowVaultRelayer, cowSettlement } = ctx.networkTxConfig;
-  const allowedTargets = new Set([...sellTokens, cowSettlement]);
+  // native ETH placeholder is never a transaction target
+  const allowedTargets = new Set(
+    [...sellTokens, cowSettlement].filter((address) => address !== ethAddress),
+  );
 
   if (allowedTargets.has(txTo.toLocaleLowerCase() as Address)) {
     // CoW Protocol - only preSetSignature and only for smart wallets(can't sign messages)
@@ -339,4 +430,20 @@ export const extractApprovals = (
   }
 
   return approvals;
+};
+
+// Params forwarded to the wallet: only the validated fields, unknown keys dropped
+export const sanitizeTransactionParams = (
+  method: string,
+  params: unknown[] | undefined,
+): unknown[] | undefined => {
+  if (method === 'eth_sendTransaction') {
+    return sendTransactionParamsSchema.parse(params);
+  }
+  if (method === 'wallet_sendCalls') {
+    const [batch] = sendCallsParamsSchema.parse(params);
+    return [{ ...(params?.[0] as object), calls: batch.calls }];
+  }
+
+  return params;
 };

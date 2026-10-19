@@ -96,8 +96,11 @@ export const createCowswapProfile = ({
       new Set(buyKeys).size === buyKeys.length,
     'CoW Swap profile has duplicate tokens',
   );
-  // native ETH cannot be approved or presigned
-  invariant(!sellKeys.includes('eth'), 'CoW Swap profile cannot sell ETH');
+  // native ETH cannot be approved or presigned, it is sold through EthFlow
+  invariant(
+    !sellKeys.includes('eth') || mainnetContracts.cowEthFlow,
+    'CoW Swap profile cannot sell ETH without EthFlow',
+  );
   // a token listed on both sides must use one price and one decimals
   for (const sellToken of sellTokens) {
     const buyToken = buyTokens.find((token) => token.key === sellToken.key);

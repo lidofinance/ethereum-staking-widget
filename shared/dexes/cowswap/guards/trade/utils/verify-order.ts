@@ -47,7 +47,7 @@ export const unitsToRaw = (
  * Verifies that the EIP-712 order amounts match the onBeforeTrade payload
  * that was validated by the trade guard.
  *
- * - sellAmount must equal the validated sellAmountUnits (exact match)
+ * - sellAmount must not exceed the validated sellAmountUnits
  * - buyAmount must be >= the validated buyAmountMinUnits (no worse than shown)
  *
  * Returns null if OK, or an error message if verification fails.

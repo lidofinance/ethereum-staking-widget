@@ -8,6 +8,7 @@ import {
   ValidationContext,
   extractApprovals,
   isCancelOrder,
+  sanitizeTransactionParams,
   jsonRpcRequestSchema,
   validateSendCalls,
   validateSendTransaction,
@@ -106,6 +107,9 @@ export const validateRpcRequest = async (
   return {
     order,
     approvals,
-    sanitizedRequest,
+    sanitizedRequest: {
+      ...sanitizedRequest,
+      params: sanitizeTransactionParams(method, params),
+    },
   };
 };

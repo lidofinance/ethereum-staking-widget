@@ -1,13 +1,21 @@
 {
   "name": "Lido swap sell",
-  "timestamp": "2026-10-15T00:00:00.000Z",
+  "timestamp": "2026-10-19T00:00:00.000Z",
   "version": {
     "major": 1,
-    "minor": 0,
+    "minor": 1,
     "patch": 0
   },
   "keywords": [],
   "tokens": [
+    {
+      "symbol": "ETH",
+      "name": "Ether",
+      "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/logo.png"
+    },
     {
       "symbol": "stETH",
       "name": "Liquid staked Ether 2.0",

@@ -41,6 +41,7 @@
     "ensUniversalResolver": "0xeEeEEEeE14D718C2B47D9923Deab1335E144EeEe",
     "cowVaultRelayer": "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110",
     "cowSettlement": "0x9008D19f58AAbD9eD0D60971565AA8510560ab41",
+    "cowEthFlow": "0xba3cb449bd2b4adddbc894d8697f5170800eadec",
 
     "ggvVault": "0xef417FCE1883c6653E7dC6AF7c6F85CCDE84Aa09",
     "ggvTeller": "0x4C74ccA483A278Bcb90Aea3f8F565e56202D82B2",

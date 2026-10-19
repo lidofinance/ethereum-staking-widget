@@ -60,6 +60,7 @@ export const CONTRACT_NAMES = {
   ensUniversalResolver: 'ensUniversalResolver',
   cowVaultRelayer: 'cowVaultRelayer',
   cowSettlement: 'cowSettlement',
+  cowEthFlow: 'cowEthFlow',
 
   // 3rd party tokens
   weth: 'weth',

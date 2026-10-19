@@ -7,6 +7,7 @@ vi.mock('utils/standardFetcher', () => ({
 
 import {
   extractApprovals,
+  sanitizeTransactionParams,
   validateSendTransaction,
   validateSendCalls,
 } from '../validate-tx-signing';
@@ -14,13 +15,15 @@ import { hashCowswapOrder, calculateOrderUID } from '../order';
 import {
   encodeFunctionData,
   erc20Abi,
+  ethAddress,
   keccak256,
+  maxUint32,
   parseEther,
   toHex,
 } from 'viem';
 // json-stringify-deterministic is a transitive dependency (see utils.ts)
 import stringify from 'json-stringify-deterministic';
-import { CowSettlementAbi } from '../../../../abi';
+import { CowEthFlowAbi, CowSettlementAbi } from '../../../../abi';
 import { TRANSACTION_ERROR } from '../../consts';
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -941,5 +944,308 @@ describe('extractApprovals', () => {
     expect(extractApprovals('eth_signTypedData_v4', [SIGNER, '{}'])).toEqual(
       [],
     );
+  });
+});
+
+describe('EthFlow', () => {
+  const ETH_FLOW = mainnetNetwork.contracts.cowEthFlow.toLowerCase();
+  const ethFlowCtx = {
+    ...mainnetCtx,
+    networkTxConfig: {
+      ...MAINNET_TX_CONFIG,
+      sellTokens: new Set([...MAINNET_TX_CONFIG.sellTokens, ethAddress]),
+    },
+  };
+  const ETH_FLOW_ORDER = {
+    buyToken: USDC as `0x${string}`,
+    receiver: SIGNER,
+    sellAmount: parseEther('1'),
+    buyAmount: 2_000_000_000n,
+    appData: APP_DATA,
+    feeAmount: 0n,
+    validTo: TEST_VALID_TO,
+    partiallyFillable: false,
+    quoteId: 1n,
+  };
+  const buildEthFlowCall = (
+    functionName: 'createOrder' | 'invalidateOrder',
+    overrides: Partial<typeof ETH_FLOW_ORDER> = {},
+  ) =>
+    encodeFunctionData({
+      abi: CowEthFlowAbi,
+      functionName,
+      args: [{ ...ETH_FLOW_ORDER, ...overrides }],
+    });
+  const sendEthFlow = (
+    data: `0x${string}`,
+    value = parseEther('1'),
+    ctx: typeof mainnetCtx = ethFlowCtx,
+  ) =>
+    validateSendTransaction([{ to: ETH_FLOW, data, value: toHex(value) }], ctx);
+
+  beforeEach(() => {
+    vi.mocked(standardFetcher).mockResolvedValue({
+      fullAppData: buildFullAppData(FEE_RECIPIENT),
+    });
+  });
+
+  it('allows createOrder and returns the order sold as native ETH', async () => {
+    expect(await sendEthFlow(buildEthFlowCall('createOrder'))).toEqual({
+      allowed: true,
+      result: {
+        sellToken: ethAddress,
+        buyToken: USDC,
+        receiver: SIGNER.toLowerCase(),
+        sellAmount: parseEther('1'),
+        buyAmount: 2_000_000_000n,
+        validTo: TEST_VALID_TO,
+        appData: APP_DATA,
+        feeAmount: 0n,
+        kind: 'sell',
+        partiallyFillable: false,
+        sellTokenBalance: 'erc20',
+        buyTokenBalance: 'erc20',
+      },
+    });
+  });
+
+  it.each([
+    ['ETH not sellable in the profile', {}, parseEther('1'), mainnetCtx, 2004],
+    ['value below sell amount', {}, parseEther('0.5'), ethFlowCtx, 2045],
+    ['zero value', {}, 0n, ethFlowCtx, 2045],
+    ['non-zero fee', { feeAmount: 1n }, parseEther('1'), ethFlowCtx, 2044],
+    [
+      'partially fillable order',
+      { partiallyFillable: true },
+      parseEther('1'),
+      ethFlowCtx,
+      2043,
+    ],
+    [
+      'WETH as buy token',
+      { buyToken: WETH as `0x${string}` },
+      parseEther('1'),
+      ethFlowCtx,
+      2046,
+    ],
+    [
+      'buy token outside the allowlist',
+      { buyToken: ATTACKER },
+      parseEther('1'),
+      ethFlowCtx,
+      2005,
+    ],
+    [
+      'foreign receiver',
+      { receiver: ATTACKER },
+      parseEther('1'),
+      ethFlowCtx,
+      2006,
+    ],
+    [
+      'expired order',
+      { validTo: Math.floor(Date.now() / 1000) - 1 },
+      parseEther('1'),
+      ethFlowCtx,
+      2008,
+    ],
+  ] as const)(
+    'blocks createOrder with %s',
+    async (_, overrides, value, ctx, code) => {
+      expect(
+        await sendEthFlow(
+          buildEthFlowCall('createOrder', overrides),
+          value,
+          ctx,
+        ),
+      ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(code) });
+    },
+  );
+
+  it('blocks createOrder with a foreign appCode', async () => {
+    vi.mocked(standardFetcher).mockResolvedValue({
+      fullAppData: buildFullAppData(FEE_RECIPIENT).replaceAll(
+        'Lido dApp Staking',
+        'Other App',
+      ),
+    });
+    expect(await sendEthFlow(buildEthFlowCall('createOrder'))).toEqual({
+      allowed: false,
+      reason: TRANSACTION_ERROR(2038),
+    });
+  });
+
+  it('blocks unknown EthFlow calls', async () => {
+    const wrapAll = ('0x' + 'deadbeef') as `0x${string}`;
+    expect(await sendEthFlow(wrapAll, 0n)).toEqual({
+      allowed: false,
+      reason: TRANSACTION_ERROR(2041),
+    });
+  });
+
+  it('allows invalidateOrder and computes the EthFlow order uid', async () => {
+    const result = await sendEthFlow(buildEthFlowCall('invalidateOrder'), 0n);
+    const settlementOrder = {
+      ...TEST_ORDER,
+      sellToken: WETH as `0x${string}`,
+      buyToken: USDC as `0x${string}`,
+      receiver: SIGNER.toLowerCase() as `0x${string}`,
+      sellAmount: parseEther('1'),
+      buyAmount: 2_000_000_000n,
+      validTo: Number(maxUint32),
+      appData: APP_DATA,
+      feeAmount: 0n,
+    };
+    const orderUid = calculateOrderUID(
+      hashCowswapOrder(
+        settlementOrder,
+        CHAIN_MAINNET,
+        COW_SETTLEMENT as `0x${string}`,
+      ),
+      ETH_FLOW as `0x${string}`,
+      Number(maxUint32),
+    );
+
+    expect(result).toEqual({
+      allowed: true,
+      result: { isCancel: true, orderUid },
+    });
+  });
+
+  it('blocks invalidateOrder with ETH value', async () => {
+    expect(await sendEthFlow(buildEthFlowCall('invalidateOrder'), 1n)).toEqual({
+      allowed: false,
+      reason: TRANSACTION_ERROR(2042),
+    });
+  });
+
+  it('still blocks ETH value to any other target', async () => {
+    expect(
+      await validateSendTransaction(
+        [
+          {
+            to: STETH,
+            data: buildApproveAmount(COW_VAULT_RELAYER, 1n),
+            value: toHex(1n),
+          },
+        ],
+        ethFlowCtx,
+      ),
+    ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2031) });
+  });
+
+  it('never targets the native ETH placeholder', async () => {
+    expect(
+      await validateSendTransaction(
+        [{ to: ethAddress, data: buildApproveAmount(COW_VAULT_RELAYER, 1n) }],
+        ethFlowCtx,
+      ),
+    ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2032) });
+  });
+
+  it('treats EthFlow as unknown target on networks without it', async () => {
+    const ctx = {
+      ...ethFlowCtx,
+      networkTxConfig: { ...ethFlowCtx.networkTxConfig, cowEthFlow: undefined },
+    };
+    expect(await sendEthFlow(buildEthFlowCall('createOrder'), 0n, ctx)).toEqual(
+      {
+        allowed: false,
+        reason: TRANSACTION_ERROR(2032),
+      },
+    );
+    expect(
+      await sendEthFlow(buildEthFlowCall('createOrder'), parseEther('1'), ctx),
+    ).toEqual({
+      allowed: false,
+      reason: TRANSACTION_ERROR(2031),
+    });
+  });
+
+  it('returns the order from a wallet_sendCalls batch', async () => {
+    const result = await validateSendCalls(
+      [
+        {
+          calls: [
+            {
+              to: ETH_FLOW,
+              data: buildEthFlowCall('createOrder'),
+              value: toHex(parseEther('1')),
+            },
+          ],
+        },
+      ],
+      ethFlowCtx,
+    );
+    expect(result.allowed).toBe(true);
+    expect(result.result).toMatchObject({ sellToken: ethAddress });
+  });
+});
+
+describe('sanitizeTransactionParams', () => {
+  const approveData = buildApproveAmount(COW_VAULT_RELAYER, 1n);
+
+  it('keeps only validated eth_sendTransaction fields', () => {
+    expect(
+      sanitizeTransactionParams('eth_sendTransaction', [
+        {
+          to: STETH,
+          from: SIGNER,
+          data: approveData,
+          value: '0x0',
+          input: '0xdeadbeef',
+          authorizationList: [{}],
+        },
+      ]),
+    ).toEqual([
+      {
+        to: STETH,
+        from: SIGNER.toLowerCase(),
+        data: approveData,
+        value: '0x0',
+      },
+    ]);
+  });
+
+  it('keeps batch fields but only validated call fields', () => {
+    expect(
+      sanitizeTransactionParams('wallet_sendCalls', [
+        {
+          version: '2.0.0',
+          chainId: '0x1',
+          calls: [{ to: STETH, data: approveData, input: '0xdeadbeef' }],
+        },
+      ]),
+    ).toEqual([
+      {
+        version: '2.0.0',
+        chainId: '0x1',
+        calls: [{ to: STETH, data: approveData }],
+      },
+    ]);
+  });
+
+  it('leaves other methods untouched', () => {
+    const params = [SIGNER, '{}'];
+    expect(sanitizeTransactionParams('eth_signTypedData_v4', params)).toBe(
+      params,
+    );
+  });
+});
+
+describe('validateSendTransaction — from', () => {
+  it('blocks a transaction from another address', async () => {
+    expect(
+      await validateSendTransaction(
+        [
+          {
+            to: STETH,
+            from: ATTACKER,
+            data: buildApproveAmount(COW_VAULT_RELAYER, 1n),
+          },
+        ],
+        mainnetCtx,
+      ),
+    ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2047) });
   });
 });

@@ -10,8 +10,9 @@ import {
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
-// Any-to-any: every ERC-20 is listed on both sides; native ETH is buy-only
+// Any-to-any: every token is listed on both sides; ETH is sold through EthFlow
 const SWAP_TOKENS: CowswapToken[] = [
+  { key: 'eth', decimals: 18, oracleFeed: 'ETH_USD' },
   { key: 'lido', decimals: 18, oracleFeed: 'STETH_USD' },
   // wstETH is converted to stETH via stEthPerToken
   { key: 'wsteth', decimals: 18, oracleFeed: 'STETH_USD' },
@@ -30,10 +31,7 @@ const SWAP_TOKENS: CowswapToken[] = [
 export const SWAP_COWSWAP_PROFILE = createCowswapProfile({
   appCode: 'Lido dApp Swap',
   sellTokens: SWAP_TOKENS,
-  buyTokens: [
-    { key: 'eth', decimals: 18, oracleFeed: 'ETH_USD' },
-    ...SWAP_TOKENS,
-  ],
+  buyTokens: SWAP_TOKENS,
   defaultPair: { sell: 'STETH', buy: 'ETH' },
   tokenLists: {
     sell: {

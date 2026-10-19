@@ -31,10 +31,13 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     expect(profile.appCode).toBe('Lido dApp Swap');
   });
 
-  it('lists every ERC-20 on both sides and ETH as buy-only', () => {
-    const { sellTokens, buyTokens } = profile.getNetworkTxConfig(mainnet.id);
-    expect(sellTokens).toEqual(new Set(ERC20_TOKENS));
+  it('lists every token on both sides and sells ETH through EthFlow', () => {
+    const { sellTokens, buyTokens, cowEthFlow } = profile.getNetworkTxConfig(
+      mainnet.id,
+    );
+    expect(sellTokens).toEqual(new Set([ethAddress, ...ERC20_TOKENS]));
     expect(buyTokens).toEqual(new Set([ethAddress, ...ERC20_TOKENS]));
+    expect(cowEthFlow).toBe(lower(c.cowEthFlow));
   });
 
   it('has on-chain decimals for every token', () => {
@@ -59,7 +62,7 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     for (const address of [ethAddress, ...ERC20_TOKENS]) {
       expect(profile.oracleFeeds.buy[address]).toBeDefined();
     }
-    for (const address of ERC20_TOKENS) {
+    for (const address of [ethAddress, ...ERC20_TOKENS]) {
       expect(profile.oracleFeeds.sell[address]).toBeDefined();
     }
   });

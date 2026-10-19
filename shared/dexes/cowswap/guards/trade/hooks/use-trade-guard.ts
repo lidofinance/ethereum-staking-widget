@@ -1,3 +1,4 @@
+import { ethAddress, isAddressEqual } from 'viem';
 import { useCallback, useRef, useState } from 'react';
 
 import type { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
@@ -171,12 +172,18 @@ export const useTradeGuard = ({
 
   /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
   const verifySignedOrder = useCallback(
-    (order: OrderData): string | null =>
-      verifyOrderAgainstSnapshot(
+    (order: OrderData): string | null => {
+      const error = verifyOrderAgainstSnapshot(
         order,
         lastValidatedTradeRef.current,
         tokenDecimals,
-      ),
+      );
+      // EthFlow sends ETH with the order: one transaction per validated trade
+      if (!error && isAddressEqual(order.sellToken, ethAddress)) {
+        lastValidatedTradeRef.current = null;
+      }
+      return error;
+    },
     [tokenDecimals],
   );
 

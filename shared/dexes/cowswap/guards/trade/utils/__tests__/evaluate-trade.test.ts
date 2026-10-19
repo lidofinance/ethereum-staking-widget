@@ -504,6 +504,26 @@ describe('verifyOrderAgainstSnapshot', () => {
     buyAmountMinUnits: '1980',
   };
 
+  it('verifies an EthFlow order against a native ETH snapshot', () => {
+    const ETH = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+    const ethOrder = {
+      ...ORDER,
+      sellToken: ETH.toLowerCase(),
+    } as unknown as OrderData;
+    const ethSnapshot = { ...SNAPSHOT, sellToken: ETH as `0x${string}` };
+
+    expect(
+      verifyOrderAgainstSnapshot(ethOrder, ethSnapshot, TOKEN_DECIMALS),
+    ).toBeNull();
+    expect(
+      verifyOrderAgainstSnapshot(
+        { ...ethOrder, sellAmount: 2n * 10n ** 18n },
+        ethSnapshot,
+        TOKEN_DECIMALS,
+      ),
+    ).toBe(TRADE_VERIFICATION_ERROR(1005));
+  });
+
   it('returns 1001 without snapshot', () => {
     expect(verifyOrderAgainstSnapshot(ORDER, null, TOKEN_DECIMALS)).toBe(
       TRADE_BUILD_ERROR(1001),
