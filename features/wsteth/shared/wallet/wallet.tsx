@@ -11,13 +11,18 @@ import {
   useStETHByWstETH,
   useIsLedgerLive,
 } from 'modules/web3';
-import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
+import {
+  CardBalance,
+  CardRow,
+  Fallback,
+  CardNetwork,
+  MultiChainWalletBackdrop,
+} from 'shared/wallet';
 
-import { StyledCard } from './styles';
 import { useConfig } from 'config';
 
 const WalletComponent = () => {
-  const { chainType } = useDappStatus();
+  const { chainId } = useDappStatus();
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
@@ -26,7 +31,10 @@ const WalletComponent = () => {
   const stethByWsteth = useStETHByWstETH(wstethBalance?.data);
 
   return (
-    <StyledCard data-testid="wrapCardSection" $chainType={chainType}>
+    <MultiChainWalletBackdrop
+      data-testid="wrapCardSection"
+      multiChainId={chainId}
+    >
       <CardRow>
         <CardBalance
           title="ETH balance"
@@ -39,7 +47,7 @@ const WalletComponent = () => {
             />
           }
         />
-        <CardAccount />
+        <CardNetwork />
       </CardRow>
       <Divider />
       <CardRow>
@@ -96,7 +104,7 @@ const WalletComponent = () => {
           }
         />
       </CardRow>
-    </StyledCard>
+    </MultiChainWalletBackdrop>
   );
 };
 

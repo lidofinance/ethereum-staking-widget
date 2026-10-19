@@ -1,10 +1,11 @@
-import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
+import { LIDO_MULTICHAIN_CHAINS, CHAINS } from 'consts/chains';
 import { Card } from 'shared/wallet/card';
 import styled, { css } from 'styled-components';
 
 type MultiChainWalletBackdropProps = React.ComponentProps<typeof Card> & {
-  multiChainId?: LIDO_MULTICHAIN_CHAINS;
+  multiChainId?: LIDO_MULTICHAIN_CHAINS | CHAINS;
 };
+
 export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
   <Card {...props} />
 ))<MultiChainWalletBackdropProps>`
@@ -12,6 +13,9 @@ export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
   ${({ multiChainId }) => {
     if (!multiChainId) return '';
     switch (multiChainId) {
+      // L2s and unsupported but recognized L2s
+      case CHAINS.OptimismSepolia:
+      case CHAINS.Optimism:
       case LIDO_MULTICHAIN_CHAINS.Optimism:
         return css`
           background: linear-gradient(
@@ -21,14 +25,17 @@ export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
             #b73544 100%
           );
         `;
+      case CHAINS.Arbitrum:
       case LIDO_MULTICHAIN_CHAINS.Arbitrum:
         return css`
           background: linear-gradient(52.01deg, #1d1e35 0.01%, #12aaff 100%);
         `;
+      case CHAINS.Base:
       case LIDO_MULTICHAIN_CHAINS.Base:
         return css`
           background: linear-gradient(52.01deg, #1d1e35 0.01%, #4782fc 100%);
         `;
+      case CHAINS.Linea:
       case LIDO_MULTICHAIN_CHAINS.Linea:
         return css`
           background: linear-gradient(52deg, #190066 0.01%, #84dcfb 100%);
@@ -41,6 +48,8 @@ export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
             #f0b90b 91.42%
           );
         `;
+      case CHAINS.UnichainSepolia:
+      case CHAINS.Unichain:
       case LIDO_MULTICHAIN_CHAINS.Unichain:
         return css`
           background: linear-gradient(52.01deg, #fc0fa4 0.01%, #8e1459 100%);
@@ -49,6 +58,16 @@ export const MultiChainWalletBackdrop = styled(({ multiChainId, ...props }) => (
         return css`
           background: linear-gradient(52.01deg, #00cfff 0.01%, #1d3fd4 100%);
         `;
+
+      // Ethereum mainnet + testnets
+      case CHAINS.Hoodi:
+      case CHAINS.Holesky:
+      case CHAINS.Sepolia:
+      case CHAINS.Mainnet:
+        return css`
+          background: linear-gradient(65.21deg, #37394a 19.1%, #3e4b4f 100%);
+        `;
+      // Unrecognized chains
       default:
         return css`
           background: linear-gradient(
