@@ -11,7 +11,7 @@ import {
   useStETHByWstETH,
   useIsLedgerLive,
 } from 'modules/web3';
-import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
+import { CardBalance, CardRow, Fallback, CardNetwork } from 'shared/wallet';
 
 import { StyledCard } from './styles';
 import { useConfig } from 'config';
@@ -39,7 +39,7 @@ const WalletComponent = () => {
             />
           }
         />
-        <CardAccount />
+        <CardNetwork />
       </CardRow>
       <Divider />
       <CardRow>
