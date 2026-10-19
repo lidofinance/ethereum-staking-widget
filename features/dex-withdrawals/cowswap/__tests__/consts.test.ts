@@ -87,7 +87,10 @@ describe('WITHDRAWALS_COWSWAP_PROFILE', () => {
   });
 
   it('defaults to stETH → ETH', () => {
-    expect(profile.defaultPair).toEqual({ sell: 'STETH', buy: 'ETH' });
+    expect(profile.getDefaultPair(mainnet.id)).toEqual({
+      sell: lower(c.lido),
+      buy: 'ETH',
+    });
   });
 
   it('points to withdrawals DEX token lists', () => {

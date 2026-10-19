@@ -64,6 +64,11 @@ export const CONTRACT_NAMES = {
   aggregatorCbbtcUsdPriceFeed: 'aggregatorCbbtcUsdPriceFeed',
   aggregatorLdoEthPriceFeed: 'aggregatorLdoEthPriceFeed',
   aggregatorWbtcBtcPriceFeed: 'aggregatorWbtcBtcPriceFeed',
+  aggregatorLinkUsdPriceFeed: 'aggregatorLinkUsdPriceFeed',
+  aggregatorUniUsdPriceFeed: 'aggregatorUniUsdPriceFeed',
+  aggregatorAaveUsdPriceFeed: 'aggregatorAaveUsdPriceFeed',
+  aggregatorRlusdUsdPriceFeed: 'aggregatorRlusdUsdPriceFeed',
+  aggregatorUsdgUsdPriceFeed: 'aggregatorUsdgUsdPriceFeed',
   stethCurve: 'stethCurve',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
@@ -83,6 +88,11 @@ export const CONTRACT_NAMES = {
   dai: 'dai',
   pyusd: 'pyusd',
   cbbtc: 'cbbtc',
+  link: 'link',
+  uni: 'uni',
+  aave: 'aave',
+  rlusd: 'rlusd',
+  usdg: 'usdg',
 
   // GGV
   ggvVault: 'ggvVault',

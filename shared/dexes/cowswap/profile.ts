@@ -41,21 +41,25 @@ export type CowswapProfileConfig = {
   appCode: string;
   sellTokens: readonly CowswapToken[];
   buyTokens: readonly CowswapToken[];
-  // widget asset symbols selected on load
-  defaultPair: { sell: string; buy: string };
+  // token keys selected on load, first available on the network wins
+  defaultPair: { sell: readonly DexTokenKey[]; buy: readonly DexTokenKey[] };
   tokenLists: { sell: CowswapTokenList; buy: CowswapTokenList };
   // token decimals and prices apply on every network, prices come from mainnet Chainlink
   networks: Record<number, CowswapNetwork>;
   analytics: CowswapAnalyticsEvents;
 };
 
+// widget assets: token address, or 'ETH' for native ETH
+export type CowswapDefaultPair = { sell: string; buy: string };
+
 export type CowswapProfile = Omit<
   CowswapProfileConfig,
-  'networks' | 'sellTokens' | 'buyTokens'
+  'networks' | 'sellTokens' | 'buyTokens' | 'defaultPair'
 > & {
   // networks with a partner fee recipient; undefined disables the swap
   chainIds: readonly number[];
   getNetworkTxConfig: (chainId: number) => NetworkTxConfig | undefined;
+  getDefaultPair: (chainId: number) => CowswapDefaultPair | undefined;
   // lowercased token address on any enabled network → decimals / price
   tokenDecimals: TokenDecimalsMap;
   oracleFeeds: OracleFeedMaps;
@@ -84,10 +88,24 @@ const toAddressMap = <T>(
   return map;
 };
 
+// first preferred key the network allows on that side
+const pickAsset = (
+  contracts: CowswapNetwork,
+  allowed: ReadonlySet<string>,
+  keys: readonly DexTokenKey[],
+): string | undefined => {
+  for (const key of keys) {
+    const address = resolveTokenAddress(contracts, key);
+    if (address && allowed.has(address)) return key === 'eth' ? 'ETH' : address;
+  }
+  return undefined;
+};
+
 export const createCowswapProfile = ({
   networks,
   sellTokens,
   buyTokens,
+  defaultPair,
   ...rest
 }: CowswapProfileConfig): CowswapProfile => {
   invariant(rest.appCode.trim(), 'CoW Swap profile requires appCode');
@@ -155,10 +173,24 @@ export const createCowswapProfile = ({
     ),
   };
 
+  const defaultPairs = new Map<number, CowswapDefaultPair>(
+    enabled.map(({ chainId, contracts }) => {
+      const txConfig = txConfigs.get(chainId) as NetworkTxConfig;
+      const sell = pickAsset(contracts, txConfig.sellTokens, defaultPair.sell);
+      const buy = pickAsset(contracts, txConfig.buyTokens, defaultPair.buy);
+      invariant(
+        sell && buy && sell !== buy,
+        `CoW Swap profile has no default pair on chain ${chainId}`,
+      );
+      return [chainId, { sell, buy }];
+    }),
+  );
+
   return {
     ...rest,
     chainIds: enabled.map(({ chainId }) => chainId),
     getNetworkTxConfig: (chainId) => txConfigs.get(chainId),
+    getDefaultPair: (chainId) => defaultPairs.get(chainId),
     tokenDecimals,
     oracleFeeds,
   };

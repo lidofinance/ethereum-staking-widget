@@ -20,7 +20,7 @@ export const WITHDRAWALS_COWSWAP_PROFILE = createCowswapProfile({
     { key: 'usds', decimals: 18, oracleFeed: 'DAI_USD' },
     { key: 'wbtc', decimals: 8, oracleFeed: 'BTC_USD' },
   ],
-  defaultPair: { sell: 'STETH', buy: 'ETH' },
+  defaultPair: { sell: ['lido'], buy: ['eth'] },
   tokenLists: {
     sell: {
       url: `${GITHUB_RAW_MAIN_PATH}/public/token-lists/withdrawals-dex-sell-tokenlist.json`,

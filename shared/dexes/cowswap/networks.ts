@@ -24,6 +24,11 @@ const TOKEN_KEYS: readonly DexTokenContractKey[] = [
   'pyusd',
   'wbtc',
   'cbbtc',
+  'link',
+  'uni',
+  'aave',
+  'rlusd',
+  'usdg',
 ];
 
 type NetworkContracts = Record<string, string | undefined>;

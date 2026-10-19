@@ -3,7 +3,7 @@
   "timestamp": "2026-10-19T00:00:00.000Z",
   "version": {
     "major": 1,
-    "minor": 2,
+    "minor": 3,
     "patch": 0
   },
   "keywords": [],
@@ -111,6 +111,44 @@
       "decimals": 8,
       "chainId": 1,
       "logoURI": "https://files.cow.fi/token-lists/images/1/0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf/logo.png"
+    },
+    {
+      "symbol": "RLUSD",
+      "name": "RLUSD",
+      "address": "0x8292bb45bf1ee4d140127049757c2e0ff06317ed",
+      "decimals": 18,
+      "chainId": 1
+    },
+    {
+      "symbol": "USDG",
+      "name": "Global Dollar",
+      "address": "0xe343167631d89b6ffc58b88d6b7fb0228795491d",
+      "decimals": 6,
+      "chainId": 1
+    },
+    {
+      "symbol": "LINK",
+      "name": "ChainLink Token",
+      "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x514910771af9ca656af840dff83e8264ecf986ca/logo.png"
+    },
+    {
+      "symbol": "UNI",
+      "name": "Uniswap",
+      "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984/logo.png"
+    },
+    {
+      "symbol": "AAVE",
+      "name": "Aave Token",
+      "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9/logo.png"
     },
     {
       "symbol": "ETH",

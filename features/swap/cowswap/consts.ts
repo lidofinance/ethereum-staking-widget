@@ -22,13 +22,19 @@ const SWAP_TOKENS: CowswapToken[] = [
   { key: 'pyusd', decimals: 6, oracleFeed: 'PYUSD_USD' },
   { key: 'wbtc', decimals: 8, oracleFeed: 'WBTC_USD' },
   { key: 'cbbtc', decimals: 8, oracleFeed: 'CBBTC_USD' },
+  { key: 'rlusd', decimals: 18, oracleFeed: 'RLUSD_USD' },
+  { key: 'usdg', decimals: 6, oracleFeed: 'USDG_USD' },
+  { key: 'link', decimals: 18, oracleFeed: 'LINK_USD' },
+  { key: 'uni', decimals: 18, oracleFeed: 'UNI_USD' },
+  { key: 'aave', decimals: 18, oracleFeed: 'AAVE_USD' },
 ];
 
 export const SWAP_COWSWAP_PROFILE = createCowswapProfile({
   appCode: 'Lido dApp Swap',
   sellTokens: SWAP_TOKENS,
   buyTokens: SWAP_TOKENS,
-  defaultPair: { sell: 'STETH', buy: 'ETH' },
+  // stETH is mainnet-only, L2s start from wstETH
+  defaultPair: { sell: ['lido', 'wsteth'], buy: ['eth'] },
   tokenLists: {
     sell: {
       // TODO: temp

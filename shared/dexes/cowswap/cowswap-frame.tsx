@@ -33,7 +33,7 @@ import {
   useLoadingStates,
 } from './hooks';
 import { useTradeGuard, TradeGuardModal } from './guards/trade';
-import type { CowswapProfile } from './profile';
+import type { CowswapDefaultPair, CowswapProfile } from './profile';
 import { shouldRefreshForSellToken } from './utils';
 import { LoaderStyled, DexWrapper } from './styles';
 
@@ -81,7 +81,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
 }) => {
   const {
     appCode,
-    defaultPair,
+    getDefaultPair,
     tokenLists,
     analytics,
     getNetworkTxConfig,
@@ -105,6 +105,8 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   if (!networkTxConfig)
     throw new Error('CoW Swap is not enabled on this network');
   const { sellTokens, feeRecipient } = networkTxConfig;
+  // set for every enabled network by createCowswapProfile
+  const defaultPair = getDefaultPair(widgetChainId) as CowswapDefaultPair;
   const { validateAddress } = useAddressValidation();
   const { name: themeName } = useTheme();
   // Fall back to self-hosted token lists if GitHub is unavailable

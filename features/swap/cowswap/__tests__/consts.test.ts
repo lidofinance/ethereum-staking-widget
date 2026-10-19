@@ -34,6 +34,11 @@ const ERC20_TOKENS = [
   c.pyusd,
   c.wbtc,
   c.cbbtc,
+  c.rlusd,
+  c.usdg,
+  c.link,
+  c.uni,
+  c.aave,
 ].map(lower);
 
 describe('SWAP_COWSWAP_PROFILE', () => {
@@ -63,6 +68,11 @@ describe('SWAP_COWSWAP_PROFILE', () => {
       [lower(c.pyusd)]: 6,
       [lower(c.wbtc)]: 8,
       [lower(c.cbbtc)]: 8,
+      [lower(c.rlusd)]: 18,
+      [lower(c.usdg)]: 6,
+      [lower(c.link)]: 18,
+      [lower(c.uni)]: 18,
+      [lower(c.aave)]: 18,
     });
   });
 
@@ -176,5 +186,17 @@ describe('SWAP_COWSWAP_PROFILE', () => {
 
     expect(config.sellTokens).toEqual(expected);
     expect(config.buyTokens).toEqual(expected);
+  });
+
+  it.each([
+    ['mainnet', mainnet.id, c.lido],
+    ['arbitrum', arbitrum.id, arbitrumNetwork.contracts.L2wstETH],
+    ['base', base.id, baseNetwork.contracts.L2wstETH],
+    ['linea', linea.id, lineaNetwork.contracts.L2wstETH],
+  ])('starts %s from stETH or wstETH to ETH', (_, chainId, sellToken) => {
+    expect(profile.getDefaultPair(chainId)).toEqual({
+      sell: lower(sellToken),
+      buy: 'ETH',
+    });
   });
 });

@@ -33,6 +33,9 @@ const L2_NETWORK = {
   partnerFeeRecipient: '0x00000000000000000000000000000000000000a4',
 };
 
+// fixture pair starts from stETH, which the L2 network lacks
+const L2_PAIR = { sell: ['lido', 'wsteth'], buy: ['eth'] } as const;
+
 const configTx = (profile = TEST_PROFILE, chainId: number = mainnet.id) => {
   const config = profile.getNetworkTxConfig(chainId);
   if (!config) throw new Error(`no config for ${chainId}`);
@@ -42,7 +45,6 @@ const configTx = (profile = TEST_PROFILE, chainId: number = mainnet.id) => {
 describe('createCowswapProfile', () => {
   it('keeps plain config fields', () => {
     expect(TEST_PROFILE.appCode).toBe(TEST_PROFILE_CONFIG.appCode);
-    expect(TEST_PROFILE.defaultPair).toBe(TEST_PROFILE_CONFIG.defaultPair);
     expect(TEST_PROFILE.tokenLists).toBe(TEST_PROFILE_CONFIG.tokenLists);
     expect(TEST_PROFILE.analytics).toBe(TEST_PROFILE_CONFIG.analytics);
   });
@@ -121,6 +123,7 @@ describe('createCowswapProfile', () => {
   it('prices L2 tokens like their mainnet counterparts', () => {
     const profile = createCowswapProfile({
       ...TEST_PROFILE_CONFIG,
+      defaultPair: L2_PAIR,
       networks: { [mainnet.id]: MAINNET, [arbitrum.id]: L2_NETWORK },
     });
 
@@ -142,6 +145,7 @@ describe('createCowswapProfile', () => {
       appCode: 'Lido Swap',
       sellTokens: [{ key: 'wsteth', decimals: 18, oracleFeed: 'WSTETH_USD' }],
       buyTokens: [{ key: 'usdc', decimals: 6, oracleFeed: 'USDC_USD' }],
+      defaultPair: { sell: ['wsteth'], buy: ['usdc'] },
       networks: { [mainnet.id]: MAINNET },
     });
     const config = configTx(profile);
@@ -180,6 +184,7 @@ describe('createCowswapProfile', () => {
     [
       'one address mapped to different tokens',
       {
+        defaultPair: L2_PAIR,
         networks: {
           [mainnet.id]: MAINNET,
           [arbitrum.id]: { ...L2_NETWORK, wsteth: undefined, usdc: c.wsteth },
@@ -246,5 +251,33 @@ describe('createCowswapProfile', () => {
     expect(configTx(profile, sepolia.id).sellTokens.has(ethAddress)).toBe(
       false,
     );
+  });
+
+  it('resolves the default pair per network by preference', () => {
+    const profile = createCowswapProfile({
+      ...TEST_PROFILE_CONFIG,
+      defaultPair: { sell: ['lido', 'wsteth'], buy: ['eth'] },
+      networks: { [mainnet.id]: MAINNET, [arbitrum.id]: L2_NETWORK },
+    });
+
+    expect(profile.getDefaultPair(mainnet.id)).toEqual({
+      sell: lower(c.lido),
+      buy: 'ETH',
+    });
+    // no stETH on the L2: falls back to wstETH
+    expect(profile.getDefaultPair(arbitrum.id)).toEqual({
+      sell: L2_WSTETH,
+      buy: 'ETH',
+    });
+    expect(profile.getDefaultPair(137)).toBeUndefined();
+  });
+
+  it('throws when a network has no default pair', () => {
+    expect(() =>
+      createCowswapProfile({
+        ...TEST_PROFILE_CONFIG,
+        networks: { [mainnet.id]: MAINNET, [arbitrum.id]: L2_NETWORK },
+      }),
+    ).toThrow(`no default pair on chain ${arbitrum.id}`);
   });
 });

@@ -24,7 +24,12 @@ export type ChainlinkFeedKey =
   | 'PYUSD_USD'
   | 'CBBTC_USD'
   | 'LDO_ETH'
-  | 'WBTC_BTC';
+  | 'WBTC_BTC'
+  | 'LINK_USD'
+  | 'UNI_USD'
+  | 'AAVE_USD'
+  | 'RLUSD_USD'
+  | 'USDG_USD';
 
 export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
   ETH_USD: {
@@ -87,6 +92,31 @@ export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
     maxStaleness: 87000,
     decimals: 8,
   },
+  LINK_USD: {
+    address: c.aggregatorLinkUsdPriceFeed as Address,
+    maxStaleness: 3900,
+    decimals: 8,
+  },
+  UNI_USD: {
+    address: c.aggregatorUniUsdPriceFeed as Address,
+    maxStaleness: 3900,
+    decimals: 8,
+  },
+  AAVE_USD: {
+    address: c.aggregatorAaveUsdPriceFeed as Address,
+    maxStaleness: 3900,
+    decimals: 8,
+  },
+  RLUSD_USD: {
+    address: c.aggregatorRlusdUsdPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 8,
+  },
+  USDG_USD: {
+    address: c.aggregatorUsdgUsdPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 8,
+  },
 };
 
 // Token USD price as a product of feeds, e.g. LDO/ETH × ETH/USD
@@ -114,6 +144,11 @@ export const ORACLE_PRICES: Record<
   CBBTC_USD: ['CBBTC_USD'],
   LDO_USD: ['LDO_ETH', 'ETH_USD'],
   WBTC_USD: ['WBTC_BTC', 'BTC_USD'],
+  LINK_USD: ['LINK_USD'],
+  UNI_USD: ['UNI_USD'],
+  AAVE_USD: ['AAVE_USD'],
+  RLUSD_USD: ['RLUSD_USD'],
+  USDG_USD: ['USDG_USD'],
 };
 
 // Price key that applies the wstETH rate, on any network
@@ -156,4 +191,9 @@ export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
   // 18 decimals: 0.00001–0.01 ETH
   LDO_ETH: { min: 10n ** 13n, max: 10n ** 16n },
   WBTC_BTC: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  LINK_USD: { min: CHAINLINK_SCALE, max: 200n * CHAINLINK_SCALE },
+  UNI_USD: { min: CHAINLINK_SCALE / 2n, max: 100n * CHAINLINK_SCALE },
+  AAVE_USD: { min: 10n * CHAINLINK_SCALE, max: 2_000n * CHAINLINK_SCALE },
+  RLUSD_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  USDG_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
 };

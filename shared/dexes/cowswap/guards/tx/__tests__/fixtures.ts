@@ -27,7 +27,7 @@ export const TEST_PROFILE_CONFIG: CowswapProfileConfig = {
     { key: 'usds', decimals: 18, oracleFeed: 'DAI_USD' },
     { key: 'wbtc', decimals: 8, oracleFeed: 'BTC_USD' },
   ],
-  defaultPair: { sell: 'STETH', buy: 'ETH' },
+  defaultPair: { sell: ['lido'], buy: ['eth'] },
   tokenLists: {
     sell: { url: 'https://example.com/sell.json', fallback: 'sell.json' },
     buy: { url: 'https://example.com/buy.json', fallback: 'buy.json' },
