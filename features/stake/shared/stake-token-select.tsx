@@ -5,8 +5,8 @@ import { useDappStatus } from 'modules/web3';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 const OPTIONS = [
-  { label: 'Ethereum (ETH)', token: TOKENS_TO_STAKE.ETH },
-  { label: 'Wrapped Ether (WETH)', token: TOKENS_TO_STAKE.WETH },
+  { token: TOKENS_TO_STAKE.ETH },
+  { token: TOKENS_TO_STAKE.WETH },
 ];
 
 type StakeTokenSelectProps = Pick<
