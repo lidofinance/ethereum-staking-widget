@@ -74,7 +74,7 @@ export const ErrorMessageStyled = styled(Box)`
   color: var(--lido-color-text);
   opacity: 0.5;
   background-color: ${({ theme }) =>
-    theme.name === 'light' ? '#e1e4e8' : '#273852'};
+    theme.name === 'light' ? '#e1e4e8' : 'var(--custom-fill-dark)'};
   border-radius: 10px;
 `;
 

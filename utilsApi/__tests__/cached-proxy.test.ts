@@ -126,3 +126,77 @@ describe('createCachedProxy error responses', () => {
     expect(res.headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
   });
 });
+
+describe('createCachedProxy forwardHeaders', () => {
+  const res = () =>
+    ({
+      setHeader: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+      end: vi.fn(),
+    }) as any;
+  const makeReq = (headers: Record<string, string> = {}) =>
+    ({ query: {}, headers }) as unknown as NextApiRequest;
+  // Headers lowercases names
+  const sentHeaders = () =>
+    Object.fromEntries(
+      new Headers(vi.mocked(standardFetcher).mock.calls[0][1]?.headers),
+    );
+
+  beforeEach(() => {
+    vi.mocked(standardFetcher).mockResolvedValue({ isValid: true });
+  });
+
+  afterEach(() => {
+    vi.mocked(standardFetcher).mockReset();
+  });
+
+  it('sends the headers built from the incoming request upstream', async () => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+      forwardHeaders: (req) => ({
+        'X-Client-User-Agent': String(req.headers['user-agent']),
+      }),
+    });
+
+    await proxy(makeReq({ 'user-agent': 'curl/8.5.0' }), res());
+
+    expect(sentHeaders()).toMatchObject({
+      'x-client-user-agent': 'curl/8.5.0',
+      accept: 'application/json',
+    });
+  });
+
+  it.each<Record<string, string>>([
+    { Accept: 'text/html' },
+    { accept: 'text/html', 'content-type': 'text/plain' },
+  ])('cannot override the fixed upstream headers: %o', async (forwarded) => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+      forwardHeaders: () => forwarded,
+    });
+
+    await proxy(makeReq(), res());
+
+    expect(sentHeaders()).toMatchObject({
+      accept: 'application/json',
+      'content-type': 'application/json',
+    });
+  });
+
+  it('sends only the fixed headers without forwardHeaders', async () => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+    });
+
+    await proxy(makeReq({ 'user-agent': 'curl/8.5.0' }), res());
+
+    expect(sentHeaders()).toEqual({
+      accept: 'application/json',
+      'content-type': 'application/json',
+    });
+  });
+});

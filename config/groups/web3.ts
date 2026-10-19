@@ -11,12 +11,14 @@ export const AA_TX_POLLING_TIMEOUT = 180_000; // 3 minutes
 // will always have:
 // Balances:
 // >=0.001 ether(or native token), >=0.001 stETH, >=0.001 wstETH,
+// >=0.001 WETH (L2 stake chains: Base, Optimism, Linea, Arbitrum)
 // Contract States:
 // >=0.001 stETH allowance to wstETH (L1)
 // >=0.001 wsTETH allowance to WQ (L1)
 // >=0.001 wsTETH allowance to WQ (L1)
 // >=0.001 wsTETH allowance to stETH (L2)
 // >=0.001 wsTETH allowance to stETH (L2)
+// >=0.001 WETH allowance to L2 staking receiver (L2 stake chains)
 
 // on Mainnet, Holesky, Hoodi, Sepolia, Optimism, Optimism Sepolia
 export const ESTIMATE_ACCOUNT =

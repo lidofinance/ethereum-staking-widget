@@ -7,37 +7,59 @@ import {
   useDappStatus,
   ESTIMATE_AMOUNT,
   useLidoSDKL2,
+  type FeeEstimateTx,
 } from 'modules/web3';
+
+type UnwrapGasLimitQueryResult = {
+  gasLimit: bigint;
+  tx?: FeeEstimateTx;
+};
 
 export const useUnwrapGasLimit = () => {
   const { chainId, isDappActiveOnL2 } = useDappStatus();
   const { wrap } = useLidoSDK();
-  const { l2, isL2 } = useLidoSDKL2();
+  const { l2, isL2Wrap } = useLidoSDKL2();
 
   const fallback = isDappActiveOnL2 ? UNWRAP_L2_GAS_LIMIT : UNWRAP_GAS_LIMIT;
 
-  const { data } = useQuery<bigint>({
+  const { data } = useQuery<UnwrapGasLimitQueryResult>({
     queryKey: ['unwrap-gas-limit', isDappActiveOnL2, chainId],
     ...STRATEGY_LAZY,
+    // served while the estimate loads; a failed estimate fails the query so
+    // it is retried instead of the fallback being cached as an estimate
+    placeholderData: { gasLimit: fallback },
     queryFn: async () => {
       try {
-        if (isL2) {
-          return await l2.wrapWstethToStethEstimateGas({
+        if (isL2Wrap) {
+          const props = {
             value: ESTIMATE_AMOUNT,
             account: config.ESTIMATE_ACCOUNT,
-          });
+          };
+          const [gasLimit, { to, data }] = await Promise.all([
+            l2.wrapWstethToStethEstimateGas(props),
+            l2.wrapWstethToStethPopulateTx(props),
+          ]);
+          // representative tx for chain-specific fee quotes (L1 data fee)
+          return {
+            gasLimit,
+            tx: data
+              ? { account: config.ESTIMATE_ACCOUNT, to, data }
+              : undefined,
+          };
         } else {
-          return await wrap.unwrapEstimateGas({
+          const gasLimit = await wrap.unwrapEstimateGas({
             value: ESTIMATE_AMOUNT,
             account: config.ESTIMATE_ACCOUNT,
           });
+          return { gasLimit };
         }
       } catch (error) {
-        console.warn(error);
-        return fallback;
+        console.warn('[unwrap-gas-limit]', error);
+        throw error;
       }
     },
   });
 
-  return data ?? fallback;
+  // the fallback also stands in after a failed estimate
+  return { gasLimit: data?.gasLimit ?? fallback, tx: data?.tx };
 };

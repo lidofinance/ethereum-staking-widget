@@ -24,6 +24,7 @@ const GlobalStyle = createGlobalStyle`
     --footer-mobile-margin-bottom: calc(var(--nav-mobile-height) + var(--nav-mobile-bottom-inset));
     
     --custom-background-dark: #28282f;
+    --custom-fill-dark: #273852;
   }
 
   /*

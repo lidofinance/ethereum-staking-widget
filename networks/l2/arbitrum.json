@@ -1,0 +1,12 @@
+{
+  "contracts": {
+    "L2wstETH": "0x5979D7b546E38E414F7E9822514be443A4800529",
+
+    "L2stakingReceiver": "0x72229141D4B016682d3618ECe47c046f30Da4AD1",
+    "L2FastStakeOraclePool": "0xac143bF41BBA4a8014b4Ef5a5F46b39a36AE40A8",
+    "L2FastStakeOracleFeed": "0x301cBCDA894c932E9EDa3Cf8878f78304e69E367",
+
+    "weth": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"
+  },
+  "api": {}
+}
