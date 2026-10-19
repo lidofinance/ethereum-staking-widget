@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
-import { encodeFunctionData } from 'viem';
+import { encodeFunctionData, getContract } from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
   useTxFlow,
   useLidoSDK,
   useDappStatus,
+  useMainnetOnlyWagmi,
   AACall,
   applyRoundUpTxParameter,
 } from 'modules/web3';
@@ -19,12 +20,17 @@ import {
   SyncRedeemQueueWritableContract,
 } from '../types/contracts';
 import { TxModalStages } from '../types/tx-modal-stages';
+import { ORACLE_ABI, VAULT_ABI } from '../abi';
 import { COLLECTOR_CONFIG } from '../consts';
 import { meetsSyncRedeemRequirements } from '../utils/sync-redeem-requirements';
+import { isReportFresh } from '../utils/report-freshness';
 
 const QA_REMAINING_DAILY_LIMIT_KEY =
   'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit';
 const QA_LIQUID_ASSETS_KEY = 'mock-qa-helpers-mellow-sync-redeem-liquid-assets';
+// Set to "0" to simulate a stale oracle report.
+const QA_REPORT_TIMESTAMP_KEY =
+  'mock-qa-helpers-mellow-sync-redeem-report-timestamp';
 
 type SyncWithdrawAvailability =
   | { status: 'available' }
@@ -50,12 +56,49 @@ export const useWithdraw = ({
 }) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
   const txFlow = useTxFlow();
 
   const withdraw = useCallback(
     async ({ amount }: { amount: bigint }): Promise<boolean> => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
+
+      // The sync queue reverts with StaleReport for an old report. The Collector does not check it.
+      const checkReportFreshness = async (
+        syncQueue: SyncRedeemQueueWritableContract,
+      ) => {
+        invariant(publicClientMainnet, 'Public client is not available');
+
+        const [vaultAddress, asset, [, maxAge], block] = await Promise.all([
+          syncQueue.read.vault(),
+          syncQueue.read.asset(),
+          syncQueue.read.syncRedeemParams(),
+          publicClientMainnet.getBlock(),
+        ]);
+
+        // Resolved on-chain rather than from config
+        const oracleAddress = await getContract({
+          abi: VAULT_ABI,
+          address: vaultAddress,
+          client: { public: publicClientMainnet },
+        }).read.oracle();
+
+        const report = await getContract({
+          abi: ORACLE_ABI,
+          address: oracleAddress,
+          client: { public: publicClientMainnet },
+        }).read.getReport([asset]);
+
+        return isReportFresh({
+          reportTimestamp: overrideWithQAMockBigInt(
+            BigInt(report.timestamp),
+            QA_REPORT_TIMESTAMP_KEY,
+          ),
+          maxAge: BigInt(maxAge),
+          blockTimestamp: block.timestamp,
+        });
+      };
 
       const checkSyncWithdrawAvailability = async (
         syncQueue: SyncRedeemQueueWritableContract,
@@ -70,19 +113,25 @@ export const useWithdraw = ({
         // Eager return to save rpc calls, duplicates predicate from meetsSyncRedeemRequirements
         if (amount > remainingDailyLimit) return false;
 
-        const [{ assets, isWithdrawalPossible }, actualLiquidAssets] =
-          await Promise.all([
-            collector.read.getWithdrawalParams([
-              amount,
-              syncQueue.address,
-              COLLECTOR_CONFIG,
-            ]) as Promise<{ assets: bigint; isWithdrawalPossible: boolean }>,
-            syncQueue.read.getLiquidAssets(),
-          ]);
+        const [
+          { assets, isWithdrawalPossible },
+          actualLiquidAssets,
+          isFreshReport,
+        ] = await Promise.all([
+          collector.read.getWithdrawalParams([
+            amount,
+            syncQueue.address,
+            COLLECTOR_CONFIG,
+          ]) as Promise<{ assets: bigint; isWithdrawalPossible: boolean }>,
+          syncQueue.read.getLiquidAssets(),
+          checkReportFreshness(syncQueue),
+        ]);
         const liquidAssets = overrideWithQAMockBigInt(
           actualLiquidAssets,
           QA_LIQUID_ASSETS_KEY,
         );
+
+        if (!isFreshReport) return false;
 
         return meetsSyncRedeemRequirements({
           isWithdrawalPossible,
@@ -245,6 +294,7 @@ export const useWithdraw = ({
       matomoEventStart,
       matomoEventSuccess,
       onRetry,
+      publicClientMainnet,
       syncRedeemQueue,
       txFlow,
       txModalStages,

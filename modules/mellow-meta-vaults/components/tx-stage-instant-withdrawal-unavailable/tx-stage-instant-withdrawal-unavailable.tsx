@@ -6,7 +6,7 @@ export const TxStageInstantWithdrawalUnavailable = () => {
     <TransactionModalContent
       icon={<StageIconWarning />}
       title="Instant withdrawal is no longer available"
-      description="The buffer was depleted before your transaction was confirmed. Please try again using the standard withdrawal flow."
+      description="Either the instant-withdrawal buffer was depleted or the vault's price feed went out of date while your transaction was being signed. You can try again in a few minutes, or withdraw now using the standard flow."
     />
   );
 };

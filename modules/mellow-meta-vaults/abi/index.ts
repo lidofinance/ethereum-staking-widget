@@ -6,3 +6,4 @@ export * from './share-manager';
 export * from './collector';
 export * from './vault-contract';
 export * from './fee-manager';
+export * from './oracle';
