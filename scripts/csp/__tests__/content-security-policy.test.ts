@@ -49,6 +49,10 @@ describe('cspInputsFromEnv', () => {
     });
   });
 
+  it('treats an empty CSP_REPORT_URI as no reporting', () => {
+    expect(cspInputsFromEnv({ CSP_REPORT_URI: '' }).reportUri).toBeUndefined();
+  });
+
   it.each([
     ['true', true],
     ['TRUE', true],
