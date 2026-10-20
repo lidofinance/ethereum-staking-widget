@@ -23,7 +23,7 @@ export const useSendAACalls = () => {
       callback: (props: TxCallbackProps) => Promise<void> = async () => {},
     ) => {
       try {
-        const walletClient = core.web3Provider;
+        const walletClient = core.walletClient;
         invariant(walletClient, 'Wallet client is undefined');
 
         await callback({
@@ -101,6 +101,6 @@ export const useSendAACalls = () => {
         throw error;
       }
     },
-    [address, core.web3Provider],
+    [address, core.walletClient],
   );
 };

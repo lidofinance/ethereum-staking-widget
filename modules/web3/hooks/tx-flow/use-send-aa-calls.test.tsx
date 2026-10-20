@@ -23,7 +23,7 @@ vi.mock('config', () => ({
 vi.mock('../../web3-provider/lido-sdk', () => ({
   useLidoSDK: () => ({
     core: {
-      web3Provider: {
+      walletClient: {
         sendCalls: state.sendCalls,
         waitForCallsStatus: state.waitForCallsStatus,
       },

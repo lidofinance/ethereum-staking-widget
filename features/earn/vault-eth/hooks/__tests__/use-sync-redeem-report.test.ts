@@ -2,8 +2,6 @@ import type { Address } from 'viem';
 
 import { renderHook } from 'features/stake/shared/__tests__/stake-test-utils';
 
-const VAULT: Address = '0x00000000000000000000000000000000000000d1';
-const ORACLE: Address = '0x00000000000000000000000000000000000000d2';
 const ASSET: Address = '0x00000000000000000000000000000000000000d3';
 const CHAIN_ID = 1;
 const MAX_AGE = 3600;
@@ -22,14 +20,17 @@ type State = {
   data: unknown;
   // what the vault's oracle reports for the queue's asset
   report: { priceD18: bigint; timestamp: number; isSuspicious: boolean };
-  publicClientMainnet: { readContract: ReturnType<typeof vi.fn> };
+  publicClientMainnet: object;
+  // the oracle's getReport, keyed by asset
+  getReport: ReturnType<typeof vi.fn>;
 };
 
 const state = vi.hoisted((): State => ({
   query: undefined,
   data: undefined,
   report: { priceD18: 10n ** 18n, timestamp: 0, isSuspicious: false },
-  publicClientMainnet: { readContract: vi.fn() },
+  publicClientMainnet: {},
+  getReport: vi.fn(),
 }));
 
 vi.mock('@tanstack/react-query', () => ({
@@ -47,9 +48,13 @@ vi.mock('modules/web3', () => ({
 vi.mock('../../contracts', () => ({
   getSyncRedeemQueueContractWSTETH: () => ({
     read: {
-      vault: async () => VAULT,
       asset: async () => ASSET,
       syncRedeemParams: async () => [0n, MAX_AGE, 0n, 0n, 0n] as const,
+    },
+  }),
+  getOracleContract: () => ({
+    read: {
+      getReport: state.getReport,
     },
   }),
 }));
@@ -75,34 +80,20 @@ beforeEach(() => {
     timestamp: NOW - 60,
     isSuspicious: false,
   };
-  state.publicClientMainnet = {
-    readContract: vi.fn(
-      async ({
-        functionName,
-        address,
-      }: {
-        functionName: string;
-        address: Address;
-      }) => {
-        if (functionName === 'oracle' && address === VAULT) return ORACLE;
-        if (functionName === 'getReport' && address === ORACLE)
-          return state.report;
-        throw new Error(`unexpected read: ${functionName} at ${address}`);
-      },
-    ),
-  };
+  state.getReport.mockImplementation(async ([asset]: [Address]) => {
+    if (asset !== ASSET) throw new Error(`unexpected asset ${asset}`);
+    return state.report;
+  });
 });
 
 describe('useEthVaultSyncRedeemReport', () => {
-  it('reads the report through the queue, its vault and the vault oracle', async () => {
+  it('reads the configured oracle report for the queue asset, with the queue maxAge', async () => {
     render();
     await expect(query().queryFn()).resolves.toEqual({
       report: state.report,
       maxAge: MAX_AGE,
     });
-    expect(state.publicClientMainnet?.readContract).toHaveBeenCalledWith(
-      expect.objectContaining({ functionName: 'getReport', args: [ASSET] }),
-    );
+    expect(state.getReport).toHaveBeenCalledWith([ASSET]);
   });
 
   it('is keyed by chain and off until the vault is available', () => {

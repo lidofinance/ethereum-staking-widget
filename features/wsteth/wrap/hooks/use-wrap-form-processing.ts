@@ -56,7 +56,7 @@ export const useWrapFormProcessor = ({
 
         const referralAddress = await getReferralAddress(
           referral,
-          wrap.core.rpcProvider,
+          wrap.core.publicClient,
         );
 
         const willReceive = await (isL2Wrap

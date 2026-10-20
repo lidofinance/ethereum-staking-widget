@@ -128,7 +128,6 @@ const createSdk = (
   const core = {
     chainId: 1,
     publicClient,
-    rpcProvider: publicClient,
     useWalletClient: () => walletClient,
     performTransaction,
   };

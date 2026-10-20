@@ -3,10 +3,12 @@ import invariant from 'tiny-invariant';
 
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
-import { ORACLE_ABI, VAULT_ABI } from 'modules/mellow-meta-vaults/abi';
 import { isSyncRedeemReportUsable } from 'modules/mellow-meta-vaults/utils/sync-redeem-requirements';
 
-import { getSyncRedeemQueueContractWSTETH } from '../contracts';
+import {
+  getOracleContract,
+  getSyncRedeemQueueContractWSTETH,
+} from '../contracts';
 import { ETH_VAULT_QUERY_SCOPE } from '../consts';
 
 export const SYNC_REDEEM_REPORT_QUERY_KEY = 'sync-redeem-report';
@@ -37,24 +39,13 @@ export const useEthVaultSyncRedeemReport = ({
     queryFn: async () => {
       invariant(publicClientMainnet, 'Public client is not defined');
       const syncQueue = getSyncRedeemQueueContractWSTETH(publicClientMainnet);
-      // the queue exposes neither the oracle nor the report: both come
-      // through the vault it serves
-      const [vault, asset, [, maxAge]] = await Promise.all([
-        syncQueue.read.vault(),
+      const oracle = getOracleContract(publicClientMainnet);
+      // the queue prices with its vault's oracle report for its own asset
+      const [asset, [, maxAge]] = await Promise.all([
         syncQueue.read.asset(),
         syncQueue.read.syncRedeemParams(),
       ]);
-      const oracle = await publicClientMainnet.readContract({
-        address: vault,
-        abi: VAULT_ABI,
-        functionName: 'oracle',
-      });
-      const report = await publicClientMainnet.readContract({
-        address: oracle,
-        abi: ORACLE_ABI,
-        functionName: 'getReport',
-        args: [asset],
-      });
+      const report = await oracle.read.getReport([asset]);
       return { report, maxAge };
     },
   });
