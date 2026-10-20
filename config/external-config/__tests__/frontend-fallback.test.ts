@@ -18,7 +18,7 @@ describe('getFallbackedManifestEntry', () => {
         },
         '1': validEntry,
       },
-      1,
+      '1',
     );
 
     expect(entry.config.earnAllocation.labelAllowList).toEqual([
@@ -30,22 +30,22 @@ describe('getFallbackedManifestEntry', () => {
   it('uses an empty config extension when baseConfig has none', () => {
     const entry = getFallbackedManifestEntry(
       { baseConfig: {}, '1': validEntry },
-      1,
+      '1',
     );
 
     expect(entry.config.earnAllocation.labelAllowList).toEqual([]);
   });
 
   it('uses the whole local manifest when the remote manifest is invalid', () => {
-    const entry = getFallbackedManifestEntry({}, 1);
+    const entry = getFallbackedManifestEntry({}, '1');
 
     expect(entry.config.featureFlags.dgBannerEnabled).toBe(true);
   });
 
   it('materializes local network overrides on top of baseConfig', () => {
-    const mainnet = getFallbackedManifestEntry({}, 1);
-    const staging = getFallbackedManifestEntry({}, 1, 'staging');
-    const hoodi = getFallbackedManifestEntry({}, 560048);
+    const mainnet = getFallbackedManifestEntry({}, '1');
+    const staging = getFallbackedManifestEntry({}, '1-staging');
+    const hoodi = getFallbackedManifestEntry({}, '560048');
 
     expect(mainnet.config.api.validation?.version).toBe('2');
     expect(staging.config.api.validation?.version).toBe('1');
@@ -72,7 +72,7 @@ describe('getFallbackedManifestEntry', () => {
           },
         },
       },
-      1,
+      '1',
     );
 
     expect(entry.config.earnAllocation.labelAllowList).toEqual([
@@ -91,7 +91,7 @@ describe('getFallbackedManifestEntry', () => {
           config: { earnAllocation: { labelAllowList: [] } },
         },
       },
-      1,
+      '1',
     );
 
     expect(entry.config.earnAllocation.labelAllowList).toEqual([]);
@@ -107,7 +107,7 @@ describe('overrideManifestConfig', () => {
         },
         '1': validEntry,
       },
-      1,
+      '1',
     );
 
     const config = overrideManifestConfig(entry.config, {

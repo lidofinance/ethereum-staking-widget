@@ -6,6 +6,7 @@ import { fetchExternalManifest } from './fetch-external-manifest';
 
 import { config } from 'config';
 import {
+  getConfiguredManifestKey,
   getFallbackedManifestEntry,
   shouldRedirectToRoot,
 } from 'config/external-config';
@@ -64,8 +65,7 @@ export const getDefaultStaticProps = <
     if (custom) {
       const ssrManifest = getFallbackedManifestEntry(
         ___prefetch_manifest___,
-        config.defaultChain,
-        config.manifestOverride,
+        getConfiguredManifestKey(),
       );
 
       const { props: customProps, ...rest } = (await custom({
