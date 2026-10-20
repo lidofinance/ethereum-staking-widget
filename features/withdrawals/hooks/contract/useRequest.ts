@@ -5,7 +5,13 @@ import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdraw
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
-import { useAA, useIsSmartAccount, useLidoSDK, useTxFlow } from 'modules/web3';
+import {
+  useAA,
+  useDappStatus,
+  useIsSmartAccount,
+  useLidoSDK,
+  useTxFlow,
+} from 'modules/web3';
 import { config } from 'config';
 import { applyRoundUpTxParameter } from 'modules/web3';
 
@@ -24,6 +30,7 @@ export const useWithdrawalRequest = ({
   onConfirm,
   onRetry,
 }: useWithdrawalRequestParams) => {
+  const { address } = useDappStatus();
   const { isAA } = useAA();
   const { isBunker } = useWithdrawals();
   const { withdraw } = useLidoSDK();
@@ -127,7 +134,7 @@ export const useWithdrawalRequest = ({
           await txFlow({
             callsFn: async () => {
               // Approve + Withdraw batch tx
-              const args = { amount, token };
+              const args = { amount, token, receiver: address };
               return await Promise.all([
                 needsApprove && withdraw.approval.approvePopulateTx(args),
                 withdraw.request.requestWithdrawalPopulateTx(args),
@@ -207,6 +214,7 @@ export const useWithdrawalRequest = ({
       isApprovalFlow,
       isBunker,
       isForceAllowance,
+      address,
       needsApprove,
       onConfirm,
       onRetry,
