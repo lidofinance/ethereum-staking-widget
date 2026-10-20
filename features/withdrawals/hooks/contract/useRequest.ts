@@ -24,6 +24,12 @@ type useWithdrawalRequestParams = {
   onRetry?: () => void;
 };
 
+type useWithdrawalRequestArgs = {
+  requests: bigint[] | null;
+  amount: bigint | null;
+  token: TOKENS_TO_WITHDRAWLS;
+};
+
 export const useWithdrawalRequest = ({
   amount,
   token,
@@ -53,20 +59,18 @@ export const useWithdrawalRequest = ({
   const { closeModal } = useTransactionModal();
 
   const request = useCallback(
-    async ({
-      requests,
-      amount,
-      token,
-    }: {
-      requests: bigint[] | null;
-      amount: bigint | null;
-      token: TOKENS_TO_WITHDRAWLS;
-    }) => {
+    async ({ requests, amount, token }: useWithdrawalRequestArgs) => {
       invariant(
         requests && requests.length > 0,
         'cannot submit empty requests',
       );
       invariant(amount, 'cannot submit empty amount');
+      // The modal shows `amount`, the direct and permit paths send `requests`
+      // and the AA path splits `amount` again: one total for all three
+      invariant(
+        requests.reduce((total, value) => total + value, 0n) === amount,
+        'requests do not add up to the amount',
+      );
 
       const onTryAllowance = () => {
         closeModal();

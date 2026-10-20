@@ -138,7 +138,11 @@ const transformContext = (
 export const RequestFormValidationResolver: Resolver<
   RequestFormInputType,
   RequestFormValidationContextType
-> = async (values, context) => {
+> = async (liveValues, context) => {
+  // hook-form passes its live values object: a snapshot keeps the amount the
+  // requests are split from and the amount submitted the same if the field
+  // changes mid-await
+  const values = { ...liveValues };
   const { amount, mode, token } = values;
   const validationResults: ValidationResults = {
     requests: null,
