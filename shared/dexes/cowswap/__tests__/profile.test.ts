@@ -10,6 +10,7 @@ import { createCowswapProfile, type CowswapProfileConfig } from '../profile';
 import {
   TEST_PROFILE,
   TEST_PROFILE_CONFIG,
+  TEST_SEPOLIA_NETWORK,
 } from '../guards/tx/__tests__/fixtures';
 
 const c = mainnetNetwork.contracts;
@@ -17,7 +18,7 @@ const s = sepoliaNetwork.contracts;
 const lower = (address: string) => address.toLowerCase() as Address;
 
 const MAINNET = COWSWAP_NETWORKS[mainnet.id];
-const SEPOLIA = COWSWAP_NETWORKS[sepolia.id];
+const SEPOLIA = TEST_SEPOLIA_NETWORK;
 // L2-shaped network with its own addresses
 const L2_WSTETH = '0x00000000000000000000000000000000000000a1';
 const L2_USDC = '0x00000000000000000000000000000000000000a2';

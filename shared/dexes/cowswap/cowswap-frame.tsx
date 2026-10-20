@@ -332,6 +332,8 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     <>
       <DexWrapper $consumeBottomSpace={consumeBottomSpace && isLoaded}>
         <CowSwapWidget
+          // remount with the loader reset: READY fires once per widget, params updates don't recreate it
+          key={`${chainId}:${address ?? ''}`}
           provider={provider}
           params={params}
           listeners={listeners}

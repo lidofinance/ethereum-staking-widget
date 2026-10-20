@@ -3,6 +3,7 @@ import { mainnet, sepolia } from 'viem/chains';
 import invariant from 'tiny-invariant';
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import sepoliaNetwork from 'networks/sepolia.json';
 
 import { COWSWAP_NETWORKS } from '../../../networks';
 import {
@@ -11,6 +12,11 @@ import {
 } from '../../../profile';
 
 export const TEST_APP_CODE = 'Lido dApp Staking';
+
+export const TEST_SEPOLIA_NETWORK = {
+  ...COWSWAP_NETWORKS[sepolia.id],
+  partnerFeeRecipient: sepoliaNetwork.contracts.daoAgent,
+};
 
 // Mirrors the withdrawals DEX profile
 export const TEST_PROFILE_CONFIG: CowswapProfileConfig = {
@@ -34,7 +40,8 @@ export const TEST_PROFILE_CONFIG: CowswapProfileConfig = {
   },
   networks: {
     [mainnet.id]: COWSWAP_NETWORKS[mainnet.id],
-    [sepolia.id]: COWSWAP_NETWORKS[sepolia.id],
+    // sepolia is off in config, enabled here to cover a second network
+    [sepolia.id]: TEST_SEPOLIA_NETWORK,
   },
   analytics: {
     quoteViewed: MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteViewed,

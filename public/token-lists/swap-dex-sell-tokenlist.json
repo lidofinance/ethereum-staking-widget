@@ -1,9 +1,9 @@
 {
   "name": "Lido swap sell",
-  "timestamp": "2026-10-19T00:00:00.000Z",
+  "timestamp": "2026-10-20T00:00:00.000Z",
   "version": {
-    "major": 1,
-    "minor": 3,
+    "major": 2,
+    "minor": 0,
     "patch": 0
   },
   "keywords": [],
@@ -309,78 +309,6 @@
       "decimals": 8,
       "chainId": 8453,
       "logoURI": "https://files.cow.fi/token-lists/images/8453/0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf/logo.png"
-    },
-    {
-      "symbol": "ETH",
-      "name": "Ether",
-      "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "decimals": 18,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/59144/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/logo.png"
-    },
-    {
-      "symbol": "WETH",
-      "name": "Wrapped Ether",
-      "address": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
-      "decimals": 18,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/59144/0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f/logo.png"
-    },
-    {
-      "symbol": "wstETH",
-      "name": "Wrapped liquid staked Ether 2.0",
-      "address": "0xb5bedd42000b71fdde22d3ee8a79bd49a568fc8f",
-      "decimals": 18,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0/logo.png"
-    },
-    {
-      "symbol": "LDO",
-      "name": "Lido DAO Token",
-      "address": "0x0e076aafd86a71dceac65508daf975425c9d0cb6",
-      "decimals": 18,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0x5a98fcbea516cf06857215779fd812ca3bef1b32/logo.png"
-    },
-    {
-      "symbol": "USDC",
-      "name": "USD Coin",
-      "address": "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
-      "decimals": 6,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/59144/0x176211869ca2b568f2a7d4ee941e073a821ee1ff/logo.png"
-    },
-    {
-      "symbol": "USDT",
-      "name": "Tether USD",
-      "address": "0xa219439258ca9da29e9cc4ce5596924745e12b93",
-      "decimals": 6,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/59144/0xa219439258ca9da29e9cc4ce5596924745e12b93/logo.png"
-    },
-    {
-      "symbol": "USDe",
-      "name": "USDe",
-      "address": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
-      "decimals": 18,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/logo.png"
-    },
-    {
-      "symbol": "DAI",
-      "name": "Dai Stablecoin",
-      "address": "0x4af15ec2a0bd43db75dd04e62faa3b8ef36b00d5",
-      "decimals": 18,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0x6b175474e89094c44da98b954eedeac495271d0f/logo.png"
-    },
-    {
-      "symbol": "WBTC",
-      "name": "Wrapped BTC",
-      "address": "0x3aab2285ddcddad8edf438c1bab47e1a9d05a9b4",
-      "decimals": 8,
-      "chainId": 59144,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/logo.png"
     }
   ]
 }

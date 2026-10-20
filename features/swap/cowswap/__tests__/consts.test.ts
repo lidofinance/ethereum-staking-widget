@@ -5,7 +5,6 @@ import { arbitrum, base, linea, mainnet, sepolia } from 'viem/chains';
 import mainnetNetwork from 'networks/mainnet.json';
 import arbitrumNetwork from 'networks/l2/arbitrum.json';
 import baseNetwork from 'networks/l2/base.json';
-import lineaNetwork from 'networks/l2/linea.json';
 import sellTokenList from '../../../../public/token-lists/swap-dex-sell-tokenlist.json';
 import buyTokenList from '../../../../public/token-lists/swap-dex-buy-tokenlist.json';
 
@@ -96,7 +95,7 @@ describe('SWAP_COWSWAP_PROFILE', () => {
   ] as const)(
     '%s token list matches the profile on every network',
     (_, list, side) => {
-      const listChainIds = [mainnet.id, arbitrum.id, base.id, linea.id];
+      const listChainIds = [mainnet.id, arbitrum.id, base.id];
       expect(new Set(list.tokens.map((token) => token.chainId))).toEqual(
         new Set(listChainIds),
       );
@@ -118,16 +117,24 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     },
   );
 
-  it('is enabled on mainnet, sepolia and the CoW L2s', () => {
+  it('is enabled on mainnet, Arbitrum and Base', () => {
     expect([...profile.chainIds].sort()).toEqual(
-      [mainnet.id, sepolia.id, arbitrum.id, base.id, linea.id].sort(),
+      [mainnet.id, arbitrum.id, base.id].sort(),
     );
+  });
+
+  // no partner fee recipient in config, see ADR 0006
+  it.each([
+    ['linea', linea.id],
+    ['sepolia', sepolia.id],
+  ])('keeps %s disabled', (_, chainId) => {
+    expect(COWSWAP_NETWORKS[chainId]).toBeDefined();
+    expect(profile.getNetworkTxConfig(chainId)).toBeUndefined();
   });
 
   it.each([
     ['arbitrum', arbitrum.id, arbitrumNetwork.contracts],
     ['base', base.id, baseNetwork.contracts],
-    ['linea', linea.id, lineaNetwork.contracts],
   ])('uses %s wstETH, WETH and CoW contracts', (_, chainId, contracts) => {
     const config = profile.getNetworkTxConfig(chainId);
     if (!config) throw new Error(`no config for ${chainId}`);
@@ -169,11 +176,6 @@ describe('SWAP_COWSWAP_PROFILE', () => {
       base.id,
       ['eth', 'wsteth', 'weth', 'usdc', 'usdt', 'usde', 'dai', 'usds', 'cbbtc'],
     ],
-    [
-      'linea',
-      linea.id,
-      ['eth', 'wsteth', 'weth', 'ldo', 'usdc', 'usdt', 'usde', 'dai', 'wbtc'],
-    ],
   ] as const)('lists the verified %s tokens', (_, chainId, keys) => {
     const config = profile.getNetworkTxConfig(chainId);
     if (!config) throw new Error(`no config for ${chainId}`);
@@ -192,7 +194,6 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     ['mainnet', mainnet.id, c.lido],
     ['arbitrum', arbitrum.id, arbitrumNetwork.contracts.L2wstETH],
     ['base', base.id, baseNetwork.contracts.L2wstETH],
-    ['linea', linea.id, lineaNetwork.contracts.L2wstETH],
   ])('starts %s from stETH or wstETH to ETH', (_, chainId, sellToken) => {
     expect(profile.getDefaultPair(chainId)).toEqual({
       sell: lower(sellToken),
