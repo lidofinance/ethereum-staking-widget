@@ -13,6 +13,7 @@ import {
   requestAddressMetric,
   httpMethodGuard,
   HttpMethod,
+  enforceJsonOnly,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { trackedFetchRpc } from 'utilsApi/tracked-fetch-rpc';
@@ -116,11 +117,14 @@ export const config = {
 
 // The last wrapper is the outermost. The address metric decodes every batch
 // entry, so it runs innermost, only for requests the method guard and the
-// rate limiter admitted
+// rate limiter admitted. The JSON guard sits outside them all: every response
+// of the route, a 405 or 429 included, leaves with the JSON type and the
+// sandbox, and a form navigation never reaches the provider
 export default wrapNextRequest([
   requestAddressMetric(Metrics.request.ethCallToAddress),
   rateLimit,
   httpMethodGuard([HttpMethod.POST]),
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.RPC),
+  enforceJsonOnly,
   defaultErrorHandler,
 ])(rpc);
