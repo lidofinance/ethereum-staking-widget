@@ -39,7 +39,7 @@ export const useWrapFormProcessor = ({
   const { address } = useDappStatus();
   const { wrap, wstETH } = useLidoSDK();
   const { isAA } = useAA();
-  const { l2, isL2 } = useLidoSDKL2();
+  const { l2, isL2Wrap } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
   const txFlow = useTxFlow();
 
@@ -59,14 +59,14 @@ export const useWrapFormProcessor = ({
           wrap.core.rpcProvider,
         );
 
-        const willReceive = await (isL2
+        const willReceive = await (isL2Wrap
           ? l2.steth.convertToShares(amount)
           : wrap.convertStethToWsteth(amount));
 
         const onWrapConfirm = async () => {
           const [, balance] = await Promise.all([
             onConfirm?.(),
-            isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
+            isL2Wrap ? l2.wsteth.balance(address) : wstETH.balance(address),
           ]);
           return balance;
         };
@@ -77,7 +77,7 @@ export const useWrapFormProcessor = ({
             const args = {
               value: amount,
             };
-            if (isL2) {
+            if (isL2Wrap) {
               // unwrap steth to wsteth on l2
               calls = [await l2.unwrapStethPopulateTx(args)];
             } else if (token === TOKENS_TO_WRAP.stETH) {
@@ -102,7 +102,7 @@ export const useWrapFormProcessor = ({
             return calls;
           },
           sendTransaction: async (txStagesCallback) => {
-            if (isL2) {
+            if (isL2Wrap) {
               // The operation 'stETH to wstETH' on L2 is 'unwrap'
               await l2.unwrapStethToWsteth({
                 value: amount,
@@ -173,7 +173,7 @@ export const useWrapFormProcessor = ({
     },
     [
       address,
-      isL2,
+      isL2Wrap,
       l2,
       wrap,
       txFlow,

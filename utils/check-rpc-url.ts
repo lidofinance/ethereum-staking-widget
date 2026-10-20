@@ -6,7 +6,12 @@ import {
   decodeFunctionResult,
 } from 'viem';
 import type { Address } from 'viem';
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
+import {
+  CHAINS,
+  LIDO_L2_CONTRACT_ADDRESSES,
+  LIDO_L2_CONTRACT_NAMES,
+} from '@lidofinance/lido-ethereum-sdk/common';
+import { getContractAddress } from 'config/networks/contract-address';
 
 import { isUrl } from './is-url';
 
@@ -27,14 +32,24 @@ const abi = [
     stateMutability: 'view',
     type: 'function',
   },
-];
+] as const;
+
+/**
+ * Lido token contract `checkRpcUrl` reads to prove the RPC serves the chain:
+ * stETH where it is deployed, otherwise the bridged wstETH (Base, Linea,
+ * Arbitrum carry no stETH)
+ */
+export const getRpcCheckAddress = (chainId: CHAINS) =>
+  getContractAddress(chainId, 'lido') ??
+  LIDO_L2_CONTRACT_ADDRESSES[chainId]?.[LIDO_L2_CONTRACT_NAMES.steth] ??
+  LIDO_L2_CONTRACT_ADDRESSES[chainId]?.[LIDO_L2_CONTRACT_NAMES.wsteth];
 
 export const checkRpcUrl = async (
   rpcUrl: string,
   chainId: CHAINS,
-  stethAddress?: Address | string | null,
+  tokenAddress?: Address | string | null,
 ) => {
-  if (!stethAddress) return RPCErrorType.URL_IS_NOT_VALID; // TODO: L2 case
+  if (!tokenAddress) return RPCErrorType.URL_IS_NOT_VALID;
   if (!isUrl(rpcUrl)) return RPCErrorType.URL_IS_NOT_VALID;
 
   try {
@@ -60,11 +75,11 @@ export const checkRpcUrl = async (
     });
 
     const result = await client.call({
-      to: stethAddress as Address,
+      to: tokenAddress as Address,
       data: functionData,
     });
 
-    // Should be 'Liquid staked Ether 2.0'
+    // 'Liquid staked Ether 2.0' or 'Wrapped liquid staked Ether 2.0'
     decodeFunctionResult({
       abi,
       functionName,

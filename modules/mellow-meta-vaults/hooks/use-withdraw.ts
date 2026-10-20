@@ -70,20 +70,22 @@ export const useWithdraw = ({
         // Eager return to save rpc calls, duplicates predicate from meetsSyncRedeemRequirements
         if (amount > remainingDailyLimit) return false;
 
-        const [{ assets }, actualLiquidAssets] = await Promise.all([
-          collector.read.getWithdrawalParams([
-            amount,
-            syncQueue.address,
-            COLLECTOR_CONFIG,
-          ]) as Promise<{ assets: bigint }>,
-          syncQueue.read.getLiquidAssets(),
-        ]);
+        const [{ assets, isWithdrawalPossible }, actualLiquidAssets] =
+          await Promise.all([
+            collector.read.getWithdrawalParams([
+              amount,
+              syncQueue.address,
+              COLLECTOR_CONFIG,
+            ]) as Promise<{ assets: bigint; isWithdrawalPossible: boolean }>,
+            syncQueue.read.getLiquidAssets(),
+          ]);
         const liquidAssets = overrideWithQAMockBigInt(
           actualLiquidAssets,
           QA_LIQUID_ASSETS_KEY,
         );
 
         return meetsSyncRedeemRequirements({
+          isWithdrawalPossible,
           requestedShares: amount,
           requestedAssets: assets,
           remainingDailyLimit,

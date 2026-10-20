@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { type QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  getContract,
-  type Address,
-  type WatchContractEventOnLogsFn,
-} from 'viem';
+import { type QueryKey, useQueryClient } from '@tanstack/react-query';
+import { erc20Abi, type Address, type WatchContractEventOnLogsFn } from 'viem';
 import {
   useBalance,
   useReadContract,
@@ -13,12 +8,8 @@ import {
   useConnection,
 } from 'wagmi';
 import type { GetBalanceData } from 'wagmi/query';
-import {
-  erc20abi,
-  type AbstractLidoSDKErc20,
-} from '@lidofinance/lido-ethereum-sdk/erc20';
 
-import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { config } from 'config';
 import { getTokenAddress } from 'config/networks/token-address';
 import { Token, TOKEN_SYMBOLS } from 'consts/tokens';
@@ -43,10 +34,6 @@ export const useEthereumBalance = () => {
 
   return queryData;
 };
-
-type TokenContract = Awaited<
-  ReturnType<InstanceType<typeof AbstractLidoSDKErc20>['getContract']>
->;
 
 type TokenSubscriptionState = Record<
   Address,
@@ -197,20 +184,19 @@ export const useTokenTransferSubscription = () => {
   return subscribe;
 };
 
-// NB: contract can be undefined but for better wagmi typings is casted as NoNNullable
 export const useTokenBalance = (
-  contract: TokenContract,
+  contractAddress?: Address,
   address?: Address,
   shouldSubscribe = true,
 ) => {
   const { chainId } = useDappStatus();
   const { subscribeToTokenUpdates } = useLidoSDK();
 
-  const enabled = !!(address && contract);
+  const enabled = !!(address && contractAddress);
 
   const balanceQuery = useReadContract({
-    abi: contract?.abi,
-    address: contract?.address,
+    abi: erc20Abi,
+    address: contractAddress,
     chainId,
     functionName: 'balanceOf',
     args: address && [address],
@@ -225,15 +211,20 @@ export const useTokenBalance = (
   });
 
   useEffect(() => {
-    if (shouldSubscribe && enabled && address && contract?.address) {
+    if (shouldSubscribe && enabled && address && contractAddress) {
       return subscribeToTokenUpdates({
-        tokenAddress: contract.address,
+        tokenAddress: contractAddress,
         queryKey: balanceQuery.queryKey,
       });
     }
-    // queryKey causes rerender
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, enabled, contract?.address]);
+  }, [
+    address,
+    enabled,
+    contractAddress,
+    shouldSubscribe,
+    subscribeToTokenUpdates,
+  ]);
 
   return balanceQuery;
 };
@@ -243,29 +234,22 @@ export const useStethBalance = ({
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
   const { chainId, address, isChainMatched } = useDappStatus();
-  const { stETH } = useLidoSDK();
-  const { l2, isL2 } = useLidoSDKL2();
 
   const mergedAccount = account ?? address;
   const enabled = !!mergedAccount && isChainMatched;
 
-  const { data: contract, isLoading } = useQuery({
-    queryKey: ['steth-contract', chainId, isL2],
-    enabled,
-    staleTime: Infinity,
-    queryFn: async () => (isL2 ? l2.steth.getContract() : stETH.getContract()),
-  });
+  const tokenAddress = enabled ? getTokenAddress(chainId, 'stETH') : undefined;
 
   const balanceData = useTokenBalance(
-    contract!,
+    tokenAddress,
     mergedAccount,
     shouldSubscribeToUpdates,
   );
 
   return {
     ...balanceData,
-    tokenAddress: contract ? contract.address : undefined,
-    isLoading: isLoading || balanceData.isLoading,
+    tokenAddress: tokenAddress,
+    isLoading: balanceData.isLoading,
   };
 };
 
@@ -275,28 +259,21 @@ export const useWstethBalance = ({
 }: UseBalanceProps = {}) => {
   const { address, chainId, isChainMatched } = useDappStatus();
   const mergedAccount = account ?? address;
-  const { wstETH } = useLidoSDK();
-  const { l2, isL2 } = useLidoSDKL2();
 
   const enabled = !!mergedAccount && isChainMatched;
 
-  const { data: contract, isLoading } = useQuery({
-    queryKey: ['wsteth-contract', chainId, isL2],
-    enabled,
-    staleTime: Infinity,
-    queryFn: () => (isL2 ? l2.wsteth.getContract() : wstETH.getContract()),
-  });
+  const tokenAddress = enabled ? getTokenAddress(chainId, 'wstETH') : undefined;
 
   const balanceData = useTokenBalance(
-    contract!,
+    tokenAddress,
     mergedAccount,
     shouldSubscribeToUpdates,
   );
 
   return {
     ...balanceData,
-    tokenAddress: contract ? contract.address : undefined,
-    isLoading: isLoading || balanceData.isLoading,
+    tokenAddress: tokenAddress,
+    isLoading: balanceData.isLoading,
   };
 };
 
@@ -305,31 +282,21 @@ export const useWethBalance = ({
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
   const { address, chainId, isChainMatched } = useDappStatus();
-  const { core } = useLidoSDK();
   const mergedAccount = account ?? address;
 
   const enabled = !!mergedAccount && isChainMatched;
 
-  const wethAddress = getTokenAddress(chainId, 'WETH');
-
-  const contract =
-    wethAddress && enabled
-      ? getContract({
-          address: wethAddress,
-          client: core.rpcProvider,
-          abi: erc20abi,
-        })
-      : undefined;
+  const tokenAddress = enabled ? getTokenAddress(chainId, 'WETH') : undefined;
 
   const balanceData = useTokenBalance(
-    contract as any,
+    tokenAddress,
     mergedAccount,
     shouldSubscribeToUpdates,
   );
 
   return {
     ...balanceData,
-    tokenAddress: wethAddress,
+    tokenAddress: tokenAddress,
     isLoading: balanceData.isLoading,
   };
 };
@@ -343,25 +310,17 @@ export const useStablecoinBalance = ({
   account?: Address;
   shouldSubscribeToUpdates?: boolean;
 }) => {
-  const { core } = useLidoSDK();
   const { address, chainId, isChainMatched } = useDappStatus();
   const mergedAccount = account ?? address;
 
   const enabled = !!mergedAccount && isChainMatched;
 
-  const tokenAddress = getTokenAddress(chainId, TOKEN_SYMBOLS[token]);
-
-  const contract =
-    tokenAddress && enabled
-      ? getContract({
-          address: tokenAddress,
-          client: core.rpcProvider,
-          abi: erc20abi,
-        })
-      : undefined;
+  const tokenAddress = enabled
+    ? getTokenAddress(chainId, TOKEN_SYMBOLS[token])
+    : undefined;
 
   const balanceData = useTokenBalance(
-    contract as any,
+    tokenAddress,
     mergedAccount,
     shouldSubscribeToUpdates,
   );
@@ -377,7 +336,7 @@ export const useStablecoinBalance = ({
     usdcAmount: stableAmount,
     stableAmount,
     usdAmount,
-    tokenAddress: contract ? contract.address : undefined,
+    tokenAddress: tokenAddress,
     isLoading: balanceData.isLoading,
   };
 };

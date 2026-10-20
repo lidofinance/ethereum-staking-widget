@@ -1,15 +1,4 @@
-import { Event } from '.';
+import type { BACKEND_SCHEMA } from '../fetchers/backend';
+import type { z } from 'zod';
 
-export type Backend = {
-  events: Event[];
-  totals: {
-    ethRewards: number;
-    currencyRewards: number;
-  };
-  averageApr: string;
-  ethToStEthRatio: number;
-  stETHCurrencyPrice: {
-    [key: string]: number;
-  };
-  totalItems: number;
-};
+export type Backend = z.infer<typeof BACKEND_SCHEMA>;

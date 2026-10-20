@@ -5,30 +5,15 @@ const { satanizer, commonPatterns } = require('@lidofinance/satanizer');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const loadEnvConfig = require('@next/env').loadEnvConfig;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { clampArgs } = require('./utilsApi/clamp-log-args.cjs');
+const { clampArgs } = require('./scripts/logger/clamp-log-args.cjs');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { getRpcUrlPatterns } = require('./scripts/logger/rpc-url-log-patterns.cjs');
 
 // Must load env first
 const projectDir = process.cwd();
 loadEnvConfig(projectDir);
 
-const RPC_URL_ENV_KEYS = [
-  'EL_RPC_URLS_1',
-  'EL_RPC_URLS_10',
-  'EL_RPC_URLS_130',
-  'EL_RPC_URLS_1301',
-  'EL_RPC_URLS_17000',
-  'EL_RPC_URLS_560048',
-  'EL_RPC_URLS_11155111',
-  'EL_RPC_URLS_11155420',
-];
-
-// Comma-split so each URL becomes its own pattern; otherwise satanizer only matches the full concatenation.
-const rpcUrlPatterns = RPC_URL_ENV_KEYS.flatMap((key) =>
-  (process.env[key] || '')
-    .split(',')
-    .map((url) => url.trim())
-    .filter(Boolean),
-);
+const rpcUrlPatterns = getRpcUrlPatterns();
 
 const patterns = [...commonPatterns, ...rpcUrlPatterns].filter(Boolean);
 const mask = satanizer(patterns);
@@ -44,7 +29,7 @@ const logger = (defaultConfig) =>
     },
     hooks: {
       // Cap arguments before masking — masking cost grows faster than linearly
-      // with payload size. See utilsApi/clamp-log-args.cjs for the limits.
+      // with payload size. See scripts/logger/clamp-log-args.cjs for the limits.
       logMethod(inputArgs, method) {
         return method.apply(this, mask(clampArgs(inputArgs)));
       },

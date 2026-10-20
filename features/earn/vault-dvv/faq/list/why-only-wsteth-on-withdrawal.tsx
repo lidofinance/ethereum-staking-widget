@@ -2,12 +2,16 @@ import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
+import { lidoEcosystemPath } from 'utils/lido-ecosystem-path';
 import { LocalLink } from 'shared/components/local-link';
 import { WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
 
 export const WhyOnlyWstethOnWithdrawal: FC = () => {
   const MULTICHAIN_PATH = `${config.rootOrigin}/lido-multichain`;
-  const ECOSYSTEM_PATH = `${config.rootOrigin}/lido-ecosystem?criteria=and&tokens=wsteth`;
+  const ECOSYSTEM_PATH = lidoEcosystemPath({
+    tokens: ['wstETH'],
+    criteria: 'and',
+  });
 
   return (
     <Accordion summary="Why, even though deposits are made in ETH/WETH, do I only receive wstETH on withdrawal?">

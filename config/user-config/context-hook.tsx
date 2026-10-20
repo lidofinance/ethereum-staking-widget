@@ -1,20 +1,23 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useRef } from 'react';
 
 import { CHAINS } from 'consts/chains';
 import { useLocalStorage } from 'shared/hooks/use-local-storage';
 
 import { getUserConfigDefault } from './utils';
 import { UserConfigDefaultType } from './types';
+import { assignRpcUrl, type RpcUrls } from './rpc-urls';
 
 const STORAGE_USER_CONFIG = 'lido-user-config';
 
 type SavedUserConfig = {
-  rpcUrls: Partial<Record<CHAINS, string>>;
+  rpcUrls: RpcUrls;
 };
 
 export type UserConfigContextType = UserConfigDefaultType & {
   savedUserConfig: SavedUserConfig;
   setSavedUserConfig: (config: SavedUserConfig) => void;
+  /** Sets or, with an empty url, clears one chain's custom RPC, keeping the others */
+  setRpcUrl: (chainId: CHAINS, rpcUrl?: string) => void;
   isWalletConnectionAllowed: boolean;
   setIsWalletConnectionAllowed: (isAllowed: boolean) => void;
 };
@@ -43,6 +46,24 @@ export const useUserConfigContext = () => {
     [setLocalStorage],
   );
 
+  // Latest saved config for the chain-scoped setter, so two quick saves for
+  // different chains never overwrite each other with a stale closure
+  const savedUserConfigRef = useRef(savedUserConfig);
+  savedUserConfigRef.current = savedUserConfig;
+
+  const setRpcUrl = useCallback(
+    (chainId: CHAINS, rpcUrl?: string) => {
+      setSavedConfigAndRemember({
+        rpcUrls: assignRpcUrl(
+          savedUserConfigRef.current.rpcUrls,
+          chainId,
+          rpcUrl,
+        ),
+      });
+    },
+    [setSavedConfigAndRemember],
+  );
+
   return useMemo(() => {
     const userConfigDefault = getUserConfigDefault();
 
@@ -50,8 +71,14 @@ export const useUserConfigContext = () => {
       ...userConfigDefault,
       savedUserConfig,
       setSavedUserConfig: setSavedConfigAndRemember,
+      setRpcUrl,
       isWalletConnectionAllowed,
       setIsWalletConnectionAllowed,
     };
-  }, [isWalletConnectionAllowed, savedUserConfig, setSavedConfigAndRemember]);
+  }, [
+    isWalletConnectionAllowed,
+    savedUserConfig,
+    setSavedConfigAndRemember,
+    setRpcUrl,
+  ]);
 };

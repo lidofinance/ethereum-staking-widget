@@ -15,6 +15,10 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   SITE_BLOCKED = 'SITE_BLOCKED',
   PROVIDER_DISCONNECTED = 'PROVIDER_DISCONNECTED',
   CHAIN_DISCONNECTED = 'CHAIN_DISCONNECTED',
+  TX_SETTLED_DATA_UNAVAILABLE = 'TX_SETTLED_DATA_UNAVAILABLE',
+  QUOTE_CHANGED = 'QUOTE_CHANGED',
+  STAKE_WETH_INTERRUPTED = 'STAKE_WETH_INTERRUPTED',
+  STAKE_WETH_L2_INTERRUPTED = 'STAKE_WETH_L2_INTERRUPTED',
   SOMETHING_WRONG = 'SOMETHING_WRONG',
 }
 
@@ -91,6 +95,26 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'Your wallet is not connected to the selected network.',
     'eth_widget_errors_chain_disconnected',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.TX_SETTLED_DATA_UNAVAILABLE]: [
+    'Ethereum_Staking_Widget_Errors',
+    'Transaction settled but follow-up data could not be loaded',
+    'eth_widget_errors_tx_settled_data_unavailable',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'The exchange rate has changed. Check the updated amount and try again.',
+    'eth_widget_errors_quote_changed',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'WETH unwrapped but the stake was not sent',
+    'eth_widget_errors_stake_weth_interrupted',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_L2_INTERRUPTED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'WETH approved but the L2 stake was not sent',
+    'eth_widget_errors_stake_weth_l2_interrupted',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG]: [
     'Ethereum_Staking_Widget_Errors',

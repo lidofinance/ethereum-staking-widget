@@ -1,4 +1,19 @@
+import type { NextApiRequest } from 'next';
+
+import { CACHE_DEFAULT_ERROR_HEADERS } from 'config/groups/cache';
+import { standardFetcher } from 'utils/standardFetcher';
+import { FetcherError } from 'utils/fetcherError';
 import { buildParams } from '../cached-proxy-build-params';
+import { createCachedProxy } from '../cached-proxy';
+
+vi.mock('utils/standardFetcher', () => ({ standardFetcher: vi.fn() }));
+vi.mock('../fetchApiWrapper', () => ({
+  responseTimeExternalMetricWrapper: ({
+    request,
+  }: {
+    request: () => unknown;
+  }) => request(),
+}));
 
 describe('buildParams', () => {
   it('returns null when ignoreParams is true', () => {
@@ -44,5 +59,144 @@ describe('buildParams', () => {
   it('treats an empty allow-list as "filter everything out"', () => {
     const out = buildParams({ address: '0xabc', limit: '10' }, false, []);
     expect(out).toBeNull();
+  });
+});
+
+describe('createCachedProxy error responses', () => {
+  const makeRes = () => {
+    const res: any = {
+      statusCode: 200,
+      headers: {} as Record<string, string>,
+      setHeader(name: string, value: string) {
+        this.headers[name.toLowerCase()] = value;
+        return this;
+      },
+      status(code: number) {
+        this.statusCode = code;
+        return this;
+      },
+      json: vi.fn(),
+      end: vi.fn(),
+    };
+    return res;
+  };
+  const req = { query: { address: '0xabc' } } as unknown as NextApiRequest;
+  const proxy = createCachedProxy({
+    proxyUrl: 'https://upstream/',
+    cacheTTL: 1,
+  });
+
+  afterEach(() => {
+    vi.mocked(standardFetcher).mockReset();
+  });
+
+  it('sends no-store on upstream 5xx so the 500 is not cached', async () => {
+    vi.mocked(standardFetcher).mockRejectedValue(
+      new FetcherError('bad gateway', 502),
+    );
+    const res = makeRes();
+
+    await expect(proxy(req, res)).rejects.toThrow('bad gateway');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
+  });
+
+  it('sends no-store on timeout', async () => {
+    vi.mocked(standardFetcher).mockRejectedValue(
+      new DOMException('timed out', 'TimeoutError'),
+    );
+    const res = makeRes();
+
+    await expect(proxy(req, res)).rejects.toThrow('timed out');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
+  });
+
+  it('sends no-store on forwarded 4xx', async () => {
+    vi.mocked(standardFetcher).mockRejectedValue(
+      new FetcherError('not found', 404),
+    );
+    const res = makeRes();
+
+    await proxy(req, res);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.headers['cache-control']).toBe(CACHE_DEFAULT_ERROR_HEADERS);
+  });
+});
+
+describe('createCachedProxy forwardHeaders', () => {
+  const res = () =>
+    ({
+      setHeader: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+      end: vi.fn(),
+    }) as any;
+  const makeReq = (headers: Record<string, string> = {}) =>
+    ({ query: {}, headers }) as unknown as NextApiRequest;
+  // Headers lowercases names
+  const sentHeaders = () =>
+    Object.fromEntries(
+      new Headers(vi.mocked(standardFetcher).mock.calls[0][1]?.headers),
+    );
+
+  beforeEach(() => {
+    vi.mocked(standardFetcher).mockResolvedValue({ isValid: true });
+  });
+
+  afterEach(() => {
+    vi.mocked(standardFetcher).mockReset();
+  });
+
+  it('sends the headers built from the incoming request upstream', async () => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+      forwardHeaders: (req) => ({
+        'X-Client-User-Agent': String(req.headers['user-agent']),
+      }),
+    });
+
+    await proxy(makeReq({ 'user-agent': 'curl/8.5.0' }), res());
+
+    expect(sentHeaders()).toMatchObject({
+      'x-client-user-agent': 'curl/8.5.0',
+      accept: 'application/json',
+    });
+  });
+
+  it.each<Record<string, string>>([
+    { Accept: 'text/html' },
+    { accept: 'text/html', 'content-type': 'text/plain' },
+  ])('cannot override the fixed upstream headers: %o', async (forwarded) => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+      forwardHeaders: () => forwarded,
+    });
+
+    await proxy(makeReq(), res());
+
+    expect(sentHeaders()).toMatchObject({
+      accept: 'application/json',
+      'content-type': 'application/json',
+    });
+  });
+
+  it('sends only the fixed headers without forwardHeaders', async () => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+    });
+
+    await proxy(makeReq({ 'user-agent': 'curl/8.5.0' }), res());
+
+    expect(sentHeaders()).toEqual({
+      accept: 'application/json',
+      'content-type': 'application/json',
+    });
   });
 });

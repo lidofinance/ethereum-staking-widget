@@ -47,6 +47,7 @@ export const WIDGET_PAGES = [
   '/earn/usd/withdraw',
   '/earn/eth/deposit',
   '/earn/eth/withdraw',
+  '/swap',
 ];
 
 // cache control
@@ -294,10 +295,10 @@ export default withBundleAnalyzer({
     developmentMode,
     devnetOverrides,
 
-    // ETH rpcs
     defaultChain: process.env.DEFAULT_CHAIN,
     manifestOverride: process.env.MANIFEST_OVERRIDE,
     configManifestPath: process.env.CONFIG_MANIFEST_PATH,
+    // ETH rpcs
     rpcUrls_1: process.env.EL_RPC_URLS_1,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     rpcUrls_11155111: process.env.EL_RPC_URLS_11155111,
@@ -308,6 +309,12 @@ export default withBundleAnalyzer({
     // Unichain rpcs
     rpcUrls_130: process.env.EL_RPC_URLS_130,
     rpcUrls_1301: process.env.EL_RPC_URLS_1301,
+    // Base rpcs
+    rpcUrls_8453: process.env.EL_RPC_URLS_8453,
+    // Linea rpcs
+    rpcUrls_59144: process.env.EL_RPC_URLS_59144,
+    // Arbitrum rpcs
+    rpcUrls_42161: process.env.EL_RPC_URLS_42161,
 
     cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
     cspReportUri: process.env.CSP_REPORT_URI,

@@ -1,4 +1,5 @@
 {
+  "__WARNING__": "This file is deprecated. Will be deleted. Do not use it for new development.",
   "baseConfig": {
     "withdrawalDex": {
       "integration": "cowswap",

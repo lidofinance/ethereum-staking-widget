@@ -3,18 +3,18 @@ import React, {
   useContext,
   useState,
   useMemo,
-  useEffect,
   useCallback,
 } from 'react';
 import invariant from 'tiny-invariant';
 
 import { useConnection } from 'wagmi';
-import { Chain } from 'wagmi/chains';
+import type { Chain } from 'wagmi/chains';
 
 import {
-  isSDKSupportedChainAndChainIsL1,
-  isSDKSupportedL2Chain,
-  isSDKSupportedChain,
+  isSupportedL2Chain,
+  isSupportedL2StakingChain,
+  isSupportedL1Chain,
+  isSupportedL2WrapChain,
 } from 'consts/chains';
 import { config } from 'config';
 import { ModalProvider } from 'providers/modal-provider';
@@ -79,10 +79,7 @@ export const useDappChain = (): UseDappChainValue => {
         .map((id) => wagmiChainMap[id])
         .map((chain) => (chain.testnet ? chain.name : MAINNET));
 
-      // Ethereum example:
-      // - Ethereum
-      // - or
-      // - Ethereum(Mainnet,Hoodi,Sepolia,Holesky)
+      // Example: Ethereum or Ethereum(Mainnet,Hoodi,Sepolia,Holesky)
       return chainNamesForType.length === 1 && chainNamesForType[0] === MAINNET
         ? chainType
         : `${chainType}(${chainNamesForType.join(',')})`;
@@ -100,42 +97,34 @@ export const useDappChain = (): UseDappChainValue => {
       ...context,
       isChainMatched: walletChain ? context.chainId === walletChain : true,
       isSupportedChain: walletChain
-        ? context.supportedChainIds.includes(walletChain) &&
-          isSDKSupportedChain(walletChain)
+        ? context.supportedChainIds.includes(walletChain)
         : true,
       supportedChainLabels,
     };
   }, [context, walletChain]);
 };
 
-// wallet chain the dapp can follow, undefined means fall back to the default chain
-const getFollowableWalletChain = (
-  walletChainId: number | undefined,
-  isAllowedChain: (chainId: number) => boolean,
-) => {
-  return walletChainId &&
-    config.supportedChains.includes(walletChainId) &&
-    isAllowedChain(walletChainId)
-    ? walletChainId
-    : undefined;
-};
+/**
+ * Common logic for handling supported chains, including chain switching and maintaining the current chain state.
+ */
+const useSupportedChainLogic = (
+  isChainSupported: (chainId: number) => boolean,
+): DappChainContextValue => {
+  // State for current chain ID as source of truth over wagmi state
+  // wagmi state will enable all supported chains but our local state will override it
+  const [chainId, setChainId] = useState<number>(config.defaultChain);
 
-export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
-  children,
-}) => {
+  // wagmi state for the connected wallet
   const { chainId: walletChainId, isConnected } = useConnection();
+
+  // hook for switching chain state in wagmi/wallet state
   const {
     trySwitchChain,
     isPending: isSwitchChainPending,
     canSwitchChain,
   } = useSwitchChain();
-  // starts on the wallet chain: the page remounts on navigation and would flash "wrong network"
-  const [chainId, setChainId] = useState<number>(
-    () =>
-      (isConnected &&
-        getFollowableWalletChain(walletChainId, isSDKSupportedChain)) ||
-      config.defaultChain,
-  );
+
+  // callback that requests a chain change, soft syncing on edge-cases
   const requestChangeChain = useCallback(
     async (newChainId: number) => {
       if (!canSwitchChain) {
@@ -147,55 +136,84 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
       if (!success) {
         return setChainId(newChainId);
       }
+      // success is no-op, wagmi changes the state and we sync it to chainId during render below
     },
     [trySwitchChain, canSwitchChain],
   );
 
-  useEffect(() => {
-    const followableChainId = getFollowableWalletChain(
-      walletChainId,
-      isSDKSupportedChain,
-    );
-    if (!followableChainId) {
-      // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
-      // It also works on the first rendering, but we don't care.
+  // smart sync wagmi state to local state.
+  // Done during render (not in an effect) so that no frame is committed where the wallet
+  // is already on the new chain while `chainId` still points to the old one: such a frame
+  // flashes "wrong network" UI (isChainMatched=false) on every chain switch.
+  // https://react.dev/reference/react/useState#storing-information-from-previous-renders
+  const [prevWalletState, setPrevWalletState] = useState<{
+    walletChainId: number | undefined;
+    isConnected: boolean;
+  } | null>(null);
+  if (
+    !prevWalletState ||
+    prevWalletState.walletChainId !== walletChainId ||
+    prevWalletState.isConnected !== isConnected
+  ) {
+    setPrevWalletState({ walletChainId, isConnected });
+    if (
+      !walletChainId ||
+      !config.supportedChains.includes(walletChainId) ||
+      !isChainSupported(walletChainId)
+    ) {
+      // Resets 'chainId' to 'config.defaultChain' when the wallet is disconnected or on an unsupported chain
       setChainId(config.defaultChain);
-      return;
+    } else if (isConnected) {
+      setChainId(walletChainId);
     }
+  }
 
-    if (isConnected) {
-      setChainId(followableChainId);
-    }
-  }, [walletChainId, isConnected]);
+  return useMemo(
+    () => ({
+      chainId,
+      setChainId,
+      chainType: getChainTypeByChainId(chainId) ?? DAPP_CHAIN_TYPE.Ethereum,
+      requestChangeChain,
+      isSwitchChainPending,
+      canSwitchChain,
+
+      wagmiChain: wagmiChainMap[chainId],
+      wagmiDefaultChain: wagmiChainMap[config.defaultChain],
+      wagmiWalletChain: walletChainId
+        ? wagmiChainMap[walletChainId]
+        : undefined,
+
+      isChainIdOnL2: isSupportedL2Chain(chainId),
+      supportedChainIds: config.supportedChains.filter((chain) =>
+        isChainSupported(chain),
+      ),
+    }),
+    [
+      canSwitchChain,
+      chainId,
+      isChainSupported,
+      isSwitchChainPending,
+      requestChangeChain,
+      walletChainId,
+    ],
+  );
+};
+
+/**
+ * Enables L1 and L2 chains with wrap Functionality
+ */
+export const SupportL1AndL2WrapChains: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const isChainSupported = useCallback(
+    (chainId: number) =>
+      isSupportedL1Chain(chainId) || isSupportedL2WrapChain(chainId),
+    [],
+  );
+  const contextValue = useSupportedChainLogic(isChainSupported);
 
   return (
-    <DappChainContext.Provider
-      value={useMemo(
-        () => ({
-          chainId,
-          setChainId,
-          chainType: getChainTypeByChainId(chainId) ?? DAPP_CHAIN_TYPE.Ethereum,
-          requestChangeChain,
-          isSwitchChainPending,
-          canSwitchChain,
-          wagmiChain: wagmiChainMap[chainId],
-          wagmiDefaultChain: wagmiChainMap[config.defaultChain],
-          wagmiWalletChain: walletChainId
-            ? wagmiChainMap[walletChainId]
-            : undefined,
-
-          isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
-          supportedChainIds: config.supportedChains.filter(isSDKSupportedChain),
-        }),
-        [
-          canSwitchChain,
-          chainId,
-          isSwitchChainPending,
-          requestChangeChain,
-          walletChainId,
-        ],
-      )}
-    >
+    <DappChainContext.Provider value={contextValue}>
       <LidoSDKL2Provider>
         {/* Some modals depend on the LidoSDKL2Provider */}
         <ModalProvider>{children}</ModalProvider>
@@ -204,94 +222,73 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   );
 };
 
-// Value of this context only allows L1 chains and no chain switch
-// this is actual for most pages and can be overriden by SupportL2Chains on per page basis
-// for safety reasons this cannot be default context value
-// in order to prevent accidental useDappChain/useDappStatus misusage in top-lvl components
-export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
+/**
+ * Enables L1 and L2 chains with staking functionality
+ */
+export const SupportL1andL2StakingChains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId: walletChainId, isConnected } = useConnection();
-  const {
-    trySwitchChain,
-    isPending: isSwitchChainPending,
-    canSwitchChain,
-  } = useSwitchChain();
-  // starts on the wallet chain: the page remounts on navigation and would flash "wrong network"
-  const [chainId, setChainId] = useState<number>(
-    () =>
-      (isConnected &&
-        getFollowableWalletChain(
-          walletChainId,
-          isSDKSupportedChainAndChainIsL1,
-        )) ||
-      config.defaultChain,
+  const isChainSupported = useCallback(
+    (chainId: number) =>
+      isSupportedL1Chain(chainId) || isSupportedL2StakingChain(chainId),
+    [],
   );
-  const requestChangeChain = useCallback(
-    async (newChainId: number) => {
-      if (!canSwitchChain) {
-        return setChainId(newChainId);
-      }
-
-      const { success } = await trySwitchChain(newChainId);
-      // if the chain switch was unsuccessful, we still set the chainId to the newChainId
-      if (!success) {
-        return setChainId(newChainId);
-      }
-    },
-    [trySwitchChain, canSwitchChain],
-  );
-
-  useEffect(() => {
-    const followableChainId = getFollowableWalletChain(
-      walletChainId,
-      isSDKSupportedChainAndChainIsL1,
-    );
-    if (!followableChainId) {
-      // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
-      // It also works on the first rendering, but we don't care.
-      setChainId(config.defaultChain);
-      return;
-    }
-
-    if (isConnected) {
-      setChainId(followableChainId);
-    }
-  }, [walletChainId, isConnected]);
+  const contextValue = useSupportedChainLogic(isChainSupported);
 
   return (
-    <DappChainContext.Provider
-      value={useMemo(
-        () => ({
-          chainId,
-          setChainId,
-          chainType: DAPP_CHAIN_TYPE.Ethereum,
-          requestChangeChain,
-          isSwitchChainPending,
-          canSwitchChain,
+    <DappChainContext.Provider value={contextValue}>
+      <LidoSDKL2Provider>
+        {/* Some modals depend on the LidoSDKL2Provider */}
+        <ModalProvider>{children}</ModalProvider>
+      </LidoSDKL2Provider>
+    </DappChainContext.Provider>
+  );
+};
 
-          wagmiChain: wagmiChainMap[chainId],
-          wagmiDefaultChain: wagmiChainMap[config.defaultChain],
-          wagmiWalletChain: walletChainId
-            ? wagmiChainMap[walletChainId]
-            : undefined,
+/**
+ * Enables L1 chains and the given L2 chains, for pages with their own L2 set
+ * @param l2ChainIds must be a stable reference
+ */
+export const SupportL1AndCustomL2Chains: React.FC<
+  React.PropsWithChildren<{ l2ChainIds: readonly number[] }>
+> = ({ l2ChainIds, children }) => {
+  const isChainSupported = useCallback(
+    (chainId: number) =>
+      isSupportedL1Chain(chainId) ||
+      (isSupportedL2StakingChain(chainId) && l2ChainIds.includes(chainId)),
+    [l2ChainIds],
+  );
+  const contextValue = useSupportedChainLogic(isChainSupported);
 
-          // only L1 chains
-          isChainIdOnL2: false,
-          supportedChainIds: config.supportedChains.filter(
-            (chain) =>
-              isSDKSupportedChain(chain) && !isSDKSupportedL2Chain(chain),
-          ),
-        }),
-        [
-          canSwitchChain,
-          chainId,
-          isSwitchChainPending,
-          requestChangeChain,
-          walletChainId,
-        ],
-      )}
-    >
+  return (
+    <DappChainContext.Provider value={contextValue}>
+      <LidoSDKL2Provider>
+        {/* Some modals depend on the LidoSDKL2Provider */}
+        <ModalProvider>{children}</ModalProvider>
+      </LidoSDKL2Provider>
+    </DappChainContext.Provider>
+  );
+};
+
+/**
+ * Enables only L1 chains - Ethereum Mainnet and testnets
+ * @remarks
+ * Value of this context only allows L1 chains and no chain switch
+ * this is actual for most pages and can be overriden by SupportL2Chains on per page basis
+ * for safety reasons this cannot be default context value
+ * in order to prevent accidental useDappChain/useDappStatus misusage in top-lvl components
+ */
+export const SupportOnlyL1Chains: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const isOnlyL1Chain = useCallback(
+    (chainId: number) => isSupportedL1Chain(chainId),
+    [],
+  );
+  const contextValue = useSupportedChainLogic(isOnlyL1Chain);
+
+  return (
+    <DappChainContext.Provider value={contextValue}>
       <LidoSDKProvider>
         {/* Stub LidoSDKL2Provider for hooks that gives isL2:false. Will be overriden in SupportL2Chains */}
         <LidoSDKL2Provider>{children}</LidoSDKL2Provider>

@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { config } from 'config';
+import { lidoEcosystemPath } from 'utils/lido-ecosystem-path';
 
 export const WhyReceiveWstethOnWithdrawal: FC = () => {
   return (
@@ -10,9 +11,7 @@ export const WhyReceiveWstethOnWithdrawal: FC = () => {
         to reduce the time to claim and complete a withdrawal. By receiving
         wstETH, you will continue to accrue staking APR while you hold it. Also,
         wstETH is widely{' '}
-        <Link
-          href={`${config.rootOrigin}/lido-ecosystem?criteria=and&tokens=wsteth`}
-        >
+        <Link href={lidoEcosystemPath({ tokens: ['wstETH'], criteria: 'and' })}>
           accepted in DeFi
         </Link>
         , so you can use it across protocols,{' '}

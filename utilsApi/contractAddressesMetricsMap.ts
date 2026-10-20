@@ -1,4 +1,4 @@
-import type { Address, Abi } from 'viem';
+import { erc20Abi, type Address, type Abi } from 'viem';
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
@@ -30,9 +30,11 @@ import { ENSUniversalResolverAbi } from 'abi/ens-universal-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import {
+  CowEthFlowAbi,
   CowSettlementAbi,
   CowVaultRelayerAbi,
-} from 'features/dex-withdrawals/cowswap';
+} from 'shared/dexes/cowswap';
+import { opGasPriceOracleAbi } from 'abi/op-gas-price-oracle-abi';
 // Tokens ABIs
 import { wethABI } from 'abi/weth-abi';
 import { usdtABI } from 'abi/usdt-abi';
@@ -78,6 +80,11 @@ import {
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
+import {
+  L2_STAKING_ORACLE_FEED_ABI,
+  L2_STAKING_ORACLE_POOL_ABI,
+  L2_STAKING_RECEIVER_ABI,
+} from 'modules/l2-staking';
 
 export const METRIC_CONTRACT_ABIS = {
   // Lido
@@ -86,8 +93,13 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.wsteth]: WstethABI,
   [CONTRACT_NAMES.daoAgent]: [],
   [CONTRACT_NAMES.withdrawalQueue]: WithdrawalQueueAbi,
+  // Lido L2
   [CONTRACT_NAMES.L2stETH]: rebasableL2StethAbi,
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
+  [CONTRACT_NAMES.L2stakingReceiver]: L2_STAKING_RECEIVER_ABI,
+  [CONTRACT_NAMES.L2FastStakeOraclePool]: L2_STAKING_ORACLE_POOL_ABI,
+  [CONTRACT_NAMES.L2FastStakeOracleFeed]: L2_STAKING_ORACLE_FEED_ABI,
+  [CONTRACT_NAMES.L2GasPriceOracle]: opGasPriceOracleAbi,
   // SI contracts
   [CONTRACT_NAMES.wstethReferralStaker]: WstethReferralStakerABI,
   // Dual Governance
@@ -102,6 +114,17 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.aggregatorUsdtUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorDaiUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorBtcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdeUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdsUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorPyusdUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorCbbtcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorLdoEthPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorWbtcBtcPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorLinkUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUniUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorAaveUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorRlusdUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdgUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSPublicResolverAbi,
@@ -109,6 +132,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
   [CONTRACT_NAMES.cowVaultRelayer]: CowVaultRelayerAbi,
   [CONTRACT_NAMES.cowSettlement]: CowSettlementAbi,
+  [CONTRACT_NAMES.cowEthFlow]: CowEthFlowAbi,
   // 3rd party tokens
   [CONTRACT_NAMES.weth]: wethABI,
   [CONTRACT_NAMES.usdc]: usdcABI,
@@ -116,6 +140,15 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.usds]: usdsABI,
   [CONTRACT_NAMES.wbtc]: wbtcABI,
   [CONTRACT_NAMES.usde]: usdeABI,
+  [CONTRACT_NAMES.ldo]: erc20Abi,
+  [CONTRACT_NAMES.dai]: erc20Abi,
+  [CONTRACT_NAMES.pyusd]: erc20Abi,
+  [CONTRACT_NAMES.cbbtc]: erc20Abi,
+  [CONTRACT_NAMES.link]: erc20Abi,
+  [CONTRACT_NAMES.uni]: erc20Abi,
+  [CONTRACT_NAMES.aave]: erc20Abi,
+  [CONTRACT_NAMES.rlusd]: erc20Abi,
+  [CONTRACT_NAMES.usdg]: erc20Abi,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,

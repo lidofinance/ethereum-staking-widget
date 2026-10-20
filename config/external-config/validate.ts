@@ -1,3 +1,4 @@
+import { CHAINS } from 'config/chains';
 import { z } from 'zod';
 
 ///
@@ -29,7 +30,7 @@ const EarnVaultConfigApyEntrySchema = z.preprocess((obj) => {
   return undefined;
 }, EarnVaultConfigApySchema);
 
-const MAX_VAULT_TEXT_LENGTH = 250;
+const MAX_REASON_TEXT_LENGTH = 250;
 
 const EarnVaultConfigEntrySchema = z.object({
   name: EarnVaultNameSchema,
@@ -43,9 +44,9 @@ const EarnVaultConfigEntrySchema = z.object({
   deprecated: z.boolean().optional().default(false),
   disabled: z.boolean().optional().default(false),
   // Texts
-  depositPauseReasonText: z.string().max(MAX_VAULT_TEXT_LENGTH).optional(),
-  withdrawPauseReasonText: z.string().max(MAX_VAULT_TEXT_LENGTH).optional(),
-  listWarningText: z.string().max(MAX_VAULT_TEXT_LENGTH).optional(),
+  depositPauseReasonText: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
+  withdrawPauseReasonText: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
+  listWarningText: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
 });
 
 // Filter out unknown vaults and vaults with invalid schema
@@ -207,6 +208,7 @@ export const ManifestConfigPages = {
   Rewards: '/rewards',
   Settings: '/settings',
   Earn: '/earn',
+  Swap: '/swap',
 } as const;
 
 export const PageNameSchema = z.enum(Object.values(ManifestConfigPages));
@@ -265,6 +267,98 @@ const MultiChainBannerSchema = z
     message: 'Chain IDs in multiChainBanner must be unique',
   });
 
+type UnknownRecord = Record<string, unknown>;
+
+const isUnknownRecord = (value: unknown): value is UnknownRecord =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+//
+// L2 Stake
+//
+
+// Default liquidity target for L2 stake in ETH that the pool aims to maintain
+const DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH = 25;
+
+const L2StakeConfigurationSchema = z.object({
+  enabled: z.boolean().optional().default(true),
+  // Target wsteth liquidity for L2 stake in integer ETH
+  liquidityTarget: z
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .default(DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH),
+  disableReason: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
+});
+
+// Per-chain entries carry only the keys the manifest sets: an omitted key must
+// fall through to `common` (e.g. a common `enabled: false`), not to a default
+const L2StakePerChainConfigurationSchema = z.object({
+  enabled: z.boolean().optional(),
+  liquidityTarget: z.number().int().min(0).optional(),
+  disableReason: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
+});
+
+const sanitizeL2StakeEntry = (entry: unknown) => {
+  if (!isUnknownRecord(entry)) return {};
+  const { enabled, liquidityTarget } = entry;
+  return {
+    ...(enabled !== undefined && { enabled: enabled === true }),
+    ...(typeof liquidityTarget === 'number' &&
+      Number.isInteger(liquidityTarget) &&
+      liquidityTarget >= 0 && { liquidityTarget }),
+    ...(typeof entry.disableReason === 'string' &&
+      entry.disableReason.length > 0 && { disableReason: entry.disableReason }),
+  };
+};
+
+const L2StakeSchema = z.preprocess(
+  (value) => {
+    const section = isUnknownRecord(value) ? value : {};
+    const perChain = isUnknownRecord(section.perChain) ? section.perChain : {};
+    return {
+      common: sanitizeL2StakeEntry(section.common),
+      perChain: Object.fromEntries(
+        Object.entries(perChain)
+          .filter(([key]) => /^[1-9]\d*$/.test(key))
+          .map(([key, entry]) => [key, sanitizeL2StakeEntry(entry)]),
+      ),
+    };
+  },
+  z.object({
+    common: L2StakeConfigurationSchema,
+    perChain: z.record(
+      z
+        .string()
+        .transform((v) => Number(v))
+        .pipe(z.number().min(1)),
+      L2StakePerChainConfigurationSchema,
+    ),
+  }),
+);
+
+const definedEntries = <T extends object>(overrides: T): Partial<T> =>
+  Object.fromEntries(
+    Object.entries(overrides).filter(([, value]) => value !== undefined),
+  ) as Partial<T>;
+
+// Populate all chains with common config
+const L2StakeTransformSchema = L2StakeSchema.transform((data) => {
+  return {
+    common: data.common,
+    perChain: Object.fromEntries(
+      Object.values(CHAINS)
+        .filter((chain) => typeof chain === 'number')
+        .map((chainId) => [
+          chainId,
+          {
+            ...data.common,
+            ...definedEntries(data.perChain[chainId] ?? {}),
+          },
+        ]),
+    ) as Record<CHAINS, z.infer<typeof L2StakeConfigurationSchema>>,
+  };
+});
 //
 // Wallets
 //
@@ -284,6 +378,7 @@ const WalletsConfigSchema = z
 
 const ManifestConfigSchema = z.object({
   withdrawalDex: DexWithdrawalIntegrationEntrySchema,
+  l2Stake: L2StakeTransformSchema,
   multiChainBanner: MultiChainBannerSchema.optional().default([]),
   featureFlags: FeatureFlagsSchema.optional().default({}),
   earnVaults: EarnVaultListSchema.optional().default([]),
@@ -318,11 +413,6 @@ const ManifestKeySchema = z
     /^[1-9]\d*(?:-.+)?$/,
     "Must be a chain id or chain id with suffix (e.g. '1', '1-staging')",
   );
-
-type UnknownRecord = Record<string, unknown>;
-
-const isUnknownRecord = (value: unknown): value is UnknownRecord =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 // Objects are merged recursively, while arrays and primitive values from the
 // network config replace their baseConfig counterparts. Object.fromEntries is

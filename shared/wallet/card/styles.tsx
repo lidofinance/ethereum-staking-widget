@@ -53,21 +53,25 @@ export const WalletCardTitleStyle = styled.div`
   line-height: 24px;
 `;
 
-export const WalletCardValueStyle = styled.div<{ $small: boolean }>`
+export const WalletCardValueStyle = styled.div<{ $small?: boolean }>`
   margin-top: 2px;
   font-size: ${({ theme, $small }) =>
     $small ? theme.fontSizesMap.sm : theme.fontSizesMap.md}px;
   line-height: 1.4em;
   font-weight: 800;
   white-space: nowrap;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 `;
 
 export const WalletCardExtraStyle = styled.div`
   margin-top: 2px;
   opacity: 0.5;
+  display: flex;
 `;
 
-export const WalletCardContentStyle = styled.div<{ $hidden: boolean }>`
+export const WalletCardContentStyle = styled.div<{ $hidden?: boolean }>`
   margin-top: 8px;
   opacity: ${({ $hidden }) => ($hidden ? 0 : 1)};
   pointer-events: ${({ $hidden }) => ($hidden ? 'none' : 'auto')};
@@ -87,4 +91,21 @@ export const WalletCardAccountStyle = styled.div`
   & > * {
     cursor: pointer;
   }
+`;
+
+export const WalletCardNetworkStyle = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  & > svg {
+    width: 20px;
+    height: 20px;
+    align-self: center;
+  }
+
+  margin-top: 2px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  line-height: 1.7em;
+  font-weight: 400;
+  white-space: nowrap;
 `;
