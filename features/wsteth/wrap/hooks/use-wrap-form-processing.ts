@@ -53,6 +53,11 @@ export const useWrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
+        // L2 has one route, stETH → wstETH; the form hides the selector there
+        invariant(
+          !isL2Wrap || token === TOKENS_TO_WRAP.stETH,
+          'L2 wrap takes stETH only',
+        );
 
         const referralAddress = await getReferralAddress(
           referral,
