@@ -12,7 +12,7 @@ export type Thresholds = {
 // USD limits, same for every token (ADR 0004)
 export const DEFAULT_THRESHOLDS: Thresholds = {
   oracleDeviationBlock: 4,
-  maxSellUsd: 5_000_000,
+  maxSellUsd: 10_000_000,
   // Below it the network fee alone can exceed the deviation block
   minSellUsdToTriggerOracle: 1_000,
 };

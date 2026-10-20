@@ -181,6 +181,13 @@ const validateSettlerSignature = async (
   }
 };
 
+// WETH.deposit() selector
+const WETH_DEPOSIT_SELECTOR = '0xd0e30db0';
+
+const isWethDeposit = (call: { to: Address; data: Hex }, weth: Address) =>
+  isAddressEqual(call.to, weth) &&
+  call.data.toLowerCase() === WETH_DEPOSIT_SELECTOR;
+
 // EthFlow sells native ETH: createOrder carries the order and the ETH, invalidateOrder cancels it
 const validateEthFlowCall = async (
   data: Hex,
@@ -374,9 +381,27 @@ export const validateSendCalls = async (
     };
   }
 
+  // Safe sells ETH as WETH.deposit{value} + [WETH.approve] + setPreSignature(WETH order)
+  const { weth, sellTokens } = ctx.networkTxConfig;
+  const depositIndexes = calls.flatMap((call, index) =>
+    isWethDeposit(call, weth) ? [index] : [],
+  );
+  if (depositIndexes.length > 1) {
+    return { allowed: false, reason: TRANSACTION_ERROR(2052) };
+  }
+  const depositCall =
+    depositIndexes[0] === undefined ? undefined : calls[depositIndexes[0]];
+  const depositValue = depositCall?.value ? hexToBigInt(depositCall.value) : 0n;
+  if (depositCall && (depositValue === 0n || !sellTokens.has(ethAddress))) {
+    return { allowed: false, reason: TRANSACTION_ERROR(2053) };
+  }
+
   let order: OrderData | CancelOrderData | undefined = undefined;
 
-  for (const [_, call] of calls.entries()) {
+  for (const [index, call] of calls.entries()) {
+    // the deposit is checked against the order below
+    if (index === depositIndexes[0]) continue;
+
     const result = await validateSendTransaction([call], ctx);
     if (!result.allowed) {
       return {
@@ -409,6 +434,27 @@ export const validateSendCalls = async (
       allowed: false,
       reason: TRANSACTION_ERROR(2037),
     };
+  }
+
+  if (depositCall) {
+    // the wrapped ETH must be exactly what the order sells
+    if (isCancelOrder(order) || !isAddressEqual(order.sellToken, weth)) {
+      return { allowed: false, reason: TRANSACTION_ERROR(2054) };
+    }
+    if (order.sellAmount !== depositValue) {
+      return { allowed: false, reason: TRANSACTION_ERROR(2055) };
+    }
+    const approvals = extractApprovals('wallet_sendCalls', params);
+    if (
+      approvals.some(
+        ({ token, amount }) =>
+          isAddressEqual(token, weth) && amount > depositValue,
+      )
+    ) {
+      return { allowed: false, reason: TRANSACTION_ERROR(2056) };
+    }
+    // checked against the trade snapshot as a native ETH sale
+    return { allowed: true, result: { ...order, sellToken: ethAddress } };
   }
 
   return { allowed: true, result: order };
@@ -460,8 +506,24 @@ export const sanitizeTransactionParams = (
     return sendTransactionParamsSchema.parse(params);
   }
   if (method === 'wallet_sendCalls') {
-    return sendCallsParamsSchema.parse(params);
+    const [batch] = sendCallsParamsSchema.parse(params);
+    // all or nothing: a wrap or approve must not land without its order
+    return [{ ...batch, atomicRequired: true }];
   }
 
   return params;
+};
+
+// wallet_sendCalls batch that wraps ETH into the network WETH (Safe ETH sale)
+export const hasWethDeposit = (
+  method: string,
+  params: unknown,
+  weth: Address,
+): boolean => {
+  if (method !== 'wallet_sendCalls') return false;
+  const parsed = sendCallsParamsSchema.safeParse(params);
+  return (
+    parsed.success &&
+    parsed.data[0].calls.some((call) => isWethDeposit(call, weth))
+  );
 };

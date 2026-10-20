@@ -7,6 +7,7 @@ vi.mock('utils/standardFetcher', () => ({
 
 import {
   extractApprovals,
+  hasWethDeposit,
   sanitizeTransactionParams,
   validateSendTransaction,
   validateSendCalls,
@@ -1248,6 +1249,7 @@ describe('sanitizeTransactionParams', () => {
       {
         version: '2.0.0',
         chainId: '0x1',
+        atomicRequired: true,
         calls: [{ to: STETH, data: approveData }],
       },
     ]);
@@ -1304,5 +1306,143 @@ describe('validateSendCalls — batch fields', () => {
       mainnetCtx,
     );
     expect(result.allowed).toBe(true);
+  });
+});
+
+describe('validateSendCalls — Safe ETH sale', () => {
+  const ETH_VALUE = 10n ** 18n;
+  const safeEthCtx = {
+    ...mainnetCtx,
+    networkTxConfig: {
+      ...MAINNET_TX_CONFIG,
+      sellTokens: new Set([...MAINNET_TX_CONFIG.sellTokens, ethAddress, WETH]),
+    },
+  } as typeof mainnetCtx;
+  const WETH_ORDER = {
+    ...TEST_ORDER,
+    sellToken: WETH as `0x${string}`,
+    buyToken: USDC as `0x${string}`,
+    buyAmount: 2_000_000_000n,
+  };
+  const WETH_ORDER_UID = calculateOrderUID(
+    hashCowswapOrder(
+      WETH_ORDER,
+      CHAIN_MAINNET,
+      COW_SETTLEMENT as `0x${string}`,
+    ),
+    SIGNER,
+    TEST_VALID_TO,
+  );
+  const deposit = (value = ETH_VALUE) => ({
+    to: WETH,
+    data: '0xd0e30db0',
+    value: toHex(value),
+  });
+  const approveWeth = (amount = ETH_VALUE) => ({
+    to: WETH,
+    data: buildApproveAmount(COW_VAULT_RELAYER, amount),
+  });
+  const presign = (uid = WETH_ORDER_UID) => ({
+    to: COW_SETTLEMENT,
+    data: buildSetPreSignature(uid),
+  });
+  const batch = (calls: object[]) => [{ calls }];
+
+  beforeEach(() => {
+    vi.mocked(standardFetcher).mockResolvedValue({
+      ...buildOrderApiResponse(FEE_RECIPIENT, WETH, WETH_ORDER_UID, USDC),
+      buyAmount: '2000000000',
+    });
+  });
+
+  it('allows wrap + approve + presign and returns a native ETH sale', async () => {
+    const result = await validateSendCalls(
+      batch([deposit(), approveWeth(), presign()]),
+      safeEthCtx,
+    );
+    expect(result).toMatchObject({
+      allowed: true,
+      result: {
+        sellToken: ethAddress,
+        buyToken: USDC,
+        sellAmount: ETH_VALUE,
+        buyAmount: 2_000_000_000n,
+      },
+    });
+  });
+
+  it.each([
+    [
+      'wrapping less than the order sells',
+      [deposit(ETH_VALUE / 2n), presign()],
+      2055,
+    ],
+    ['two deposits', [deposit(), deposit(), presign()], 2052],
+    ['a deposit without ETH', [deposit(0n), presign()], 2053],
+    [
+      'an approve above the wrapped amount',
+      [deposit(), approveWeth(ETH_VALUE + 1n), presign()],
+      2056,
+    ],
+    [
+      'an order that sells another token',
+      [deposit(), presign(TEST_ORDER_UID)],
+      2054,
+    ],
+    ['a deposit without an order', [deposit(), approveWeth()], 2036],
+  ] as const)('blocks a batch with %s', async (_, calls, code) => {
+    if (code === 2054) {
+      vi.mocked(standardFetcher).mockResolvedValue(buildOrderApiResponse());
+    }
+    expect(await validateSendCalls(batch([...calls]), safeEthCtx)).toEqual({
+      allowed: false,
+      reason: TRANSACTION_ERROR(code),
+    });
+  });
+
+  it('blocks the wrap when the profile does not sell ETH', async () => {
+    expect(
+      await validateSendCalls(batch([deposit(), presign()]), mainnetCtx),
+    ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2053) });
+  });
+});
+
+describe('hasWethDeposit', () => {
+  const weth = WETH as `0x${string}`;
+  const callsWith = (data: string) => [
+    { calls: [{ to: WETH, data, value: '0x1' }] },
+  ];
+
+  it('detects a WETH deposit in a batch', () => {
+    expect(
+      hasWethDeposit('wallet_sendCalls', callsWith('0xD0E30DB0'), weth),
+    ).toBe(true);
+  });
+
+  it('ignores other calls and other methods', () => {
+    expect(
+      hasWethDeposit('wallet_sendCalls', callsWith('0xd0e30db000'), weth),
+    ).toBe(false);
+    expect(
+      hasWethDeposit('eth_sendTransaction', callsWith('0xd0e30db0'), weth),
+    ).toBe(false);
+  });
+});
+
+describe('sanitizeTransactionParams — atomic batches', () => {
+  it('forces atomic execution of every batch', () => {
+    expect(
+      sanitizeTransactionParams('wallet_sendCalls', [
+        {
+          atomicRequired: false,
+          calls: [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
+        },
+      ]),
+    ).toEqual([
+      {
+        atomicRequired: true,
+        calls: [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
+      },
+    ]);
   });
 });

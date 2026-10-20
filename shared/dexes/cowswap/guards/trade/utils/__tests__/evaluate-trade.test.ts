@@ -170,12 +170,12 @@ describe('evaluateTrade', () => {
 
   it('blocks sell above max USD', async () => {
     const { options } = setup();
-    // 2600 stETH × $2000 = $5.2M
+    // 5200 stETH × $2000 = $10.4M
     const result = await evaluateTrade(
       makePayload({
-        sellTokenAmount: { units: '2600' },
-        buyTokenAmount: { units: '5200000' },
-        minimumReceiveBuyAmount: { units: '5148000' },
+        sellTokenAmount: { units: '5200' },
+        buyTokenAmount: { units: '10400000' },
+        minimumReceiveBuyAmount: { units: '10296000' },
       }),
       options,
     );
@@ -190,12 +190,12 @@ describe('evaluateTrade', () => {
 
   it('allows sell at max USD', async () => {
     const { options } = setup();
-    // 2500 stETH × $2000 = $5M
+    // 5000 stETH × $2000 = $10M
     const result = await evaluateTrade(
       makePayload({
-        sellTokenAmount: { units: '2500' },
-        buyTokenAmount: { units: '5000000' },
-        minimumReceiveBuyAmount: { units: '4950000' },
+        sellTokenAmount: { units: '5000' },
+        buyTokenAmount: { units: '10000000' },
+        minimumReceiveBuyAmount: { units: '9900000' },
       }),
       options,
     );
@@ -350,9 +350,9 @@ describe('evaluateApproval', () => {
     expect(
       await evaluateApproval(
         makePayload({
-          sellTokenAmount: { units: '2600' },
-          buyTokenAmount: { units: '5200000' },
-          minimumReceiveBuyAmount: { units: '5148000' },
+          sellTokenAmount: { units: '5200' },
+          buyTokenAmount: { units: '10400000' },
+          minimumReceiveBuyAmount: { units: '10296000' },
         }),
         options,
       ),

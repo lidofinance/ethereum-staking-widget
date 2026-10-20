@@ -213,6 +213,25 @@ describe('request — validation', () => {
     expect(walletClient.request).not.toHaveBeenCalled();
   });
 
+  it('verifies approvals before the order', async () => {
+    const approval = { token: ORDER.sellToken, amount: 10n };
+    vi.mocked(validateRpcRequest).mockResolvedValue({
+      order: ORDER,
+      approvals: [approval],
+      sanitizedRequest: SIGN_REQUEST,
+    });
+    const { provider, params } = setup();
+
+    await provider.request(SIGN_REQUEST);
+
+    // verifying an ETH order consumes the trade snapshot the approve needs
+    expect(
+      vi.mocked(params.verifyApproval).mock.invocationCallOrder[0],
+    ).toBeLessThan(
+      vi.mocked(params.verifySignedOrder).mock.invocationCallOrder[0],
+    );
+  });
+
   it('sends request when approve passes verification', async () => {
     const approval = { token: ORDER.sellToken, amount: 10n };
     vi.mocked(validateRpcRequest).mockResolvedValue({

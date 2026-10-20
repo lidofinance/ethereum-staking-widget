@@ -1,3 +1,5 @@
+import { ethAddress, isAddressEqual } from 'viem';
+
 import {
   COWSWAP_API_NETWORKS,
   COWSWAP_WIDGET_ALLOWED_RPC_METHODS,
@@ -8,6 +10,7 @@ import {
   OrderData,
   ValidationContext,
   extractApprovals,
+  hasWethDeposit,
   isCancelOrder,
   sanitizeTransactionParams,
   jsonRpcRequestSchema,
@@ -102,7 +105,16 @@ export const validateRpcRequest = async (
     throw new Error(TRANSACTION_ERROR(2002));
   }
 
-  const approvals: ApprovalData[] = extractApprovals(method, params);
+  const { weth } = ctx.networkTxConfig;
+  // a Safe ETH sale approves the WETH it wraps: bound by the ETH trade snapshot
+  const isWrapSale =
+    order?.sellToken === ethAddress && hasWethDeposit(method, params, weth);
+  const approvals: ApprovalData[] = extractApprovals(method, params).map(
+    (approval) =>
+      isWrapSale && isAddressEqual(approval.token, weth)
+        ? { ...approval, token: ethAddress }
+        : approval,
+  );
 
   return {
     order,

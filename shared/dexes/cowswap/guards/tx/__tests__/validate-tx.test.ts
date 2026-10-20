@@ -4,6 +4,7 @@ vi.mock('../utils/validate-tx-signing', () => ({
   validateSendTransaction: vi.fn(),
   validateSendCalls: vi.fn(),
   extractApprovals: vi.fn(() => []),
+  hasWethDeposit: vi.fn(() => false),
   sanitizeTransactionParams: vi.fn(
     (_method: string, params: unknown) => params,
   ),
@@ -16,6 +17,7 @@ vi.mock('../utils/validate-typed-message', () => ({
 import { validateRpcRequest } from '../validate-tx';
 import {
   extractApprovals,
+  hasWethDeposit,
   sanitizeTransactionParams,
   validateSendTransaction,
   validateSendCalls,
@@ -397,5 +399,52 @@ describe('validateRpcRequest — sanitized params', () => {
       'eth_sendTransaction',
       request.params,
     );
+  });
+});
+
+describe('validateRpcRequest — Safe ETH sale approvals', () => {
+  it('checks the WETH approve of an ETH sale as native ETH', async () => {
+    const weth = MAINNET_TX_CONFIG.weth;
+    vi.mocked(validateSendCalls).mockResolvedValue({
+      allowed: true,
+      result: {
+        ...MOCK_ORDER,
+        sellToken: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      },
+    });
+    vi.mocked(extractApprovals).mockReturnValueOnce([
+      { token: weth, amount: 5n },
+    ]);
+    vi.mocked(hasWethDeposit).mockReturnValueOnce(true);
+
+    const { approvals } = await validateRpcRequest(
+      makeRequest('wallet_sendCalls'),
+      mainnetCtx,
+    );
+
+    expect(approvals).toEqual([
+      { token: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', amount: 5n },
+    ]);
+  });
+
+  it('keeps the WETH approve as WETH without a wrap in the batch', async () => {
+    const weth = MAINNET_TX_CONFIG.weth;
+    vi.mocked(validateSendCalls).mockResolvedValue({
+      allowed: true,
+      result: {
+        ...MOCK_ORDER,
+        sellToken: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      },
+    });
+    vi.mocked(extractApprovals).mockReturnValueOnce([
+      { token: weth, amount: 5n },
+    ]);
+
+    const { approvals } = await validateRpcRequest(
+      makeRequest('wallet_sendCalls'),
+      mainnetCtx,
+    );
+
+    expect(approvals).toEqual([{ token: weth, amount: 5n }]);
   });
 });

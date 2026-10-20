@@ -83,16 +83,17 @@ export const createCowSwapProvider = ({
         // this prevents extra fields to be passed along with the orginal request
         payload = sanitizedRequest as typeof payload;
 
-        // Validate order trade  params, order can be recovered from different signing methods
-        if (order) {
-          const error = verifySignedOrder(order);
+        // Approve amount is bounded by the validated approval or trade snapshot;
+        // checked first: verifying an ETH order consumes the trade snapshot
+        for (const approval of approvals) {
+          const error = verifyApproval(approval);
 
           if (error) throw new Error(error);
         }
 
-        // Approve amount is bounded by the validated approval snapshot
-        for (const approval of approvals) {
-          const error = verifyApproval(approval);
+        // Validate order trade  params, order can be recovered from different signing methods
+        if (order) {
+          const error = verifySignedOrder(order);
 
           if (error) throw new Error(error);
         }
