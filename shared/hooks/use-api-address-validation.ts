@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { API_ROUTES } from 'consts/api';
 import { config } from 'config';
 import { standardFetcher } from 'utils/standardFetcher';
+import { FetcherError } from 'utils/fetcherError';
 
 const getApiUrl = (route: string, params?: Record<string, string>) => {
   // Simple: always use full URL with current origin
@@ -44,6 +45,11 @@ export const useApiAddressValidation = () => {
               await standardFetcher<unknown>(url, { method: 'GET' }),
             );
           } catch (error) {
+            // any 429 means this client is over a rate limit (Cloudflare,
+            // widget or validation API): block instead of falling back
+            if (error instanceof FetcherError && error.status === 429) {
+              return { isValid: false };
+            }
             return null;
           }
         },
