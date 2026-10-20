@@ -12,6 +12,8 @@ import {
   getRedeemQueueWritableContractWSTETH,
   getSyncRedeemQueueWritableContractWSTETH,
 } from '../../contracts';
+import { useEthVaultAvailable } from '../../hooks/use-vault-available';
+import { useEthVaultSyncRedeemReport } from '../../hooks/use-sync-redeem-report';
 
 export const useEthVaultWithdraw = (onRetry: () => void) => {
   const { core } = useLidoSDK();
@@ -24,6 +26,14 @@ export const useEthVaultWithdraw = (onRetry: () => void) => {
   });
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');
+  const { isEthVaultAvailable } = useEthVaultAvailable();
+  // The sync queue reverts on a stale, suspicious or zero oracle report
+  // while the async queue takes the request regardless:
+  // the instant route is withheld until the report is usable again. Unknown
+  // (loading, unreadable) leaves the route to the pre-send availability check
+  const { isUsable: isSyncRedeemReportUsable } = useEthVaultSyncRedeemReport({
+    enabled: isEthVaultAvailable,
+  });
 
   const collector = useMemo(
     () => getCollectorContract(publicClientMainnet),
@@ -47,7 +57,8 @@ export const useEthVaultWithdraw = (onRetry: () => void) => {
   return useWithdraw({
     collector,
     asyncRedeemQueue,
-    syncRedeemQueue,
+    syncRedeemQueue:
+      isSyncRedeemReportUsable === false ? undefined : syncRedeemQueue,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnEthWithdrawalStart,

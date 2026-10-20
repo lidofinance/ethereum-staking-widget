@@ -1,5 +1,6 @@
 import invariant from 'tiny-invariant';
-import { useQuery } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query';
 import { erc20abi } from '@lidofinance/lido-ethereum-sdk/erc20';
 
 import { getTokenAddress } from 'config/networks/token-address';
@@ -9,7 +10,7 @@ import { useGGVUserShareState } from 'features/earn/vault-ggv/withdraw/hooks/use
 import { useIsUnlocked } from 'features/earn/vault-ggv/withdraw/hooks/use-is-unlocked';
 import { ETH_VAULT_QUERY_SCOPE } from '../consts';
 
-import { getAsyncDepositQueueContract } from '../contracts';
+import { getLegacyAsyncDepositQueueContract } from '../contracts';
 import { EthDepositToken } from '../types';
 import { useEthVaultAvailable } from '../hooks/use-vault-available';
 import { getSTGVaultContract } from 'features/earn/vault-stg/contracts';
@@ -21,21 +22,23 @@ export const useUpgradableTokenBalances = () => {
   const enabled = isDappActive && !!address;
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   const vaultAvailable = useEthVaultAvailable();
+  const queryClient = useQueryClient();
 
   const ggvShareStateQuery = useGGVUserShareState();
   const areGgvSharesTimeLocked = useIsUnlocked(
     Number(ggvShareStateQuery.data?.shareUnlockTime ?? 0),
   );
 
-  const { data, isLoading, refetch } = useQuery({
+  // The options are shared with `fetchBalances` below, so a fetch started for
+  // one account cannot resolve with another's result: the observer's own
+  // `refetch` follows the current key, which moves when the account switches
+  const balancesQuery = queryOptions({
     queryKey: [
       ETH_VAULT_QUERY_SCOPE,
       UPGRADABLE_TOKEN_BALANCES_QUERY_KEY,
       address,
       chainId,
     ],
-    enabled:
-      enabled && !!publicClientMainnet && vaultAvailable.isDepositEnabled,
     queryFn: async () => {
       invariant(publicClientMainnet, 'Public client is not defined');
       invariant(address, 'Address is not defined');
@@ -59,7 +62,7 @@ export const useUpgradableTokenBalances = () => {
         });
 
       const readIsRequestInQueue = async (token: EthDepositToken) => {
-        const contract = getAsyncDepositQueueContract({
+        const contract = getLegacyAsyncDepositQueueContract({
           publicClient: publicClientMainnet,
           token,
         });
@@ -102,6 +105,19 @@ export const useUpgradableTokenBalances = () => {
     },
   });
 
+  const { data, isLoading } = useQuery({
+    ...balancesQuery,
+    enabled:
+      enabled && !!publicClientMainnet && vaultAvailable.isDepositEnabled,
+  });
+
+  // A fresh read for the account and chain of this render, whatever the
+  // connection does meanwhile
+  const fetchBalances = useCallback(
+    () => queryClient.fetchQuery({ ...balancesQuery, staleTime: 0 }),
+    [queryClient, balancesQuery],
+  );
+
   return {
     balances: {
       [TOKENS.gg]: areGgvSharesTimeLocked ? 0n : data?.gg, // if GGV shares are time-locked, we consider the balance as 0 for upgrade purposes
@@ -109,6 +125,6 @@ export const useUpgradableTokenBalances = () => {
       [TOKENS.dvsteth]: data?.dvsteth,
     },
     isLoading,
-    refetchBalances: refetch,
+    fetchBalances,
   };
 };

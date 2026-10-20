@@ -28,6 +28,7 @@ export enum ErrorMessage {
   QUOTE_CHANGED = 'The exchange rate has changed. Check the updated amount and try again.',
   STAKE_WETH_INTERRUPTED = 'Your WETH was unwrapped, but the stake was not sent. Retry to stake the ETH.',
   STAKE_WETH_L2_INTERRUPTED = 'Your WETH was approved, but the stake was not sent. Retry to stake it.',
+  DEPOSIT_INTERRUPTED = 'Your tokens were approved, but the deposit was not sent. Retry to deposit them.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -361,6 +362,8 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
     MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED,
   [ErrorMessage.STAKE_WETH_L2_INTERRUPTED]:
     MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_L2_INTERRUPTED,
+  [ErrorMessage.DEPOSIT_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_INTERRUPTED,
 };
 
 const trackErrorDebounced = debounce((errorMessage: string) => {
