@@ -19,8 +19,7 @@ import {
 import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
 import { wethABI } from 'abi/weth-abi';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
-import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
-import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { QuoteMismatchError, TxSettledError } from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import {
   aaSendCalls,
@@ -104,7 +103,6 @@ vi.mock('modules/web3', async () => {
         validateAddress: async () => true,
         sendAACalls: state.sendAACalls,
         isCurrent: () => true,
-        txHash: { current: undefined },
       }),
     applyRoundUpTxParameter: (value: bigint) => value,
   };

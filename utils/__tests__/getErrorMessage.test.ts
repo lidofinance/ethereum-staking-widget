@@ -5,16 +5,58 @@ import {
   type TransactionReceipt,
 } from 'viem';
 
-import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
+import {
+  TransactionRevertedError,
+  TxSentDataUnavailableError,
+  TxSettledError,
+} from 'modules/web3';
 import {
   getErrorMessage,
   ErrorMessage,
   extractCodeFromError,
+  isRetryableTxError,
+  isSettledTxError,
 } from '../getErrorMessage';
 
 console.error = vi.fn();
 
+describe('isRetryableTxError', () => {
+  it('allows a retry of an ordinary failure', () => {
+    expect(isRetryableTxError({ code: 4001 })).toBe(true);
+    expect(isRetryableTxError(new Error('boom'))).toBe(true);
+  });
+
+  it('refuses a retry when the transaction may have landed', () => {
+    expect(isRetryableTxError(new TxSettledError(new Error('read')))).toBe(
+      false,
+    );
+    expect(
+      isRetryableTxError(new TxSentDataUnavailableError(new Error('timeout'))),
+    ).toBe(false);
+  });
+
+  it('refuses a retry the wallet cannot pay for', () => {
+    expect(isRetryableTxError({ code: -32000 })).toBe(false);
+  });
+});
+
+describe('isSettledTxError', () => {
+  it('is true only for a settled transaction', () => {
+    expect(isSettledTxError(new TxSettledError(new Error('read')))).toBe(true);
+    expect(
+      isSettledTxError(new TxSentDataUnavailableError(new Error('timeout'))),
+    ).toBe(false);
+    expect(isSettledTxError(new Error('boom'))).toBe(false);
+  });
+});
+
 describe('getErrorMessage', () => {
+  it('names a transaction that was sent but never read back, whatever the cause says', () => {
+    // the cause is a wallet rejection shape: the wrapper must win over it
+    const error = new TxSentDataUnavailableError({ code: 4001 }, '0x1');
+    expect(getErrorMessage(error)).toBe(ErrorMessage.TX_SENT_DATA_UNAVAILABLE);
+  });
+
   it('should return NOT_ENOUGH_ETHER error message when error code is -32000', () => {
     const error = { code: -32000 };
     expect(getErrorMessage(error)).toBe(ErrorMessage.NOT_ENOUGH_ETHER);

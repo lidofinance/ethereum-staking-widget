@@ -199,6 +199,4 @@ export type TxFlowDeps = {
   // False once the owning UI unmounted or a newer flow started; a stale flow
   // must neither reach the wallet nor report stages
   isCurrent: () => boolean;
-  // Memoized txHash shared across stages (and across flows by the hook)
-  txHash: { current: Hash | undefined };
 };

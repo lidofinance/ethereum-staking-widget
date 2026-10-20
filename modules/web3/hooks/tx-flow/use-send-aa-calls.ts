@@ -6,9 +6,8 @@ import { config } from 'config';
 // the concrete files, not the provider barrel: that one leads back here
 import { useLidoSDK } from '../../web3-provider/lido-sdk';
 import { useLidoSDKL2 } from '../../web3-provider/lido-sdk-l2';
+import { SendCallsError, TxSentDataUnavailableError } from '../../utils/errors';
 import { AACall, TxCallbackProps } from './types';
-
-export class SendCallsError extends Error {}
 
 export const useSendAACalls = () => {
   const { address } = useConnection();
@@ -81,9 +80,12 @@ export const useSendAACalls = () => {
               ?.transactionHash
           : undefined;
 
+        // The wallet says the batch went through but gives nothing to find it
+        // by: the outcome cannot be confirmed from here, which is not a failure
         if (!txHash) {
-          throw new SendCallsError(
-            'Could not locate TX hash.Check your wallet for details.',
+          throw new TxSentDataUnavailableError(
+            new Error('Call status is success but carries no transaction hash'),
+            callData.id,
           );
         }
 

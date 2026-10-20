@@ -9,7 +9,7 @@ import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 import type { TransactionCallback } from '@lidofinance/lido-ethereum-sdk/core';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { TxSettledError, TxSentDataUnavailableError } from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import { wethABI } from 'abi/weth-abi';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
@@ -79,7 +79,6 @@ vi.mock('modules/web3', async () => {
         validateAddress: async () => true,
         sendAACalls: state.sendAACalls,
         isCurrent: () => true,
-        txHash: { current: undefined },
       }),
     applyRoundUpTxParameter: (value: bigint) => value,
   };
@@ -282,6 +281,22 @@ describe('useStake', () => {
         onRetry,
       );
       expect(onUnwrapped).not.toHaveBeenCalled();
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('legacy signing, unread outcome', () => {
+    it('reports a stake that could not be read back as sent, not failed', async () => {
+      const { walletClient } = createSdk(legacyPerformTransaction('unlocated'));
+
+      // the stake may have landed: no form reset, the modal says to reload
+      await expect(stake(ETH)).resolves.toBe(false);
+
+      expect(walletClient.writeContract).toHaveBeenCalledWith(submitCall());
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(TxSentDataUnavailableError),
+        onRetry,
+      );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });
   });

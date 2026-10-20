@@ -1,7 +1,7 @@
 import { decodeFunctionData, getAddress, type Address, type Hash } from 'viem';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { TxSettledError, TxSentDataUnavailableError } from 'modules/web3';
 import {
   aaSendCalls,
   legacyPerformTransaction,
@@ -64,7 +64,6 @@ vi.mock('modules/web3', async () => {
         validateAddress: async () => true,
         sendAACalls: state.sendAACalls,
         isCurrent: () => true,
-        txHash: { current: undefined },
       }),
     applyRoundUpTxParameter: (value: bigint) => value,
   };
@@ -268,6 +267,33 @@ describe('useWithdraw', () => {
         state.txModalStages.instantWithdrawalUnavailable,
       ).not.toHaveBeenCalled();
       // only the check before the transaction read the limit
+      expect(
+        queues.syncRedeemQueue.read.remainingDailyLimit,
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports a redemption that could not be read back as sent, without rechecking the buffer', async () => {
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('unlocated'),
+      );
+      // the redemption would take more than half of what was left: a recheck
+      // would misreport the instant route as gone
+      const queues = createQueues({
+        ...ample,
+        remainingDailyLimit: [100n, 40n],
+      });
+
+      await expect(withdraw(queues)).resolves.toBe(false);
+
+      expect(queues.syncRedeemQueue.write.redeem).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed.mock.calls[0]?.[0]).toBeInstanceOf(
+        TxSentDataUnavailableError,
+      );
+      expect(state.txModalStages.failed.mock.calls[0]?.[1]).toBeUndefined();
+      expect(
+        state.txModalStages.instantWithdrawalUnavailable,
+      ).not.toHaveBeenCalled();
       expect(
         queues.syncRedeemQueue.read.remainingDailyLimit,
       ).toHaveBeenCalledTimes(1);

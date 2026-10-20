@@ -1,7 +1,7 @@
 import { decodeFunctionData, getAddress, type Address, type Hash } from 'viem';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { TxSettledError, TxSentDataUnavailableError } from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import { TOKENS } from 'consts/tokens';
 import {
@@ -109,7 +109,6 @@ vi.mock('modules/web3', async () => {
         validateAddress: async () => true,
         sendAACalls: state.sendAACalls,
         isCurrent: () => true,
-        txHash: { current: undefined },
       }),
     applyRoundUpTxParameter: (value: bigint) => value,
   };
@@ -305,6 +304,38 @@ describe('useDeposit', () => {
         onRetry,
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('reports a deposit that could not be read back as sent, not failed', async () => {
+      const queue = createQueue();
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('unlocated'),
+      );
+
+      // not a success: the form keeps its state, the modal says to reload
+      await expect(deposit(queue, TOKENS.eth)).resolves.toBe(false);
+
+      expect(queue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed.mock.calls[0]?.[0]).toBeInstanceOf(
+        TxSentDataUnavailableError,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('reports an approval that could not be read back as sent, not as an interrupted deposit', async () => {
+      const queue = createQueue();
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('unlocated'),
+      );
+
+      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(false);
+
+      // the approval may or may not have landed: no deposit on top of it
+      expect(queue.write.deposit).not.toHaveBeenCalled();
+      expect(state.txModalStages.failed.mock.calls[0]?.[0]).toBeInstanceOf(
+        TxSentDataUnavailableError,
+      );
     });
 
     it('stops at a rejected approval and offers a retry', async () => {

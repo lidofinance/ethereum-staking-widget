@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { Hash } from 'viem';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
+import { TxSentDataUnavailableError } from '../../utils/errors';
 import type { AACall, TxCallbackProps } from './types';
 
 const ACCOUNT = '0x00000000000000000000000000000000000000aa';
@@ -100,6 +101,24 @@ describe('useSendAACalls', () => {
       experimental_fallback: true,
     });
     expect(sentWith().calls).toHaveLength(1);
+  });
+
+  it('reports a successful status without a receipt as sent, not failed', async () => {
+    state.waitForCallsStatus.mockResolvedValue({
+      status: 'success',
+      receipts: [],
+    });
+
+    const { result, stages } = send([call(1)]);
+    const thrown: unknown = await result.catch((error: unknown) => error);
+
+    expect(thrown).toBeInstanceOf(TxSentDataUnavailableError);
+    expect((thrown as TxSentDataUnavailableError).txHashOrCallId).toBe(CALL_ID);
+    expect(stages).toEqual([
+      TransactionCallbackStage.SIGN,
+      TransactionCallbackStage.RECEIPT,
+      TransactionCallbackStage.ERROR,
+    ]);
   });
 
   it('reports a refused batch as an error and rethrows', async () => {

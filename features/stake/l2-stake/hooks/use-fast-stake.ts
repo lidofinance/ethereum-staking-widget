@@ -12,8 +12,8 @@ import {
   useLidoSDKL2,
   TxSettledError,
   TxFlowInterruptedError,
+  QuoteMismatchError,
 } from 'modules/web3';
-import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import {
   calcFastStakeWstethByEth,
   LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK,

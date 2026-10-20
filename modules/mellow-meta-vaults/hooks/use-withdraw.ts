@@ -8,6 +8,7 @@ import {
   useDappStatus,
   applyRoundUpTxParameter,
   isStepSettled,
+  TxSentDataUnavailableError,
 } from 'modules/web3';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -210,8 +211,13 @@ export const useWithdraw = ({
           // The redemption is on chain, only a follow-up read failed: the
           // flow resolves as a success and the modal says so. Re-reading the
           // sync queue here would see the capacity this very redemption used
-          // and misreport it as "instant withdrawal unavailable"
-          if (isStepSettled(ctx, STEP.redeem)) {
+          // and misreport it as "instant withdrawal unavailable". Same for a
+          // redemption that was sent but could not be read back: it may have
+          // landed, and the modal already says to reload
+          if (
+            isStepSettled(ctx, STEP.redeem) ||
+            error instanceof TxSentDataUnavailableError
+          ) {
             txModalStages.failed(error);
             return;
           }
