@@ -30,7 +30,7 @@ const getManifestUrl = (): string => {
 };
 
 export const useExternalConfigContext = (
-  prefetchedManifest?: unknown,
+  prefetchedManifest: unknown | undefined,
 ): ExternalConfig => {
   const { isEarnDisabledByRuntimeContext } = useEarnRuntimeState();
 
