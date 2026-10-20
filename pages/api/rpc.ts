@@ -114,10 +114,13 @@ export const config = {
   },
 };
 
+// The last wrapper is the outermost. The address metric decodes every batch
+// entry, so it runs innermost, only for requests the method guard and the
+// rate limiter admitted
 export default wrapNextRequest([
-  httpMethodGuard([HttpMethod.POST]),
-  rateLimit,
-  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.RPC),
   requestAddressMetric(Metrics.request.ethCallToAddress),
+  rateLimit,
+  httpMethodGuard([HttpMethod.POST]),
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.RPC),
   defaultErrorHandler,
 ])(rpc);

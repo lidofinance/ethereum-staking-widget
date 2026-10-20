@@ -12,6 +12,9 @@ import { buildParams } from './cached-proxy-build-params';
 export { buildParams } from './cached-proxy-build-params';
 
 const DEFAULT_CACHE_MAX_ENTRIES = 200;
+// Full rewards histories reach several MB each: a count cap alone let 200 of
+// them pin the heap of the one server process
+const DEFAULT_CACHE_MAX_BYTES = 32 * 1024 * 1024;
 
 type ProxyOptions = {
   proxyUrl: string | ((req: NextApiRequest) => Promise<string>);
@@ -24,6 +27,8 @@ type ProxyOptions = {
   metricsHost?: string;
   /** Hard cap on cache entries. Default 200. */
   cacheMaxEntries?: number;
+  /** Hard cap on cached bytes (serialized). Larger bodies are served uncached. Default 32MB. */
+  cacheMaxBytes?: number;
   /** Extra upstream headers from the request; cache hits don't reach upstream. */
   forwardHeaders?: (req: NextApiRequest) => Record<string, string>;
 };
@@ -37,11 +42,17 @@ export const createCachedProxy = ({
   transformData = (data) => data,
   metricsHost,
   cacheMaxEntries = DEFAULT_CACHE_MAX_ENTRIES,
+  cacheMaxBytes = DEFAULT_CACHE_MAX_BYTES,
   forwardHeaders,
 }: ProxyOptions): API => {
   const cache = new LRUCache<string, any>({
     max: cacheMaxEntries,
+    maxSize: cacheMaxBytes,
+    sizeCalculation: (value) => Buffer.byteLength(JSON.stringify(value)),
     ttl: cacheTTL,
+    // Without this an expired entry stays in memory until its key is read
+    // again or the cache is full
+    ttlAutopurge: true,
   });
   return async (req, res) => {
     const params = buildParams(req.query, ignoreParams, allowedQueryParams);

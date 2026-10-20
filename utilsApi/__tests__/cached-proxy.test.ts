@@ -200,3 +200,47 @@ describe('createCachedProxy forwardHeaders', () => {
     });
   });
 });
+
+describe('createCachedProxy byte budget', () => {
+  const makeRes = () => ({
+    json: vi.fn(),
+    setHeader: vi.fn(),
+    status: vi.fn(),
+  });
+  const req = { query: { address: '0xabc' } } as unknown as NextApiRequest;
+
+  afterEach(() => {
+    vi.mocked(standardFetcher).mockReset();
+  });
+
+  it('serves a body within the budget from cache', async () => {
+    vi.mocked(standardFetcher).mockResolvedValue({ events: [1, 2, 3] });
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/',
+      cacheTTL: 60_000,
+      cacheMaxBytes: 1024,
+    });
+
+    await proxy(req, makeRes() as any);
+    await proxy(req, makeRes() as any);
+
+    expect(standardFetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it('serves a body above the budget without retaining it', async () => {
+    const body = { events: 'x'.repeat(2048) };
+    vi.mocked(standardFetcher).mockResolvedValue(body);
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/',
+      cacheTTL: 60_000,
+      cacheMaxBytes: 1024,
+    });
+
+    const res = makeRes();
+    await proxy(req, res as any);
+    await proxy(req, makeRes() as any);
+
+    expect(res.json).toHaveBeenCalledWith(body);
+    expect(standardFetcher).toHaveBeenCalledTimes(2);
+  });
+});
