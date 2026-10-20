@@ -38,7 +38,7 @@
     "@metamask/connect-evm": "2.1.1",
     "@safe-global/safe-apps-provider": "~0.18.6",
     "@safe-global/safe-apps-sdk": "^9.1.0",
-    "@tanstack/react-query": "^5.85.6",
+    "@tanstack/react-query": "^5.104.5",
     "@walletconnect/ethereum-provider": "^2.23.8",
     "copy-to-clipboard": "^3.3.1",
     "echarts": "^6.1.0",
@@ -62,9 +62,9 @@
     "reef-knot": "8.4.0",
     "styled-components": "^5.3.5",
     "tiny-invariant": "^1.1.0",
-    "viem": "2.55.11",
-    "wagmi": "3.7.6",
-    "zod": "^4.1.12"
+    "viem": "2.57.7",
+    "wagmi": "3.7.7",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@babel/core": "^7",
