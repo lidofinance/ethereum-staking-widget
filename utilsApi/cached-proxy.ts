@@ -45,10 +45,10 @@ export const createCachedProxy = ({
   cacheMaxBytes = DEFAULT_CACHE_MAX_BYTES,
   forwardHeaders,
 }: ProxyOptions): API => {
-  const cache = new LRUCache<string, any>({
+  const cache = new LRUCache<string, string>({
     max: cacheMaxEntries,
     maxSize: cacheMaxBytes,
-    sizeCalculation: (value) => Buffer.byteLength(JSON.stringify(value)),
+    sizeCalculation: (value) => Buffer.byteLength(value),
     ttl: cacheTTL,
     // Without this an expired entry stays in memory until its key is read
     // again or the cache is full
@@ -63,9 +63,14 @@ export const createCachedProxy = ({
 
     const cacheKey = `${proxyUrlString}-${params?.toString() ?? ''}`;
 
+    const sendJson = (body: string) => {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.send(body);
+    };
+
     const cachedValue = cache.get(cacheKey);
     if (cachedValue) {
-      res.json(cachedValue);
+      sendJson(cachedValue);
       return;
     }
     const url = proxyUrlString + (params ? `?${params.toString()}` : '');
@@ -85,10 +90,10 @@ export const createCachedProxy = ({
           }),
       });
 
-      const transformedData = transformData(data) ?? data;
+      const body = JSON.stringify(transformData(data) ?? data);
 
-      cache.set(cacheKey, transformedData);
-      res.json(transformedData);
+      cache.set(cacheKey, body);
+      sendJson(body);
     } catch (e) {
       // route-level cacheControl set public caching before the handler ran
       res.setHeader('Cache-Control', CACHE_DEFAULT_ERROR_HEADERS);

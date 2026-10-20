@@ -253,10 +253,11 @@ export const useDeposit = <DepositQueueToken extends string>({
           // a completed deposit, whatever the error says: the user must learn
           // the funds are safe and a retry continues with the deposit, which
           // re-reads the allowance and skips the approval
+          // A settled reset alone is not an approval: the message would
+          // claim an allowance that is still zero; a retry reads it and
+          // approves from there
           const isInterruptedAfterApprove =
-            (isStepSettled(ctx, STEP.approve) ||
-              isStepSettled(ctx, STEP.resetApprove)) &&
-            !isStepSent(ctx, STEP.deposit);
+            isStepSettled(ctx, STEP.approve) && !isStepSent(ctx, STEP.deposit);
           txModalStages.failed(
             isInterruptedAfterApprove
               ? new TxFlowInterruptedError(

@@ -76,6 +76,7 @@ describe('createCachedProxy error responses', () => {
         return this;
       },
       json: vi.fn(),
+      send: vi.fn(),
       end: vi.fn(),
     };
     return res;
@@ -133,6 +134,7 @@ describe('createCachedProxy forwardHeaders', () => {
       setHeader: vi.fn(),
       status: vi.fn(),
       json: vi.fn(),
+      send: vi.fn(),
       end: vi.fn(),
     }) as any;
   const makeReq = (headers: Record<string, string> = {}) =>
@@ -204,6 +206,7 @@ describe('createCachedProxy forwardHeaders', () => {
 describe('createCachedProxy byte budget', () => {
   const makeRes = () => ({
     json: vi.fn(),
+    send: vi.fn(),
     setHeader: vi.fn(),
     status: vi.fn(),
   });
@@ -240,7 +243,7 @@ describe('createCachedProxy byte budget', () => {
     await proxy(req, res as any);
     await proxy(req, makeRes() as any);
 
-    expect(res.json).toHaveBeenCalledWith(body);
+    expect(res.send).toHaveBeenCalledWith(JSON.stringify(body));
     expect(standardFetcher).toHaveBeenCalledTimes(2);
   });
 });
