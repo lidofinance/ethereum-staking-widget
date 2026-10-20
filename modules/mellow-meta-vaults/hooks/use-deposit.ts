@@ -15,6 +15,7 @@ import {
   isStepSettled,
   TxFlowInterruptedError,
   TxSettledError,
+  type TxFlowOptions,
   useDappStatus,
   useLidoSDK,
   useTxFlow,
@@ -58,19 +59,25 @@ type DepositData = {
   needsApprovalReset: boolean;
 };
 
+type UseDepositArgs<DepositQueueToken extends string> = {
+  depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
+  txModalStages: TxModalStages;
+  onRetry?: () => void;
+  matomoEventStart?: MATOMO_EVENT_TYPE;
+  matomoEventSuccess?: MATOMO_EVENT_TYPE;
+  // the vault's query scopes, refetched after a deposit whose outcome could
+  // not be read; the whole cache without it
+  refetchScope?: TxFlowOptions['refetchScope'];
+};
+
 export const useDeposit = <DepositQueueToken extends string>({
   depositQueueGetter,
   txModalStages,
   onRetry,
   matomoEventStart,
   matomoEventSuccess,
-}: {
-  depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
-  txModalStages: TxModalStages;
-  onRetry?: () => void;
-  matomoEventStart?: MATOMO_EVENT_TYPE;
-  matomoEventSuccess?: MATOMO_EVENT_TYPE;
-}) => {
+  refetchScope,
+}: UseDepositArgs<DepositQueueToken>) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const txFlow = useTxFlow();
@@ -92,6 +99,7 @@ export const useDeposit = <DepositQueueToken extends string>({
         });
 
       const { isSuccess } = await txFlow<DepositData>({
+        refetchScope,
         prepare: async () => {
           const tokenAddress = getTokenAddress(core.chainId, token);
           invariant(tokenAddress, 'Token address is not defined');
@@ -268,6 +276,7 @@ export const useDeposit = <DepositQueueToken extends string>({
       address,
       core,
       depositQueueGetter,
+      refetchScope,
       matomoEventStart,
       matomoEventSuccess,
       onRetry,

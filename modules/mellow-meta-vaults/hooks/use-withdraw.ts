@@ -9,6 +9,7 @@ import {
   applyRoundUpTxParameter,
   isStepSettled,
   TxSentDataUnavailableError,
+  type TxFlowOptions,
 } from 'modules/web3';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -49,6 +50,23 @@ const USER_ACTION_ERRORS: readonly string[] = [
   ErrorMessage.DEVICE_LOCKED,
 ];
 
+type UseWithdrawArgs = {
+  asyncRedeemQueue: AsyncRedeemQueueWritableContract;
+  syncRedeemQueue?: SyncRedeemQueueWritableContract; // Omit for async-only queues
+  collector: CollectorContract;
+  txModalStages: TxModalStages;
+  onRetry?: () => void;
+  matomoEventStart?: MATOMO_EVENT_TYPE;
+  matomoEventSuccess?: MATOMO_EVENT_TYPE;
+  // the vault's query scopes, refetched after a withdrawal whose outcome
+  // could not be read; the whole cache without it
+  refetchScope?: TxFlowOptions['refetchScope'];
+};
+
+type WithdrawArgs = {
+  amount: bigint;
+};
+
 export const useWithdraw = ({
   asyncRedeemQueue,
   syncRedeemQueue,
@@ -57,21 +75,14 @@ export const useWithdraw = ({
   onRetry,
   matomoEventStart,
   matomoEventSuccess,
-}: {
-  asyncRedeemQueue: AsyncRedeemQueueWritableContract;
-  syncRedeemQueue?: SyncRedeemQueueWritableContract; // Omit for async-only queues
-  collector: CollectorContract;
-  txModalStages: TxModalStages;
-  onRetry?: () => void;
-  matomoEventStart?: MATOMO_EVENT_TYPE;
-  matomoEventSuccess?: MATOMO_EVENT_TYPE;
-}) => {
+  refetchScope,
+}: UseWithdrawArgs) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const txFlow = useTxFlow();
 
   const withdraw = useCallback(
-    async ({ amount }: { amount: bigint }): Promise<boolean> => {
+    async ({ amount }: WithdrawArgs): Promise<boolean> => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
 
@@ -132,6 +143,7 @@ export const useWithdraw = ({
       const syncWithdrawArgs = [amount, address] as const;
 
       const { isSuccess } = await txFlow<WithdrawData>({
+        refetchScope,
         prepare: async () => {
           const availability = await getSyncWithdrawAvailability();
           if (availability.status === 'unknown') {
@@ -254,6 +266,7 @@ export const useWithdraw = ({
       asyncRedeemQueue,
       collector.read,
       core,
+      refetchScope,
       matomoEventStart,
       matomoEventSuccess,
       onRetry,

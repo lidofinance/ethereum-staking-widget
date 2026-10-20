@@ -9,6 +9,7 @@ import type {
   GetCallsStatusReturnType,
   TransactionReceipt,
 } from 'viem';
+import type { QueryKey } from '@tanstack/react-query';
 
 export type AACall = { to: Address; data?: Hash; value?: bigint };
 
@@ -143,18 +144,31 @@ type CallsFn<TCall, TData> = (
 ) => Promise<(TCall | null | undefined | false)[]>;
 
 /**
+ * Options shared by both flow shapes.
+ *
+ * @property refetchScope - Query key prefixes to invalidate after a transaction
+ * that was sent but never read back (it may have landed). Each entry is matched
+ * as a prefix, so a scope key alone covers every query under it. Without it the
+ * whole cache is refetched.
+ */
+export type TxFlowOptions = {
+  refetchScope?: readonly QueryKey[];
+};
+
+/**
  * Legacy flow: one `sendTransaction` that drives every transaction itself.
  * `callsFn` is only used for an EIP-5792 batch.
  *
  * @property callsFn - A function returning a list of calls for EIP-5792 sendCalls. Gets called only in case of EIP-5792.
  * @property sendTransaction - Fallback function to send a transaction if EIP-5792 is not supported.
  */
-export type LegacyTxFlowArgs = StageCallbacks & {
-  callsFn?: CallsFn<AACall, undefined>;
-  sendTransaction: (txStagesCallback: TransactionCallback) => Promise<void>;
-  prepare?: never;
-  sendStep?: never;
-};
+export type LegacyTxFlowArgs = StageCallbacks &
+  TxFlowOptions & {
+    callsFn?: CallsFn<AACall, undefined>;
+    sendTransaction: (txStagesCallback: TransactionCallback) => Promise<void>;
+    prepare?: never;
+    sendStep?: never;
+  };
 
 /**
  * Stepwise flow: `callsFn` is the source of truth. Every call carries a
@@ -170,16 +184,17 @@ export type LegacyTxFlowArgs = StageCallbacks & {
  * @property callsFn - Builds the ordered steps; `ctx.isAA` tells whether they will be signed as a batch.
  * @property sendStep - Sends one step with the SDK when there is no EIP-5792 support.
  */
-export type StepTxFlowArgs<TData = undefined> = StageCallbacks<TData> & {
-  prepare?: (ctx: TxFlowContext<undefined>) => Promise<TData>;
-  callsFn: CallsFn<TxStep, TData>;
-  sendStep: (
-    step: TxStep,
-    txStagesCallback: TransactionCallback,
-    ctx: TxFlowContext<TData>,
-  ) => Promise<void>;
-  sendTransaction?: never;
-};
+export type StepTxFlowArgs<TData = undefined> = StageCallbacks<TData> &
+  TxFlowOptions & {
+    prepare?: (ctx: TxFlowContext<undefined>) => Promise<TData>;
+    callsFn: CallsFn<TxStep, TData>;
+    sendStep: (
+      step: TxStep,
+      txStagesCallback: TransactionCallback,
+      ctx: TxFlowContext<TData>,
+    ) => Promise<void>;
+    sendTransaction?: never;
+  };
 
 /**
  * Arguments for the transaction flow function returned by {@link useTxFlow}.

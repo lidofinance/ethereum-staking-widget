@@ -40,11 +40,18 @@ export const useTxFlow = () => {
     async <TData = undefined>(args: TxFlowArgs<TData>) => {
       const operation = ++operationRef.current;
       // A transaction that was sent but never read back may have changed
-      // balances, allowances and requests under the forms: refetch everything
-      // the UI holds, so the state is current even before the reload it asks for
+      // balances, allowances and requests under the forms: refetch what the
+      // caller scoped, or everything the UI holds, so the state is current
+      // even before the reload it asks for
       const refetchOnUnknownOutcome = (error: unknown) => {
-        if (error instanceof TxSentDataUnavailableError) {
+        if (!(error instanceof TxSentDataUnavailableError)) return;
+        const { refetchScope } = args;
+        if (!refetchScope) {
           void queryClient.invalidateQueries();
+          return;
+        }
+        for (const queryKey of refetchScope) {
+          void queryClient.invalidateQueries({ queryKey });
         }
       };
       try {

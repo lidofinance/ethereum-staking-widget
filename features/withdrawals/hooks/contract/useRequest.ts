@@ -17,14 +17,14 @@ import { applyRoundUpTxParameter } from 'modules/web3';
 
 import { useWithdrawalRequestTxApprove } from './use-withdrawal-request-tx-approve';
 
-type useWithdrawalRequestParams = {
+type UseWithdrawalRequestArgs = {
   amount: bigint | null;
   token: TOKENS_TO_WITHDRAWLS;
   onConfirm?: () => Promise<void>;
   onRetry?: () => void;
 };
 
-type useWithdrawalRequestArgs = {
+type RequestArgs = {
   requests: bigint[] | null;
   amount: bigint | null;
   token: TOKENS_TO_WITHDRAWLS;
@@ -35,7 +35,7 @@ export const useWithdrawalRequest = ({
   token,
   onConfirm,
   onRetry,
-}: useWithdrawalRequestParams) => {
+}: UseWithdrawalRequestArgs) => {
   const { address } = useDappStatus();
   const { isAA } = useAA();
   const { isBunker } = useWithdrawals();
@@ -59,7 +59,7 @@ export const useWithdrawalRequest = ({
   const { closeModal } = useTransactionModal();
 
   const request = useCallback(
-    async ({ requests, amount, token }: useWithdrawalRequestArgs) => {
+    async ({ requests, amount, token }: RequestArgs) => {
       invariant(
         requests && requests.length > 0,
         'cannot submit empty requests',

@@ -222,6 +222,32 @@ describe('useTxFlow with a legacy flow', () => {
     expect(args.onSuccess).not.toHaveBeenCalled();
   });
 
+  it('refetches only the given scope after a tx that was never read back', async () => {
+    const txFlow = renderHook(useTxFlow);
+    const args = {
+      ...createLegacyArgs(
+        vi.fn(
+          legacySdk(
+            { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+            () => {
+              throw new Error('Timed out while waiting for transaction');
+            },
+          ),
+        ),
+      ),
+      refetchScope: [['feature-scope'], ['balance']],
+    };
+
+    await expect(txFlow(args)).rejects.toBeInstanceOf(
+      TxSentDataUnavailableError,
+    );
+    expect(invalidateQueries).toHaveBeenCalledTimes(2);
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ['feature-scope'],
+    });
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ['balance'] });
+  });
+
   it('does not refetch after a failure before the tx was sent', async () => {
     const txFlow = renderHook(useTxFlow);
     const args = createLegacyArgs(
