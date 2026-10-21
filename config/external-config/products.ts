@@ -1,3 +1,5 @@
+import type { ParsedUrlQuery } from 'querystring';
+
 import {
   EARN_PATH,
   HOME_PATH,
@@ -7,7 +9,7 @@ import {
   WRAP_PATH,
 } from 'consts/urls';
 
-import { isDisabledPath } from './utils';
+import { isDisabledPath } from './disabled-path';
 import type { ManifestConfig, ManifestConfigPage } from './types';
 
 export const PRODUCTS = ['stake', 'earn', 'swap'] as const;
@@ -108,6 +110,41 @@ export const parseProductsUrlState = (
   );
 
   return { products, order };
+};
+
+export type ProductQuery = Record<string, string>;
+
+/**
+ * Product params as a query object that parses to the same state:
+ * keys keep the position of their first param, repeated `product` values are joined,
+ * other repeated keys keep the first value, since the first param wins.
+ */
+export const toProductQuery = (
+  entries: readonly (readonly [string, string])[],
+): ProductQuery => {
+  const query: ProductQuery = {};
+  for (const [key, value] of entries) {
+    if (!(PRODUCT_QUERY_KEYS as readonly string[]).includes(key)) continue;
+    if (key === 'product' && query.product !== undefined) {
+      query.product = `${query.product},${value}`;
+    } else {
+      query[key] ??= value;
+    }
+  }
+  return query;
+};
+
+// replaces product params of a query with the given ones
+export const withProductQuery = (
+  query: ParsedUrlQuery,
+  productQuery: ProductQuery,
+): ParsedUrlQuery => {
+  const rest = Object.fromEntries(
+    Object.entries(query).filter(
+      ([key]) => !(PRODUCT_QUERY_KEYS as readonly string[]).includes(key),
+    ),
+  );
+  return { ...rest, ...productQuery };
 };
 
 /**

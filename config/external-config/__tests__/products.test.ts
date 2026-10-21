@@ -2,6 +2,8 @@ import {
   getHomePath,
   getProductPagesOverride,
   parseProductsUrlState,
+  toProductQuery,
+  withProductQuery,
 } from '../products';
 
 const parse = (search: string) =>
@@ -136,5 +138,62 @@ describe('getHomePath', () => {
         '/earn': disabled,
       }),
     ).toBe('/swap');
+  });
+});
+
+describe('toProductQuery', () => {
+  const toQuery = (search: string) =>
+    toProductQuery([...new URLSearchParams(search).entries()]);
+
+  it('keeps only product params', () => {
+    expect(toQuery('?ref=0x1&earn=eth&theme=dark')).toEqual({ earn: 'eth' });
+  });
+
+  it('joins repeated `product` params', () => {
+    expect(toQuery('?product=swap&product=earn')).toEqual({
+      product: 'swap,earn',
+    });
+  });
+
+  it('keeps the first value of other repeated params', () => {
+    expect(toQuery('?swap=disabled&swap=enabled')).toEqual({
+      swap: 'disabled',
+    });
+  });
+
+  it.each([
+    '',
+    '?swap=disabled',
+    '?earn=eth,usd',
+    '?product=swap&product=earn',
+    '?product=foo&product=earn',
+    '?earn=disabled&product=earn',
+    '?product=earn&earn=disabled',
+    '?product=earn&swap=enabled&product=swap',
+    '?swap=disabled&swap=enabled',
+    '?earn=eth&earn=disabled',
+    '?product=earn&earn=eth&earn=usd',
+    '?stake=disabled&earn=disabled&swap=disabled',
+  ])('parses to the same state: %s', (search) => {
+    const query = new URLSearchParams(toQuery(search));
+    expect(parse(`?${query}`)).toEqual(parse(search));
+  });
+});
+
+describe('withProductQuery', () => {
+  it('replaces product params and keeps the rest', () => {
+    expect(
+      withProductQuery(
+        { ref: '0x1', earn: 'disabled', product: ['swap', 'earn'] },
+        { swap: 'disabled' },
+      ),
+    ).toEqual({ ref: '0x1', swap: 'disabled' });
+  });
+
+  it('restores product params lost by the URL', () => {
+    expect(withProductQuery({ ref: '0x1' }, { product: 'earn' })).toEqual({
+      ref: '0x1',
+      product: 'earn',
+    });
   });
 });
