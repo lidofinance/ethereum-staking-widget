@@ -91,8 +91,7 @@ export const CardNetwork: Component<'div'> = (props) => {
         Network
       </WalletCardTitleStyle>
       <WalletCardNetworkStyle data-testid="networkName">
-        {ChainIcon && <ChainIcon width={20} height={20} viewBox="0 0 28 28" />}{' '}
-        {getPrettyChainName(chainId)}
+        {ChainIcon && <ChainIcon />} {getPrettyChainName(chainId)}
       </WalletCardNetworkStyle>
     </WalletCardBalanceStyle>
   );
