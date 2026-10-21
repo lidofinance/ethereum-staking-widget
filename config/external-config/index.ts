@@ -18,6 +18,16 @@ export {
   isDisabledPath,
 } from './utils';
 export {
+  PRODUCTS,
+  PRODUCT_QUERY_KEYS,
+  PRODUCT_PATHS,
+  parseProductsUrlState,
+  getProductPagesOverride,
+  getHomePath,
+} from './products';
+export type { Product, ProductsUrlState } from './products';
+export { useProductsUrlState } from './use-products-url-state';
+export {
   ManifestSchema,
   ManifestConfigPages,
   ManifestConfigWithdrawalDexIntegrations,

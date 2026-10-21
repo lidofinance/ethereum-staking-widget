@@ -4,7 +4,8 @@ import { useRouter } from 'next/router';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useConfig } from 'config';
 import { isDisabledPath } from 'config/external-config';
-import { HOME_PATH } from 'consts/urls';
+import { getHomePath } from 'config/external-config/products';
+import { useProductsUrlState } from 'config/external-config/use-products-url-state';
 
 import { LayoutEffectSsrDelayed } from 'shared/components/layout-effect-ssr-delayed';
 
@@ -17,6 +18,7 @@ export const ExternalForbiddenRouteProvider = ({
   const router = useRouter();
   const path = useRouterPath();
   const { pages } = useConfig().externalConfig;
+  const productsUrlState = useProductsUrlState();
 
   const checkPathEffect = useCallback(() => {
     if (pages && isDisabledPath(path, pages)) {
@@ -28,11 +30,12 @@ export const ExternalForbiddenRouteProvider = ({
       const query = Object.fromEntries(
         Object.entries(router.query).filter(([key]) => !dynamicParams.has(key)),
       );
+      // `/` when stake is enabled, else the first enabled product
       void router
-        .push({ pathname: HOME_PATH, query })
+        .push({ pathname: getHomePath(productsUrlState, pages), query })
         .finally(() => setShowContent(true));
     }
-  }, [pages, path, router]);
+  }, [pages, path, router, productsUrlState]);
 
   const effectDeps = useMemo(() => [pages, path], [pages, path]);
 

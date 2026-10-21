@@ -1,7 +1,15 @@
 import type { ExternalConfig } from 'config/external-config';
 import type { PageRoute } from './types';
 import type { ManifestConfigPage } from 'config/external-config';
+import { isDisabledPath } from 'config/external-config/utils';
 import { getPathWithoutFirstSlash } from 'consts/urls';
+
+// config page of a route: exact key or its parent; `/` matches only itself
+const findPageKey = (routePath: string, paths: ManifestConfigPage[]) =>
+  paths.find(
+    (path) =>
+      routePath === path || (path !== '/' && routePath.startsWith(`${path}/`)),
+  );
 
 /**
  * Recursively filters the available routes based on the external configuration.
@@ -40,15 +48,13 @@ export const filterAvailableRoutes = (
         .filter((route) => {
           if (route === null) return false;
           if ('path' in route && route.path) {
-            const path = paths.find((path) => route.path.includes(path));
-            if (!path) return true;
-            return !configPages[path]?.shouldDisable;
+            return !isDisabledPath(route.path, configPages);
           }
           return true;
         }) as PageRoute[]
     ).map((route) => {
       if ('path' in route && route.path) {
-        const path = paths.find((path) => route.path.includes(path));
+        const path = findPageKey(route.path, paths);
         return {
           ...route,
           showNew: !!path && configPages[path]?.showNew,

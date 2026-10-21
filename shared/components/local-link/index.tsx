@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link, { LinkProps } from 'next/link';
 
 import { config } from 'config';
+import { PRODUCT_QUERY_KEYS } from 'config/external-config/products';
 import { LinkIpfs } from 'shared/components/link-ipfs';
 
 // TODO: make LocalLink support passing hash
@@ -10,29 +11,44 @@ import { LinkIpfs } from 'shared/components/link-ipfs';
 // since routing in IPFS is using hashes like this: /#/path
 // Ideally, LocalLink must be compatible with href as object
 
+const KEPT_QUERY_KEYS: readonly string[] = [
+  'ref',
+  'embed',
+  'app',
+  'theme',
+  'forceAllowance',
+  ...PRODUCT_QUERY_KEYS,
+];
+
 type LocalLinkProps = PropsWithChildren<
   LinkProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps>
 >;
 
 export const LocalLink: FC<LocalLinkProps> = (props) => {
   const router = useRouter();
-  const { ref, embed, app, theme, earn, forceAllowance } = router.query;
   const { href, ...restProps } = props;
 
-  const extraQuery = {} as Record<string, string>;
-  // does not support duplicates ?ref=01234&ref=56789
-
-  if (ref && typeof ref === 'string') extraQuery.ref = ref;
-  if (embed && typeof embed === 'string') extraQuery.embed = embed;
-  if (app && typeof app === 'string') extraQuery.app = app;
-  if (theme && typeof theme === 'string') extraQuery.theme = theme;
-  if (earn && typeof earn === 'string') extraQuery.earn = earn;
-  if (forceAllowance && typeof forceAllowance === 'string')
-    extraQuery.forceAllowance = forceAllowance;
+  // keeps URL order: product params resolve conflicts by order
+  const extraQuery = {} as Record<string, string | string[]>;
+  for (const [key, value] of Object.entries(router.query)) {
+    // only product params may repeat: ?product=earn&product=stake
+    const isKept =
+      typeof value === 'string' || (Array.isArray(value) && key === 'product');
+    if (value && isKept && KEPT_QUERY_KEYS.includes(key)) {
+      extraQuery[key] = value;
+    }
+  }
 
   if (typeof href === 'string') {
     if (config.ipfsMode) {
-      return <LinkIpfs {...restProps} href={href} query={extraQuery} />;
+      // repeated `product` params are equal to a comma-separated one
+      const ipfsQuery = Object.fromEntries(
+        Object.entries(extraQuery).map(([key, value]) => [
+          key,
+          Array.isArray(value) ? value.join(',') : value,
+        ]),
+      );
+      return <LinkIpfs {...restProps} href={href} query={ipfsQuery} />;
     }
 
     return (

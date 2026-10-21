@@ -117,14 +117,16 @@
       "name": "RLUSD",
       "address": "0x8292bb45bf1ee4d140127049757c2e0ff06317ed",
       "decimals": 18,
-      "chainId": 1
+      "chainId": 1,
+      "logoURI": "https://assets.coingecko.com/coins/images/39651/large/RLUSD_200x200_%281%29.png?1727376633"
     },
     {
       "symbol": "USDG",
       "name": "Global Dollar",
       "address": "0xe343167631d89b6ffc58b88d6b7fb0228795491d",
       "decimals": 6,
-      "chainId": 1
+      "chainId": 1,
+      "logoURI": "https://assets.coingecko.com/coins/images/51281/large/GDN_USDG_Token_200x200.png?1730484111"
     },
     {
       "symbol": "LINK",
@@ -155,7 +157,8 @@
       "name": "AUSD",
       "address": "0x00000000efe302beaa2b3e6e1b18d08d69a9012a",
       "decimals": 6,
-      "chainId": 1
+      "chainId": 1,
+      "logoURI": "https://assets.coingecko.com/coins/images/39284/large/AUSD_1024px.png?1764684132"
     },
     {
       "symbol": "EURC",
@@ -178,7 +181,8 @@
       "name": "Paxos Gold",
       "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "decimals": 18,
-      "chainId": 1
+      "chainId": 1,
+      "logoURI": "https://assets.coingecko.com/coins/images/9519/large/asset-paxg.png?1785284785"
     },
     {
       "symbol": "tBTC",
@@ -193,7 +197,8 @@
       "name": "Lombard Staked Bitcoin",
       "address": "0x8236a87084f8b84306f72007f36f2618a5634494",
       "decimals": 8,
-      "chainId": 1
+      "chainId": 1,
+      "logoURI": "https://assets.coingecko.com/coins/images/39969/large/lbtc-token-circle-200.png?1786635984"
     },
     {
       "symbol": "cbETH",
@@ -304,7 +309,8 @@
       "name": "Global Dollar",
       "address": "0x004b506865409877c9fa29bfb1eba929984b9bbc",
       "decimals": 6,
-      "chainId": 42161
+      "chainId": 42161,
+      "logoURI": "https://assets.coingecko.com/coins/images/51281/large/GDN_USDG_Token_200x200.png?1730484111"
     },
     {
       "symbol": "GHO",
@@ -455,7 +461,8 @@
       "name": "Lombard Staked Bitcoin",
       "address": "0xecac9c5f704e954931349da37f60e39f515c11c1",
       "decimals": 8,
-      "chainId": 8453
+      "chainId": 8453,
+      "logoURI": "https://assets.coingecko.com/coins/images/39969/large/lbtc-token-circle-200.png?1786635984"
     },
     {
       "symbol": "cbETH",

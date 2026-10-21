@@ -49,7 +49,7 @@ const normalizePath = (path: string): string => {
 
 // A path is disabled when its route is a disabled page key or a child of one.
 // Query values are ignored: `/wrap?next=/earn` is the wrap page. `/` is only
-// matched exactly, and the schema guarantees the stake page is never disabled
+// matched exactly; it is disabled only at runtime by URL params, never by the manifest
 export const isDisabledPath = (
   path: string,
   pages: ManifestConfig['pages'],

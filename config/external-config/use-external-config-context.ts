@@ -7,7 +7,6 @@ import { REMOTE_CONFIG_MANIFEST_URL } from 'consts/external-links';
 import { API_ROUTES } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useEarnRuntimeState } from 'features/earn/shared/hooks/use-earn-state';
-import { EARN_PATH } from 'consts/urls';
 
 import {
   overrideManifestConfig,
@@ -15,6 +14,8 @@ import {
 } from './frontend-fallback';
 import { ManifestSchema } from './validate';
 import { getManifestKey } from './utils';
+import { getProductPagesOverride } from './products';
+import { useProductsUrlState } from './use-products-url-state';
 import type { ExternalConfig, ManifestConfig, ManifestEntry } from './types';
 
 // IPFS builds (no backend) and legacy builds (no CONFIG_MANIFEST_PATH) fetch
@@ -33,6 +34,7 @@ export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
   const { isEarnDisabledByRuntimeContext } = useEarnRuntimeState();
+  const productsUrlState = useProductsUrlState();
 
   const { defaultChain, manifestOverride } = config;
   const fallbackData = useFallbackManifestEntry(
@@ -87,28 +89,26 @@ export const useExternalConfigContext = (
   return useMemo(() => {
     const { config: cleanConfig, ...rest } = queryResult.data ?? fallbackData;
 
-    const EARN_CONFIG = cleanConfig.pages[EARN_PATH];
-
-    // TODO: replace this logic with useEarnState hook, which is a single source of truth for Earn state.
+    // Products disabled by URL params (and Earn by Ledger Live) are disabled as pages,
+    // so Navigation and the route guard handle them like config-disabled pages
+    // TODO: replace Earn logic with useEarnState hook, which is a single source of truth for Earn state.
     // Current blocker: the Navigation component (navigation.tsx) uses external config to disable pages,
     // we don't want to couple it with specific Earn state logic.
-    const overridePages: Partial<ManifestConfig> | undefined =
-      isEarnDisabledByRuntimeContext
-        ? {
-            pages: {
-              [EARN_PATH]: {
-                showNew: EARN_CONFIG?.showNew ?? false,
-                sections: EARN_CONFIG?.sections ?? [],
-                shouldDisable: true,
-              },
-            },
-          }
-        : undefined;
+    const overridePages: Partial<ManifestConfig> = {
+      pages: getProductPagesOverride(
+        productsUrlState,
+        cleanConfig.pages,
+        isEarnDisabledByRuntimeContext,
+      ),
+    };
 
-    const overrideConfig = overrideManifestConfig(cleanConfig, {
-      ...overridePages,
-    });
+    const overrideConfig = overrideManifestConfig(cleanConfig, overridePages);
 
     return { ...overrideConfig, ...rest, fetchMeta: queryResult };
-  }, [queryResult, fallbackData, isEarnDisabledByRuntimeContext]);
+  }, [
+    queryResult,
+    fallbackData,
+    isEarnDisabledByRuntimeContext,
+    productsUrlState,
+  ]);
 };
