@@ -1,4 +1,4 @@
-import { L2StakeModule } from 'modules/l2-staking/l2-staking-module';
+import { L2StakeModule } from 'modules/l2-staking';
 
 const P = 10n ** 18n;
 const FEE = 10n ** 15n;

@@ -13,8 +13,8 @@ import {
   LIDO_L2_WETH_APPROVE_GAS_LIMIT_FALLBACK,
   LIDO_L2_STAKING_QUERY_SCOPE,
   type L2StakeModule,
+  type L2StakableToken,
 } from 'modules/l2-staking';
-import type { L2StakableToken } from 'modules/l2-staking/types';
 import { LIDO_ADDRESS } from 'config/groups/stake';
 
 // the WETH estimate relies on the estimate account holding WETH and

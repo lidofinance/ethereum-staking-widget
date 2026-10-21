@@ -8,7 +8,7 @@ import {
   encodeFeeDtoO,
   encodeFeeOtoD,
   encodeSlowStakeData,
-} from '../fee-codec';
+} from '../utils/fee-codec';
 import { LIDO_L2_SLOW_STAKE_LANES } from '../const';
 import { CHAINS } from 'config/chains';
 

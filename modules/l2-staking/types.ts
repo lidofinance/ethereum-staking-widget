@@ -8,19 +8,17 @@ import type {
   JsonRpcAccount,
   PublicClient,
 } from 'viem';
-import type {
-  L2StakingReceiverAbiType,
-  L2StakingOracleFeedAbiType,
-  L2StakingOraclePoolAbiType,
-} from './l2-staking-abi';
-import type { CcipRouterAbiType, CcipTokenPoolAbiType } from './ccip-abi';
+import type { L2StakingReceiverAbiType } from './abi/l2-staking-receiver';
+import type { L2StakingOraclePoolAbiType } from './abi/l2-staking-oracle-pool';
+import type { L2StakingOracleFeedAbiType } from './abi/l2-staking-oracle-feed';
+import type { CcipRouterAbiType, CcipTokenPoolAbiType } from './abi/ccip';
 import type {
   CommonTransactionProps,
   EtherValue,
   LidoSdkKeyedClients,
   LidoSDKCore,
 } from '@lidofinance/lido-ethereum-sdk/core';
-import type { L1StakingReceiverAbiType } from './l1-receiver-abi';
+import type { L1StakingReceiverAbiType } from './abi/l1-staking-receiver';
 import type { L2_SLOW_STAKE_STAGE } from './const';
 
 export type L2StakingReceiverContractType = EncodableContract<

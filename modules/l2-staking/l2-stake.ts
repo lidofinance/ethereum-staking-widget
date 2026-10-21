@@ -33,16 +33,14 @@ import { bridgedWstethAbi } from '@lidofinance/lido-ethereum-sdk/l2';
 // lead back to the SDK provider this module is created in
 import { estimateSendFees } from 'modules/web3/fees/estimate';
 
-import {
-  L2_STAKING_ORACLE_POOL_ABI,
-  L2_STAKING_RECEIVER_ABI,
-  L2_STAKING_ORACLE_FEED_ABI,
-} from './l2-staking-abi';
+import { L2_STAKING_RECEIVER_ABI } from './abi/l2-staking-receiver';
+import { L2_STAKING_ORACLE_POOL_ABI } from './abi/l2-staking-oracle-pool';
+import { L2_STAKING_ORACLE_FEED_ABI } from './abi/l2-staking-oracle-feed';
 import {
   CCIP_ONRAMP_ABI,
   CCIP_ROUTER_ABI,
   CCIP_TOKEN_POOL_ABI,
-} from './ccip-abi';
+} from './abi/ccip';
 import {
   CCIP_ETHEREUM_CHAIN_SELECTOR,
   L2_SLOW_STAKE_STAGE,
@@ -57,14 +55,14 @@ import {
   decodeSlowStakeData,
   encodeFeeDtoO,
   encodeFeeOtoD,
-} from './fee-codec';
+} from './utils/fee-codec';
 import {
   CCIP_MESSAGE_STATUS,
   CcipApiClient,
   getCcipExplorerMessageUrl,
   type CcipMessage,
-} from './ccip-api';
-import { L1_STAKING_RECEIVER_ABI } from './l1-receiver-abi';
+} from './utils/ccip-api';
+import { L1_STAKING_RECEIVER_ABI } from './abi/l1-staking-receiver';
 import { L2SlowStakeLookupError, type L2SlowStakeLookupSource } from './errors';
 
 import type {

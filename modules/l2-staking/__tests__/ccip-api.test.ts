@@ -6,7 +6,7 @@ import {
   ccipMessageSchema,
   ccipMessageListSchema,
   getCcipExplorerMessageUrl,
-} from '../ccip-api';
+} from '../utils/ccip-api';
 
 const MESSAGE_ID: Hash =
   '0xf50ff3791ba99db683b51a711436712b130ace8cb0f42789850b5f3cdc56cd5e';

@@ -2,7 +2,7 @@ import { getAddress } from 'viem';
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { CHAINS } from 'config/chains';
-import { LIDO_L2_STAKING_CHAIN_IDS } from 'modules/l2-staking/const';
+import { LIDO_L2_STAKING_CHAIN_IDS } from 'modules/l2-staking';
 
 import optimismSet from 'networks/l2/optimism.json';
 import optimismSepoliaSet from 'networks/l2/optimism-sepolia.json';

@@ -12,10 +12,10 @@ import {
 } from 'viem';
 import { CHAINS, ERROR_CODE } from '@lidofinance/lido-ethereum-sdk/common';
 
-import { L2_STAKING_RECEIVER_ABI } from '../l2-staking-abi';
-import { L1_STAKING_RECEIVER_ABI } from '../l1-receiver-abi';
+import { L2_STAKING_RECEIVER_ABI } from '../abi/l2-staking-receiver';
+import { L1_STAKING_RECEIVER_ABI } from '../abi/l1-staking-receiver';
 import { L2SlowStakeLookupError } from '../errors';
-import { encodeSlowStakeData } from '../fee-codec';
+import { encodeSlowStakeData } from '../utils/fee-codec';
 import {
   ACCOUNT,
   L1_RECEIVER,

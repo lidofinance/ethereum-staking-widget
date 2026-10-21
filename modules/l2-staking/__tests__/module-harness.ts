@@ -13,7 +13,7 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/common';
 import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { L2StakeModule } from '../l2-staking-module';
+import { L2StakeModule } from '../l2-stake';
 
 export const P = 10n ** 18n;
 export const FEE = 10n ** 15n; // 0.1%

@@ -15,7 +15,7 @@ import {
   BPS_PRECISION,
   LIDO_L2_SLOW_STAKE_MAX_FEE_BUFFER_BPS,
   type L2SlowStakeReturnFee,
-} from './const';
+} from '../const';
 
 /**
  * The packed byte layouts of the sender contract's FeeCodec library. Nothing

@@ -12,8 +12,8 @@ import {
   LIDO_L2_SLOW_STAKE_WETH_GAS_LIMIT_FALLBACK,
   LIDO_L2_STAKING_QUERY_SCOPE,
   type L2StakeModule,
+  type L2StakableToken,
 } from 'modules/l2-staking';
-import type { L2StakableToken } from 'modules/l2-staking/types';
 
 // The send fronts the CCIP fee in value, which the estimate account does not
 // hold, so the L2 gas is not estimated: the lane constants stand for it. The

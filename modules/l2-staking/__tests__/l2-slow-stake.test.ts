@@ -11,8 +11,8 @@ import {
 } from 'viem';
 import { CHAINS, ERROR_CODE } from '@lidofinance/lido-ethereum-sdk/common';
 
-import { L2_STAKING_RECEIVER_ABI } from '../l2-staking-abi';
-import { L2StakeModule } from '../l2-staking-module';
+import { L2_STAKING_RECEIVER_ABI } from '../abi/l2-staking-receiver';
+import { L2StakeModule } from '../l2-stake';
 import {
   CCIP_ETHEREUM_CHAIN_SELECTOR,
   LIDO_L2_SLOW_STAKE_LANES,
@@ -23,7 +23,7 @@ import {
   decodeFeeDtoOAmount,
   encodeFeeDtoO,
   encodeFeeOtoD,
-} from '../fee-codec';
+} from '../utils/fee-codec';
 import {
   ACCOUNT,
   CCIP_BUCKET,

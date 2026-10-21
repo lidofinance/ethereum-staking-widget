@@ -18,8 +18,7 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/core';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import { L2StakeModule } from 'modules/l2-staking/l2-staking-module';
-import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
+import { L2StakeModule, L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking';
 import {
   CCIP_ETHEREUM_CHAIN_SELECTOR,
   applySlowStakeMaxFeeBuffer,

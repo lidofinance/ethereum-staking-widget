@@ -13,8 +13,7 @@ import {
 import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import { L2StakeModule } from 'modules/l2-staking/l2-staking-module';
-import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
+import { L2StakeModule, L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
