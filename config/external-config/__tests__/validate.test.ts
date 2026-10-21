@@ -842,3 +842,47 @@ describe('baseConfig.l2Stake', () => {
     expect(manifest['1']?.config.l2Stake.perChain[BASE].enabled).toBe(false);
   });
 });
+
+describe('baseConfig.swap', () => {
+  const BASE = 8453;
+  const ARBITRUM = 42161;
+
+  const parseSwap = (swap?: unknown) =>
+    ManifestSchema.parse({ baseConfig: { swap } }).baseConfig.swap;
+
+  it('has no per-chain switches when omitted', () => {
+    expect(parseSwap(undefined)).toEqual({ perChain: {} });
+  });
+
+  it('keeps boolean `enabled` per chain', () => {
+    const result = parseSwap({
+      perChain: { [BASE]: { enabled: false }, [ARBITRUM]: { enabled: true } },
+    });
+    expect(result.perChain[BASE]).toEqual({ enabled: false });
+    expect(result.perChain[ARBITRUM]).toEqual({ enabled: true });
+  });
+
+  it('drops invalid keys and entries instead of failing', () => {
+    const result = parseSwap({
+      perChain: {
+        base: { enabled: false },
+        '0': { enabled: false },
+        [BASE]: { enabled: 'no' },
+        [ARBITRUM]: null,
+      },
+    });
+    expect(result).toEqual({ perChain: {} });
+    expect(parseSwap('broken')).toEqual({ perChain: {} });
+  });
+
+  it('lets a network entry override baseConfig', () => {
+    const manifest = ManifestSchema.parse({
+      baseConfig: { swap: { perChain: { [BASE]: { enabled: true } } } },
+      '1': {
+        leastSafeVersion: '1.0.0',
+        config: { swap: { perChain: { [BASE]: { enabled: false } } } },
+      },
+    });
+    expect(manifest['1']?.config.swap.perChain[BASE]?.enabled).toBe(false);
+  });
+});

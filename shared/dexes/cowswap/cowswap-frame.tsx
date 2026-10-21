@@ -70,6 +70,8 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 export type CowswapFrameProps = {
   profile: CowswapProfile;
   refetchBalances: () => void;
+  // subset of profile.chainIds still enabled, e.g. by the manifest
+  chainIds?: readonly number[];
   // cancel the host Block bottom padding once loaded
   consumeBottomSpace?: boolean;
 };
@@ -77,6 +79,7 @@ export type CowswapFrameProps = {
 export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   profile,
   refetchBalances,
+  chainIds = profile.chainIds,
   consumeBottomSpace = true,
 }) => {
   const {
@@ -94,8 +97,8 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     useLoadingStates();
 
   const { address, chainId, isTestnet } = useDappStatus();
-  // dapp chain if the profile enables it, else mainnet (sepolia on testnets)
-  const widgetChainId = profile.chainIds.includes(chainId)
+  // dapp chain if enabled, else mainnet (sepolia on testnets)
+  const widgetChainId = chainIds.includes(chainId)
     ? chainId
     : isTestnet
       ? sepolia.id

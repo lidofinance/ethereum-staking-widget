@@ -1,14 +1,13 @@
 import type { FC } from 'react';
 import Head from 'next/head';
 
-import { SwapDex, SWAP_COWSWAP_PROFILE } from 'features/swap';
-import { SupportL1AndCustomL2Chains } from 'modules/web3';
+import { SwapDex, SupportL1AndSwapL2Chains } from 'features/swap';
 import { Layout } from 'shared/components';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const SwapPage: FC = () => {
   return (
-    <SupportL1AndCustomL2Chains l2ChainIds={SWAP_COWSWAP_PROFILE.chainIds}>
+    <SupportL1AndSwapL2Chains>
       <Layout
         title="Swap"
         subtitle="Swap tokens across supported networks with the best available route."
@@ -18,7 +17,7 @@ const SwapPage: FC = () => {
         </Head>
         <SwapDex />
       </Layout>
-    </SupportL1AndCustomL2Chains>
+    </SupportL1AndSwapL2Chains>
   );
 };
 

@@ -6,7 +6,10 @@ import type { ChainlinkFeedConfig } from '../types';
 
 // --- Resolve mainnet addresses from network config ---
 
-const c = mainnetConfig.contracts;
+const c = mainnetConfig.contracts as Record<
+  keyof typeof mainnetConfig.contracts,
+  Address
+>;
 
 // TODO; move maxStaleness to consts
 
@@ -41,127 +44,127 @@ export type ChainlinkFeedKey =
 
 export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
   ETH_USD: {
-    address: c.aggregatorEthUsdPriceFeed as Address,
+    address: c.aggregatorEthUsdPriceFeed,
     maxStaleness: 3900, // 1h + 5min buffer
     decimals: 8,
   },
   STETH_USD: {
-    address: c.aggregatorStEthUsdPriceFeed as Address,
+    address: c.aggregatorStEthUsdPriceFeed,
     maxStaleness: 3900,
     decimals: 8,
   },
   USDC_USD: {
-    address: c.aggregatorUsdcUsdPriceFeed as Address,
+    address: c.aggregatorUsdcUsdPriceFeed,
     maxStaleness: 87000, // 24h + 10min buffer
     decimals: 8,
   },
   USDT_USD: {
-    address: c.aggregatorUsdtUsdPriceFeed as Address,
+    address: c.aggregatorUsdtUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   DAI_USD: {
-    address: c.aggregatorDaiUsdPriceFeed as Address,
+    address: c.aggregatorDaiUsdPriceFeed,
     maxStaleness: 3900, // 1h, used as proxy for USDS in withdrawals
     decimals: 8,
   },
   BTC_USD: {
-    address: c.aggregatorBtcUsdPriceFeed as Address,
+    address: c.aggregatorBtcUsdPriceFeed,
     maxStaleness: 3900, // 1h
     decimals: 8,
   },
   USDE_USD: {
-    address: c.aggregatorUsdeUsdPriceFeed as Address,
+    address: c.aggregatorUsdeUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   USDS_USD: {
-    address: c.aggregatorUsdsUsdPriceFeed as Address,
+    address: c.aggregatorUsdsUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   PYUSD_USD: {
-    address: c.aggregatorPyusdUsdPriceFeed as Address,
+    address: c.aggregatorPyusdUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   CBBTC_USD: {
-    address: c.aggregatorCbbtcUsdPriceFeed as Address,
+    address: c.aggregatorCbbtcUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   LDO_ETH: {
-    address: c.aggregatorLdoEthPriceFeed as Address,
+    address: c.aggregatorLdoEthPriceFeed,
     maxStaleness: 87000,
     decimals: 18,
   },
   WBTC_BTC: {
-    address: c.aggregatorWbtcBtcPriceFeed as Address,
+    address: c.aggregatorWbtcBtcPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   LINK_USD: {
-    address: c.aggregatorLinkUsdPriceFeed as Address,
+    address: c.aggregatorLinkUsdPriceFeed,
     maxStaleness: 3900,
     decimals: 8,
   },
   UNI_USD: {
-    address: c.aggregatorUniUsdPriceFeed as Address,
+    address: c.aggregatorUniUsdPriceFeed,
     maxStaleness: 3900,
     decimals: 8,
   },
   AAVE_USD: {
-    address: c.aggregatorAaveUsdPriceFeed as Address,
+    address: c.aggregatorAaveUsdPriceFeed,
     maxStaleness: 3900,
     decimals: 8,
   },
   RLUSD_USD: {
-    address: c.aggregatorRlusdUsdPriceFeed as Address,
+    address: c.aggregatorRlusdUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   USDG_USD: {
-    address: c.aggregatorUsdgUsdPriceFeed as Address,
+    address: c.aggregatorUsdgUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   AUSD_USD: {
-    address: c.aggregatorAusdUsdPriceFeed as Address,
+    address: c.aggregatorAusdUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 18,
   },
   EURC_USD: {
-    address: c.aggregatorEurcUsdPriceFeed as Address,
+    address: c.aggregatorEurcUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   GHO_USD: {
-    address: c.aggregatorGhoUsdPriceFeed as Address,
+    address: c.aggregatorGhoUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   PAXG_USD: {
-    address: c.aggregatorPaxgUsdPriceFeed as Address,
+    address: c.aggregatorPaxgUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   TBTC_USD: {
-    address: c.aggregatorTbtcUsdPriceFeed as Address,
+    address: c.aggregatorTbtcUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   LBTC_BTC: {
-    address: c.aggregatorLbtcBtcPriceFeed as Address,
+    address: c.aggregatorLbtcBtcPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
   CBETH_ETH: {
-    address: c.aggregatorCbethEthPriceFeed as Address,
+    address: c.aggregatorCbethEthPriceFeed,
     maxStaleness: 87000,
     decimals: 18,
   },
   SUSDE_USD: {
-    address: c.aggregatorSusdeUsdPriceFeed as Address,
+    address: c.aggregatorSusdeUsdPriceFeed,
     maxStaleness: 87000,
     decimals: 8,
   },
@@ -221,6 +224,9 @@ export const WSTETH_ADDRESS = c.wsteth.toLowerCase() as Address;
 
 // Chainlink scale (8 decimals)
 export const CHAINLINK_SCALE = 10n ** 8n;
+// 0.5 and 2 in Chainlink scale, bounds for pegged prices
+export const CHAINLINK_SCALE_MIN = CHAINLINK_SCALE / 2n;
+export const CHAINLINK_SCALE_MAX = CHAINLINK_SCALE * 2n;
 // wstETH scale (18 decimals)
 export const WSTETH_SCALE = 10n ** 18n;
 // wstETH rate minimum (18 decimals)
@@ -232,28 +238,28 @@ export const WSTETH_RATE_MAX = 2n * 10n ** 18n; // 2.0 — ~14 years runway at 5
 export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
   ETH_USD: { min: 1000n * CHAINLINK_SCALE, max: 20_000n * CHAINLINK_SCALE },
   STETH_USD: { min: 1000n * CHAINLINK_SCALE, max: 20_000n * CHAINLINK_SCALE },
-  USDC_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
-  USDT_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
-  DAI_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  USDC_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
+  USDT_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
+  DAI_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
   BTC_USD: {
     min: 30_000n * CHAINLINK_SCALE,
     max: 200_000n * CHAINLINK_SCALE,
   },
-  USDE_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
-  USDS_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
-  PYUSD_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  USDE_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
+  USDS_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
+  PYUSD_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
   CBBTC_USD: {
     min: 30_000n * CHAINLINK_SCALE,
     max: 200_000n * CHAINLINK_SCALE,
   },
   // 18 decimals: 0.00001–0.01 ETH
   LDO_ETH: { min: 10n ** 13n, max: 10n ** 16n },
-  WBTC_BTC: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  WBTC_BTC: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
   LINK_USD: { min: CHAINLINK_SCALE, max: 200n * CHAINLINK_SCALE },
-  UNI_USD: { min: CHAINLINK_SCALE / 2n, max: 100n * CHAINLINK_SCALE },
+  UNI_USD: { min: CHAINLINK_SCALE_MIN, max: 100n * CHAINLINK_SCALE },
   AAVE_USD: { min: 10n * CHAINLINK_SCALE, max: 2_000n * CHAINLINK_SCALE },
-  RLUSD_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
-  USDG_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  RLUSD_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
+  USDG_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
   // 18 decimals: 0.5–2 USD
   AUSD_USD: { min: 5n * 10n ** 17n, max: 2n * 10n ** 18n },
   // EUR, not USD
@@ -261,16 +267,16 @@ export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
     min: (CHAINLINK_SCALE * 8n) / 10n,
     max: (CHAINLINK_SCALE * 16n) / 10n,
   },
-  GHO_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  GHO_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
   // one troy ounce of gold
   PAXG_USD: { min: 1000n * CHAINLINK_SCALE, max: 20_000n * CHAINLINK_SCALE },
   TBTC_USD: {
     min: 30_000n * CHAINLINK_SCALE,
     max: 200_000n * CHAINLINK_SCALE,
   },
-  LBTC_BTC: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  LBTC_BTC: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
   // 18 decimals: 1–2 ETH, the rate only grows
   CBETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
   // value-accruing, ≈ 1.25 USD now
-  SUSDE_USD: { min: CHAINLINK_SCALE / 2n, max: 3n * CHAINLINK_SCALE },
+  SUSDE_USD: { min: CHAINLINK_SCALE_MIN, max: 3n * CHAINLINK_SCALE },
 };

@@ -4,8 +4,8 @@ import { ButtonProps, useBreakpoint } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 import { useDappStatus, useEthereumBalance } from 'modules/web3';
 
-import { AddressBadge } from '../../../../../wallet/components/address-badge/address-badge';
-import { useWalletModal } from '../../../../../wallet/wallet-modal/use-wallet-modal';
+import { AddressBadge } from 'shared/wallet/components/address-badge/address-badge';
+import { useWalletModal } from 'shared/wallet/wallet-modal/use-wallet-modal';
 
 import {
   WalledButtonStyle,

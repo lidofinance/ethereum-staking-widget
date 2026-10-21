@@ -7,7 +7,7 @@ import {
   useDappStatus,
   wagmiChainMap,
 } from 'modules/web3';
-import { usePopupMenu } from 'shared/components/layout/header/components/popup';
+import { usePopupMenu } from '../popup';
 
 import {
   ChainSwitcherOptions,

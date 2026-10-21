@@ -4,7 +4,7 @@ import {
   PopoverNoClickBackdrop,
   PopupStyled,
   type usePopupMenu,
-} from 'shared/components/layout/header/components/popup';
+} from '../../popup';
 
 import { ChainOptionStyled } from '../styles';
 

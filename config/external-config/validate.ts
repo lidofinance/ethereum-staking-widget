@@ -360,6 +360,47 @@ const L2StakeTransformSchema = L2StakeSchema.transform((data) => {
   };
 });
 //
+// Swap
+//
+
+// Per-chain switch for the swap tab; it can only turn a chain off, the chain list is in code
+const SwapSchema = z
+  .preprocess(
+    (value) => {
+      const section = isUnknownRecord(value) ? value : {};
+      const perChain = isUnknownRecord(section.perChain)
+        ? section.perChain
+        : {};
+      return {
+        perChain: Object.fromEntries(
+          Object.entries(perChain)
+            .filter(
+              ([key, entry]) =>
+                /^[1-9]\d*$/.test(key) &&
+                isUnknownRecord(entry) &&
+                typeof entry.enabled === 'boolean',
+            )
+            .map(([key, entry]) => [
+              key,
+              { enabled: (entry as UnknownRecord).enabled },
+            ]),
+        ),
+      };
+    },
+    z.object({
+      perChain: z.record(
+        z
+          .string()
+          .transform((v) => Number(v))
+          .pipe(z.number().min(1)),
+        z.object({ enabled: z.boolean() }),
+      ),
+    }),
+  )
+  .optional()
+  .default({ perChain: {} });
+
+//
 // Wallets
 //
 
@@ -379,6 +420,7 @@ const WalletsConfigSchema = z
 const ManifestConfigSchema = z.object({
   withdrawalDex: DexWithdrawalIntegrationEntrySchema,
   l2Stake: L2StakeTransformSchema,
+  swap: SwapSchema,
   multiChainBanner: MultiChainBannerSchema.optional().default([]),
   featureFlags: FeatureFlagsSchema.optional().default({}),
   earnVaults: EarnVaultListSchema.optional().default([]),

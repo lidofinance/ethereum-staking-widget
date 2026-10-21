@@ -41,7 +41,7 @@
     },
     "pages": {
       "/earn": {
-        "showNew": true,
+        "showNew": false,
         "shouldDisable": false
       },
       "/swap": {
@@ -92,7 +92,6 @@
       },
       "pages": {
         "/earn": {
-          "showNew": true,
           "shouldDisable": false
         }
       },
@@ -141,7 +140,6 @@
       },
       "pages": {
         "/earn": {
-          "showNew": true,
           "shouldDisable": false
         }
       },
@@ -179,7 +177,6 @@
           "shouldDisable": true
         },
         "/earn": {
-          "showNew": false,
           "shouldDisable": true
         },
         "/swap": {
