@@ -224,11 +224,20 @@ const PagesEntrySchema = z
     (obj) => {
       if (typeof obj === 'object' && obj !== null) {
         return Object.fromEntries(
-          Object.entries(obj).filter(
-            ([key, value]) =>
+          Object.entries(obj).filter(([key, value]) => {
+            const isValid =
               PageNameSchema.safeParse(key).success &&
-              PageSchema.safeParse(value).success,
-          ),
+              PageSchema.safeParse(value).success;
+            // a dropped entry can leave a page enabled, so make it visible
+            if (!isValid) {
+              console.warn(
+                '[manifest] dropped invalid page entry:',
+                key,
+                value,
+              );
+            }
+            return isValid;
+          }),
         );
       }
       return obj;
@@ -374,12 +383,21 @@ const SwapSchema = z
       return {
         perChain: Object.fromEntries(
           Object.entries(perChain)
-            .filter(
-              ([key, entry]) =>
+            .filter(([key, entry]) => {
+              const isValid =
                 /^[1-9]\d*$/.test(key) &&
                 isUnknownRecord(entry) &&
-                typeof entry.enabled === 'boolean',
-            )
+                typeof entry.enabled === 'boolean';
+              // a dropped entry leaves the chain enabled, so make it visible
+              if (!isValid) {
+                console.warn(
+                  '[manifest] dropped invalid swap entry:',
+                  key,
+                  entry,
+                );
+              }
+              return isValid;
+            })
             .map(([key, entry]) => [
               key,
               { enabled: (entry as UnknownRecord).enabled },

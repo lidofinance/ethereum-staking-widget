@@ -99,8 +99,9 @@ export const useExternalConfigContext = (
     // we don't want to couple it with specific Earn state logic.
     const overridePages: Partial<ManifestConfig> = {
       pages: getProductPagesOverride(productsUrlState, cleanConfig.pages, {
-        earn: isEarnDisabledByRuntimeContext,
-        swap: isLedgerLive,
+        // IPFS build exports only `/`, so Earn and Swap pages do not exist there
+        earn: isEarnDisabledByRuntimeContext || !!config.ipfsMode,
+        swap: isLedgerLive || !!config.ipfsMode,
       }),
     };
 

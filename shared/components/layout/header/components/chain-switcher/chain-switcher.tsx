@@ -72,7 +72,7 @@ export const ChainSwitcher: FC = () => {
         {...triggerProps}
       >
         <IconStyle $loading={isSwitchChainPending}>
-          {iconsMap[chainId].iconComponent}
+          {iconsMap[chainId]?.iconComponent}
         </IconStyle>
         {!isLocked && <ArrowStyle data-testid="canExpanded" $opened={opened} />}
         {isSwitchChainPending && <Loader size="small" />}

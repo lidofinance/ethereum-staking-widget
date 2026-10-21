@@ -168,6 +168,11 @@ const useSupportedChainLogic = (
     }
   }
 
+  // manifest refetch can drop the current chain at runtime
+  if (!isChainSupported(chainId) && isChainSupported(config.defaultChain)) {
+    setChainId(config.defaultChain);
+  }
+
   return useMemo(
     () => ({
       chainId,
