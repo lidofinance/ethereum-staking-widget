@@ -1,4 +1,12 @@
-import { encodeAbiParameters, type Address, type Hash } from 'viem';
+import {
+  encodeAbiParameters,
+  parseEventLogs,
+  type AbiEvent,
+  type Address,
+  type Hash,
+  type Log,
+  type PublicClient,
+} from 'viem';
 import {
   CHAINS,
   LIDO_L2_CONTRACT_ADDRESSES,
@@ -60,16 +68,79 @@ export type ReadCall = {
   args?: unknown[];
 };
 
-type ModuleOptions = {
+export type LogsRequest = {
+  address: Address;
+  fromBlock: bigint;
+  toBlock: bigint;
+  event?: { name: string };
+  args?: Record<string, unknown>;
+};
+
+export type ChainStub = {
   // replies by function name on top of the defaults
   reads?: Record<string, unknown>;
+  // eth_getLogs replies, per request
+  logs?: (request: LogsRequest) => unknown[];
+  receipts?: Record<string, { blockNumber: bigint; logs: unknown[] }>;
+  blockNumber?: bigint;
 };
+
+type ModuleOptions = ChainStub & {
+  // the Ethereum side, when a test reaches it
+  l1?: ChainStub;
+  // the CCIP API, as a fetch stand-in
+  fetcher?: typeof fetch;
+  ccipApiBaseUrl?: string;
+  logsBlockRange?: number;
+};
+
+// The log and receipt side of a public client stand-in. Like viem, getLogs
+// hands back decoded logs: the raw logs the test supplies are decoded with
+// the requested event and filtered by its args
+export const createLogsClient = ({
+  logs,
+  receipts = {},
+  blockNumber = 100n,
+}: Omit<ChainStub, 'reads'>) => ({
+  getLogs: vi.fn(async (request: LogsRequest) =>
+    parseEventLogs({
+      abi: [request.event as AbiEvent],
+      args: request.args,
+      logs: (logs?.(request) ?? []) as Log[],
+    }),
+  ),
+  getBlockNumber: vi.fn(async () => blockNumber),
+  getTransactionReceipt: vi.fn(async ({ hash }: { hash: string }) => {
+    const receipt = receipts[hash];
+    if (!receipt) throw new Error(`no receipt for ${hash}`);
+    return receipt;
+  }),
+});
+
+// A public client stand-in over a lookup table of reads, logs and receipts
+export const createChainClient = ({ reads = {}, ...rest }: ChainStub) => ({
+  readContract: vi.fn(async ({ functionName }: ReadCall) => {
+    if (!(functionName in reads))
+      throw new Error(`unexpected read: ${functionName}`);
+    return reads[functionName];
+  }),
+  ...createLogsClient(rest),
+});
 
 // The module only needs `core` for its clients, account and chain: a plain
 // stub keeps real viem encoding in the loop while the RPC is a lookup table
 export const createModule = (
   chainId: CHAINS = CHAINS.Base,
-  { reads: readOverrides }: ModuleOptions = {},
+  {
+    reads: readOverrides,
+    logs,
+    receipts,
+    blockNumber,
+    l1,
+    fetcher,
+    ccipApiBaseUrl,
+    logsBlockRange,
+  }: ModuleOptions = {},
 ) => {
   const reads: Record<string, unknown> = {
     getOraclePool: POOL,
@@ -104,7 +175,9 @@ export const createModule = (
     estimateContractGas: vi.fn(async () => 120_000n),
     // raw RPC for chain-specific fee quotes (linea_estimateGas)
     request: vi.fn(async () => LINEA_QUOTE),
+    ...createLogsClient({ logs, receipts, blockNumber }),
   };
+  const l1PublicClient = l1 ? createChainClient(l1) : undefined;
   const walletClient = { writeContract: vi.fn(async () => TX_HASH) };
   const core = {
     chain: { id: chainId },
@@ -139,6 +212,12 @@ export const createModule = (
       },
     ),
   };
-  const l2Stake = new L2StakeModule({ core: core as unknown as LidoSDKCore });
-  return { l2Stake, core, publicClient, walletClient };
+  const l2Stake = new L2StakeModule({
+    core: core as unknown as LidoSDKCore,
+    l1PublicClient: l1PublicClient as unknown as PublicClient | undefined,
+    fetcher,
+    ccipApiBaseUrl,
+    logsBlockRange,
+  });
+  return { l2Stake, core, publicClient, walletClient, l1PublicClient };
 };

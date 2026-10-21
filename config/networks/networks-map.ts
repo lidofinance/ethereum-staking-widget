@@ -52,6 +52,9 @@ export const CONTRACT_NAMES = {
   L2CcipRouter: 'L2CcipRouter',
   L2CcipOnRamp: 'L2CcipOnRamp',
   L2CcipWethPool: 'L2CcipWethPool',
+  // the Ethereum side of the slow stake, shared by every lane; read for a
+  // stake's status
+  L1stakingReceiver: 'L1stakingReceiver',
   // OP-stack predeploy quoting the L1 data fee of a tx
   L2GasPriceOracle: 'L2GasPriceOracle',
   // 3rd party contracts

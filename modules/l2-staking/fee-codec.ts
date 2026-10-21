@@ -1,5 +1,6 @@
 import {
   concatHex,
+  getAddress,
   hexToBigInt,
   numberToHex,
   size,
@@ -91,6 +92,22 @@ export const encodeSlowStakeData = (
     numberToHex(amount, { size: 32 }),
     feeDtoO,
   ]).toLowerCase() as Hex;
+
+// The payload back into its fields, for a message read from the CCIP API
+export const decodeSlowStakeData = (
+  data: Hex,
+): { recipient: Address; amount: bigint; feeDtoO: Hex } => {
+  invariant(
+    size(data) >= 52,
+    'slow stake payload is shorter than 52 bytes',
+    ERROR_CODE.INVALID_ARGUMENT,
+  );
+  return {
+    recipient: getAddress(slice(data, 0, 20)),
+    amount: hexToBigInt(slice(data, 20, 52)),
+    feeDtoO: slice(data, 52),
+  };
+};
 
 // bytes4(keccak256("CCIP EVMExtraArgsV1")) followed by the ABI-encoded struct
 export const CCIP_EVM_EXTRA_ARGS_V1_TAG = '0x97a657c9';

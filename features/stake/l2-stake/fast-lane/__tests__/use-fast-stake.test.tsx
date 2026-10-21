@@ -1,5 +1,6 @@
 import {
   decodeFunctionData,
+  erc20Abi,
   getAddress,
   zeroAddress,
   type Address,
@@ -14,7 +15,6 @@ import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
 import { L2StakeModule } from 'modules/l2-staking/l2-staking-module';
 import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
-import { wethABI } from 'abi/weth-abi';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
@@ -180,7 +180,7 @@ const decodeFastStake = (data: Hash) => {
 };
 
 const decodeApprove = (data: Hash) => {
-  const decoded = decodeFunctionData({ abi: wethABI, data });
+  const decoded = decodeFunctionData({ abi: erc20Abi, data });
   expect(decoded.functionName).toBe('approve');
   return decoded.args as readonly [Address, bigint];
 };

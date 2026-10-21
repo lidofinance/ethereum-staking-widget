@@ -1,11 +1,12 @@
 import type { EncodableContract } from '@lidofinance/lido-ethereum-sdk/common';
-import type { wethABI } from 'abi/weth-abi';
 import type {
+  erc20Abi,
   GetContractReturnType,
   Address,
   Hash,
   Hex,
   JsonRpcAccount,
+  PublicClient,
 } from 'viem';
 import type {
   L2StakingReceiverAbiType,
@@ -17,7 +18,10 @@ import type {
   CommonTransactionProps,
   EtherValue,
   LidoSdkKeyedClients,
+  LidoSDKCore,
 } from '@lidofinance/lido-ethereum-sdk/core';
+import type { L1StakingReceiverAbiType } from './l1-receiver-abi';
+import type { L2_SLOW_STAKE_STAGE } from './const';
 
 export type L2StakingReceiverContractType = EncodableContract<
   GetContractReturnType<L2StakingReceiverAbiType, LidoSdkKeyedClients>
@@ -64,7 +68,7 @@ export type L2StakeState = {
 };
 
 export type L2WethContractType = EncodableContract<
-  GetContractReturnType<typeof wethABI, LidoSdkKeyedClients>
+  GetContractReturnType<typeof erc20Abi, LidoSdkKeyedClients>
 >;
 
 export type L2ApproveWethProps = {
@@ -150,4 +154,91 @@ export type L2SlowStakeResult = {
   user: Address;
   token: Address;
   amount: bigint;
+};
+
+export type L2StakeModuleProps = {
+  core: LidoSDKCore;
+  // Ethereum client for the L1 legs of a slow stake's status; the status
+  // methods require it, everything else works without
+  l1PublicClient?: PublicClient;
+  ccipApiBaseUrl?: string;
+  // the widest eth_getLogs block range the RPC in front serves
+  logsBlockRange?: number;
+  fetcher?: typeof fetch;
+};
+
+export type L1StakingReceiverContractType = GetContractReturnType<
+  L1StakingReceiverAbiType,
+  PublicClient
+>;
+
+// The L2 send, as the sender's SlowStake event records it
+export type L2SlowStakeSent = {
+  messageId: Hash;
+  user: Address;
+  token: Address;
+  amount: bigint;
+  sendTxHash: Hash;
+  sendBlockNumber: bigint;
+};
+
+// The CCIP message as the receiver got it; what a retry on L1 needs
+export type L1FailedMessage = {
+  messageId: Hash;
+  sourceChainSelector: bigint;
+  sender: Hex;
+  data: Hex;
+  destTokenAmounts: readonly { token: Address; amount: bigint }[];
+};
+
+export type L2SlowStakeStage =
+  (typeof L2_SLOW_STAKE_STAGE)[keyof typeof L2_SLOW_STAKE_STAGE];
+
+type L2SlowStakeStatusBase = L2SlowStakeSent & {
+  ccipExplorerUrl: string;
+};
+
+export type L2SlowStakeStatus =
+  | (L2SlowStakeStatusBase & { stage: 'sent' })
+  | (L2SlowStakeStatusBase & { stage: 'in_transit'; ccipStatus: string })
+  | (L2SlowStakeStatusBase & {
+      stage: 'transport_failed';
+      ccipStatus: string;
+      readyForManualExecution: boolean;
+    })
+  | (L2SlowStakeStatusBase & {
+      stage: 'parked';
+      l1TxHash: Hash;
+      l1BlockNumber: bigint;
+      failedMessage: L1FailedMessage;
+    })
+  | (L2SlowStakeStatusBase & { stage: 'tokens_recovered'; l1TxHash: Hash })
+  | (L2SlowStakeStatusBase & {
+      stage: 'staked';
+      l1TxHash: Hash;
+      l1BlockNumber: bigint;
+      stakedAmount: bigint;
+      // the retryable ticket on Arbitrum; absent on the other lanes
+      bridgeMessageId?: Hash;
+    })
+  | (L2SlowStakeStatusBase & {
+      stage: 'delivered';
+      l1TxHash: Hash;
+      stakedAmount: bigint;
+      l2TxHash: Hash;
+    });
+
+export type L2SlowStakeLookupProps = {
+  account: Address;
+  // the L2 block to search the user's sends from; the search is chunked by
+  // the module's logs block range
+  fromBlock: bigint;
+  toBlock?: bigint;
+};
+
+export type L2SlowStakeApiLookupProps = {
+  account: Address;
+  // pages of the lane's message list to walk, newest first
+  pageSize?: number;
+  maxPages?: number;
 };

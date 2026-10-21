@@ -1,11 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import {
+  decodeAbiParameters,
   encodeFunctionData,
+  erc20Abi,
+  getAbiItem,
   getContract,
+  isAddressEqual,
   parseEventLogs,
   size,
   zeroAddress,
+  zeroHash,
+  type AbiEvent,
   type Address,
+  type GetLogsParameters,
+  type GetLogsReturnType,
+  type Hash,
+  type PublicClient,
   type TransactionReceipt,
 } from 'viem';
 import {
@@ -19,7 +29,6 @@ import {
   Logger,
 } from '@lidofinance/lido-ethereum-sdk/common';
 import { bridgedWstethAbi } from '@lidofinance/lido-ethereum-sdk/l2';
-import { wethABI } from 'abi/weth-abi';
 // the estimate file, not the fees barrel: that one carries the hooks, which
 // lead back to the SDK provider this module is created in
 import { estimateSendFees } from 'modules/web3/fees/estimate';
@@ -36,6 +45,8 @@ import {
 } from './ccip-abi';
 import {
   CCIP_ETHEREUM_CHAIN_SELECTOR,
+  L2_SLOW_STAKE_STAGE,
+  LIDO_L2_LOGS_BLOCK_RANGE,
   LIDO_L2_SLOW_STAKE_LANES,
   type L2SlowStakeLaneConfig,
 } from './const';
@@ -43,9 +54,18 @@ import {
   applySlowStakeMaxFeeBuffer,
   buildSlowStakeCcipMessage,
   decodeFeeDtoOAmount,
+  decodeSlowStakeData,
   encodeFeeDtoO,
   encodeFeeOtoD,
 } from './fee-codec';
+import {
+  CCIP_MESSAGE_STATUS,
+  CcipApiClient,
+  getCcipExplorerMessageUrl,
+  type CcipMessage,
+} from './ccip-api';
+import { L1_STAKING_RECEIVER_ABI } from './l1-receiver-abi';
+import { L2SlowStakeLookupError, type L2SlowStakeLookupSource } from './errors';
 
 import type {
   AccountValue,
@@ -76,6 +96,13 @@ import type {
   L2SlowStakeProps,
   L2SlowStakeResult,
   ParsedL2SlowStakeProps,
+  L2StakeModuleProps,
+  L1StakingReceiverContractType,
+  L1FailedMessage,
+  L2SlowStakeSent,
+  L2SlowStakeStatus,
+  L2SlowStakeLookupProps,
+  L2SlowStakeApiLookupProps,
 } from './types';
 
 type TokenBucket = {
@@ -84,6 +111,55 @@ type TokenBucket = {
   isEnabled: boolean;
   capacity: bigint;
   rate: bigint;
+};
+
+const SLOW_STAKE_EVENT = getAbiItem({
+  abi: L2_STAKING_RECEIVER_ABI,
+  name: 'SlowStake',
+});
+const TRANSFER_EVENT = getAbiItem({ abi: erc20Abi, name: 'Transfer' });
+const MESSAGE_RECOVERED_EVENT = getAbiItem({
+  abi: L1_STAKING_RECEIVER_ABI,
+  name: 'MessageRecovered',
+});
+const TOKENS_RECOVERED_EVENT = getAbiItem({
+  abi: L1_STAKING_RECEIVER_ABI,
+  name: 'TokensRecovered',
+});
+
+// receipt logs by emitter, case-insensitively
+const isFrom = (address: Address) => (log: { address: Address }) =>
+  isAddressEqual(log.address, address);
+
+// a wstETH mint to the user on the L2: the last leg of a slow stake
+type L2WstethMint = {
+  value: bigint;
+  transactionHash: Hash;
+  blockNumber: bigint;
+};
+
+// what the receiver's receipt on L1 says about one message
+type L1Outcome =
+  | {
+      kind: 'succeeded';
+      l1TxHash: Hash;
+      l1BlockNumber: bigint;
+      stakedAmount: bigint;
+      bridgeMessageId?: Hash;
+    }
+  | {
+      kind: 'failed';
+      l1TxHash: Hash;
+      l1BlockNumber: bigint;
+      failedMessage: L1FailedMessage;
+    };
+
+type ChunkedLogsParams<TEvent extends AbiEvent> = {
+  address: Address;
+  event: TEvent;
+  args?: GetLogsParameters<TEvent>['args'];
+  fromBlock: bigint;
+  toBlock?: bigint;
 };
 
 // Decorator arguments are evaluated while the class is being defined, before
@@ -95,6 +171,22 @@ const L2_ORACLE_POOL_PRECISION = BigInt(1e18);
 export class L2StakeModule extends LidoSDKModule {
   public L2_ORACLE_POOL_PRECISION = L2_ORACLE_POOL_PRECISION;
   public ETH_TOKEN_ADDRESS = zeroAddress;
+
+  private readonly l1PublicClient?: PublicClient;
+  private readonly ccipApi: CcipApiClient;
+  private readonly logsBlockRange: bigint;
+
+  constructor(props: L2StakeModuleProps) {
+    super(props);
+    this.l1PublicClient = props.l1PublicClient;
+    this.ccipApi = new CcipApiClient({
+      baseUrl: props.ccipApiBaseUrl,
+      fetcher: props.fetcher,
+    });
+    this.logsBlockRange = BigInt(
+      props.logsBlockRange ?? LIDO_L2_LOGS_BLOCK_RANGE,
+    );
+  }
 
   private static clampToZero = (value: bigint) => (value > 0n ? value : 0n);
 
@@ -282,7 +374,7 @@ export class L2StakeModule extends LidoSDKModule {
     return getEncodableContract(
       getContract({
         address,
-        abi: wethABI,
+        abi: erc20Abi,
         client: this.core.keyedClient,
       }),
     );
@@ -349,7 +441,7 @@ export class L2StakeModule extends LidoSDKModule {
     const tx = {
       to: weth.address,
       data: encodeFunctionData({
-        abi: wethABI,
+        abi: erc20Abi,
         functionName: 'approve',
         args: params,
       }),
@@ -613,9 +705,7 @@ export class L2StakeModule extends LidoSDKModule {
   ) {
     const sender =
       senderAddress ?? (await this.getL2StakingReceiverContractAddress());
-    return receipt.logs.filter(
-      (log) => log.address.toLowerCase() === sender.toLowerCase(),
-    );
+    return receipt.logs.filter(isFrom(sender));
   }
 
   // ---------------------------------------------------------------------
@@ -688,7 +778,7 @@ export class L2StakeModule extends LidoSDKModule {
       CCIP_ETHEREUM_CHAIN_SELECTOR,
     ]);
     invariant(
-      onRampAddress !== zeroAddress,
+      !isAddressEqual(onRampAddress, zeroAddress),
       'CCIP lane to Ethereum is not configured on the router',
       ERROR_CODE.NOT_SUPPORTED,
     );
@@ -702,7 +792,7 @@ export class L2StakeModule extends LidoSDKModule {
       WNATIVE,
     ]);
     invariant(
-      poolAddress !== zeroAddress,
+      !isAddressEqual(poolAddress, zeroAddress),
       'CCIP has no pool for WETH on this lane',
       ERROR_CODE.NOT_SUPPORTED,
     );
@@ -746,7 +836,7 @@ export class L2StakeModule extends LidoSDKModule {
       ]),
     ]);
 
-    const isOraclePoolSet = oraclePoolAddress !== zeroAddress;
+    const isOraclePoolSet = !isAddressEqual(oraclePoolAddress, zeroAddress);
     const isOraclePoolPaused = isOraclePoolSet
       ? await getContract({
           address: oraclePoolAddress,
@@ -947,6 +1037,523 @@ export class L2StakeModule extends LidoSDKModule {
     );
     const { messageId, user, token, amount } = log.args;
     return { messageId, user, token, amount };
+  }
+
+  // ---------------------------------------------------------------------
+  // Slow stake status: the one transaction the user signed, followed across
+  // CCIP, the L1 receiver and the bridge back. Three sources, each with its
+  // own blind spot: the CCIP API knows transport and execution but not
+  // whether the stake inside worked; the receiver on L1 knows that; the
+  // L2 knows whether the wstETH arrived
+  // ---------------------------------------------------------------------
+
+  public getCcipApiBaseUrl(): string {
+    return this.ccipApi.baseUrl;
+  }
+
+  public getCcipExplorerMessageUrl(messageId: Hash): string {
+    return getCcipExplorerMessageUrl(messageId);
+  }
+
+  private getL1PublicClient(): PublicClient {
+    invariant(
+      this.l1PublicClient,
+      'Slow stake status needs an L1 public client',
+      ERROR_CODE.NOT_SUPPORTED,
+    );
+    return this.l1PublicClient;
+  }
+
+  // the receiver, from the sender's own routing entry
+  @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
+  public async getL1StakingReceiverAddress(): Promise<Address> {
+    const { receiver } = await this.getSlowStakeConfig();
+    const [address] = decodeAbiParameters([{ type: 'address' }], receiver);
+    return address;
+  }
+
+  @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
+  public async getL1StakingReceiverContract(): Promise<L1StakingReceiverContractType> {
+    return getContract({
+      address: await this.getL1StakingReceiverAddress(),
+      abi: L1_STAKING_RECEIVER_ABI,
+      client: this.getL1PublicClient(),
+    });
+  }
+
+  @Cache(CACHE_TIME_CONSTANT, ['core.chain.id'])
+  public async getL1WstethAddress(): Promise<Address> {
+    const receiver = await this.getL1StakingReceiverContract();
+    return this.lookup('l1', () => receiver.read.WSTETH());
+  }
+
+  // The user's sends on this L2, oldest first. Nothing stores them for the
+  // user: a cold start finds them in the sender's events
+  public async getSlowStakeSentEvents({
+    account,
+    fromBlock,
+    toBlock,
+  }: L2SlowStakeLookupProps): Promise<L2SlowStakeSent[]> {
+    const address = await this.getL2StakingReceiverContractAddress();
+    const logs = await this.getLogsChunked(this.core.publicClient, 'l2', {
+      address,
+      event: SLOW_STAKE_EVENT,
+      args: { user: account },
+      fromBlock,
+      toBlock,
+    });
+    return logs.map((log) => {
+      const { messageId, user, token, amount } = log.args;
+      invariant(
+        messageId && user && token && amount !== undefined,
+        'SlowStake event is missing a field',
+        ERROR_CODE.READ_ERROR,
+      );
+      return {
+        messageId,
+        user,
+        token,
+        amount,
+        sendTxHash: log.transactionHash,
+        sendBlockNumber: log.blockNumber,
+      };
+    });
+  }
+
+  // The user's sends on this L2 from the CCIP API: the lane's own list,
+  // filtered by the account that signed the send. No block range to pick
+  // and no log scan, but `origin` is the signer, so a smart account or a
+  // Safe is not found here: those need the log scan. Oldest first
+  public async getSlowStakeSentFromCcipApi(
+    props: L2SlowStakeApiLookupProps,
+  ): Promise<L2SlowStakeSent[]> {
+    const found = await this.findUserMessages(props);
+    return found.map(({ sent }) => sent);
+  }
+
+  // Statuses for the sends the CCIP API lists for the user; the messages
+  // already fetched are reused, so nothing is read twice
+  public async getSlowStakeStatusesFromCcipApi(
+    props: L2SlowStakeApiLookupProps,
+  ): Promise<L2SlowStakeStatus[]> {
+    const found = await this.findUserMessages(props);
+    const [first] = found;
+    if (!first) return [];
+    const mints = await this.getWstethMintsOnL2({
+      account: props.account,
+      fromBlock: first.sent.sendBlockNumber,
+    });
+    const statuses: L2SlowStakeStatus[] = [];
+    for (const { sent, message } of found) {
+      statuses.push(await this.resolveSlowStakeStatus(sent, mints, message));
+    }
+    return statuses;
+  }
+
+  private async findUserMessages({
+    account,
+    pageSize = 100,
+    maxPages = 10,
+  }: L2SlowStakeApiLookupProps): Promise<
+    { sent: L2SlowStakeSent; message: CcipMessage }[]
+  > {
+    const [sender, config, lane, { WNATIVE }] = await Promise.all([
+      this.getL2StakingReceiverContractAddress(),
+      this.getSlowStakeConfig(),
+      Promise.resolve(this.getSlowStakeLaneConfig()),
+      this.getReceiverConstants(),
+    ]);
+    const summaries = [];
+    let cursor: string | undefined;
+    for (let page = 0; page < maxPages; page += 1) {
+      const list = await this.lookup('ccip-api', () =>
+        this.ccipApi.listMessages({
+          sender,
+          sourceChainSelector: lane.sourceChainSelector,
+          destChainSelector: config.destChainSelector,
+          limit: pageSize,
+          cursor,
+        }),
+      );
+      summaries.push(
+        ...list.data.filter((entry) => isAddressEqual(entry.origin, account)),
+      );
+      if (!list.pagination.hasNextPage || !list.pagination.cursor) break;
+      cursor = list.pagination.cursor;
+    }
+    // the payload (the recipient and the amount) and the send block are on
+    // the message itself
+    const messages = await Promise.all(
+      summaries.map((entry) => this.fetchCcipMessage(entry.messageId)),
+    );
+    const found = messages.flatMap((message) => {
+      if (!message) return [];
+      const { recipient, amount } = decodeSlowStakeData(message.data);
+      return [
+        {
+          message,
+          sent: {
+            messageId: message.messageId,
+            user: recipient,
+            token: WNATIVE,
+            amount,
+            sendTxHash: message.sendTransactionHash,
+            sendBlockNumber: BigInt(message.sendBlockNumber),
+          },
+        },
+      ];
+    });
+    // the API lists newest first
+    return found.sort((a, b) =>
+      a.sent.sendBlockNumber < b.sent.sendBlockNumber ? -1 : 1,
+    );
+  }
+
+  // Every slow stake of the user in the block range, with where it is.
+  // The wstETH mints to the user are read once and claimed by the stakes in
+  // send order, so two stakes of one amount do not both claim one delivery
+  public async getSlowStakeStatuses(
+    props: L2SlowStakeLookupProps,
+  ): Promise<L2SlowStakeStatus[]> {
+    const sent = await this.getSlowStakeSentEvents(props);
+    const [first] = sent;
+    if (!first) return [];
+    const mints = await this.getWstethMintsOnL2({
+      account: props.account,
+      fromBlock: first.sendBlockNumber,
+      toBlock: props.toBlock,
+    });
+    const statuses: L2SlowStakeStatus[] = [];
+    for (const stake of sent) {
+      statuses.push(await this.resolveSlowStakeStatus(stake, mints));
+    }
+    return statuses;
+  }
+
+  public async getSlowStakeStatus(
+    sent: L2SlowStakeSent,
+  ): Promise<L2SlowStakeStatus> {
+    return this.resolveSlowStakeStatus(sent);
+  }
+
+  // By message id alone, e.g. one the user kept: the send is rebuilt from
+  // the API's copy of the message. Null while the API does not list it
+  public async getSlowStakeStatusByMessageId(
+    messageId: Hash,
+  ): Promise<L2SlowStakeStatus | null> {
+    const message = await this.fetchCcipMessage(messageId);
+    if (!message) return null;
+    invariant(
+      message.sourceNetworkInfo.chainId === this.core.chain.id,
+      `Message ${messageId} was sent from chain ${message.sourceNetworkInfo.chainId}, not ${this.core.chain.id}`,
+      ERROR_CODE.NOT_SUPPORTED,
+    );
+    const { recipient, amount } = decodeSlowStakeData(message.data);
+    const { WNATIVE } = await this.getReceiverConstants();
+    return this.resolveSlowStakeStatus(
+      {
+        messageId,
+        user: recipient,
+        token: WNATIVE,
+        amount,
+        sendTxHash: message.sendTransactionHash,
+        sendBlockNumber: BigInt(message.sendBlockNumber),
+      },
+      undefined,
+      message,
+    );
+  }
+
+  // The L1 transaction that retries a parked stake: permissionless, sent
+  // with an Ethereum wallet, paid by whoever sends it
+  public async retryFailedMessagePopulateTx(
+    failedMessage: L1FailedMessage,
+  ): Promise<{ to: Address; data: `0x${string}` }> {
+    return {
+      to: await this.getL1StakingReceiverAddress(),
+      data: encodeFunctionData({
+        abi: L1_STAKING_RECEIVER_ABI,
+        functionName: 'retryFailedMessage',
+        args: [failedMessage],
+      }),
+    };
+  }
+
+  private async resolveSlowStakeStatus(
+    sent: L2SlowStakeSent,
+    mints?: L2WstethMint[],
+    message?: CcipMessage | null,
+  ): Promise<L2SlowStakeStatus> {
+    const base = {
+      ...sent,
+      ccipExplorerUrl: getCcipExplorerMessageUrl(sent.messageId),
+    };
+    const ccip = message ?? (await this.fetchCcipMessage(sent.messageId));
+    if (!ccip) return { ...base, stage: L2_SLOW_STAKE_STAGE.sent };
+    if (ccip.status === CCIP_MESSAGE_STATUS.failed) {
+      return {
+        ...base,
+        stage: L2_SLOW_STAKE_STAGE.transportFailed,
+        ccipStatus: ccip.status,
+        readyForManualExecution: ccip.readyForManualExecution,
+      };
+    }
+    if (
+      ccip.status !== CCIP_MESSAGE_STATUS.success ||
+      !ccip.receiptTransactionHash
+    ) {
+      return {
+        ...base,
+        stage: L2_SLOW_STAKE_STAGE.inTransit,
+        ccipStatus: ccip.status,
+      };
+    }
+    // Executed on Ethereum: CCIP's success is the OffRamp's, not the
+    // stake's. The receiver's own verdict is in the same receipt
+    const outcome = await this.readL1Outcome(
+      sent.messageId,
+      ccip.receiptTransactionHash,
+    );
+    return outcome.kind === 'failed'
+      ? this.resolveParked(base, outcome, mints)
+      : this.resolveStaked(base, outcome, mints);
+  }
+
+  // A failed stake parks the funds at the receiver until someone retries
+  // it, or the DAO recovers them. Both clear the failed-message slot, so a
+  // clear slot after a failure means one of the two happened: the events
+  // say which
+  private async resolveParked(
+    base: L2SlowStakeSent & { ccipExplorerUrl: string },
+    outcome: Extract<L1Outcome, { kind: 'failed' }>,
+    mints?: L2WstethMint[],
+  ): Promise<L2SlowStakeStatus> {
+    const receiver = await this.getL1StakingReceiverContract();
+    const failedHash = await this.lookup('l1', () =>
+      receiver.read.getFailedMessageHash([base.messageId]),
+    );
+    if (failedHash !== zeroHash) {
+      return {
+        ...base,
+        stage: L2_SLOW_STAKE_STAGE.parked,
+        l1TxHash: outcome.l1TxHash,
+        l1BlockNumber: outcome.l1BlockNumber,
+        failedMessage: outcome.failedMessage,
+      };
+    }
+    const l1 = this.getL1PublicClient();
+    const recovery = {
+      address: receiver.address,
+      args: { messageId: base.messageId },
+      fromBlock: outcome.l1BlockNumber,
+    };
+    const [tokensRecovered, messageRecovered] = await Promise.all([
+      this.getLogsChunked(l1, 'l1', {
+        ...recovery,
+        event: TOKENS_RECOVERED_EVENT,
+      }),
+      this.getLogsChunked(l1, 'l1', {
+        ...recovery,
+        event: MESSAGE_RECOVERED_EVENT,
+      }),
+    ]);
+    const [recoveredTokens] = tokensRecovered;
+    if (recoveredTokens) {
+      return {
+        ...base,
+        stage: L2_SLOW_STAKE_STAGE.tokensRecovered,
+        l1TxHash: recoveredTokens.transactionHash,
+      };
+    }
+    const [retried] = messageRecovered;
+    if (retried) {
+      const retryOutcome = await this.readL1Outcome(
+        base.messageId,
+        retried.transactionHash,
+      );
+      if (retryOutcome.kind === 'succeeded')
+        return this.resolveStaked(base, retryOutcome, mints);
+    }
+    throw new L2SlowStakeLookupError(
+      'l1',
+      'The failed message slot is clear, but no recovery event was found in the range',
+      { messageId: base.messageId },
+    );
+  }
+
+  // Staked: the wstETH is in the bridge back. Delivered once a mint of that
+  // amount to the user shows on the L2 after the send; the matched mint is
+  // taken out of the list handed in, so a later stake cannot claim it
+  private async resolveStaked(
+    base: L2SlowStakeSent & { ccipExplorerUrl: string },
+    outcome: Extract<L1Outcome, { kind: 'succeeded' }>,
+    mints?: L2WstethMint[],
+  ): Promise<L2SlowStakeStatus> {
+    const candidates =
+      mints ??
+      (await this.getWstethMintsOnL2({
+        account: base.user,
+        fromBlock: base.sendBlockNumber,
+      }));
+    const index = candidates.findIndex(
+      (mint) => mint.value === outcome.stakedAmount,
+    );
+    if (index === -1) {
+      return {
+        ...base,
+        stage: L2_SLOW_STAKE_STAGE.staked,
+        l1TxHash: outcome.l1TxHash,
+        l1BlockNumber: outcome.l1BlockNumber,
+        stakedAmount: outcome.stakedAmount,
+        bridgeMessageId: outcome.bridgeMessageId,
+      };
+    }
+    const [mint] = candidates.splice(index, 1);
+    return {
+      ...base,
+      stage: L2_SLOW_STAKE_STAGE.delivered,
+      l1TxHash: outcome.l1TxHash,
+      stakedAmount: outcome.stakedAmount,
+      l2TxHash: mint.transactionHash,
+    };
+  }
+
+  // The receiver's verdict and the amount it staked, from the receipt of
+  // the L1 execution (or of a retry). The adapters run by delegatecall, so
+  // the bridge's own event is emitted from the receiver too
+  private async readL1Outcome(
+    messageId: Hash,
+    l1TxHash: Hash,
+  ): Promise<L1Outcome> {
+    const l1 = this.getL1PublicClient();
+    const [receiverAddress, wsteth] = await Promise.all([
+      this.getL1StakingReceiverAddress(),
+      this.getL1WstethAddress(),
+    ]);
+    const receipt = await this.lookup('l1', () =>
+      l1.getTransactionReceipt({ hash: l1TxHash }),
+    );
+    const receiverLogs = parseEventLogs({
+      abi: L1_STAKING_RECEIVER_ABI,
+      logs: receipt.logs.filter(isFrom(receiverAddress)),
+    });
+    const verdict = receiverLogs.find(
+      (log) =>
+        (log.eventName === 'MessageSucceeded' ||
+          log.eventName === 'MessageFailed' ||
+          log.eventName === 'MessageRecovered') &&
+        log.args.messageId === messageId,
+    );
+    invariant(
+      verdict,
+      `The receiver reported nothing for message ${messageId} in ${l1TxHash}`,
+      ERROR_CODE.READ_ERROR,
+    );
+    if (verdict.eventName === 'MessageFailed') {
+      return {
+        kind: 'failed',
+        l1TxHash,
+        l1BlockNumber: receipt.blockNumber,
+        failedMessage: verdict.args.message,
+      };
+    }
+    const handover = parseEventLogs({
+      abi: erc20Abi,
+      eventName: 'Transfer',
+      logs: receipt.logs.filter(isFrom(wsteth)),
+    }).find((log) => isAddressEqual(log.args.from, receiverAddress));
+    invariant(
+      handover,
+      `No wstETH left the receiver for message ${messageId} in ${l1TxHash}`,
+      ERROR_CODE.READ_ERROR,
+    );
+    const bridge = receiverLogs.find(
+      (log) => log.eventName === 'ArbitrumL1toL2MessageSent',
+    );
+    return {
+      kind: 'succeeded',
+      l1TxHash,
+      l1BlockNumber: receipt.blockNumber,
+      stakedAmount: handover.args.value,
+      bridgeMessageId:
+        bridge?.eventName === 'ArbitrumL1toL2MessageSent'
+          ? bridge.args.messageId
+          : undefined,
+    };
+  }
+
+  private async getWstethMintsOnL2({
+    account,
+    fromBlock,
+    toBlock,
+  }: L2SlowStakeLookupProps): Promise<L2WstethMint[]> {
+    const address = await this.getL2StakingWstethContractAddress();
+    const logs = await this.getLogsChunked(this.core.publicClient, 'l2', {
+      address,
+      event: TRANSFER_EVENT,
+      args: { from: zeroAddress, to: account },
+      fromBlock,
+      toBlock,
+    });
+    return logs.map((log) => ({
+      value: log.args.value ?? 0n,
+      transactionHash: log.transactionHash,
+      blockNumber: log.blockNumber,
+    }));
+  }
+
+  private async fetchCcipMessage(messageId: Hash): Promise<CcipMessage | null> {
+    return this.lookup(
+      'ccip-api',
+      () => this.ccipApi.getMessage(messageId),
+      messageId,
+    );
+  }
+
+  // Logs over a range wider than the RPC in front serves, in its chunks
+  private async getLogsChunked<TEvent extends AbiEvent>(
+    client: PublicClient,
+    source: L2SlowStakeLookupSource,
+    { address, event, args, fromBlock, toBlock }: ChunkedLogsParams<TEvent>,
+  ): Promise<GetLogsReturnType<TEvent>> {
+    const latest =
+      toBlock ?? (await this.lookup(source, () => client.getBlockNumber()));
+    const logs: GetLogsReturnType<TEvent> = [];
+    for (let from = fromBlock; from <= latest; from += this.logsBlockRange) {
+      const to =
+        from + this.logsBlockRange - 1n < latest
+          ? from + this.logsBlockRange - 1n
+          : latest;
+      const chunk = await this.lookup(source, () =>
+        client.getLogs({
+          address,
+          event,
+          args,
+          fromBlock: from,
+          toBlock: to,
+        } as GetLogsParameters<TEvent>),
+      );
+      logs.push(...(chunk as GetLogsReturnType<TEvent>));
+    }
+    return logs;
+  }
+
+  // a source that does not answer is a lookup failure, not a stake status
+  private async lookup<T>(
+    source: L2SlowStakeLookupSource,
+    read: () => Promise<T>,
+    messageId?: Hash,
+  ): Promise<T> {
+    try {
+      return await read();
+    } catch (error) {
+      if (error instanceof L2SlowStakeLookupError) throw error;
+      throw new L2SlowStakeLookupError(
+        source,
+        `Slow stake status read failed (${source})`,
+        { messageId, cause: error },
+      );
+    }
   }
 
   private async parseSlowStakeProps<

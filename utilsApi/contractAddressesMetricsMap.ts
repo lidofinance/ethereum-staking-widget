@@ -83,6 +83,7 @@ import {
   CCIP_ONRAMP_ABI,
   CCIP_ROUTER_ABI,
   CCIP_TOKEN_POOL_ABI,
+  L1_STAKING_RECEIVER_ABI,
   L2_STAKING_ORACLE_FEED_ABI,
   L2_STAKING_ORACLE_POOL_ABI,
   L2_STAKING_RECEIVER_ABI,
@@ -104,6 +105,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.L2CcipRouter]: CCIP_ROUTER_ABI,
   [CONTRACT_NAMES.L2CcipOnRamp]: CCIP_ONRAMP_ABI,
   [CONTRACT_NAMES.L2CcipWethPool]: CCIP_TOKEN_POOL_ABI,
+  [CONTRACT_NAMES.L1stakingReceiver]: L1_STAKING_RECEIVER_ABI,
   [CONTRACT_NAMES.L2GasPriceOracle]: opGasPriceOracleAbi,
   // SI contracts
   [CONTRACT_NAMES.wstethReferralStaker]: WstethReferralStakerABI,
@@ -202,6 +204,9 @@ const CONTRACTS_WITH_EVENTS = [
   CONTRACT_NAMES.wsteth,
   CONTRACT_NAMES.L2stETH,
   CONTRACT_NAMES.L2wstETH,
+  // a slow stake's status is read from its events on both sides
+  CONTRACT_NAMES.L2stakingReceiver,
+  CONTRACT_NAMES.L1stakingReceiver,
   CONTRACT_NAMES.weth,
   CONTRACT_NAMES.usde,
   // vaults are tokens, have transfer/approval events

@@ -59,6 +59,9 @@ export type L2SlowStakeReturnFee =
   | { bridge: 'linea' };
 
 export type L2SlowStakeLaneConfig = {
+  // the lane's own CCIP selector, as its OnRamp reports it; the source
+  // side of every message it sends
+  sourceChainSelector: bigint;
   // L1 gas committed for the receiver's ccipReceive: unwrap, stake, wrap,
   // bridge. Bought, not refunded; under-sizing it parks the stake on L1
   gasLimit: number;
@@ -75,14 +78,17 @@ export const LIDO_L2_SLOW_STAKE_LANES: Partial<
   Record<number, L2SlowStakeLaneConfig>
 > = {
   [CHAINS.Optimism]: {
+    sourceChainSelector: 3734403246176062136n,
     gasLimit: 1_000_000,
     returnFee: { bridge: 'op-stack', l2Gas: 100_000 },
   },
   [CHAINS.Base]: {
+    sourceChainSelector: 15971525489660198786n,
     gasLimit: 1_000_000,
     returnFee: { bridge: 'op-stack', l2Gas: 100_000 },
   },
   [CHAINS.Arbitrum]: {
+    sourceChainSelector: 4949039107694359620n,
     gasLimit: 1_000_000,
     returnFee: {
       bridge: 'arbitrum',
@@ -92,7 +98,32 @@ export const LIDO_L2_SLOW_STAKE_LANES: Partial<
     },
   },
   [CHAINS.Linea]: {
+    sourceChainSelector: 4627098889531055414n,
     gasLimit: 500_000,
     returnFee: { bridge: 'linea' },
   },
 };
+
+// Where a slow stake is, from the one transaction the user signed to the
+// wstETH on the L2. The two failure stages are the ones a user can act on
+// (a parked stake is retried on L1, permissionlessly); tokens recovered by
+// the DAO is final
+export const L2_SLOW_STAKE_STAGE = {
+  // the L2 transaction is mined; CCIP has not listed the message yet
+  sent: 'sent',
+  // listed by CCIP, not executed on Ethereum yet
+  inTransit: 'in_transit',
+  // CCIP could not execute it on Ethereum; manual execution may be open
+  transportFailed: 'transport_failed',
+  // executed, but the stake inside failed: the funds sit at the receiver
+  parked: 'parked',
+  // the DAO moved the parked funds out; no wstETH will arrive
+  tokensRecovered: 'tokens_recovered',
+  // staked on Ethereum, wstETH handed to the bridge back to the L2
+  staked: 'staked',
+  // wstETH credited to the user on the L2
+  delivered: 'delivered',
+} as const;
+
+// the widest eth_getLogs block range the widget's RPC proxy serves
+export const LIDO_L2_LOGS_BLOCK_RANGE = 20_000;
