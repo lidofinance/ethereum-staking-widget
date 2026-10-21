@@ -23,5 +23,7 @@ export type {
   L2SlowStakeStatus,
   L2SlowStakeLookupProps,
   L2SlowStakeApiLookupProps,
+  L2SlowStakeLatestProps,
+  L2SlowStakeLatest,
   L1FailedMessage,
 } from './types';

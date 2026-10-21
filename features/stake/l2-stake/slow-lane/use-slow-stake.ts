@@ -28,6 +28,7 @@ import { formatBalance } from 'utils/formatBalance';
 import { useTrackStakeEvent } from '../hooks/use-track-event';
 import { useSlowStakeLimits } from './use-slow-stake-limits';
 import { useTxModalStagesL2SlowStake } from './use-tx-modal-stages-slow-stake';
+import { addPendingSlowStake } from './slow-stake-pending-store';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -50,6 +51,8 @@ const STEP = { approve: 'approve', stake: 'stake' } as const;
 type SlowStakeData = {
   amount: bigint;
   address: Address;
+  // the lane's WETH, which the stake is recorded under whatever was staked
+  wethAddress: Address;
   // The sender pulls WETH, so it needs an allowance first. Read here rather
   // than taken from the form state, so a retry after a confirmed approval
   // never approves again
@@ -116,6 +119,7 @@ export const useL2SlowStake = ({
       let fee: L2SlowStakeFee | undefined;
       // the handle of the sent stake, from the receipt
       let messageId: Hash | undefined;
+      let sendBlockNumber: bigint | undefined;
 
       const { isSuccess } = await txFlow<SlowStakeData>({
         prepare: async () => {
@@ -124,6 +128,7 @@ export const useL2SlowStake = ({
           return {
             amount,
             address,
+            wethAddress: await l2Stake.getWethContractAddress(),
             needsApprove:
               isWeth && (await l2Stake.getWethAllowance(address)) < amount,
           };
@@ -163,13 +168,12 @@ export const useL2SlowStake = ({
           }
           await verifyLimits(data.amount);
           fee = await verifyQuote(data.amount);
-          const { result } = await l2Stake.slowStake({
+          await l2Stake.slowStake({
             amount: data.amount,
             token,
             maxFee: fee.maxFee,
             callback: txStagesCallback,
           });
-          messageId = result?.messageId;
         },
         onSign: async ({ payload, ctx: { stepId, data } }) => {
           if (stepId === STEP.approve) {
@@ -184,12 +188,42 @@ export const useL2SlowStake = ({
                 : LIDO_L2_SLOW_STAKE_ETH_GAS_LIMIT_FALLBACK),
           );
         },
+        // The id is read from the receipt here, before the success stage,
+        // which the SDK reports from inside the same call. An AA batch has
+        // no receipt of its own to read: its stake waits for the API
+        onConfirmation: async ({ payload, ctx: { stepId } }) => {
+          if (stepId !== STEP.stake || !payload) return;
+          try {
+            messageId = (await l2Stake.decodeSlowStakeEvents(payload))
+              .messageId;
+            sendBlockNumber = payload.blockNumber;
+          } catch (error) {
+            console.warn(
+              '[slow-stake] message id not found in the receipt',
+              error,
+            );
+          }
+        },
         onReceipt: ({ txHashOrCallId, ctx: { stepId, data } }) =>
           stepId === STEP.approve
             ? txModalStages.pendingApproval(data.amount, txHashOrCallId)
             : txModalStages.pending(data.amount, token, txHashOrCallId, isAA),
         onSuccess: async ({ txHash, ctx: { stepId, data } }) => {
           if (stepId !== STEP.stake) return;
+          // the stake is known here before the CCIP API lists it: kept for
+          // the list of recent stakes to show at once. An AA batch yields
+          // no receipt to read the id from, so it waits for the API
+          if (messageId) {
+            addPendingSlowStake({
+              messageId,
+              chainId,
+              address: data.address,
+              token: data.wethAddress,
+              amount: data.amount,
+              sendTxHash: txHash,
+              sendBlockNumber,
+            });
+          }
           await onConfirm?.();
           txModalStages.success(
             data.amount,

@@ -685,3 +685,96 @@ describe('getSlowStakeSentFromCcipApi', () => {
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('getLatestSlowStakeStatuses', () => {
+  const THIRD_MESSAGE_ID: Hash =
+    '0x5555555555555555555555555555555555555555555555555555555555555555';
+  const sends = [
+    slowStakeLog(MESSAGE_ID, SEND_BLOCK),
+    slowStakeLog(OTHER_MESSAGE_ID, SEND_BLOCK + 100n),
+    slowStakeLog(THIRD_MESSAGE_ID, SEND_BLOCK + 200n),
+  ];
+  const api = () =>
+    ccipApi({
+      [MESSAGE_ID]: ccipMessage('COMMITTED'),
+      [OTHER_MESSAGE_ID]: ccipMessage('COMMITTED', {
+        messageId: OTHER_MESSAGE_ID,
+      }),
+      [THIRD_MESSAGE_ID]: ccipMessage('COMMITTED', {
+        messageId: THIRD_MESSAGE_ID,
+      }),
+    });
+
+  it('resolves only the newest sends, newest first, and says more exist', async () => {
+    const fetcher = api();
+    const { l2Stake } = createModule(CHAINS.Base, {
+      fetcher,
+      blockNumber: SEND_BLOCK + 300n,
+      logs: ({ address }) => (address === SENDER ? sends : []),
+    });
+    const latest = await l2Stake.getLatestSlowStakeStatuses({
+      account: ACCOUNT,
+      fromBlock: SEND_BLOCK,
+      limit: 2,
+    });
+    expect(latest.statuses.map((status) => status.messageId)).toEqual([
+      THIRD_MESSAGE_ID,
+      OTHER_MESSAGE_ID,
+    ]);
+    expect(latest.hasMore).toBe(true);
+    // the oldest send is listed, never looked up
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it('reports no more once the limit covers every send', async () => {
+    const { l2Stake } = createModule(CHAINS.Base, {
+      fetcher: api(),
+      blockNumber: SEND_BLOCK + 300n,
+      logs: ({ address }) => (address === SENDER ? sends : []),
+    });
+    const latest = await l2Stake.getLatestSlowStakeStatuses({
+      account: ACCOUNT,
+      fromBlock: SEND_BLOCK,
+      limit: 3,
+    });
+    expect(latest.statuses).toHaveLength(3);
+    expect(latest.hasMore).toBe(false);
+  });
+
+  it('is empty without sends', async () => {
+    const { l2Stake } = createModule(CHAINS.Base, { fetcher: api() });
+    await expect(
+      l2Stake.getLatestSlowStakeStatuses({ account: ACCOUNT, fromBlock: 0n }),
+    ).resolves.toEqual({ statuses: [], hasMore: false });
+  });
+
+  it('bounds the API lookup the same way', async () => {
+    const fetcher = ccipApi(
+      {
+        [MESSAGE_ID]: ccipMessage('COMMITTED'),
+        [OTHER_MESSAGE_ID]: ccipMessage('COMMITTED', {
+          messageId: OTHER_MESSAGE_ID,
+          sendBlockNumber: Number(SEND_BLOCK) + 100,
+        }),
+      },
+      {
+        first: {
+          data: [
+            summary(OTHER_MESSAGE_ID, ACCOUNT),
+            summary(MESSAGE_ID, ACCOUNT),
+          ],
+          pagination: { limit: 100, hasNextPage: false, cursor: null },
+        },
+      },
+    );
+    const { l2Stake } = createModule(CHAINS.Base, { fetcher });
+    const latest = await l2Stake.getLatestSlowStakeStatusesFromCcipApi({
+      account: ACCOUNT,
+      limit: 1,
+    });
+    expect(latest.statuses.map((status) => status.messageId)).toEqual([
+      OTHER_MESSAGE_ID,
+    ]);
+    expect(latest.hasMore).toBe(true);
+  });
+});

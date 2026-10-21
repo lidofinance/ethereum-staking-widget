@@ -1,6 +1,7 @@
 import {
   decodeFunctionData,
   encodeAbiParameters,
+  encodeEventTopics,
   getAddress,
   zeroAddress,
   type Address,
@@ -11,7 +12,10 @@ import {
   CHAINS,
   LIDO_L2_CONTRACT_ADDRESSES,
 } from '@lidofinance/lido-ethereum-sdk/common';
-import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
+import {
+  TransactionCallbackStage,
+  type LidoSDKCore,
+} from '@lidofinance/lido-ethereum-sdk/core';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
 import { L2StakeModule } from 'modules/l2-staking/l2-staking-module';
@@ -44,6 +48,8 @@ const L1_RECEIVER_BYTES = encodeAbiParameters(
   ['0x6F357d53d6bE3238180316BA5F8f11467e164588'],
 );
 const RECEIVER = LIDO_L2_CONTRACT_ADDRESSES[CHAINS.Base]?.stakeReceiver;
+const MESSAGE_ID: Hash =
+  '0xf50ff3791ba99db683b51a711436712b130ace8cb0f42789850b5f3cdc56cd5e';
 const TX_HASH: Hash =
   '0x1111111111111111111111111111111111111111111111111111111111111111';
 const CALL_ID = '0xcall';
@@ -111,6 +117,10 @@ vi.mock('modules/web3', async () => {
     applyRoundUpTxParameter: (value: bigint) => value,
   };
 });
+const pendingStore = vi.hoisted(() => ({ add: vi.fn() }));
+vi.mock('../slow-stake-pending-store', () => ({
+  addPendingSlowStake: pendingStore.add,
+}));
 vi.mock('../use-tx-modal-stages-slow-stake', () => ({
   useTxModalStagesL2SlowStake: () => ({ txModalStages: state.txModalStages }),
 }));
@@ -241,6 +251,72 @@ describe('useL2SlowStake', () => {
       undefined,
     );
     expect(state.txModalStages.failed).not.toHaveBeenCalled();
+  });
+
+  it('records the sent stake by its message id for the list', async () => {
+    const perform = legacyPerformTransaction('success');
+    // the SDK confirms with the receipt, whose SlowStake log carries the id
+    const slowStakeLog = {
+      address: RECEIVER,
+      topics: encodeEventTopics({
+        abi: L2_STAKING_RECEIVER_ABI,
+        eventName: 'SlowStake',
+        args: {
+          user: ACCOUNT,
+          destChainSelector: CCIP_ETHEREUM_CHAIN_SELECTOR,
+          token: WETH,
+        },
+      }),
+      data: encodeAbiParameters(
+        [{ type: 'bytes32' }, { type: 'uint256' }],
+        [MESSAGE_ID, AMOUNT],
+      ),
+    };
+    const withLogs = vi.fn(async (props: Parameters<typeof perform>[0]) =>
+      perform({
+        ...props,
+        callback: (args) =>
+          props.callback(
+            args.stage === TransactionCallbackStage.CONFIRMATION
+              ? {
+                  ...args,
+                  payload: {
+                    ...args.payload,
+                    blockNumber: 42n,
+                    logs: [slowStakeLog],
+                  } as never,
+                }
+              : args,
+          ),
+      }),
+    );
+    createModule(withLogs);
+
+    await expect(stake(ETH)).resolves.toBe(true);
+
+    expect(state.txModalStages.success).toHaveBeenCalledWith(
+      AMOUNT,
+      ETH,
+      'Base',
+      TX_HASH,
+      MESSAGE_ID,
+    );
+
+    expect(pendingStore.add).toHaveBeenCalledWith({
+      messageId: MESSAGE_ID,
+      chainId: CHAINS.Base,
+      address: ACCOUNT,
+      token: WETH,
+      amount: AMOUNT,
+      sendTxHash: TX_HASH,
+      sendBlockNumber: 42n,
+    });
+  });
+
+  it('records nothing without a receipt to read the id from', async () => {
+    createModule(legacyPerformTransaction('success'));
+    await stake(ETH);
+    expect(pendingStore.add).not.toHaveBeenCalled();
   });
 
   it('signs the live cap when the quote moved within the shown headroom', async () => {

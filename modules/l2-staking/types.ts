@@ -242,3 +242,15 @@ export type L2SlowStakeApiLookupProps = {
   pageSize?: number;
   maxPages?: number;
 };
+
+export type L2SlowStakeLatestProps = {
+  // how many of the newest sends get their status resolved
+  limit?: number;
+};
+
+// The newest sends with their statuses, newest first, and whether older
+// sends exist beyond the limit
+export type L2SlowStakeLatest = {
+  statuses: L2SlowStakeStatus[];
+  hasMore: boolean;
+};

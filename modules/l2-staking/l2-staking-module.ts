@@ -103,6 +103,8 @@ import type {
   L2SlowStakeStatus,
   L2SlowStakeLookupProps,
   L2SlowStakeApiLookupProps,
+  L2SlowStakeLatestProps,
+  L2SlowStakeLatest,
 } from './types';
 
 type TokenBucket = {
@@ -1136,18 +1138,69 @@ export class L2StakeModule extends LidoSDKModule {
   public async getSlowStakeStatusesFromCcipApi(
     props: L2SlowStakeApiLookupProps,
   ): Promise<L2SlowStakeStatus[]> {
-    const found = await this.findUserMessages(props);
-    const [first] = found;
-    if (!first) return [];
+    const { statuses } = await this.resolveLatest(
+      await this.findUserMessages(props),
+      props.account,
+    );
+    return statuses.reverse();
+  }
+
+  // The user's newest sends from the CCIP API with their statuses, newest
+  // first, resolved only up to the limit: what a list of recent stakes shows
+  public async getLatestSlowStakeStatusesFromCcipApi({
+    limit,
+    ...props
+  }: L2SlowStakeApiLookupProps &
+    L2SlowStakeLatestProps): Promise<L2SlowStakeLatest> {
+    return this.resolveLatest(
+      await this.findUserMessages(props),
+      props.account,
+      limit,
+    );
+  }
+
+  // The same over the sender's events, for an account the API cannot
+  // attribute (a smart account's sends are signed by its bundler)
+  public async getLatestSlowStakeStatuses({
+    limit,
+    ...props
+  }: L2SlowStakeLookupProps &
+    L2SlowStakeLatestProps): Promise<L2SlowStakeLatest> {
+    const sent = await this.getSlowStakeSentEvents(props);
+    return this.resolveLatest(
+      sent.map((entry) => ({ sent: entry })),
+      props.account,
+      limit,
+      props.toBlock,
+    );
+  }
+
+  // Resolves the newest `limit` sends of an oldest-first list, newest
+  // first in the result. The wstETH mints are read once from the oldest
+  // resolved send and claimed in send order, so two stakes of one amount
+  // do not both claim one delivery
+  private async resolveLatest(
+    found: { sent: L2SlowStakeSent; message?: CcipMessage }[],
+    account: Address,
+    limit = found.length,
+    toBlock?: bigint,
+  ): Promise<L2SlowStakeLatest> {
+    const selected = limit > 0 ? found.slice(-limit) : [];
+    const [first] = selected;
+    if (!first) return { statuses: [], hasMore: found.length > 0 };
     const mints = await this.getWstethMintsOnL2({
-      account: props.account,
+      account,
       fromBlock: first.sent.sendBlockNumber,
+      toBlock,
     });
     const statuses: L2SlowStakeStatus[] = [];
-    for (const { sent, message } of found) {
+    for (const { sent, message } of selected) {
       statuses.push(await this.resolveSlowStakeStatus(sent, mints, message));
     }
-    return statuses;
+    return {
+      statuses: statuses.reverse(),
+      hasMore: found.length > selected.length,
+    };
   }
 
   private async findUserMessages({

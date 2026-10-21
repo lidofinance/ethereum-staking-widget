@@ -127,3 +127,16 @@ export const L2_SLOW_STAKE_STAGE = {
 
 // the widest eth_getLogs block range the widget's RPC proxy serves
 export const LIDO_L2_LOGS_BLOCK_RANGE = 20_000;
+
+// How far back the sender's events are scanned for an account the CCIP API
+// cannot attribute: about a day of blocks per lane, at 2 s blocks on the
+// OP-stack lanes and Linea, 0.25 s on Arbitrum. A chunked scan, one call
+// per logs block range
+export const LIDO_L2_SLOW_STAKE_LOOKBACK_BLOCKS: Partial<
+  Record<number, bigint>
+> = {
+  [CHAINS.Optimism]: 43_200n,
+  [CHAINS.Base]: 43_200n,
+  [CHAINS.Linea]: 43_200n,
+  [CHAINS.Arbitrum]: 345_600n,
+};
