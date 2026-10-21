@@ -8,7 +8,7 @@ import baseNetwork from 'networks/l2/base.json';
 import sellTokenList from '../../../../public/token-lists/swap-dex-sell-tokenlist.json';
 import buyTokenList from '../../../../public/token-lists/swap-dex-buy-tokenlist.json';
 
-import { COWSWAP_NETWORKS } from 'shared/dexes/cowswap';
+import { COWSWAP_NETWORKS } from 'modules/dexes/cowswap';
 
 import { SWAP_COWSWAP_PROFILE as profile } from '../consts';
 

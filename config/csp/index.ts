@@ -10,7 +10,7 @@ import { config } from '../get-config';
 import { secretConfig } from '../get-secret-config';
 // global import breaks HMR
 import { IPFS_BASE_SCRIPT_HASH } from 'features/ipfs/ipfs-base-script';
-import { COWSWAP_BASE_URL } from 'shared/dexes/cowswap/consts';
+import { COWSWAP_BASE_URL } from 'modules/dexes/cowswap/consts';
 
 // The policy itself is plain JS under scripts/csp: the header is set by
 // server.mjs on every HTML response (the pages are static, so nothing in the

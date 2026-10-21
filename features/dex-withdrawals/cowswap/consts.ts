@@ -2,7 +2,7 @@ import { mainnet } from 'viem/chains';
 
 import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
-import { COWSWAP_NETWORKS, createCowswapProfile } from 'shared/dexes/cowswap';
+import { COWSWAP_NETWORKS, createCowswapProfile } from 'modules/dexes/cowswap';
 
 export const WITHDRAWALS_COWSWAP_PROFILE = createCowswapProfile({
   appCode: 'Lido dApp Staking',

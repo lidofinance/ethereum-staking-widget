@@ -1,4 +1,4 @@
-import { CowswapDex } from 'shared/dexes/cowswap';
+import { CowswapDex } from 'modules/dexes/cowswap';
 import { useRefetchBalances } from 'features/dex-withdrawals/cowswap';
 
 import { SWAP_COWSWAP_PROFILE } from './cowswap';

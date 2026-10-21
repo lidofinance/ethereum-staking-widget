@@ -33,7 +33,7 @@ import {
   CowEthFlowAbi,
   CowSettlementAbi,
   CowVaultRelayerAbi,
-} from 'shared/dexes/cowswap';
+} from 'modules/dexes/cowswap';
 import { opGasPriceOracleAbi } from 'abi/op-gas-price-oracle-abi';
 // Tokens ABIs
 import { wethABI } from 'abi/weth-abi';

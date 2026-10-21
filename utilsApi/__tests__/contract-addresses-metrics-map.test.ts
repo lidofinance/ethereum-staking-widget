@@ -10,7 +10,7 @@ import { SWAP_COWSWAP_PROFILE } from 'features/swap/cowswap';
 import {
   CHAINLINK_FEEDS,
   WSTETH_ADDRESS,
-} from 'shared/dexes/cowswap/guards/oracles/feeds';
+} from 'modules/dexes/cowswap/guards/oracles/feeds';
 
 import {
   getMetricContractAbi,

@@ -4,7 +4,7 @@ import {
   COWSWAP_NETWORKS,
   createCowswapProfile,
   type CowswapToken,
-} from 'shared/dexes/cowswap';
+} from 'modules/dexes/cowswap';
 
 // Any-to-any: every token is listed on both sides; ETH is sold through EthFlow
 const SWAP_TOKENS: CowswapToken[] = [

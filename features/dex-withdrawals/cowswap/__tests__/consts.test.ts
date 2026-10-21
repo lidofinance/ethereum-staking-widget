@@ -5,7 +5,7 @@ import { mainnet, sepolia } from 'viem/chains';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import mainnetNetwork from 'networks/mainnet.json';
 
-import { TEST_PROFILE } from 'shared/dexes/cowswap/guards/tx/__tests__/fixtures';
+import { TEST_PROFILE } from 'modules/dexes/cowswap/guards/tx/__tests__/fixtures';
 
 import { WITHDRAWALS_COWSWAP_PROFILE as profile } from '../consts';
 
