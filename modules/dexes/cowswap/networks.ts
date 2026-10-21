@@ -37,6 +37,8 @@ const TOKEN_KEYS: readonly DexTokenContractKey[] = [
   'lbtc',
   'cbeth',
   'susde',
+  'reth',
+  'weeth',
 ];
 
 type NetworkContracts = Record<string, string | undefined>;

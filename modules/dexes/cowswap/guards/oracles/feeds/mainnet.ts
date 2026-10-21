@@ -40,7 +40,9 @@ export type ChainlinkFeedKey =
   | 'TBTC_USD'
   | 'LBTC_BTC'
   | 'CBETH_ETH'
-  | 'SUSDE_USD';
+  | 'SUSDE_USD'
+  | 'RETH_ETH'
+  | 'WEETH_ETH';
 
 export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
   ETH_USD: {
@@ -168,16 +170,36 @@ export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
     maxStaleness: 87000,
     decimals: 8,
   },
+  RETH_ETH: {
+    address: c.aggregatorRethEthPriceFeed,
+    maxStaleness: 87000,
+    decimals: 18,
+  },
+  WEETH_ETH: {
+    address: c.aggregatorWeethEthPriceFeed,
+    maxStaleness: 87000,
+    decimals: 18,
+  },
 };
 
 // Token USD price as a product of feeds, e.g. LDO/ETH × ETH/USD
 export type OraclePriceKey =
-  | Exclude<ChainlinkFeedKey, 'LDO_ETH' | 'WBTC_BTC' | 'LBTC_BTC' | 'CBETH_ETH'>
+  | Exclude<
+      ChainlinkFeedKey,
+      | 'LDO_ETH'
+      | 'WBTC_BTC'
+      | 'LBTC_BTC'
+      | 'CBETH_ETH'
+      | 'RETH_ETH'
+      | 'WEETH_ETH'
+    >
   | 'WSTETH_USD'
   | 'LDO_USD'
   | 'WBTC_USD'
   | 'LBTC_USD'
-  | 'CBETH_USD';
+  | 'CBETH_USD'
+  | 'RETH_USD'
+  | 'WEETH_USD';
 
 export const ORACLE_PRICES: Record<
   OraclePriceKey,
@@ -210,6 +232,8 @@ export const ORACLE_PRICES: Record<
   LBTC_USD: ['LBTC_BTC', 'BTC_USD'],
   CBETH_USD: ['CBETH_ETH', 'ETH_USD'],
   SUSDE_USD: ['SUSDE_USD'],
+  RETH_USD: ['RETH_ETH', 'ETH_USD'],
+  WEETH_USD: ['WEETH_ETH', 'ETH_USD'],
 };
 
 // Price key that applies the wstETH rate, on any network
@@ -279,4 +303,7 @@ export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
   CBETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
   // value-accruing, ≈ 1.25 USD now
   SUSDE_USD: { min: CHAINLINK_SCALE_MIN, max: 3n * CHAINLINK_SCALE },
+  // 18 decimals: 1–2 ETH, the rates only grow (≈ 1.17 and 1.11 now)
+  RETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
+  WEETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
 };

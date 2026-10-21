@@ -36,6 +36,8 @@
     "lbtc": "0x8236a87084f8B84306f72007F36F2618A5634494",
     "cbeth": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704",
     "susde": "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
+    "reth": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+    "weeth": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
 
     "aggregatorEthUsdPriceFeed": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
     "aggregatorStEthUsdPriceFeed": "0xcfe54b5cd566ab89272946f602d76ea879cab4a8",
@@ -62,6 +64,8 @@
     "aggregatorLbtcBtcPriceFeed": "0x5c29868C58b6e15e2b962943278969Ab6a7D3212",
     "aggregatorCbethEthPriceFeed": "0xF017fcB346A1885194689bA23Eff2fE6fA5C483b",
     "aggregatorSusdeUsdPriceFeed": "0xFF3BC18cCBd5999CE63E788A1c250a88626aD099",
+    "aggregatorRethEthPriceFeed": "0x536218f9E9Eb48863970252233c8F271f554C2d0",
+    "aggregatorWeethEthPriceFeed": "0x5c9C449BbC9a6075A2c061dF312a35fd1E05fF22",
     "stethCurve": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
     "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
     "ensUniversalResolver": "0xeEeEEEeE14D718C2B47D9923Deab1335E144EeEe",

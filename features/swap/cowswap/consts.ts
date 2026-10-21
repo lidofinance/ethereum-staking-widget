@@ -35,6 +35,8 @@ const SWAP_TOKENS: CowswapToken[] = [
   { key: 'lbtc', decimals: 8, oracleFeed: 'LBTC_USD' },
   { key: 'cbeth', decimals: 18, oracleFeed: 'CBETH_USD' },
   { key: 'susde', decimals: 18, oracleFeed: 'SUSDE_USD' },
+  { key: 'reth', decimals: 18, oracleFeed: 'RETH_USD' },
+  { key: 'weeth', decimals: 18, oracleFeed: 'WEETH_USD' },
 ];
 
 export const SWAP_COWSWAP_PROFILE = createCowswapProfile({

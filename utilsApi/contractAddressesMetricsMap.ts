@@ -133,6 +133,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.aggregatorLbtcBtcPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorCbethEthPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorSusdeUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorRethEthPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorWeethEthPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSPublicResolverAbi,
@@ -165,6 +167,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.lbtc]: erc20Abi,
   [CONTRACT_NAMES.cbeth]: erc20Abi,
   [CONTRACT_NAMES.susde]: erc20Abi,
+  [CONTRACT_NAMES.reth]: erc20Abi,
+  [CONTRACT_NAMES.weeth]: erc20Abi,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,

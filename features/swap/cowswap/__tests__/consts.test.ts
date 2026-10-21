@@ -46,6 +46,8 @@ const ERC20_TOKENS = [
   c.lbtc,
   c.cbeth,
   c.susde,
+  c.reth,
+  c.weeth,
 ].map(lower);
 
 describe('SWAP_COWSWAP_PROFILE', () => {
@@ -88,6 +90,8 @@ describe('SWAP_COWSWAP_PROFILE', () => {
       [lower(c.lbtc)]: 8,
       [lower(c.cbeth)]: 18,
       [lower(c.susde)]: 18,
+      [lower(c.reth)]: 18,
+      [lower(c.weeth)]: 18,
     });
   });
 
@@ -100,11 +104,13 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     }
   });
 
-  it('prices LDO, WBTC, LBTC and cbETH through composite feeds', () => {
+  it('prices LDO, WBTC, LBTC, cbETH, rETH and weETH through composite feeds', () => {
     expect(profile.oracleFeeds.sell[lower(c.ldo)]).toBe('LDO_USD');
     expect(profile.oracleFeeds.sell[lower(c.wbtc)]).toBe('WBTC_USD');
     expect(profile.oracleFeeds.sell[lower(c.lbtc)]).toBe('LBTC_USD');
     expect(profile.oracleFeeds.sell[lower(c.cbeth)]).toBe('CBETH_USD');
+    expect(profile.oracleFeeds.sell[lower(c.reth)]).toBe('RETH_USD');
+    expect(profile.oracleFeeds.sell[lower(c.weeth)]).toBe('WEETH_USD');
   });
 
   it.each([
@@ -191,6 +197,8 @@ describe('SWAP_COWSWAP_PROFILE', () => {
         'gho',
         'tbtc',
         'susde',
+        'reth',
+        'weeth',
         'link',
         'uni',
         'aave',
@@ -214,6 +222,8 @@ describe('SWAP_COWSWAP_PROFILE', () => {
         'tbtc',
         'lbtc',
         'cbeth',
+        'reth',
+        'weeth',
         'link',
         'uni',
         'aave',

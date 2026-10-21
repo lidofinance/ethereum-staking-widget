@@ -77,6 +77,8 @@ export const CONTRACT_NAMES = {
   aggregatorLbtcBtcPriceFeed: 'aggregatorLbtcBtcPriceFeed',
   aggregatorCbethEthPriceFeed: 'aggregatorCbethEthPriceFeed',
   aggregatorSusdeUsdPriceFeed: 'aggregatorSusdeUsdPriceFeed',
+  aggregatorRethEthPriceFeed: 'aggregatorRethEthPriceFeed',
+  aggregatorWeethEthPriceFeed: 'aggregatorWeethEthPriceFeed',
   stethCurve: 'stethCurve',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
@@ -109,6 +111,8 @@ export const CONTRACT_NAMES = {
   lbtc: 'lbtc',
   cbeth: 'cbeth',
   susde: 'susde',
+  reth: 'reth',
+  weeth: 'weeth',
 
   // GGV
   ggvVault: 'ggvVault',

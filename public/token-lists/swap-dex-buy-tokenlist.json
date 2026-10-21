@@ -3,7 +3,7 @@
   "timestamp": "2026-10-21T00:00:00.000Z",
   "version": {
     "major": 2,
-    "minor": 2,
+    "minor": 3,
     "patch": 0
   },
   "keywords": [],
@@ -217,6 +217,22 @@
       "logoURI": "https://files.cow.fi/token-lists/images/1/0x9d39a5de30e57443bff2a8307a4256c8797a3497/logo.png"
     },
     {
+      "symbol": "rETH",
+      "name": "Rocket Pool ETH",
+      "address": "0xae78736cd615f374d3085123a210448e74fc6393",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xae78736cd615f374d3085123a210448e74fc6393/logo.png"
+    },
+    {
+      "symbol": "weETH",
+      "name": "Wrapped eETH",
+      "address": "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee/logo.png"
+    },
+    {
       "symbol": "ETH",
       "name": "Ether",
       "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
@@ -335,6 +351,22 @@
       "decimals": 18,
       "chainId": 42161,
       "logoURI": "https://files.cow.fi/token-lists/images/1/0x9d39a5de30e57443bff2a8307a4256c8797a3497/logo.png"
+    },
+    {
+      "symbol": "rETH",
+      "name": "Rocket Pool ETH",
+      "address": "0xec70dcb4a1efa46b8f2d97c310c9c4790ba5ffa8",
+      "decimals": 18,
+      "chainId": 42161,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xae78736cd615f374d3085123a210448e74fc6393/logo.png"
+    },
+    {
+      "symbol": "weETH",
+      "name": "Wrapped eETH",
+      "address": "0x35751007a407ca6feffe80b3cb397736d2cf4dbe",
+      "decimals": 18,
+      "chainId": 42161,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee/logo.png"
     },
     {
       "symbol": "LINK",
@@ -471,6 +503,22 @@
       "decimals": 18,
       "chainId": 8453,
       "logoURI": "https://files.cow.fi/token-lists/images/1/0xbe9895146f7af43049ca1c1ae358b0541ea49704/logo.png"
+    },
+    {
+      "symbol": "rETH",
+      "name": "Rocket Pool ETH",
+      "address": "0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c",
+      "decimals": 18,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xae78736cd615f374d3085123a210448e74fc6393/logo.png"
+    },
+    {
+      "symbol": "weETH",
+      "name": "Wrapped eETH",
+      "address": "0x04c0599ae5a44757c0af6f9ec3b93da8976c150a",
+      "decimals": 18,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee/logo.png"
     },
     {
       "symbol": "LINK",
