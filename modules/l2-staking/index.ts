@@ -37,17 +37,35 @@ export {
   LIDO_L2_SLOW_STAKE_WETH_GAS_LIMIT_FALLBACK,
   LIDO_L2_SLOW_STAKE_LANES,
   LIDO_L2_SLOW_STAKE_MAX_FEE_BUFFER_BPS,
-  LIDO_L2_SLOW_STAKE_LOOKBACK_BLOCKS,
-  LIDO_L2_LOGS_BLOCK_RANGE,
   CCIP_ETHEREUM_CHAIN_SELECTOR,
   BPS_PRECISION,
   L2_SLOW_STAKE_STAGE,
+  L2_SLOW_STAKE_OUTCOME,
+  OP_STACK_L2_CROSS_DOMAIN_MESSENGER,
+  ARBITRUM_RETRYABLE_TX_PRECOMPILE,
+  LINEA_L2_MESSAGE_SERVICE,
+  LINEA_MESSAGE_STATUS_CLAIMED,
   isSupportedLidoL2StakingChain,
   type L2SlowStakeLaneConfig,
   type L2SlowStakeReturnFee,
 } from './const';
 
 export { L2SlowStakeLookupError, type L2SlowStakeLookupSource } from './errors';
+export {
+  OP_STACK_L2_CROSS_DOMAIN_MESSENGER_ABI,
+  ARBITRUM_INBOX_ABI,
+  ARBITRUM_BRIDGE_ABI,
+  ARBITRUM_RETRYABLE_TX_ABI,
+  LINEA_MESSAGE_SERVICE_ABI,
+} from './abi/bridges';
+export {
+  ARBITRUM_L1_MESSAGE_TYPE_SUBMIT_RETRYABLE,
+  decodeArbitrumSubmitRetryableMessage,
+  calculateArbitrumRetryableCreationId,
+  type ArbitrumSubmitRetryableMessage,
+  type ArbitrumRetryableCreationIdParams,
+} from './utils/arbitrum-retryable';
+export { groupSlowStakeStatuses } from './utils/slow-stake-stacks';
 
 export {
   encodeFeeOtoD,
@@ -92,8 +110,10 @@ export type {
   L2SlowStakeResult,
   L2SlowStakeSent,
   L2SlowStakeStage,
+  L2SlowStakeOutcome,
   L2SlowStakeStatus,
-  L2SlowStakeLookupProps,
+  L2SlowStakeReturnLeg,
+  L2SlowStakeStacks,
   L2SlowStakeApiLookupProps,
   L2SlowStakeLatestProps,
   L2SlowStakeLatest,

@@ -1,23 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import {
+  BaseError,
+  ContractFunctionRevertedError,
+  TransactionReceiptNotFoundError,
   decodeAbiParameters,
   encodeFunctionData,
   erc20Abi,
-  getAbiItem,
   getContract,
+  hexToBigInt,
   isAddressEqual,
   parseEventLogs,
   size,
   zeroAddress,
   zeroHash,
-  type AbiEvent,
   type Address,
-  type GetLogsParameters,
-  type GetLogsReturnType,
   type Hash,
   type PublicClient,
   type TransactionReceipt,
 } from 'viem';
+import { getL2TransactionHashes } from 'viem/op-stack';
 import {
   ERROR_CODE,
   LidoSDKModule,
@@ -44,7 +45,11 @@ import {
 import {
   CCIP_ETHEREUM_CHAIN_SELECTOR,
   L2_SLOW_STAKE_STAGE,
-  LIDO_L2_LOGS_BLOCK_RANGE,
+  L2_SLOW_STAKE_OUTCOME,
+  OP_STACK_L2_CROSS_DOMAIN_MESSENGER,
+  ARBITRUM_RETRYABLE_TX_PRECOMPILE,
+  LINEA_L2_MESSAGE_SERVICE,
+  LINEA_MESSAGE_STATUS_CLAIMED,
   LIDO_L2_SLOW_STAKE_LANES,
   type L2SlowStakeLaneConfig,
 } from './const';
@@ -63,6 +68,19 @@ import {
   type CcipMessage,
 } from './utils/ccip-api';
 import { L1_STAKING_RECEIVER_ABI } from './abi/l1-staking-receiver';
+import {
+  OP_STACK_L2_CROSS_DOMAIN_MESSENGER_ABI,
+  ARBITRUM_INBOX_ABI,
+  ARBITRUM_BRIDGE_ABI,
+  ARBITRUM_RETRYABLE_TX_ABI,
+  LINEA_MESSAGE_SERVICE_ABI,
+} from './abi/bridges';
+import {
+  ARBITRUM_L1_MESSAGE_TYPE_SUBMIT_RETRYABLE,
+  calculateArbitrumRetryableCreationId,
+  decodeArbitrumSubmitRetryableMessage,
+} from './utils/arbitrum-retryable';
+import { groupSlowStakeStatuses } from './utils/slow-stake-stacks';
 import { L2SlowStakeLookupError, type L2SlowStakeLookupSource } from './errors';
 
 import type {
@@ -99,7 +117,7 @@ import type {
   L1FailedMessage,
   L2SlowStakeSent,
   L2SlowStakeStatus,
-  L2SlowStakeLookupProps,
+  L2SlowStakeReturnLeg,
   L2SlowStakeApiLookupProps,
   L2SlowStakeLatestProps,
   L2SlowStakeLatest,
@@ -113,30 +131,13 @@ type TokenBucket = {
   rate: bigint;
 };
 
-const SLOW_STAKE_EVENT = getAbiItem({
-  abi: L2_STAKING_RECEIVER_ABI,
-  name: 'SlowStake',
-});
-const TRANSFER_EVENT = getAbiItem({ abi: erc20Abi, name: 'Transfer' });
-const MESSAGE_RECOVERED_EVENT = getAbiItem({
-  abi: L1_STAKING_RECEIVER_ABI,
-  name: 'MessageRecovered',
-});
-const TOKENS_RECOVERED_EVENT = getAbiItem({
-  abi: L1_STAKING_RECEIVER_ABI,
-  name: 'TokensRecovered',
-});
-
 // receipt logs by emitter, case-insensitively
 const isFrom = (address: Address) => (log: { address: Address }) =>
   isAddressEqual(log.address, address);
 
-// a wstETH mint to the user on the L2: the last leg of a slow stake
-type L2WstethMint = {
-  value: bigint;
-  transactionHash: Hash;
-  blockNumber: bigint;
-};
+type L1ReceiverLogs = ReturnType<
+  typeof parseEventLogs<typeof L1_STAKING_RECEIVER_ABI>
+>;
 
 // what the receiver's receipt on L1 says about one message
 type L1Outcome =
@@ -145,7 +146,7 @@ type L1Outcome =
       l1TxHash: Hash;
       l1BlockNumber: bigint;
       stakedAmount: bigint;
-      bridgeMessageId?: Hash;
+      receiverLogs: L1ReceiverLogs;
     }
   | {
       kind: 'failed';
@@ -154,12 +155,14 @@ type L1Outcome =
       failedMessage: L1FailedMessage;
     };
 
-type ChunkedLogsParams<TEvent extends AbiEvent> = {
-  address: Address;
-  event: TEvent;
-  args?: GetLogsParameters<TEvent>['args'];
-  fromBlock: bigint;
-  toBlock?: bigint;
+type L2SlowStakeStatusBase = L2SlowStakeSent & { ccipExplorerUrl: string };
+
+// executed on Ethereum, the wstETH handed to the bridge back
+type L2SlowStakeStaked = {
+  l1TxHash: Hash;
+  l1BlockNumber: bigint;
+  stakedAmount: bigint;
+  returnLeg: L2SlowStakeReturnLeg;
 };
 
 // Decorator arguments are evaluated while the class is being defined, before
@@ -174,7 +177,6 @@ export class L2StakeModule extends LidoSDKModule {
 
   private readonly l1PublicClient?: PublicClient;
   private readonly ccipApi: CcipApiClient;
-  private readonly logsBlockRange: bigint;
 
   constructor(props: L2StakeModuleProps) {
     super(props);
@@ -183,9 +185,6 @@ export class L2StakeModule extends LidoSDKModule {
       baseUrl: props.ccipApiBaseUrl,
       fetcher: props.fetcher,
     });
-    this.logsBlockRange = BigInt(
-      props.logsBlockRange ?? LIDO_L2_LOGS_BLOCK_RANGE,
-    );
   }
 
   private static clampToZero = (value: bigint) => (value > 0n ? value : 0n);
@@ -1087,43 +1086,10 @@ export class L2StakeModule extends LidoSDKModule {
     return this.lookup('l1', () => receiver.read.WSTETH());
   }
 
-  // The user's sends on this L2, oldest first. Nothing stores them for the
-  // user: a cold start finds them in the sender's events
-  public async getSlowStakeSentEvents({
-    account,
-    fromBlock,
-    toBlock,
-  }: L2SlowStakeLookupProps): Promise<L2SlowStakeSent[]> {
-    const address = await this.getL2StakingReceiverContractAddress();
-    const logs = await this.getLogsChunked(this.core.publicClient, 'l2', {
-      address,
-      event: SLOW_STAKE_EVENT,
-      args: { user: account },
-      fromBlock,
-      toBlock,
-    });
-    return logs.map((log) => {
-      const { messageId, user, token, amount } = log.args;
-      invariant(
-        messageId && user && token && amount !== undefined,
-        'SlowStake event is missing a field',
-        ERROR_CODE.READ_ERROR,
-      );
-      return {
-        messageId,
-        user,
-        token,
-        amount,
-        sendTxHash: log.transactionHash,
-        sendBlockNumber: log.blockNumber,
-      };
-    });
-  }
-
   // The user's sends on this L2 from the CCIP API: the lane's own list,
   // filtered by the account that signed the send. No block range to pick
   // and no log scan, but `origin` is the signer, so a smart account or a
-  // Safe is not found here: those need the log scan. Oldest first
+  // Safe is not found here. Oldest first
   public async getSlowStakeSentFromCcipApi(
     props: L2SlowStakeApiLookupProps,
   ): Promise<L2SlowStakeSent[]> {
@@ -1131,72 +1097,25 @@ export class L2StakeModule extends LidoSDKModule {
     return found.map(({ sent }) => sent);
   }
 
-  // Statuses for the sends the CCIP API lists for the user; the messages
-  // already fetched are reused, so nothing is read twice
-  public async getSlowStakeStatusesFromCcipApi(
-    props: L2SlowStakeApiLookupProps,
-  ): Promise<L2SlowStakeStatus[]> {
-    const { statuses } = await this.resolveLatest(
-      await this.findUserMessages(props),
-      props.account,
-    );
-    return statuses.reverse();
-  }
-
-  // The user's newest sends from the CCIP API with their statuses, newest
-  // first, resolved only up to the limit: what a list of recent stakes shows
+  // The user's newest sends from the CCIP API with where each one is, as
+  // three stacks (still moving, needing attention, done), newest first in
+  // each. Resolved only up to the limit; the messages already fetched are
+  // reused, so nothing is read twice
   public async getLatestSlowStakeStatusesFromCcipApi({
     limit,
     ...props
   }: L2SlowStakeApiLookupProps &
     L2SlowStakeLatestProps): Promise<L2SlowStakeLatest> {
-    return this.resolveLatest(
-      await this.findUserMessages(props),
-      props.account,
-      limit,
+    const found = await this.findUserMessages(props);
+    const selected =
+      limit === undefined ? found : limit > 0 ? found.slice(-limit) : [];
+    const statuses = await Promise.all(
+      selected.map(({ sent, message }) =>
+        this.resolveSlowStakeStatus(sent, message),
+      ),
     );
-  }
-
-  // The same over the sender's events, for an account the API cannot
-  // attribute (a smart account's sends are signed by its bundler)
-  public async getLatestSlowStakeStatuses({
-    limit,
-    ...props
-  }: L2SlowStakeLookupProps &
-    L2SlowStakeLatestProps): Promise<L2SlowStakeLatest> {
-    const sent = await this.getSlowStakeSentEvents(props);
-    return this.resolveLatest(
-      sent.map((entry) => ({ sent: entry })),
-      props.account,
-      limit,
-      props.toBlock,
-    );
-  }
-
-  // Resolves the newest `limit` sends of an oldest-first list, newest
-  // first in the result. The wstETH mints are read once from the oldest
-  // resolved send and claimed in send order, so two stakes of one amount
-  // do not both claim one delivery
-  private async resolveLatest(
-    found: { sent: L2SlowStakeSent; message?: CcipMessage }[],
-    account: Address,
-    limit = found.length,
-    toBlock?: bigint,
-  ): Promise<L2SlowStakeLatest> {
-    const selected = limit > 0 ? found.slice(-limit) : [];
-    const [first] = selected;
-    if (!first) return { statuses: [], hasMore: found.length > 0 };
-    const mints = await this.getWstethMintsOnL2({
-      account,
-      fromBlock: first.sent.sendBlockNumber,
-      toBlock,
-    });
-    const statuses: L2SlowStakeStatus[] = [];
-    for (const { sent, message } of selected) {
-      statuses.push(await this.resolveSlowStakeStatus(sent, mints, message));
-    }
     return {
-      statuses: statuses.reverse(),
+      ...groupSlowStakeStatuses(statuses.reverse()),
       hasMore: found.length > selected.length,
     };
   }
@@ -1260,27 +1179,6 @@ export class L2StakeModule extends LidoSDKModule {
     );
   }
 
-  // Every slow stake of the user in the block range, with where it is.
-  // The wstETH mints to the user are read once and claimed by the stakes in
-  // send order, so two stakes of one amount do not both claim one delivery
-  public async getSlowStakeStatuses(
-    props: L2SlowStakeLookupProps,
-  ): Promise<L2SlowStakeStatus[]> {
-    const sent = await this.getSlowStakeSentEvents(props);
-    const [first] = sent;
-    if (!first) return [];
-    const mints = await this.getWstethMintsOnL2({
-      account: props.account,
-      fromBlock: first.sendBlockNumber,
-      toBlock: props.toBlock,
-    });
-    const statuses: L2SlowStakeStatus[] = [];
-    for (const stake of sent) {
-      statuses.push(await this.resolveSlowStakeStatus(stake, mints));
-    }
-    return statuses;
-  }
-
   public async getSlowStakeStatus(
     sent: L2SlowStakeSent,
   ): Promise<L2SlowStakeStatus> {
@@ -1310,7 +1208,6 @@ export class L2StakeModule extends LidoSDKModule {
         sendTxHash: message.sendTransactionHash,
         sendBlockNumber: BigInt(message.sendBlockNumber),
       },
-      undefined,
       message,
     );
   }
@@ -1330,9 +1227,12 @@ export class L2StakeModule extends LidoSDKModule {
     };
   }
 
+  // One stake, one step at a time, each step read by the key the step
+  // before handed over: the CCIP message names the L1 receipt, the
+  // receipt's bridge logs name the L2 landing. Reads by hash and by key
+  // only; nothing is scanned, since few RPCs serve historic eth_getLogs
   private async resolveSlowStakeStatus(
     sent: L2SlowStakeSent,
-    mints?: L2WstethMint[],
     message?: CcipMessage | null,
   ): Promise<L2SlowStakeStatus> {
     const base = {
@@ -1340,150 +1240,61 @@ export class L2StakeModule extends LidoSDKModule {
       ccipExplorerUrl: getCcipExplorerMessageUrl(sent.messageId),
     };
     const ccip = message ?? (await this.fetchCcipMessage(sent.messageId));
-    if (!ccip) return { ...base, stage: L2_SLOW_STAKE_STAGE.sent };
+    if (!ccip) {
+      return {
+        ...base,
+        outcome: L2_SLOW_STAKE_OUTCOME.inflight,
+        stage: L2_SLOW_STAKE_STAGE.sent,
+      };
+    }
     if (ccip.status === CCIP_MESSAGE_STATUS.failed) {
       return {
         ...base,
+        outcome: L2_SLOW_STAKE_OUTCOME.error,
         stage: L2_SLOW_STAKE_STAGE.transportFailed,
         ccipStatus: ccip.status,
         readyForManualExecution: ccip.readyForManualExecution,
       };
     }
-    if (
-      ccip.status !== CCIP_MESSAGE_STATUS.success ||
-      !ccip.receiptTransactionHash
-    ) {
+    const l1TxHash = ccip.receiptTransactionHash;
+    if (ccip.status !== CCIP_MESSAGE_STATUS.success || !l1TxHash) {
       return {
         ...base,
+        outcome: L2_SLOW_STAKE_OUTCOME.inflight,
         stage: L2_SLOW_STAKE_STAGE.inTransit,
         ccipStatus: ccip.status,
       };
     }
     // Executed on Ethereum: CCIP's success is the OffRamp's, not the
     // stake's. The receiver's own verdict is in the same receipt
-    const outcome = await this.readL1Outcome(
-      sent.messageId,
-      ccip.receiptTransactionHash,
-    );
-    return outcome.kind === 'failed'
-      ? this.resolveParked(base, outcome, mints)
-      : this.resolveStaked(base, outcome, mints);
-  }
-
-  // A failed stake parks the funds at the receiver until someone retries
-  // it, or the DAO recovers them. Both clear the failed-message slot, so a
-  // clear slot after a failure means one of the two happened: the events
-  // say which
-  private async resolveParked(
-    base: L2SlowStakeSent & { ccipExplorerUrl: string },
-    outcome: Extract<L1Outcome, { kind: 'failed' }>,
-    mints?: L2WstethMint[],
-  ): Promise<L2SlowStakeStatus> {
-    const receiver = await this.getL1StakingReceiverContract();
-    const failedHash = await this.lookup('l1', () =>
-      receiver.read.getFailedMessageHash([base.messageId]),
-    );
-    if (failedHash !== zeroHash) {
-      return {
-        ...base,
-        stage: L2_SLOW_STAKE_STAGE.parked,
-        l1TxHash: outcome.l1TxHash,
-        l1BlockNumber: outcome.l1BlockNumber,
-        failedMessage: outcome.failedMessage,
-      };
-    }
     const l1 = this.getL1PublicClient();
-    const recovery = {
-      address: receiver.address,
-      args: { messageId: base.messageId },
-      fromBlock: outcome.l1BlockNumber,
-    };
-    const [tokensRecovered, messageRecovered] = await Promise.all([
-      this.getLogsChunked(l1, 'l1', {
-        ...recovery,
-        event: TOKENS_RECOVERED_EVENT,
-      }),
-      this.getLogsChunked(l1, 'l1', {
-        ...recovery,
-        event: MESSAGE_RECOVERED_EVENT,
-      }),
-    ]);
-    const [recoveredTokens] = tokensRecovered;
-    if (recoveredTokens) {
-      return {
-        ...base,
-        stage: L2_SLOW_STAKE_STAGE.tokensRecovered,
-        l1TxHash: recoveredTokens.transactionHash,
-      };
-    }
-    const [retried] = messageRecovered;
-    if (retried) {
-      const retryOutcome = await this.readL1Outcome(
-        base.messageId,
-        retried.transactionHash,
-      );
-      if (retryOutcome.kind === 'succeeded')
-        return this.resolveStaked(base, retryOutcome, mints);
-    }
-    throw new L2SlowStakeLookupError(
+    const receipt = await this.lookup(
       'l1',
-      'The failed message slot is clear, but no recovery event was found in the range',
-      { messageId: base.messageId },
+      () => l1.getTransactionReceipt({ hash: l1TxHash }),
+      sent.messageId,
     );
-  }
-
-  // Staked: the wstETH is in the bridge back. Delivered once a mint of that
-  // amount to the user shows on the L2 after the send; the matched mint is
-  // taken out of the list handed in, so a later stake cannot claim it
-  private async resolveStaked(
-    base: L2SlowStakeSent & { ccipExplorerUrl: string },
-    outcome: Extract<L1Outcome, { kind: 'succeeded' }>,
-    mints?: L2WstethMint[],
-  ): Promise<L2SlowStakeStatus> {
-    const candidates =
-      mints ??
-      (await this.getWstethMintsOnL2({
-        account: base.user,
-        fromBlock: base.sendBlockNumber,
-      }));
-    const index = candidates.findIndex(
-      (mint) => mint.value === outcome.stakedAmount,
-    );
-    if (index === -1) {
-      return {
-        ...base,
-        stage: L2_SLOW_STAKE_STAGE.staked,
-        l1TxHash: outcome.l1TxHash,
-        l1BlockNumber: outcome.l1BlockNumber,
-        stakedAmount: outcome.stakedAmount,
-        bridgeMessageId: outcome.bridgeMessageId,
-      };
-    }
-    const [mint] = candidates.splice(index, 1);
-    return {
-      ...base,
-      stage: L2_SLOW_STAKE_STAGE.delivered,
+    const outcome = await this.readL1Outcome(sent.messageId, receipt);
+    if (outcome.kind === 'failed') return this.resolveFailed(base, outcome);
+    const returnLeg = await this.readReturnLeg(receipt, outcome.receiverLogs);
+    return this.resolveReturnLeg(base, {
       l1TxHash: outcome.l1TxHash,
+      l1BlockNumber: outcome.l1BlockNumber,
       stakedAmount: outcome.stakedAmount,
-      l2TxHash: mint.transactionHash,
-    };
+      returnLeg,
+    });
   }
 
-  // The receiver's verdict and the amount it staked, from the receipt of
-  // the L1 execution (or of a retry). The adapters run by delegatecall, so
-  // the bridge's own event is emitted from the receiver too
+  // The receiver's verdict and the amount it staked, from the logs of the
+  // L1 execution receipt. The adapters run by delegatecall, so the bridge's
+  // own event is emitted from the receiver too
   private async readL1Outcome(
     messageId: Hash,
-    l1TxHash: Hash,
+    receipt: TransactionReceipt,
   ): Promise<L1Outcome> {
-    const l1 = this.getL1PublicClient();
     const [receiverAddress, wsteth] = await Promise.all([
       this.getL1StakingReceiverAddress(),
       this.getL1WstethAddress(),
     ]);
-    const receipt = await this.lookup('l1', () =>
-      l1.getTransactionReceipt({ hash: l1TxHash }),
-    );
     const receiverLogs = parseEventLogs({
       abi: L1_STAKING_RECEIVER_ABI,
       logs: receipt.logs.filter(isFrom(receiverAddress)),
@@ -1497,13 +1308,13 @@ export class L2StakeModule extends LidoSDKModule {
     );
     invariant(
       verdict,
-      `The receiver reported nothing for message ${messageId} in ${l1TxHash}`,
+      `The receiver reported nothing for message ${messageId} in ${receipt.transactionHash}`,
       ERROR_CODE.READ_ERROR,
     );
     if (verdict.eventName === 'MessageFailed') {
       return {
         kind: 'failed',
-        l1TxHash,
+        l1TxHash: receipt.transactionHash,
         l1BlockNumber: receipt.blockNumber,
         failedMessage: verdict.args.message,
       };
@@ -1515,42 +1326,285 @@ export class L2StakeModule extends LidoSDKModule {
     }).find((log) => isAddressEqual(log.args.from, receiverAddress));
     invariant(
       handover,
-      `No wstETH left the receiver for message ${messageId} in ${l1TxHash}`,
+      `No wstETH left the receiver for message ${messageId} in ${receipt.transactionHash}`,
       ERROR_CODE.READ_ERROR,
-    );
-    const bridge = receiverLogs.find(
-      (log) => log.eventName === 'ArbitrumL1toL2MessageSent',
     );
     return {
       kind: 'succeeded',
-      l1TxHash,
+      l1TxHash: receipt.transactionHash,
       l1BlockNumber: receipt.blockNumber,
       stakedAmount: handover.args.value,
-      bridgeMessageId:
-        bridge?.eventName === 'ArbitrumL1toL2MessageSent'
-          ? bridge.args.messageId
-          : undefined,
+      receiverLogs,
     };
   }
 
-  private async getWstethMintsOnL2({
-    account,
-    fromBlock,
-    toBlock,
-  }: L2SlowStakeLookupProps): Promise<L2WstethMint[]> {
-    const address = await this.getL2StakingWstethContractAddress();
-    const logs = await this.getLogsChunked(this.core.publicClient, 'l2', {
-      address,
-      event: TRANSFER_EVENT,
-      args: { from: zeroAddress, to: account },
-      fromBlock,
-      toBlock,
+  // A failed stake parks the funds at the receiver until someone retries
+  // it, or the DAO recovers them. Both clear the failed-message slot, so a
+  // clear slot after a failure means one of the two happened; which one
+  // is in the receiver's events, and this flow does not scan for them
+  private async resolveFailed(
+    base: L2SlowStakeStatusBase,
+    outcome: Extract<L1Outcome, { kind: 'failed' }>,
+  ): Promise<L2SlowStakeStatus> {
+    const receiver = await this.getL1StakingReceiverContract();
+    const failedHash = await this.lookup(
+      'l1',
+      () => receiver.read.getFailedMessageHash([base.messageId]),
+      base.messageId,
+    );
+    const { l1TxHash, l1BlockNumber } = outcome;
+    if (failedHash !== zeroHash) {
+      return {
+        ...base,
+        outcome: L2_SLOW_STAKE_OUTCOME.error,
+        stage: L2_SLOW_STAKE_STAGE.parked,
+        l1TxHash,
+        l1BlockNumber,
+        failedMessage: outcome.failedMessage,
+      };
+    }
+    return {
+      ...base,
+      outcome: L2_SLOW_STAKE_OUTCOME.success,
+      stage: L2_SLOW_STAKE_STAGE.recovered,
+      l1TxHash,
+      l1BlockNumber,
+    };
+  }
+
+  // The key the L1 receipt leaves for the wstETH's way back: the bridge's
+  // own log of the send, turned into what the L2 side is read by
+  private async readReturnLeg(
+    receipt: TransactionReceipt,
+    receiverLogs: L1ReceiverLogs,
+  ): Promise<L2SlowStakeReturnLeg> {
+    const { bridge } = this.getSlowStakeLaneConfig().returnFee;
+    const l1TxHash = receipt.transactionHash;
+    switch (bridge) {
+      case 'op-stack': {
+        // the portal logs the deposit; the deposit transaction's hash on
+        // the L2 is a function of that log
+        const [l2TxHash, ...rest] = getL2TransactionHashes({
+          logs: receipt.logs,
+        });
+        invariant(
+          l2TxHash && rest.length === 0,
+          `Expected one portal deposit in ${l1TxHash}, found ${rest.length + (l2TxHash ? 1 : 0)}`,
+          ERROR_CODE.READ_ERROR,
+        );
+        return { bridge, l2TxHash };
+      }
+      case 'arbitrum': {
+        // the receiver logs the inbox message number; the inbox and the
+        // bridge log every field the ticket id is derived from
+        const sentEvent = receiverLogs.find(
+          (log) => log.eventName === 'ArbitrumL1toL2MessageSent',
+        );
+        invariant(
+          sentEvent?.eventName === 'ArbitrumL1toL2MessageSent',
+          `No Arbitrum message in ${l1TxHash}`,
+          ERROR_CODE.READ_ERROR,
+        );
+        const messageNumber = hexToBigInt(sentEvent.args.messageId);
+        const inboxLog = parseEventLogs({
+          abi: ARBITRUM_INBOX_ABI,
+          eventName: 'InboxMessageDelivered',
+          logs: receipt.logs,
+        }).find((log) => log.args.messageNum === messageNumber);
+        const bridgeLog = parseEventLogs({
+          abi: ARBITRUM_BRIDGE_ABI,
+          eventName: 'MessageDelivered',
+          logs: receipt.logs,
+        }).find((log) => log.args.messageIndex === messageNumber);
+        invariant(
+          inboxLog &&
+            bridgeLog &&
+            bridgeLog.args.kind === ARBITRUM_L1_MESSAGE_TYPE_SUBMIT_RETRYABLE,
+          `No retryable submission ${messageNumber} in ${l1TxHash}`,
+          ERROR_CODE.READ_ERROR,
+        );
+        return {
+          bridge,
+          ticketId: calculateArbitrumRetryableCreationId({
+            l2ChainId: BigInt(this.core.chain.id),
+            messageNumber,
+            from: bridgeLog.args.sender,
+            l1BaseFee: bridgeLog.args.baseFeeL1,
+            ...decodeArbitrumSubmitRetryableMessage(inboxLog.args.data),
+          }),
+        };
+      }
+      case 'linea': {
+        const [sentLog, ...rest] = parseEventLogs({
+          abi: LINEA_MESSAGE_SERVICE_ABI,
+          eventName: 'MessageSent',
+          logs: receipt.logs,
+        });
+        invariant(
+          sentLog && rest.length === 0,
+          `Expected one Linea message in ${l1TxHash}, found ${rest.length + (sentLog ? 1 : 0)}`,
+          ERROR_CODE.READ_ERROR,
+        );
+        return { bridge, messageHash: sentLog.args._messageHash };
+      }
+    }
+  }
+
+  // Where the wstETH is on its way back, read from the L2 by the key:
+  // landed and credited, landed and failed to credit, or not landed yet
+  private async resolveReturnLeg(
+    base: L2SlowStakeStatusBase,
+    staked: L2SlowStakeStaked,
+  ): Promise<L2SlowStakeStatus> {
+    const { returnLeg } = staked;
+    const bridging: L2SlowStakeStatus = {
+      ...base,
+      ...staked,
+      outcome: L2_SLOW_STAKE_OUTCOME.inflight,
+      stage: L2_SLOW_STAKE_STAGE.bridging,
+    };
+    const relayFailed = (l2TxHash?: Hash): L2SlowStakeStatus => ({
+      ...base,
+      ...staked,
+      outcome: L2_SLOW_STAKE_OUTCOME.error,
+      stage: L2_SLOW_STAKE_STAGE.relayFailed,
+      l2TxHash,
     });
-    return logs.map((log) => ({
-      value: log.args.value ?? 0n,
-      transactionHash: log.transactionHash,
-      blockNumber: log.blockNumber,
-    }));
+    const delivered = (l2TxHash?: Hash): L2SlowStakeStatus => ({
+      ...base,
+      ...staked,
+      outcome: L2_SLOW_STAKE_OUTCOME.success,
+      stage: L2_SLOW_STAKE_STAGE.delivered,
+      l2TxHash,
+    });
+    switch (returnLeg.bridge) {
+      case 'op-stack': {
+        // The deposit transaction relays the message through the L2
+        // messenger; the messenger says whether the relay went through, a
+        // failed one is replayable
+        const receipt = await this.getReceiptIfMined('l2', returnLeg.l2TxHash);
+        if (!receipt) return bridging;
+        if (receipt.status === 'reverted')
+          return relayFailed(returnLeg.l2TxHash);
+        const relay = parseEventLogs({
+          abi: OP_STACK_L2_CROSS_DOMAIN_MESSENGER_ABI,
+          logs: receipt.logs.filter(isFrom(OP_STACK_L2_CROSS_DOMAIN_MESSENGER)),
+        });
+        if (!relay.some((log) => log.eventName === 'RelayedMessage'))
+          return relayFailed(returnLeg.l2TxHash);
+        await this.assertWstethMinted(receipt, base.user);
+        return delivered(returnLeg.l2TxHash);
+      }
+      case 'arbitrum': {
+        // The ticket's creation receipt logs the auto-redeem it scheduled;
+        // that retry transaction, when it went through, is the landing. A
+        // ticket still alive after that waits for a redeem by hand
+        const creation = await this.getReceiptIfMined('l2', returnLeg.ticketId);
+        if (!creation) return bridging;
+        if (creation.status === 'reverted')
+          return relayFailed(returnLeg.ticketId);
+        const scheduled = parseEventLogs({
+          abi: ARBITRUM_RETRYABLE_TX_ABI,
+          eventName: 'RedeemScheduled',
+          logs: creation.logs.filter(isFrom(ARBITRUM_RETRYABLE_TX_PRECOMPILE)),
+        }).find((log) => log.args.ticketId === returnLeg.ticketId);
+        const retry = scheduled
+          ? await this.getReceiptIfMined('l2', scheduled.args.retryTxHash)
+          : null;
+        if (retry?.status === 'success') {
+          await this.assertWstethMinted(retry, base.user);
+          return delivered(retry.transactionHash);
+        }
+        if (await this.isRetryableTicketAlive(returnLeg.ticketId))
+          return relayFailed(retry?.transactionHash);
+        return {
+          ...base,
+          ...staked,
+          outcome: L2_SLOW_STAKE_OUTCOME.error,
+          stage: L2_SLOW_STAKE_STAGE.unresolved,
+        };
+      }
+      case 'linea': {
+        // the L2 message service tracks the claim by the message hash; the
+        // claim transaction itself has no key to be read by
+        const status = await this.lookup('l2', () =>
+          this.core.publicClient.readContract({
+            address: LINEA_L2_MESSAGE_SERVICE,
+            abi: LINEA_MESSAGE_SERVICE_ABI,
+            functionName: 'inboxL1L2MessageStatus',
+            args: [returnLeg.messageHash],
+          }),
+        );
+        return status === LINEA_MESSAGE_STATUS_CLAIMED ? delivered() : bridging;
+      }
+    }
+  }
+
+  // the landing credits the user: the wstETH mint is in the same receipt
+  private async assertWstethMinted(
+    receipt: TransactionReceipt,
+    user: Address,
+  ): Promise<void> {
+    const wsteth = await this.getL2StakingWstethContractAddress();
+    const mint = parseEventLogs({
+      abi: erc20Abi,
+      eventName: 'Transfer',
+      logs: receipt.logs.filter(isFrom(wsteth)),
+    }).find(
+      (log) =>
+        isAddressEqual(log.args.from, zeroAddress) &&
+        isAddressEqual(log.args.to, user),
+    );
+    invariant(
+      mint,
+      `No wstETH minted to ${user} in ${receipt.transactionHash}`,
+      ERROR_CODE.READ_ERROR,
+    );
+  }
+
+  // null while the transaction is not mined; a transport failure is a
+  // lookup failure, not a status
+  private async getReceiptIfMined(
+    source: L2SlowStakeLookupSource,
+    hash: Hash,
+  ): Promise<TransactionReceipt | null> {
+    const client =
+      source === 'l1' ? this.getL1PublicClient() : this.core.publicClient;
+    try {
+      return await client.getTransactionReceipt({ hash });
+    } catch (error) {
+      if (error instanceof TransactionReceiptNotFoundError) return null;
+      throw new L2SlowStakeLookupError(
+        source,
+        `Slow stake status read failed (${source})`,
+        { cause: error },
+      );
+    }
+  }
+
+  // the precompile answers by ticket id while the ticket exists, and
+  // reverts (NoTicketWithID) once it was redeemed or expired
+  private async isRetryableTicketAlive(ticketId: Hash): Promise<boolean> {
+    try {
+      await this.core.publicClient.readContract({
+        address: ARBITRUM_RETRYABLE_TX_PRECOMPILE,
+        abi: ARBITRUM_RETRYABLE_TX_ABI,
+        functionName: 'getTimeout',
+        args: [ticketId],
+      });
+      return true;
+    } catch (error) {
+      if (
+        error instanceof BaseError &&
+        error.walk((cause) => cause instanceof ContractFunctionRevertedError)
+      )
+        return false;
+      throw new L2SlowStakeLookupError(
+        'l2',
+        'Slow stake status read failed (l2)',
+        { cause: error },
+      );
+    }
   }
 
   private async fetchCcipMessage(messageId: Hash): Promise<CcipMessage | null> {
@@ -1559,34 +1613,6 @@ export class L2StakeModule extends LidoSDKModule {
       () => this.ccipApi.getMessage(messageId),
       messageId,
     );
-  }
-
-  // Logs over a range wider than the RPC in front serves, in its chunks
-  private async getLogsChunked<TEvent extends AbiEvent>(
-    client: PublicClient,
-    source: L2SlowStakeLookupSource,
-    { address, event, args, fromBlock, toBlock }: ChunkedLogsParams<TEvent>,
-  ): Promise<GetLogsReturnType<TEvent>> {
-    const latest =
-      toBlock ?? (await this.lookup(source, () => client.getBlockNumber()));
-    const logs: GetLogsReturnType<TEvent> = [];
-    for (let from = fromBlock; from <= latest; from += this.logsBlockRange) {
-      const to =
-        from + this.logsBlockRange - 1n < latest
-          ? from + this.logsBlockRange - 1n
-          : latest;
-      const chunk = await this.lookup(source, () =>
-        client.getLogs({
-          address,
-          event,
-          args,
-          fromBlock: from,
-          toBlock: to,
-        } as GetLogsParameters<TEvent>),
-      );
-      logs.push(...(chunk as GetLogsReturnType<TEvent>));
-    }
-    return logs;
   }
 
   // a source that does not answer is a lookup failure, not a stake status

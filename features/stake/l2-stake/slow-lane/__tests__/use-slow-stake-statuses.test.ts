@@ -24,7 +24,12 @@ const ID_1: Hash =
   '0x1111111111111111111111111111111111111111111111111111111111111111';
 const ID_2: Hash =
   '0x2222222222222222222222222222222222222222222222222222222222222222';
-const listedStatus = (messageId: Hash) => ({ messageId, stage: 'staked' });
+const listedStatus = (messageId: Hash, outcome = 'success') => ({
+  messageId,
+  outcome,
+  stage: 'delivered',
+});
+const EMPTY = { inflight: [], error: [], success: [], hasMore: false };
 const OTHER_ADDRESS: Address = '0x00000000000000000000000000000000000000bb';
 
 // read by the hoisted mock factories, so hoisted with them
@@ -39,40 +44,34 @@ type QueryArgs = {
   queryKey: unknown[];
   enabled?: boolean;
   queryFn: () => Promise<unknown>;
+  select?: (data: unknown) => unknown;
 };
 
 type State = {
   address: string | undefined;
   isDappActive: boolean;
   isL2Stake: boolean;
-  isSmartAccount: boolean;
-  isSmartAccountLoading: boolean;
-  blockNumber: bigint;
   // what the query currently holds
   data: unknown;
   query: QueryArgs | undefined;
   fromApi: ReturnType<typeof vi.fn>;
-  fromLogs: ReturnType<typeof vi.fn>;
 };
 
 const state = vi.hoisted((): State => ({
   address: ACCOUNT,
   isDappActive: true,
   isL2Stake: true,
-  isSmartAccount: false,
-  isSmartAccountLoading: false,
-  blockNumber: 500_000n,
   data: undefined,
   query: undefined,
   fromApi: vi.fn(),
-  fromLogs: vi.fn(),
 }));
 
 vi.mock('@tanstack/react-query', () => ({
   useQuery: (args: QueryArgs) => {
     state.query = args;
+    const { data } = state;
     return {
-      data: state.data,
+      data: data === undefined || !args.select ? data : args.select(data),
       isLoading: false,
       error: null,
       refetch: vi.fn(),
@@ -84,18 +83,10 @@ vi.mock('modules/web3', () => ({
     address: state.address,
     isDappActive: state.isDappActive,
   }),
-  useIsSmartAccount: () => ({
-    isSmartAccount: state.isSmartAccount,
-    isLoading: state.isSmartAccountLoading,
-  }),
   useLidoSDKL2: () => ({
     chainId: CHAIN_ID,
     isL2Stake: state.isL2Stake,
-    l2Stake: {
-      core: { publicClient: { getBlockNumber: async () => state.blockNumber } },
-      getLatestSlowStakeStatusesFromCcipApi: state.fromApi,
-      getLatestSlowStakeStatuses: state.fromLogs,
-    },
+    l2Stake: { getLatestSlowStakeStatusesFromCcipApi: state.fromApi },
   }),
 }));
 
@@ -114,64 +105,33 @@ beforeEach(() => {
   state.address = ACCOUNT;
   state.isDappActive = true;
   state.isL2Stake = true;
-  state.isSmartAccount = false;
-  state.isSmartAccountLoading = false;
   state.data = undefined;
   state.query = undefined;
   state.fromApi
     .mockReset()
-    .mockResolvedValue({ statuses: ['api'], hasMore: true });
-  state.fromLogs
-    .mockReset()
-    .mockResolvedValue({ statuses: ['logs'], hasMore: false });
+    .mockResolvedValue({ ...EMPTY, success: ['api'], hasMore: true });
 });
 
 describe('useSlowStakeStatuses', () => {
-  it('asks the CCIP API for an ordinary wallet, three newest by default', async () => {
+  it('asks the CCIP API, three newest by default', async () => {
     render();
     expect(query().queryKey).toEqual([
       LIDO_L2_STAKING_QUERY_SCOPE,
       'slow-stake-statuses',
-      { chainId: CHAIN_ID, address: ACCOUNT, limit: 3, source: 'ccip-api' },
+      { chainId: CHAIN_ID, address: ACCOUNT, limit: 3 },
     ]);
     expect(query().enabled).toBe(true);
     await expect(query().queryFn()).resolves.toEqual({
-      statuses: ['api'],
+      ...EMPTY,
+      success: ['api'],
       hasMore: true,
     });
     expect(state.fromApi).toHaveBeenCalledWith({ account: ACCOUNT, limit: 3 });
-    expect(state.fromLogs).not.toHaveBeenCalled();
   });
 
-  it('scans the lane lookback for a smart account', async () => {
-    state.isSmartAccount = true;
+  it('asks for as many as the limit says', () => {
     render(5);
-    expect(query().queryKey[2]).toMatchObject({ limit: 5, source: 'logs' });
-    await query().queryFn();
-    expect(state.fromLogs).toHaveBeenCalledWith({
-      account: ACCOUNT,
-      fromBlock: 500_000n - 43_200n,
-      toBlock: 500_000n,
-      limit: 5,
-    });
-    expect(state.fromApi).not.toHaveBeenCalled();
-  });
-
-  it('does not scan below the genesis block', async () => {
-    state.isSmartAccount = true;
-    state.blockNumber = 100n;
-    render();
-    await query().queryFn();
-    expect(state.fromLogs).toHaveBeenCalledWith(
-      expect.objectContaining({ fromBlock: 0n, toBlock: 100n }),
-    );
-  });
-
-  it('waits for the account kind before asking anything', () => {
-    state.isSmartAccountLoading = true;
-    const result = render();
-    expect(query().enabled).toBe(false);
-    expect(result.isLoading).toBe(true);
+    expect(query().queryKey[2]).toMatchObject({ limit: 5 });
   });
 
   it.each([
@@ -184,32 +144,41 @@ describe('useSlowStakeStatuses', () => {
     expect(query().enabled).toBe(false);
   });
 
-  it('hands the statuses and the flag through', () => {
-    state.data = { statuses: ['a', 'b'], hasMore: true };
+  it('hands the stacks and the flag through', () => {
+    state.data = {
+      inflight: ['a'],
+      error: ['b'],
+      success: ['c'],
+      hasMore: true,
+    };
     const result = render();
-    expect(result.statuses).toEqual(['a', 'b']);
+    expect(result.inflight).toEqual(['a']);
+    expect(result.error).toEqual(['b']);
+    expect(result.success).toEqual(['c']);
     expect(result.hasMore).toBe(true);
-    expect(result.source).toBe('ccip-api');
   });
 
   it('is empty before any data', () => {
     const result = render();
-    expect(result.statuses).toEqual([]);
+    expect(result.inflight).toEqual([]);
+    expect(result.error).toEqual([]);
+    expect(result.success).toEqual([]);
     expect(result.hasMore).toBe(false);
   });
 
   describe('a stake sent from this browser', () => {
     const pendingArgs = { messageId: ID_1, token: WETH, amount: 10n ** 18n };
 
-    it('is shown as sent in front of the list before the sources list it', () => {
+    it('is shown as sent in front of the in-flight stack before the source lists it', () => {
       render().addSlowStakeMessageId(pendingArgs);
-      state.data = { statuses: [listedStatus(ID_2)], hasMore: false };
+      state.data = { ...EMPTY, inflight: [listedStatus(ID_2, 'inflight')] };
       const result = render();
-      expect(result.statuses.map((status) => status.messageId)).toEqual([
+      expect(result.inflight.map((status) => status.messageId)).toEqual([
         ID_1,
         ID_2,
       ]);
-      expect(result.statuses[0]).toMatchObject({
+      expect(result.inflight[0]).toMatchObject({
+        outcome: 'inflight',
         stage: 'sent',
         user: ACCOUNT,
         token: WETH,
@@ -218,27 +187,30 @@ describe('useSlowStakeStatuses', () => {
       });
     });
 
-    it('gives way to the sources once they list it', () => {
+    it('gives way to the source once it lists it, in any stack', () => {
       addPendingSlowStake({
         ...pendingArgs,
         chainId: CHAIN_ID,
         address: ACCOUNT,
       });
-      state.data = { statuses: [listedStatus(ID_1)], hasMore: false };
+      state.data = { ...EMPTY, success: [listedStatus(ID_1)] };
       const result = render();
-      expect(result.statuses).toEqual([listedStatus(ID_1)]);
+      expect(result.inflight).toEqual([]);
+      expect(result.success).toEqual([listedStatus(ID_1)]);
     });
 
-    it('counts towards the cutoff', () => {
+    it('is reported as settled once the sources list it', () => {
       addPendingSlowStake({
         ...pendingArgs,
         chainId: CHAIN_ID,
         address: ACCOUNT,
       });
-      state.data = { statuses: [listedStatus(ID_2)], hasMore: false };
-      const result = render(1);
-      expect(result.statuses.map((status) => status.messageId)).toEqual([ID_1]);
-      expect(result.hasMore).toBe(true);
+      render();
+      const selected = query().select?.({
+        ...EMPTY,
+        error: [listedStatus(ID_1, 'error')],
+      }) as { settled: Hash[] };
+      expect(selected.settled).toEqual([ID_1]);
     });
 
     it('belongs to its chain and account only', () => {
@@ -253,7 +225,7 @@ describe('useSlowStakeStatuses', () => {
         chainId: CHAIN_ID,
         address: OTHER_ADDRESS,
       });
-      expect(render().statuses).toEqual([]);
+      expect(render().inflight).toEqual([]);
     });
 
     it('is not recorded without a wallet', () => {

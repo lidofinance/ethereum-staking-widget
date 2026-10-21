@@ -1,10 +1,8 @@
 import {
+  TransactionReceiptNotFoundError,
   encodeAbiParameters,
-  parseEventLogs,
-  type AbiEvent,
   type Address,
   type Hash,
-  type Log,
   type PublicClient,
 } from 'viem';
 import {
@@ -68,20 +66,18 @@ export type ReadCall = {
   args?: unknown[];
 };
 
-export type LogsRequest = {
-  address: Address;
-  fromBlock: bigint;
-  toBlock: bigint;
-  event?: { name: string };
-  args?: Record<string, unknown>;
+export type StubReceipt = {
+  transactionHash?: Hash;
+  blockNumber: bigint;
+  status?: 'success' | 'reverted';
+  logs: unknown[];
 };
 
 export type ChainStub = {
-  // replies by function name on top of the defaults
+  // replies by function name on top of the defaults; an Error is thrown
   reads?: Record<string, unknown>;
-  // eth_getLogs replies, per request
-  logs?: (request: LogsRequest) => unknown[];
-  receipts?: Record<string, { blockNumber: bigint; logs: unknown[] }>;
+  // receipts by transaction hash; a hash not listed is not mined
+  receipts?: Record<string, StubReceipt>;
   blockNumber?: bigint;
 };
 
@@ -91,40 +87,36 @@ type ModuleOptions = ChainStub & {
   // the CCIP API, as a fetch stand-in
   fetcher?: typeof fetch;
   ccipApiBaseUrl?: string;
-  logsBlockRange?: number;
 };
 
-// The log and receipt side of a public client stand-in. Like viem, getLogs
-// hands back decoded logs: the raw logs the test supplies are decoded with
-// the requested event and filtered by its args
-export const createLogsClient = ({
-  logs,
+// the receipt side of a public client stand-in: like viem, a transaction
+// that is not mined is a TransactionReceiptNotFoundError
+export const createReceiptsClient = ({
   receipts = {},
   blockNumber = 100n,
 }: Omit<ChainStub, 'reads'>) => ({
-  getLogs: vi.fn(async (request: LogsRequest) =>
-    parseEventLogs({
-      abi: [request.event as AbiEvent],
-      args: request.args,
-      logs: (logs?.(request) ?? []) as Log[],
-    }),
-  ),
   getBlockNumber: vi.fn(async () => blockNumber),
-  getTransactionReceipt: vi.fn(async ({ hash }: { hash: string }) => {
+  getTransactionReceipt: vi.fn(async ({ hash }: { hash: Hash }) => {
     const receipt = receipts[hash];
-    if (!receipt) throw new Error(`no receipt for ${hash}`);
-    return receipt;
+    if (!receipt) throw new TransactionReceiptNotFoundError({ hash });
+    return { transactionHash: hash, status: 'success', ...receipt };
   }),
 });
 
-// A public client stand-in over a lookup table of reads, logs and receipts
+const answer = (reads: Record<string, unknown>, functionName: string) => {
+  if (!(functionName in reads))
+    throw new Error(`unexpected read: ${functionName}`);
+  const reply = reads[functionName];
+  if (reply instanceof Error) throw reply;
+  return reply;
+};
+
+// A public client stand-in over a lookup table of reads and receipts
 export const createChainClient = ({ reads = {}, ...rest }: ChainStub) => ({
-  readContract: vi.fn(async ({ functionName }: ReadCall) => {
-    if (!(functionName in reads))
-      throw new Error(`unexpected read: ${functionName}`);
-    return reads[functionName];
-  }),
-  ...createLogsClient(rest),
+  readContract: vi.fn(async ({ functionName }: ReadCall) =>
+    answer(reads, functionName),
+  ),
+  ...createReceiptsClient(rest),
 });
 
 // The module only needs `core` for its clients, account and chain: a plain
@@ -133,13 +125,11 @@ export const createModule = (
   chainId: CHAINS = CHAINS.Base,
   {
     reads: readOverrides,
-    logs,
     receipts,
     blockNumber,
     l1,
     fetcher,
     ccipApiBaseUrl,
-    logsBlockRange,
   }: ModuleOptions = {},
 ) => {
   const reads: Record<string, unknown> = {
@@ -168,14 +158,12 @@ export const createModule = (
       // the contract asked
       if (functionName === 'getFee' && address === CCIP_ROUTER)
         return readOverrides?.ccipGetFee ?? CCIP_FEE_QUOTE;
-      if (!(functionName in reads))
-        throw new Error(`unexpected read: ${functionName}`);
-      return reads[functionName];
+      return answer(reads, functionName);
     }),
     estimateContractGas: vi.fn(async () => 120_000n),
     // raw RPC for chain-specific fee quotes (linea_estimateGas)
     request: vi.fn(async () => LINEA_QUOTE),
-    ...createLogsClient({ logs, receipts, blockNumber }),
+    ...createReceiptsClient({ receipts, blockNumber }),
   };
   const l1PublicClient = l1 ? createChainClient(l1) : undefined;
   const walletClient = { writeContract: vi.fn(async () => TX_HASH) };
@@ -217,7 +205,6 @@ export const createModule = (
     l1PublicClient: l1PublicClient as unknown as PublicClient | undefined,
     fetcher,
     ccipApiBaseUrl,
-    logsBlockRange,
   });
   return { l2Stake, core, publicClient, walletClient, l1PublicClient };
 };

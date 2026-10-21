@@ -19,7 +19,7 @@ import type {
   LidoSDKCore,
 } from '@lidofinance/lido-ethereum-sdk/core';
 import type { L1StakingReceiverAbiType } from './abi/l1-staking-receiver';
-import type { L2_SLOW_STAKE_STAGE } from './const';
+import type { L2_SLOW_STAKE_OUTCOME, L2_SLOW_STAKE_STAGE } from './const';
 
 export type L2StakingReceiverContractType = EncodableContract<
   GetContractReturnType<L2StakingReceiverAbiType, LidoSdkKeyedClients>
@@ -160,8 +160,6 @@ export type L2StakeModuleProps = {
   // methods require it, everything else works without
   l1PublicClient?: PublicClient;
   ccipApiBaseUrl?: string;
-  // the widest eth_getLogs block range the RPC in front serves
-  logsBlockRange?: number;
   fetcher?: typeof fetch;
 };
 
@@ -191,48 +189,75 @@ export type L1FailedMessage = {
 
 export type L2SlowStakeStage =
   (typeof L2_SLOW_STAKE_STAGE)[keyof typeof L2_SLOW_STAKE_STAGE];
+export type L2SlowStakeOutcome =
+  (typeof L2_SLOW_STAKE_OUTCOME)[keyof typeof L2_SLOW_STAKE_OUTCOME];
+
+// The key the L1 receipt leaves for the wstETH's way back, one per bridge:
+// what the landing on the L2 is read by
+export type L2SlowStakeReturnLeg =
+  // the deposit transaction on the L2, derived from the portal's log
+  | { bridge: 'op-stack'; l2TxHash: Hash }
+  // the retryable ticket: the hash of its creation transaction on the L2
+  | { bridge: 'arbitrum'; ticketId: Hash }
+  // the message hash the L2 message service tracks the claim by
+  | { bridge: 'linea'; messageHash: Hash };
 
 type L2SlowStakeStatusBase = L2SlowStakeSent & {
   ccipExplorerUrl: string;
 };
 
+// executed on Ethereum, the wstETH handed to the bridge back
+type L2SlowStakeStaked = {
+  l1TxHash: Hash;
+  l1BlockNumber: bigint;
+  stakedAmount: bigint;
+  returnLeg: L2SlowStakeReturnLeg;
+};
+
 export type L2SlowStakeStatus =
-  | (L2SlowStakeStatusBase & { stage: 'sent' })
-  | (L2SlowStakeStatusBase & { stage: 'in_transit'; ccipStatus: string })
+  | (L2SlowStakeStatusBase & { outcome: 'inflight'; stage: 'sent' })
   | (L2SlowStakeStatusBase & {
+      outcome: 'inflight';
+      stage: 'in_transit';
+      ccipStatus: string;
+    })
+  | (L2SlowStakeStatusBase &
+      L2SlowStakeStaked & { outcome: 'inflight'; stage: 'bridging' })
+  | (L2SlowStakeStatusBase & {
+      outcome: 'error';
       stage: 'transport_failed';
       ccipStatus: string;
       readyForManualExecution: boolean;
     })
   | (L2SlowStakeStatusBase & {
+      outcome: 'error';
       stage: 'parked';
       l1TxHash: Hash;
       l1BlockNumber: bigint;
       failedMessage: L1FailedMessage;
     })
-  | (L2SlowStakeStatusBase & { stage: 'tokens_recovered'; l1TxHash: Hash })
+  | (L2SlowStakeStatusBase &
+      L2SlowStakeStaked & {
+        outcome: 'error';
+        stage: 'relay_failed';
+        // the failed relay or redeem on the L2, when it was mined
+        l2TxHash?: Hash;
+      })
+  | (L2SlowStakeStatusBase &
+      L2SlowStakeStaked & { outcome: 'error'; stage: 'unresolved' })
+  | (L2SlowStakeStatusBase &
+      L2SlowStakeStaked & {
+        outcome: 'success';
+        stage: 'delivered';
+        // the landing transaction; Linea's claim has no key to read it by
+        l2TxHash?: Hash;
+      })
   | (L2SlowStakeStatusBase & {
-      stage: 'staked';
+      outcome: 'success';
+      stage: 'recovered';
       l1TxHash: Hash;
       l1BlockNumber: bigint;
-      stakedAmount: bigint;
-      // the retryable ticket on Arbitrum; absent on the other lanes
-      bridgeMessageId?: Hash;
-    })
-  | (L2SlowStakeStatusBase & {
-      stage: 'delivered';
-      l1TxHash: Hash;
-      stakedAmount: bigint;
-      l2TxHash: Hash;
     });
-
-export type L2SlowStakeLookupProps = {
-  account: Address;
-  // the L2 block to search the user's sends from; the search is chunked by
-  // the module's logs block range
-  fromBlock: bigint;
-  toBlock?: bigint;
-};
 
 export type L2SlowStakeApiLookupProps = {
   account: Address;
@@ -246,9 +271,15 @@ export type L2SlowStakeLatestProps = {
   limit?: number;
 };
 
-// The newest sends with their statuses, newest first, and whether older
-// sends exist beyond the limit
-export type L2SlowStakeLatest = {
-  statuses: L2SlowStakeStatus[];
+// Statuses by what they ask of the user, each stack newest first
+export type L2SlowStakeStacks = {
+  inflight: L2SlowStakeStatus[];
+  error: L2SlowStakeStatus[];
+  success: L2SlowStakeStatus[];
+};
+
+// The newest sends with their statuses, and whether older sends exist
+// beyond the limit
+export type L2SlowStakeLatest = L2SlowStakeStacks & {
   hasMore: boolean;
 };

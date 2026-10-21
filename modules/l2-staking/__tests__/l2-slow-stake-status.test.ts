@@ -1,8 +1,11 @@
 import {
+  ContractFunctionExecutionError,
+  ContractFunctionRevertedError,
   encodeAbiParameters,
   encodeEventTopics,
   erc20Abi,
   getAddress,
+  parseEventLogs,
   zeroAddress,
   zeroHash,
   parseAbiParameters,
@@ -10,12 +13,26 @@ import {
   type Address,
   type Hash,
 } from 'viem';
+import { getL2TransactionHashes } from 'viem/op-stack';
 import { CHAINS, ERROR_CODE } from '@lidofinance/lido-ethereum-sdk/common';
 
-import { L2_STAKING_RECEIVER_ABI } from '../abi/l2-staking-receiver';
 import { L1_STAKING_RECEIVER_ABI } from '../abi/l1-staking-receiver';
+import {
+  ARBITRUM_BRIDGE_ABI,
+  ARBITRUM_INBOX_ABI,
+  ARBITRUM_RETRYABLE_TX_ABI,
+  OP_STACK_L2_CROSS_DOMAIN_MESSENGER_ABI,
+} from '../abi/bridges';
+import {
+  ARBITRUM_RETRYABLE_TX_PRECOMPILE,
+  OP_STACK_L2_CROSS_DOMAIN_MESSENGER,
+} from '../const';
 import { L2SlowStakeLookupError } from '../errors';
-import { encodeSlowStakeData } from '../utils/fee-codec';
+import {
+  calculateArbitrumRetryableCreationId,
+  decodeArbitrumSubmitRetryableMessage,
+} from '../utils/arbitrum-retryable';
+import { decodeSlowStakeData, encodeSlowStakeData } from '../utils/fee-codec';
 import {
   ACCOUNT,
   L1_RECEIVER,
@@ -24,8 +41,12 @@ import {
   createModule,
   l2Addresses,
   type ChainStub,
-  type LogsRequest,
 } from './module-harness';
+import {
+  RETURN_LEG_FIXTURES,
+  type FixtureReceipt,
+  type LaneFixture,
+} from './fixtures/slow-stake-return-legs';
 
 const MESSAGE_ID: Hash =
   '0xf50ff3791ba99db683b51a711436712b130ace8cb0f42789850b5f3cdc56cd5e';
@@ -35,10 +56,6 @@ const SEND_TX: Hash =
   '0x3435a1409eafa7a896e7ac3b3222d5d5379373d412a480e3463f358217ab075e';
 const L1_TX: Hash =
   '0x1d623b407783ea0023ba18673b39688383a7028fdc8d43d855553b46eba971c6';
-const RETRY_TX: Hash =
-  '0x3333333333333333333333333333333333333333333333333333333333333333';
-const L2_MINT_TX: Hash =
-  '0x4444444444444444444444444444444444444444444444444444444444444444';
 const L1_WSTETH: Address = '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0';
 const L1_BRIDGE: Address = '0x00000000000000000000000000000000000000b1';
 const AMOUNT = 2n * P;
@@ -47,6 +64,16 @@ const SEND_BLOCK = 155_730_938n;
 const L1_BLOCK = 25_782_450n;
 const L2_WSTETH = l2Addresses(CHAINS.Base).wsteth;
 const SENDER = l2Addresses(CHAINS.Base).stakeReceiver;
+
+// The real portal deposit log of the Base fixture: the L2 deposit
+// transaction hash is a function of it, so the synthetic Base receipts
+// below carry it and the L2 side is keyed by the hash viem derives
+const BASE_PORTAL_LOG = RETURN_LEG_FIXTURES.base.l1Receipt.logs.find(
+  (log) => log.address === '0x49048044d57e1c92a77f79988d21fa8faf74e97e',
+);
+if (!BASE_PORTAL_LOG) throw new Error('no portal log in the Base fixture');
+const [BASE_L2_TX] = getL2TransactionHashes({ logs: [BASE_PORTAL_LOG] });
+if (!BASE_L2_TX) throw new Error('no deposit hash from the portal log');
 
 // a log as eth_getLogs returns it, from an event's ABI item and its args
 const eventLog = (
@@ -69,34 +96,6 @@ const eventLog = (
   return { address, topics, data, logIndex: 0, removed: false, ...extra };
 };
 
-const slowStakeLog = (messageId: Hash, blockNumber: bigint, amount = AMOUNT) =>
-  eventLog(
-    L2_STAKING_RECEIVER_ABI,
-    'SlowStake',
-    {
-      user: ACCOUNT,
-      destChainSelector: 5009297550715157269n,
-      messageId,
-      token: WETH,
-      amount,
-    },
-    SENDER,
-    { transactionHash: SEND_TX, blockNumber },
-  );
-
-const mintLog = (
-  value: bigint,
-  blockNumber: bigint,
-  transactionHash = L2_MINT_TX,
-) =>
-  eventLog(
-    erc20Abi,
-    'Transfer',
-    { from: zeroAddress, to: ACCOUNT, value },
-    L2_WSTETH,
-    { transactionHash, blockNumber },
-  );
-
 const FAILED_MESSAGE = {
   messageId: MESSAGE_ID,
   sourceChainSelector: 15971525489660198786n,
@@ -116,7 +115,7 @@ const FAILED_MESSAGE = {
 
 // the receipt of an L1 execution that staked, or that failed inside
 const l1Receipt = (
-  outcome: 'succeeded' | 'failed' | 'recovered',
+  outcome: 'succeeded' | 'failed',
   { messageId = MESSAGE_ID, blockNumber = L1_BLOCK, txHash = L1_TX } = {},
 ) => {
   const extra = { transactionHash: txHash, blockNumber };
@@ -152,6 +151,7 @@ const l1Receipt = (
         L1_WSTETH,
         extra,
       ),
+      BASE_PORTAL_LOG,
       eventLog(
         L1_STAKING_RECEIVER_ABI,
         'BaseL1toL2MessageSent',
@@ -161,9 +161,47 @@ const l1Receipt = (
       ),
       eventLog(
         L1_STAKING_RECEIVER_ABI,
-        outcome === 'recovered' ? 'MessageRecovered' : 'MessageSucceeded',
+        'MessageSucceeded',
         { messageId },
         L1_RECEIVER,
+        extra,
+      ),
+    ],
+  };
+};
+
+const MSG_HASH: Hash =
+  '0x6666666666666666666666666666666666666666666666666666666666666666';
+
+// the deposit transaction on the L2: the messenger's verdict and the mint
+const l2Landing = (
+  relay: 'relayed' | 'failed',
+  {
+    to = ACCOUNT,
+    status = 'success',
+  }: { to?: Address; status?: 'success' | 'reverted' } = {},
+) => {
+  const extra = { transactionHash: BASE_L2_TX, blockNumber: SEND_BLOCK + 900n };
+  return {
+    blockNumber: SEND_BLOCK + 900n,
+    status,
+    logs: [
+      ...(relay === 'relayed'
+        ? [
+            eventLog(
+              erc20Abi,
+              'Transfer',
+              { from: zeroAddress, to, value: STAKED },
+              L2_WSTETH,
+              extra,
+            ),
+          ]
+        : []),
+      eventLog(
+        OP_STACK_L2_CROSS_DOMAIN_MESSENGER_ABI,
+        relay === 'relayed' ? 'RelayedMessage' : 'FailedRelayedMessage',
+        { msgHash: MSG_HASH },
+        OP_STACK_L2_CROSS_DOMAIN_MESSENGER,
         extra,
       ),
     ],
@@ -239,6 +277,8 @@ const SENT = {
   sendBlockNumber: SEND_BLOCK,
 };
 
+const EXECUTED = ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX });
+
 const l1Stub = (overrides: Partial<ChainStub> = {}): ChainStub => ({
   reads: { WSTETH: L1_WSTETH, getFailedMessageHash: zeroHash },
   receipts: { [L1_TX]: l1Receipt('succeeded') },
@@ -246,58 +286,19 @@ const l1Stub = (overrides: Partial<ChainStub> = {}): ChainStub => ({
   ...overrides,
 });
 
-describe('getSlowStakeSentEvents', () => {
-  it('reads the user sends from the sender in chunks of the logs range', async () => {
-    const seen: LogsRequest[] = [];
-    const { l2Stake } = createModule(CHAINS.Base, {
-      logsBlockRange: 20_000,
-      blockNumber: 50_000n,
-      logs: (request) => {
-        seen.push(request);
-        return request.fromBlock <= 10n ? [slowStakeLog(MESSAGE_ID, 10n)] : [];
-      },
-    });
-    const sent = await l2Stake.getSlowStakeSentEvents({
-      account: ACCOUNT,
-      fromBlock: 0n,
-    });
-    expect(sent).toEqual([
-      {
-        ...SENT,
-        user: getAddress(ACCOUNT),
-        token: getAddress(WETH),
-        sendBlockNumber: 10n,
-      },
-    ]);
-    expect(seen.map(({ fromBlock, toBlock }) => [fromBlock, toBlock])).toEqual([
-      [0n, 19_999n],
-      [20_000n, 39_999n],
-      [40_000n, 50_000n],
-    ]);
-    expect(seen[0]).toMatchObject({
-      address: SENDER,
-      event: expect.objectContaining({ name: 'SlowStake' }),
-      args: { user: ACCOUNT },
-    });
-  });
-
-  it('wraps an L2 read failure', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, {
-      logs: () => {
-        throw new Error('rpc down');
-      },
-    });
-    await expect(
-      l2Stake.getSlowStakeSentEvents({ account: ACCOUNT, fromBlock: 0n }),
-    ).rejects.toMatchObject({ name: 'L2SlowStakeLookupError', source: 'l2' });
-  });
-});
+const STAKED_ON_BASE = {
+  l1TxHash: L1_TX,
+  l1BlockNumber: L1_BLOCK,
+  stakedAmount: STAKED,
+  returnLeg: { bridge: 'op-stack', l2TxHash: BASE_L2_TX },
+};
 
 describe('getSlowStakeStatus', () => {
   it('is sent while the API does not list the message', async () => {
     const { l2Stake } = createModule(CHAINS.Base, { fetcher: ccipApi({}) });
     await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toEqual({
       ...SENT,
+      outcome: 'inflight',
       stage: 'sent',
       ccipExplorerUrl: `https://ccip.chain.link/msg/${MESSAGE_ID}`,
     });
@@ -308,6 +309,7 @@ describe('getSlowStakeStatus', () => {
       fetcher: ccipApi({ [MESSAGE_ID]: ccipMessage('COMMITTED') }),
     });
     await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
+      outcome: 'inflight',
       stage: 'in_transit',
       ccipStatus: 'COMMITTED',
     });
@@ -320,6 +322,7 @@ describe('getSlowStakeStatus', () => {
       }),
     });
     await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
+      outcome: 'error',
       stage: 'transport_failed',
       readyForManualExecution: true,
     });
@@ -327,77 +330,88 @@ describe('getSlowStakeStatus', () => {
 
   it('needs an L1 client once the message executed', async () => {
     const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      }),
+      fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }),
     });
     await expect(l2Stake.getSlowStakeStatus(SENT)).rejects.toMatchObject({
       code: ERROR_CODE.NOT_SUPPORTED,
     });
   });
 
-  it('reads the stake and the handover from the L1 receipt: staked', async () => {
-    const { l2Stake, l1PublicClient } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      }),
-      l1: l1Stub(),
-    });
+  it('is bridging from the L1 receipt until the deposit lands on the L2', async () => {
+    const { l2Stake, l1PublicClient, publicClient } = createModule(
+      CHAINS.Base,
+      { fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }), l1: l1Stub() },
+    );
     await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
-      stage: 'staked',
-      l1TxHash: L1_TX,
-      l1BlockNumber: L1_BLOCK,
-      stakedAmount: STAKED,
-      bridgeMessageId: undefined,
+      outcome: 'inflight',
+      stage: 'bridging',
+      ...STAKED_ON_BASE,
     });
     expect(l1PublicClient?.getTransactionReceipt).toHaveBeenCalledWith({
       hash: L1_TX,
     });
+    // the landing is read by the hash the portal log derives, nothing else
+    expect(publicClient.getTransactionReceipt).toHaveBeenCalledWith({
+      hash: BASE_L2_TX,
+    });
+    expect(publicClient.getTransactionReceipt).toHaveBeenCalledTimes(1);
   });
 
-  it('is delivered once the wstETH is minted to the user on the L2', async () => {
-    const { l2Stake, publicClient } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      }),
-      l1: l1Stub(),
-      blockNumber: SEND_BLOCK + 1000n,
-      logs: ({ address }) =>
-        address === L2_WSTETH ? [mintLog(STAKED, SEND_BLOCK + 900n)] : [],
-    });
-    await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
-      stage: 'delivered',
-      stakedAmount: STAKED,
-      l2TxHash: L2_MINT_TX,
-    });
-    expect(publicClient.getLogs).toHaveBeenCalledWith(
-      expect.objectContaining({
-        address: L2_WSTETH,
-        args: { from: zeroAddress, to: ACCOUNT },
-        fromBlock: SEND_BLOCK,
-      }),
-    );
-  });
-
-  it('does not take a mint of another amount for the delivery', async () => {
+  it('is delivered once the deposit relayed and minted to the user', async () => {
     const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      }),
+      fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }),
       l1: l1Stub(),
-      logs: ({ address }) =>
-        address === L2_WSTETH ? [mintLog(STAKED + 1n, SEND_BLOCK + 900n)] : [],
+      receipts: { [BASE_L2_TX]: l2Landing('relayed') },
     });
     await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
-      stage: 'staked',
+      outcome: 'success',
+      stage: 'delivered',
+      ...STAKED_ON_BASE,
+      l2TxHash: BASE_L2_TX,
+    });
+  });
+
+  it('is a failed relay when the messenger could not credit the user', async () => {
+    const { l2Stake } = createModule(CHAINS.Base, {
+      fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }),
+      l1: l1Stub(),
+      receipts: { [BASE_L2_TX]: l2Landing('failed') },
+    });
+    await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
+      outcome: 'error',
+      stage: 'relay_failed',
+      l2TxHash: BASE_L2_TX,
+    });
+  });
+
+  it('is a failed relay when the deposit transaction reverted', async () => {
+    const { l2Stake } = createModule(CHAINS.Base, {
+      fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }),
+      l1: l1Stub(),
+      receipts: {
+        [BASE_L2_TX]: l2Landing('relayed', { status: 'reverted' }),
+      },
+    });
+    await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
+      outcome: 'error',
+      stage: 'relay_failed',
+    });
+  });
+
+  it('fails the lookup when a relayed deposit minted to someone else', async () => {
+    const { l2Stake } = createModule(CHAINS.Base, {
+      fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }),
+      l1: l1Stub(),
+      receipts: { [BASE_L2_TX]: l2Landing('relayed', { to: L1_BRIDGE }) },
+    });
+    await expect(l2Stake.getSlowStakeStatus(SENT)).rejects.toMatchObject({
+      code: ERROR_CODE.READ_ERROR,
     });
   });
 
   it('is parked while the receiver holds the failed message', async () => {
     const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      }),
+      fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }),
       l1: l1Stub({
         reads: {
           WSTETH: L1_WSTETH,
@@ -408,7 +422,11 @@ describe('getSlowStakeStatus', () => {
       }),
     });
     const status = await l2Stake.getSlowStakeStatus(SENT);
-    expect(status).toMatchObject({ stage: 'parked', l1TxHash: L1_TX });
+    expect(status).toMatchObject({
+      outcome: 'error',
+      stage: 'parked',
+      l1TxHash: L1_TX,
+    });
     if (status.stage !== 'parked') throw new Error('not parked');
     expect(status.failedMessage).toEqual(FAILED_MESSAGE);
     // the retry carries the message the receiver stored
@@ -419,79 +437,18 @@ describe('getSlowStakeStatus', () => {
     expect(retry.data.startsWith('0x')).toBe(true);
   });
 
-  it('is tokens recovered when the DAO moved the parked funds out', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      }),
-      l1: l1Stub({
-        receipts: { [L1_TX]: l1Receipt('failed') },
-        logs: ({ event }) =>
-          event?.name === 'TokensRecovered'
-            ? [
-                eventLog(
-                  L1_STAKING_RECEIVER_ABI,
-                  'TokensRecovered',
-                  { messageId: MESSAGE_ID },
-                  L1_RECEIVER,
-                  { transactionHash: RETRY_TX, blockNumber: L1_BLOCK + 5n },
-                ),
-              ]
-            : [],
-      }),
-    });
-    await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
-      stage: 'tokens_recovered',
-      l1TxHash: RETRY_TX,
-    });
-  });
-
-  it('follows a retried stake into the retry receipt', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      }),
-      l1: l1Stub({
-        receipts: {
-          [L1_TX]: l1Receipt('failed'),
-          [RETRY_TX]: l1Receipt('recovered', {
-            txHash: RETRY_TX,
-            blockNumber: L1_BLOCK + 5n,
-          }),
-        },
-        logs: ({ event }) =>
-          event?.name === 'MessageRecovered'
-            ? [
-                eventLog(
-                  L1_STAKING_RECEIVER_ABI,
-                  'MessageRecovered',
-                  { messageId: MESSAGE_ID },
-                  L1_RECEIVER,
-                  { transactionHash: RETRY_TX, blockNumber: L1_BLOCK + 5n },
-                ),
-              ]
-            : [],
-      }),
-    });
-    await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
-      stage: 'staked',
-      l1TxHash: RETRY_TX,
-      stakedAmount: STAKED,
-    });
-  });
-
-  it('fails the lookup when the slot is clear but no recovery is found', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      }),
+  it('is recovered once the failed-message slot is clear, without a scan', async () => {
+    const { l2Stake, l1PublicClient } = createModule(CHAINS.Base, {
+      fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }),
       l1: l1Stub({ receipts: { [L1_TX]: l1Receipt('failed') } }),
     });
-    await expect(l2Stake.getSlowStakeStatus(SENT)).rejects.toMatchObject({
-      name: 'L2SlowStakeLookupError',
-      source: 'l1',
-      messageId: MESSAGE_ID,
+    await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
+      outcome: 'success',
+      stage: 'recovered',
+      l1TxHash: L1_TX,
+      l1BlockNumber: L1_BLOCK,
     });
+    expect(l1PublicClient?.getTransactionReceipt).toHaveBeenCalledTimes(1);
   });
 
   it('wraps an unreachable API as a lookup failure, not a status', async () => {
@@ -504,55 +461,227 @@ describe('getSlowStakeStatus', () => {
     expect(error).toBeInstanceOf(L2SlowStakeLookupError);
     expect(error.source).toBe('ccip-api');
   });
+
+  it('wraps an L2 read failure as a lookup failure, not as bridging', async () => {
+    const { l2Stake, publicClient } = createModule(CHAINS.Base, {
+      fetcher: ccipApi({ [MESSAGE_ID]: EXECUTED }),
+      l1: l1Stub(),
+    });
+    publicClient.getTransactionReceipt.mockRejectedValue(new Error('rpc down'));
+    await expect(l2Stake.getSlowStakeStatus(SENT)).rejects.toMatchObject({
+      name: 'L2SlowStakeLookupError',
+      source: 'l2',
+    });
+  });
 });
 
-describe('getSlowStakeStatuses', () => {
-  it('claims the mints in send order, one per stake', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher: ccipApi({
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-        [OTHER_MESSAGE_ID]: ccipMessage('SUCCESS', {
-          messageId: OTHER_MESSAGE_ID,
-          receiptTransactionHash: RETRY_TX,
-        }),
+// The real receipts of one completed stake per lane, read the way the
+// pipeline reads them: the landing is found by the key the L1 receipt
+// leaves, and the derived keys match the chain
+describe('the return leg on each lane', () => {
+  const l1Of = (fixture: LaneFixture): ChainStub => ({
+    reads: { WSTETH: L1_WSTETH, getFailedMessageHash: zeroHash },
+    receipts: { [fixture.l1Receipt.transactionHash]: fixture.l1Receipt },
+  });
+  const byHash = (...receipts: (FixtureReceipt | undefined)[]) =>
+    Object.fromEntries(
+      receipts.flatMap((receipt) =>
+        receipt ? [[receipt.transactionHash, receipt]] : [],
+      ),
+    );
+  const userOf = (fixture: LaneFixture) =>
+    decodeSlowStakeData(fixture.message.data as `0x${string}`).recipient;
+
+  // the precompile's reply for a ticket that was redeemed or expired
+  const noTicket = () =>
+    new ContractFunctionExecutionError(
+      new ContractFunctionRevertedError({
+        abi: ARBITRUM_RETRYABLE_TX_ABI,
+        functionName: 'getTimeout',
+        data: '0x80698456',
       }),
-      l1: l1Stub({
-        receipts: {
-          [L1_TX]: l1Receipt('succeeded'),
-          [RETRY_TX]: l1Receipt('succeeded', {
-            messageId: OTHER_MESSAGE_ID,
-            txHash: RETRY_TX,
-          }),
-        },
-      }),
-      blockNumber: SEND_BLOCK + 2000n,
-      logs: ({ address }) => {
-        if (address === SENDER)
-          return [
-            slowStakeLog(MESSAGE_ID, SEND_BLOCK),
-            slowStakeLog(OTHER_MESSAGE_ID, SEND_BLOCK + 100n),
-          ];
-        if (address === L2_WSTETH) return [mintLog(STAKED, SEND_BLOCK + 900n)];
-        return [];
+      {
+        abi: ARBITRUM_RETRYABLE_TX_ABI,
+        functionName: 'getTimeout',
+        args: [zeroHash],
+        contractAddress: ARBITRUM_RETRYABLE_TX_PRECOMPILE,
       },
+    );
+
+  describe('Base (OP-stack)', () => {
+    const fixture = RETURN_LEG_FIXTURES.base;
+    const { messageId } = fixture.message;
+
+    it('derives the deposit transaction from the portal log and reads it', async () => {
+      const { l2Stake, publicClient } = createModule(CHAINS.Base, {
+        fetcher: ccipApi({ [messageId]: fixture.message }),
+        l1: l1Of(fixture),
+        receipts: byHash(fixture.l2Receipt),
+      });
+      await expect(
+        l2Stake.getSlowStakeStatusByMessageId(messageId),
+      ).resolves.toMatchObject({
+        outcome: 'success',
+        stage: 'delivered',
+        user: userOf(fixture),
+        stakedAmount: 4_011_888_681_571_537_530n,
+        returnLeg: {
+          bridge: 'op-stack',
+          l2TxHash: fixture.l2Receipt?.transactionHash,
+        },
+        l2TxHash: fixture.l2Receipt?.transactionHash,
+      });
+      expect(publicClient.getTransactionReceipt).toHaveBeenCalledTimes(1);
     });
-    const statuses = await l2Stake.getSlowStakeStatuses({
-      account: ACCOUNT,
-      fromBlock: SEND_BLOCK,
-    });
-    expect(statuses.map((status) => status.stage)).toEqual([
-      'delivered',
-      'staked',
-    ]);
   });
 
-  it('is empty for a user without sends', async () => {
-    const { l2Stake, publicClient } = createModule();
-    await expect(
-      l2Stake.getSlowStakeStatuses({ account: ACCOUNT, fromBlock: 0n }),
-    ).resolves.toEqual([]);
-    // no mint lookup without a send to match
-    expect(publicClient.getLogs).toHaveBeenCalledTimes(1);
+  describe('Arbitrum', () => {
+    const fixture = RETURN_LEG_FIXTURES.arbitrum;
+    const { creationReceipt, retryReceipt } = fixture;
+    const { messageId } = fixture.message;
+    if (!creationReceipt || !retryReceipt)
+      throw new Error('the Arbitrum fixture lacks its L2 receipts');
+    const ticketId = creationReceipt.transactionHash;
+    const retryTx = retryReceipt.transactionHash;
+    const ticketAlive = { getTimeout: 1_800_000_000n };
+    const ticketGone = { getTimeout: noTicket() };
+
+    it('derives the ticket id from the inbox and bridge logs', () => {
+      const { logs } = fixture.l1Receipt;
+      const [inbox] = parseEventLogs({ abi: ARBITRUM_INBOX_ABI, logs });
+      const [bridge] = parseEventLogs({ abi: ARBITRUM_BRIDGE_ABI, logs });
+      if (!inbox || !bridge) throw new Error('fixture lacks the inbox logs');
+      expect(bridge.args.kind).toBe(9);
+      expect(
+        calculateArbitrumRetryableCreationId({
+          l2ChainId: 42161n,
+          messageNumber: inbox.args.messageNum,
+          from: bridge.args.sender,
+          l1BaseFee: bridge.args.baseFeeL1,
+          ...decodeArbitrumSubmitRetryableMessage(inbox.args.data),
+        }),
+      ).toBe(ticketId);
+    });
+
+    it('is delivered through the scheduled auto-redeem', async () => {
+      const { l2Stake, publicClient } = createModule(CHAINS.Arbitrum, {
+        fetcher: ccipApi({ [messageId]: fixture.message }),
+        l1: l1Of(fixture),
+        receipts: byHash(creationReceipt, retryReceipt),
+      });
+      await expect(
+        l2Stake.getSlowStakeStatusByMessageId(messageId),
+      ).resolves.toMatchObject({
+        outcome: 'success',
+        stage: 'delivered',
+        user: userOf(fixture),
+        returnLeg: { bridge: 'arbitrum', ticketId },
+        l2TxHash: retryTx,
+      });
+      // the creation receipt and the retry receipt; no ticket probe
+      expect(publicClient.getTransactionReceipt).toHaveBeenCalledTimes(2);
+      expect(publicClient.readContract).not.toHaveBeenCalledWith(
+        expect.objectContaining({ functionName: 'getTimeout' }),
+      );
+    });
+
+    it('is bridging until the ticket is created on the L2', async () => {
+      const { l2Stake } = createModule(CHAINS.Arbitrum, {
+        fetcher: ccipApi({ [messageId]: fixture.message }),
+        l1: l1Of(fixture),
+      });
+      await expect(
+        l2Stake.getSlowStakeStatusByMessageId(messageId),
+      ).resolves.toMatchObject({ outcome: 'inflight', stage: 'bridging' });
+    });
+
+    it('is a failed relay while a ticket whose auto-redeem reverted is alive', async () => {
+      const revertedRetry = { ...retryReceipt, status: 'reverted' as const };
+      const { l2Stake } = createModule(CHAINS.Arbitrum, {
+        fetcher: ccipApi({ [messageId]: fixture.message }),
+        l1: l1Of(fixture),
+        reads: ticketAlive,
+        receipts: byHash(creationReceipt, revertedRetry),
+      });
+      await expect(
+        l2Stake.getSlowStakeStatusByMessageId(messageId),
+      ).resolves.toMatchObject({
+        outcome: 'error',
+        stage: 'relay_failed',
+        l2TxHash: retryTx,
+      });
+    });
+
+    it('is unresolved once such a ticket is gone', async () => {
+      const revertedRetry = { ...retryReceipt, status: 'reverted' as const };
+      const { l2Stake } = createModule(CHAINS.Arbitrum, {
+        fetcher: ccipApi({ [messageId]: fixture.message }),
+        l1: l1Of(fixture),
+        reads: ticketGone,
+        receipts: byHash(creationReceipt, revertedRetry),
+      });
+      await expect(
+        l2Stake.getSlowStakeStatusByMessageId(messageId),
+      ).resolves.toMatchObject({ outcome: 'error', stage: 'unresolved' });
+    });
+
+    it('is a failed relay when no auto-redeem was scheduled', async () => {
+      const bareCreation = { ...creationReceipt, logs: [] };
+      const { l2Stake } = createModule(CHAINS.Arbitrum, {
+        fetcher: ccipApi({ [messageId]: fixture.message }),
+        l1: l1Of(fixture),
+        reads: ticketAlive,
+        receipts: byHash(bareCreation),
+      });
+      await expect(
+        l2Stake.getSlowStakeStatusByMessageId(messageId),
+      ).resolves.toMatchObject({
+        outcome: 'error',
+        stage: 'relay_failed',
+        l2TxHash: undefined,
+      });
+    });
+  });
+
+  describe('Linea', () => {
+    const fixture = RETURN_LEG_FIXTURES.linea;
+    const { messageId } = fixture.message;
+    const MESSAGE_HASH =
+      '0x5f39f869cf1d00b8cbb20a2bda4ce7a11e4432ecff340497b115387be0c1edcb';
+
+    it('is delivered once the L2 message service reports the claim', async () => {
+      const { l2Stake, publicClient } = createModule(CHAINS.Linea, {
+        fetcher: ccipApi({ [messageId]: fixture.message }),
+        l1: l1Of(fixture),
+        reads: { inboxL1L2MessageStatus: 2n },
+      });
+      await expect(
+        l2Stake.getSlowStakeStatusByMessageId(messageId),
+      ).resolves.toMatchObject({
+        outcome: 'success',
+        stage: 'delivered',
+        returnLeg: { bridge: 'linea', messageHash: MESSAGE_HASH },
+        l2TxHash: undefined,
+      });
+      expect(publicClient.readContract).toHaveBeenCalledWith(
+        expect.objectContaining({
+          functionName: 'inboxL1L2MessageStatus',
+          args: [MESSAGE_HASH],
+        }),
+      );
+      expect(publicClient.getTransactionReceipt).not.toHaveBeenCalled();
+    });
+
+    it('is bridging while the message is only anchored', async () => {
+      const { l2Stake } = createModule(CHAINS.Linea, {
+        fetcher: ccipApi({ [messageId]: fixture.message }),
+        l1: l1Of(fixture),
+        reads: { inboxL1L2MessageStatus: 1n },
+      });
+      await expect(
+        l2Stake.getSlowStakeStatusByMessageId(messageId),
+      ).resolves.toMatchObject({ outcome: 'inflight', stage: 'bridging' });
+    });
   });
 });
 
@@ -602,7 +731,7 @@ describe('getSlowStakeSentFromCcipApi', () => {
   it('walks the lane list, keeps the sends the user signed, oldest first', async () => {
     const fetcher = ccipApi(
       {
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
+        [MESSAGE_ID]: EXECUTED,
         [OTHER_MESSAGE_ID]: ccipMessage('COMMITTED', {
           messageId: OTHER_MESSAGE_ID,
           sendBlockNumber: Number(SEND_BLOCK) + 100,
@@ -663,95 +792,13 @@ describe('getSlowStakeSentFromCcipApi', () => {
     ).resolves.toEqual([]);
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
-
-  it('resolves statuses without fetching a message twice', async () => {
-    const fetcher = ccipApi(
-      {
-        [MESSAGE_ID]: ccipMessage('SUCCESS', { receiptTransactionHash: L1_TX }),
-      },
-      {
-        first: {
-          data: [summary(MESSAGE_ID, ACCOUNT)],
-          pagination: { limit: 100, hasNextPage: false, cursor: null },
-        },
-      },
-    );
-    const { l2Stake } = createModule(CHAINS.Base, { fetcher, l1: l1Stub() });
-    const statuses = await l2Stake.getSlowStakeStatusesFromCcipApi({
-      account: ACCOUNT,
-    });
-    expect(statuses.map((s) => s.stage)).toEqual(['staked']);
-    // one list page, one message
-    expect(fetcher).toHaveBeenCalledTimes(2);
-  });
 });
 
-describe('getLatestSlowStakeStatuses', () => {
-  const THIRD_MESSAGE_ID: Hash =
-    '0x5555555555555555555555555555555555555555555555555555555555555555';
-  const sends = [
-    slowStakeLog(MESSAGE_ID, SEND_BLOCK),
-    slowStakeLog(OTHER_MESSAGE_ID, SEND_BLOCK + 100n),
-    slowStakeLog(THIRD_MESSAGE_ID, SEND_BLOCK + 200n),
-  ];
+describe('getLatestSlowStakeStatusesFromCcipApi', () => {
   const api = () =>
-    ccipApi({
-      [MESSAGE_ID]: ccipMessage('COMMITTED'),
-      [OTHER_MESSAGE_ID]: ccipMessage('COMMITTED', {
-        messageId: OTHER_MESSAGE_ID,
-      }),
-      [THIRD_MESSAGE_ID]: ccipMessage('COMMITTED', {
-        messageId: THIRD_MESSAGE_ID,
-      }),
-    });
-
-  it('resolves only the newest sends, newest first, and says more exist', async () => {
-    const fetcher = api();
-    const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher,
-      blockNumber: SEND_BLOCK + 300n,
-      logs: ({ address }) => (address === SENDER ? sends : []),
-    });
-    const latest = await l2Stake.getLatestSlowStakeStatuses({
-      account: ACCOUNT,
-      fromBlock: SEND_BLOCK,
-      limit: 2,
-    });
-    expect(latest.statuses.map((status) => status.messageId)).toEqual([
-      THIRD_MESSAGE_ID,
-      OTHER_MESSAGE_ID,
-    ]);
-    expect(latest.hasMore).toBe(true);
-    // the oldest send is listed, never looked up
-    expect(fetcher).toHaveBeenCalledTimes(2);
-  });
-
-  it('reports no more once the limit covers every send', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, {
-      fetcher: api(),
-      blockNumber: SEND_BLOCK + 300n,
-      logs: ({ address }) => (address === SENDER ? sends : []),
-    });
-    const latest = await l2Stake.getLatestSlowStakeStatuses({
-      account: ACCOUNT,
-      fromBlock: SEND_BLOCK,
-      limit: 3,
-    });
-    expect(latest.statuses).toHaveLength(3);
-    expect(latest.hasMore).toBe(false);
-  });
-
-  it('is empty without sends', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, { fetcher: api() });
-    await expect(
-      l2Stake.getLatestSlowStakeStatuses({ account: ACCOUNT, fromBlock: 0n }),
-    ).resolves.toEqual({ statuses: [], hasMore: false });
-  });
-
-  it('bounds the API lookup the same way', async () => {
-    const fetcher = ccipApi(
+    ccipApi(
       {
-        [MESSAGE_ID]: ccipMessage('COMMITTED'),
+        [MESSAGE_ID]: ccipMessage('FAILED'),
         [OTHER_MESSAGE_ID]: ccipMessage('COMMITTED', {
           messageId: OTHER_MESSAGE_ID,
           sendBlockNumber: Number(SEND_BLOCK) + 100,
@@ -767,14 +814,47 @@ describe('getLatestSlowStakeStatuses', () => {
         },
       },
     );
+
+  it('stacks the statuses by outcome, newest first', async () => {
+    const fetcher = api();
     const { l2Stake } = createModule(CHAINS.Base, { fetcher });
+    const latest = await l2Stake.getLatestSlowStakeStatusesFromCcipApi({
+      account: ACCOUNT,
+    });
+    expect(latest.inflight.map((status) => status.messageId)).toEqual([
+      OTHER_MESSAGE_ID,
+    ]);
+    expect(latest.error.map((status) => status.messageId)).toEqual([
+      MESSAGE_ID,
+    ]);
+    expect(latest.success).toEqual([]);
+    expect(latest.hasMore).toBe(false);
+    // one list page, one fetch per message, nothing twice
+    expect(fetcher).toHaveBeenCalledTimes(3);
+  });
+
+  it('resolves only the newest sends and says more exist', async () => {
+    const { l2Stake } = createModule(CHAINS.Base, { fetcher: api() });
     const latest = await l2Stake.getLatestSlowStakeStatusesFromCcipApi({
       account: ACCOUNT,
       limit: 1,
     });
-    expect(latest.statuses.map((status) => status.messageId)).toEqual([
+    expect(latest.inflight.map((status) => status.messageId)).toEqual([
       OTHER_MESSAGE_ID,
     ]);
+    expect(latest.error).toEqual([]);
     expect(latest.hasMore).toBe(true);
+  });
+
+  it('is empty without sends', async () => {
+    const { l2Stake } = createModule(CHAINS.Base, { fetcher: ccipApi({}) });
+    await expect(
+      l2Stake.getLatestSlowStakeStatusesFromCcipApi({ account: ACCOUNT }),
+    ).resolves.toEqual({
+      inflight: [],
+      error: [],
+      success: [],
+      hasMore: false,
+    });
   });
 });

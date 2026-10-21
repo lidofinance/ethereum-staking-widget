@@ -1,5 +1,5 @@
 import { base, optimism, linea, arbitrum } from 'wagmi/chains';
-import { parseEther, parseGwei } from 'viem';
+import { parseEther, parseGwei, type Address } from 'viem';
 import { CHAINS } from 'config/chains';
 
 export const LIDO_L2_STAKING_QUERY_SCOPE = 'L2_STAKING_QUERY_SCOPE';
@@ -104,39 +104,48 @@ export const LIDO_L2_SLOW_STAKE_LANES: Partial<
   },
 };
 
+// What a slow stake asks of the user: nothing yet, something, nothing any
+// more. The stage says where it is within that
+export const L2_SLOW_STAKE_OUTCOME = {
+  inflight: 'inflight',
+  error: 'error',
+  success: 'success',
+} as const;
+
 // Where a slow stake is, from the one transaction the user signed to the
-// wstETH on the L2. The two failure stages are the ones a user can act on
-// (a parked stake is retried on L1, permissionlessly); tokens recovered by
-// the DAO is final
+// wstETH on the L2. The three error stages are ones someone can act on: a
+// transport failure is executed by hand on CCIP, a parked stake is retried
+// on L1, a failed relay is replayed or redeemed on the L2
 export const L2_SLOW_STAKE_STAGE = {
   // the L2 transaction is mined; CCIP has not listed the message yet
   sent: 'sent',
   // listed by CCIP, not executed on Ethereum yet
   inTransit: 'in_transit',
+  // staked on Ethereum, the wstETH is on the bridge back and not landed
+  bridging: 'bridging',
   // CCIP could not execute it on Ethereum; manual execution may be open
   transportFailed: 'transport_failed',
   // executed, but the stake inside failed: the funds sit at the receiver
   parked: 'parked',
-  // the DAO moved the parked funds out; no wstETH will arrive
-  tokensRecovered: 'tokens_recovered',
-  // staked on Ethereum, wstETH handed to the bridge back to the L2
-  staked: 'staked',
+  // the wstETH reached the L2 bridge, but the relay to the user failed
+  relayFailed: 'relay_failed',
+  // the bridge no longer tracks the return and its landing has no key to
+  // read by: redeemed by hand, or expired
+  unresolved: 'unresolved',
   // wstETH credited to the user on the L2
   delivered: 'delivered',
+  // the parked funds are gone from the receiver: retried, or recovered by
+  // the DAO; telling the two apart takes an event scan
+  recovered: 'recovered',
 } as const;
 
-// the widest eth_getLogs block range the widget's RPC proxy serves
-export const LIDO_L2_LOGS_BLOCK_RANGE = 20_000;
-
-// How far back the sender's events are scanned for an account the CCIP API
-// cannot attribute: about a day of blocks per lane, at 2 s blocks on the
-// OP-stack lanes and Linea, 0.25 s on Arbitrum. A chunked scan, one call
-// per logs block range
-export const LIDO_L2_SLOW_STAKE_LOOKBACK_BLOCKS: Partial<
-  Record<number, bigint>
-> = {
-  [CHAINS.Optimism]: 43_200n,
-  [CHAINS.Base]: 43_200n,
-  [CHAINS.Linea]: 43_200n,
-  [CHAINS.Arbitrum]: 345_600n,
-};
+// Where the wstETH lands on each L2, read by key: the OP-stack messenger
+// predeploy, the Arbitrum retryable precompile, the Linea message service
+export const OP_STACK_L2_CROSS_DOMAIN_MESSENGER: Address =
+  '0x4200000000000000000000000000000000000007';
+export const ARBITRUM_RETRYABLE_TX_PRECOMPILE: Address =
+  '0x000000000000000000000000000000000000006E';
+export const LINEA_L2_MESSAGE_SERVICE: Address =
+  '0x508Ca82Df566dCD1B0DE8296e70a96332cD644ec';
+// inboxL1L2MessageStatus: 0 unknown, 1 anchored, 2 claimed
+export const LINEA_MESSAGE_STATUS_CLAIMED = 2n;
