@@ -29,6 +29,14 @@ const TOKEN_KEYS: readonly DexTokenContractKey[] = [
   'aave',
   'rlusd',
   'usdg',
+  'ausd',
+  'eurc',
+  'gho',
+  'paxg',
+  'tbtc',
+  'lbtc',
+  'cbeth',
+  'susde',
 ];
 
 type NetworkContracts = Record<string, string | undefined>;

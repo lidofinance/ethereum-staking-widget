@@ -3,7 +3,7 @@
   "timestamp": "2026-10-21T00:00:00.000Z",
   "version": {
     "major": 2,
-    "minor": 1,
+    "minor": 2,
     "patch": 0
   },
   "keywords": [],
@@ -300,6 +300,61 @@
       "logoURI": "https://files.cow.fi/token-lists/images/1/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/logo.png"
     },
     {
+      "symbol": "USDG",
+      "name": "Global Dollar",
+      "address": "0x004b506865409877c9fa29bfb1eba929984b9bbc",
+      "decimals": 6,
+      "chainId": 42161
+    },
+    {
+      "symbol": "GHO",
+      "name": "Gho Token",
+      "address": "0x7dff72693f6a4149b17e7c6314655f6a9f7c8b33",
+      "decimals": 18,
+      "chainId": 42161,
+      "logoURI": "https://files.cow.fi/token-lists/images/42161/0x7dff72693f6a4149b17e7c6314655f6a9f7c8b33/logo.png"
+    },
+    {
+      "symbol": "tBTC",
+      "name": "tBTC v2",
+      "address": "0x6c84a8f1c29108f47a79964b5fe888d4f4d0de40",
+      "decimals": 18,
+      "chainId": 42161,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x18084fba666a33d37592fa2633fd49a74dd93a88/logo.png"
+    },
+    {
+      "symbol": "sUSDe",
+      "name": "Staked USDe",
+      "address": "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2",
+      "decimals": 18,
+      "chainId": 42161,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x9d39a5de30e57443bff2a8307a4256c8797a3497/logo.png"
+    },
+    {
+      "symbol": "LINK",
+      "name": "ChainLink Token",
+      "address": "0xf97f4df75117a78c1a5a0dbb814af92458539fb4",
+      "decimals": 18,
+      "chainId": 42161,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x514910771af9ca656af840dff83e8264ecf986ca/logo.png"
+    },
+    {
+      "symbol": "UNI",
+      "name": "Uniswap",
+      "address": "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0",
+      "decimals": 18,
+      "chainId": 42161,
+      "logoURI": "https://files.cow.fi/token-lists/images/42161/0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0/logo.png"
+    },
+    {
+      "symbol": "AAVE",
+      "name": "Aave Token",
+      "address": "0xba5ddd1f9d7f570dc94a51479a000e3bce967196",
+      "decimals": 18,
+      "chainId": 42161,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9/logo.png"
+    },
+    {
       "symbol": "ETH",
       "name": "Ether",
       "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
@@ -370,6 +425,69 @@
       "decimals": 8,
       "chainId": 8453,
       "logoURI": "https://files.cow.fi/token-lists/images/8453/0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf/logo.png"
+    },
+    {
+      "symbol": "EURC",
+      "name": "Euro Coin",
+      "address": "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42",
+      "decimals": 6,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/8453/0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42/logo.png"
+    },
+    {
+      "symbol": "GHO",
+      "name": "Gho Token",
+      "address": "0x6bb7a212910682dcfdbd5bcbb3e28fb4e8da10ee",
+      "decimals": 18,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f/logo.png"
+    },
+    {
+      "symbol": "tBTC",
+      "name": "tBTC v2",
+      "address": "0x236aa50979d5f3de3bd1eeb40e81137f22ab794b",
+      "decimals": 18,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x18084fba666a33d37592fa2633fd49a74dd93a88/logo.png"
+    },
+    {
+      "symbol": "LBTC",
+      "name": "Lombard Staked Bitcoin",
+      "address": "0xecac9c5f704e954931349da37f60e39f515c11c1",
+      "decimals": 8,
+      "chainId": 8453
+    },
+    {
+      "symbol": "cbETH",
+      "name": "Coinbase Wrapped Staked ETH",
+      "address": "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22",
+      "decimals": 18,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xbe9895146f7af43049ca1c1ae358b0541ea49704/logo.png"
+    },
+    {
+      "symbol": "LINK",
+      "name": "ChainLink Token",
+      "address": "0x88fb150bdc53a65fe94dea0c9ba0a6daf8c6e196",
+      "decimals": 18,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x514910771af9ca656af840dff83e8264ecf986ca/logo.png"
+    },
+    {
+      "symbol": "UNI",
+      "name": "Uniswap",
+      "address": "0xc3de830ea07524a0761646a6a4e4be0e114a3c83",
+      "decimals": 18,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984/logo.png"
+    },
+    {
+      "symbol": "AAVE",
+      "name": "Aave Token",
+      "address": "0x63706e401c06ac8513145b7687a14804d17f814b",
+      "decimals": 18,
+      "chainId": 8453,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9/logo.png"
     }
   ]
 }

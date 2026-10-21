@@ -38,6 +38,14 @@ const ERC20_TOKENS = [
   c.link,
   c.uni,
   c.aave,
+  c.ausd,
+  c.eurc,
+  c.gho,
+  c.paxg,
+  c.tbtc,
+  c.lbtc,
+  c.cbeth,
+  c.susde,
 ].map(lower);
 
 describe('SWAP_COWSWAP_PROFILE', () => {
@@ -72,6 +80,14 @@ describe('SWAP_COWSWAP_PROFILE', () => {
       [lower(c.link)]: 18,
       [lower(c.uni)]: 18,
       [lower(c.aave)]: 18,
+      [lower(c.ausd)]: 6,
+      [lower(c.eurc)]: 6,
+      [lower(c.gho)]: 18,
+      [lower(c.paxg)]: 18,
+      [lower(c.tbtc)]: 18,
+      [lower(c.lbtc)]: 8,
+      [lower(c.cbeth)]: 18,
+      [lower(c.susde)]: 18,
     });
   });
 
@@ -84,9 +100,11 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     }
   });
 
-  it('prices LDO and WBTC through composite feeds', () => {
+  it('prices LDO, WBTC, LBTC and cbETH through composite feeds', () => {
     expect(profile.oracleFeeds.sell[lower(c.ldo)]).toBe('LDO_USD');
     expect(profile.oracleFeeds.sell[lower(c.wbtc)]).toBe('WBTC_USD');
+    expect(profile.oracleFeeds.sell[lower(c.lbtc)]).toBe('LBTC_USD');
+    expect(profile.oracleFeeds.sell[lower(c.cbeth)]).toBe('CBETH_USD');
   });
 
   it.each([
@@ -169,12 +187,37 @@ describe('SWAP_COWSWAP_PROFILE', () => {
         'usds',
         'pyusd',
         'wbtc',
+        'usdg',
+        'gho',
+        'tbtc',
+        'susde',
+        'link',
+        'uni',
+        'aave',
       ],
     ],
     [
       'base',
       base.id,
-      ['eth', 'wsteth', 'weth', 'usdc', 'usdt', 'usde', 'dai', 'usds', 'cbbtc'],
+      [
+        'eth',
+        'wsteth',
+        'weth',
+        'usdc',
+        'usdt',
+        'usde',
+        'dai',
+        'usds',
+        'cbbtc',
+        'eurc',
+        'gho',
+        'tbtc',
+        'lbtc',
+        'cbeth',
+        'link',
+        'uni',
+        'aave',
+      ],
     ],
   ] as const)('lists the verified %s tokens', (_, chainId, keys) => {
     const config = profile.getNetworkTxConfig(chainId);

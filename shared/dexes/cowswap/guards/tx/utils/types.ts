@@ -21,7 +21,15 @@ export type DexTokenContractKey =
   | 'uni'
   | 'aave'
   | 'rlusd'
-  | 'usdg';
+  | 'usdg'
+  | 'ausd'
+  | 'eurc'
+  | 'gho'
+  | 'paxg'
+  | 'tbtc'
+  | 'lbtc'
+  | 'cbeth'
+  | 'susde';
 
 // CoW contracts and tokens of one network; a token without an address is not traded there
 export type CowswapNetwork = Partial<Record<DexTokenContractKey, string>> & {

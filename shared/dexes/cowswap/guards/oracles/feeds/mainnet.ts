@@ -29,7 +29,15 @@ export type ChainlinkFeedKey =
   | 'UNI_USD'
   | 'AAVE_USD'
   | 'RLUSD_USD'
-  | 'USDG_USD';
+  | 'USDG_USD'
+  | 'AUSD_USD'
+  | 'EURC_USD'
+  | 'GHO_USD'
+  | 'PAXG_USD'
+  | 'TBTC_USD'
+  | 'LBTC_BTC'
+  | 'CBETH_ETH'
+  | 'SUSDE_USD';
 
 export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
   ETH_USD: {
@@ -117,14 +125,56 @@ export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
     maxStaleness: 87000,
     decimals: 8,
   },
+  AUSD_USD: {
+    address: c.aggregatorAusdUsdPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 18,
+  },
+  EURC_USD: {
+    address: c.aggregatorEurcUsdPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 8,
+  },
+  GHO_USD: {
+    address: c.aggregatorGhoUsdPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 8,
+  },
+  PAXG_USD: {
+    address: c.aggregatorPaxgUsdPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 8,
+  },
+  TBTC_USD: {
+    address: c.aggregatorTbtcUsdPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 8,
+  },
+  LBTC_BTC: {
+    address: c.aggregatorLbtcBtcPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 8,
+  },
+  CBETH_ETH: {
+    address: c.aggregatorCbethEthPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 18,
+  },
+  SUSDE_USD: {
+    address: c.aggregatorSusdeUsdPriceFeed as Address,
+    maxStaleness: 87000,
+    decimals: 8,
+  },
 };
 
 // Token USD price as a product of feeds, e.g. LDO/ETH × ETH/USD
 export type OraclePriceKey =
-  | Exclude<ChainlinkFeedKey, 'LDO_ETH' | 'WBTC_BTC'>
+  | Exclude<ChainlinkFeedKey, 'LDO_ETH' | 'WBTC_BTC' | 'LBTC_BTC' | 'CBETH_ETH'>
   | 'WSTETH_USD'
   | 'LDO_USD'
-  | 'WBTC_USD';
+  | 'WBTC_USD'
+  | 'LBTC_USD'
+  | 'CBETH_USD';
 
 export const ORACLE_PRICES: Record<
   OraclePriceKey,
@@ -149,6 +199,14 @@ export const ORACLE_PRICES: Record<
   AAVE_USD: ['AAVE_USD'],
   RLUSD_USD: ['RLUSD_USD'],
   USDG_USD: ['USDG_USD'],
+  AUSD_USD: ['AUSD_USD'],
+  EURC_USD: ['EURC_USD'],
+  GHO_USD: ['GHO_USD'],
+  PAXG_USD: ['PAXG_USD'],
+  TBTC_USD: ['TBTC_USD'],
+  LBTC_USD: ['LBTC_BTC', 'BTC_USD'],
+  CBETH_USD: ['CBETH_ETH', 'ETH_USD'],
+  SUSDE_USD: ['SUSDE_USD'],
 };
 
 // Price key that applies the wstETH rate, on any network
@@ -196,4 +254,23 @@ export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
   AAVE_USD: { min: 10n * CHAINLINK_SCALE, max: 2_000n * CHAINLINK_SCALE },
   RLUSD_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
   USDG_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  // 18 decimals: 0.5–2 USD
+  AUSD_USD: { min: 5n * 10n ** 17n, max: 2n * 10n ** 18n },
+  // EUR, not USD
+  EURC_USD: {
+    min: (CHAINLINK_SCALE * 8n) / 10n,
+    max: (CHAINLINK_SCALE * 16n) / 10n,
+  },
+  GHO_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  // one troy ounce of gold
+  PAXG_USD: { min: 1000n * CHAINLINK_SCALE, max: 20_000n * CHAINLINK_SCALE },
+  TBTC_USD: {
+    min: 30_000n * CHAINLINK_SCALE,
+    max: 200_000n * CHAINLINK_SCALE,
+  },
+  LBTC_BTC: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  // 18 decimals: 1–2 ETH, the rate only grows
+  CBETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
+  // value-accruing, ≈ 1.25 USD now
+  SUSDE_USD: { min: CHAINLINK_SCALE / 2n, max: 3n * CHAINLINK_SCALE },
 };
