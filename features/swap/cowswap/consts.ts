@@ -27,6 +27,14 @@ const SWAP_TOKENS: CowswapToken[] = [
   { key: 'link', decimals: 18, oracleFeed: 'LINK_USD' },
   { key: 'uni', decimals: 18, oracleFeed: 'UNI_USD' },
   { key: 'aave', decimals: 18, oracleFeed: 'AAVE_USD' },
+  { key: 'ausd', decimals: 6, oracleFeed: 'AUSD_USD' },
+  { key: 'eurc', decimals: 6, oracleFeed: 'EURC_USD' },
+  { key: 'gho', decimals: 18, oracleFeed: 'GHO_USD' },
+  { key: 'paxg', decimals: 18, oracleFeed: 'PAXG_USD' },
+  { key: 'tbtc', decimals: 18, oracleFeed: 'TBTC_USD' },
+  { key: 'lbtc', decimals: 8, oracleFeed: 'LBTC_USD' },
+  { key: 'cbeth', decimals: 18, oracleFeed: 'CBETH_USD' },
+  { key: 'susde', decimals: 18, oracleFeed: 'SUSDE_USD' },
 ];
 
 export const SWAP_COWSWAP_PROFILE = createCowswapProfile({
@@ -38,12 +46,12 @@ export const SWAP_COWSWAP_PROFILE = createCowswapProfile({
   tokenLists: {
     sell: {
       // TODO: temp
-      url: 'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/feature/si-2790-swap-tab/public/token-lists/swap-dex-sell-tokenlist.json',
+      url: 'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/feature/si-2786-new-navigation/public/token-lists/swap-dex-sell-tokenlist.json',
       fallback: 'token-lists/swap-dex-sell-tokenlist.json',
     },
     buy: {
       // TODO: temp
-      url: 'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/feature/si-2790-swap-tab/public/token-lists/swap-dex-buy-tokenlist.json',
+      url: 'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/feature/si-2786-new-navigation/public/token-lists/swap-dex-buy-tokenlist.json',
       fallback: 'token-lists/swap-dex-buy-tokenlist.json',
     },
   },
