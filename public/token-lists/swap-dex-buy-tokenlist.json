@@ -1,9 +1,9 @@
 {
   "name": "Lido swap buy",
-  "timestamp": "2026-10-20T00:00:00.000Z",
+  "timestamp": "2026-10-21T00:00:00.000Z",
   "version": {
     "major": 2,
-    "minor": 0,
+    "minor": 1,
     "patch": 0
   },
   "keywords": [],
@@ -149,6 +149,67 @@
       "decimals": 18,
       "chainId": 1,
       "logoURI": "https://files.cow.fi/token-lists/images/1/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9/logo.png"
+    },
+    {
+      "symbol": "AUSD",
+      "name": "AUSD",
+      "address": "0x00000000efe302beaa2b3e6e1b18d08d69a9012a",
+      "decimals": 6,
+      "chainId": 1
+    },
+    {
+      "symbol": "EURC",
+      "name": "Euro Coin",
+      "address": "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c",
+      "decimals": 6,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x1abaea1f7c830bd89acc67ec4af516284b1bc33c/logo.png"
+    },
+    {
+      "symbol": "GHO",
+      "name": "Gho Token",
+      "address": "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f/logo.png"
+    },
+    {
+      "symbol": "PAXG",
+      "name": "Paxos Gold",
+      "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+      "decimals": 18,
+      "chainId": 1
+    },
+    {
+      "symbol": "tBTC",
+      "name": "tBTC v2",
+      "address": "0x18084fba666a33d37592fa2633fd49a74dd93a88",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x18084fba666a33d37592fa2633fd49a74dd93a88/logo.png"
+    },
+    {
+      "symbol": "LBTC",
+      "name": "Lombard Staked Bitcoin",
+      "address": "0x8236a87084f8b84306f72007f36f2618a5634494",
+      "decimals": 8,
+      "chainId": 1
+    },
+    {
+      "symbol": "cbETH",
+      "name": "Coinbase Wrapped Staked ETH",
+      "address": "0xbe9895146f7af43049ca1c1ae358b0541ea49704",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xbe9895146f7af43049ca1c1ae358b0541ea49704/logo.png"
+    },
+    {
+      "symbol": "sUSDe",
+      "name": "Staked USDe",
+      "address": "0x9d39a5de30e57443bff2a8307a4256c8797a3497",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x9d39a5de30e57443bff2a8307a4256c8797a3497/logo.png"
     },
     {
       "symbol": "ETH",
