@@ -17,6 +17,7 @@ const enabledProducts = (search: string) => {
 };
 
 const disabled = { shouldDisable: true, showNew: false, sections: [] };
+const noRuntime = { earn: false, swap: false };
 
 describe('parseProductsUrlState', () => {
   it('enables every product without params', () => {
@@ -86,7 +87,7 @@ describe('getProductPagesOverride', () => {
     const override = getProductPagesOverride(
       parse('?stake=disabled'),
       {},
-      false,
+      noRuntime,
     );
     expect(Object.keys(override)).toEqual([
       '/',
@@ -97,7 +98,14 @@ describe('getProductPagesOverride', () => {
   });
 
   it('disables earn and swap pages', () => {
-    const override = getProductPagesOverride(parse('?product=stake'), {}, true);
+    const override = getProductPagesOverride(
+      parse('?product=stake'),
+      {},
+      {
+        earn: true,
+        swap: false,
+      },
+    );
     expect(Object.keys(override)).toEqual(['/earn', '/swap']);
   });
 
@@ -105,14 +113,34 @@ describe('getProductPagesOverride', () => {
     const override = getProductPagesOverride(
       parse('?product=swap'),
       { '/swap': disabled },
-      false,
+      noRuntime,
     );
     expect(override['/']).toBeUndefined();
     expect(override['/earn']?.shouldDisable).toBe(true);
   });
 
   it('keeps stake when Ledger Live disables earn and swap is off', () => {
-    const override = getProductPagesOverride(parse('?product=earn'), {}, true);
+    const override = getProductPagesOverride(
+      parse('?product=earn'),
+      {},
+      {
+        earn: true,
+        swap: false,
+      },
+    );
+    expect(override['/']).toBeUndefined();
+  });
+
+  it('disables swap at runtime even if the URL enables it', () => {
+    const override = getProductPagesOverride(
+      parse('?product=swap'),
+      {},
+      {
+        earn: false,
+        swap: true,
+      },
+    );
+    expect(override['/swap']?.shouldDisable).toBe(true);
     expect(override['/']).toBeUndefined();
   });
 });

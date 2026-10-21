@@ -147,22 +147,28 @@ export const withProductQuery = (
   return { ...rest, ...productQuery };
 };
 
+// products disabled at runtime regardless of URL params, e.g. by Ledger Live
+export type RuntimeDisabledProducts = Record<'earn' | 'swap', boolean>;
+
 /**
- * Pages to disable for products disabled by URL; `isEarnDisabled` adds Ledger Live.
+ * Pages to disable for products disabled by URL or at runtime.
  * Stake stays available when every other product is disabled, so the app is never empty.
  */
 export const getProductPagesOverride = (
   { products }: ProductsUrlState,
   pages: ManifestConfig['pages'],
-  isEarnDisabled: boolean,
+  runtimeDisabled: RuntimeDisabledProducts,
 ): ManifestConfig['pages'] => {
   const isDisabled: Record<Product, boolean> = {
     stake: !products.stake.enabled,
     earn:
       !products.earn.enabled ||
-      isEarnDisabled ||
+      runtimeDisabled.earn ||
       isDisabledPath(EARN_PATH, pages),
-    swap: !products.swap.enabled || isDisabledPath(SWAP_PATH, pages),
+    swap:
+      !products.swap.enabled ||
+      runtimeDisabled.swap ||
+      isDisabledPath(SWAP_PATH, pages),
   };
   if (isDisabled.earn && isDisabled.swap) isDisabled.stake = false;
 

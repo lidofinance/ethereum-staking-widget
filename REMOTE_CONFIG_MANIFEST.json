@@ -43,6 +43,9 @@
       "/earn": {
         "showNew": true,
         "shouldDisable": false
+      },
+      "/swap": {
+        "shouldDisable": false
       }
     },
     "api": {
@@ -178,6 +181,9 @@
         "/earn": {
           "showNew": false,
           "shouldDisable": true
+        },
+        "/swap": {
+          "shouldDisable": true
         }
       }
     }
@@ -189,6 +195,11 @@
     "config": {
       "withdrawalDex": {
         "enabled": false
+      },
+      "pages": {
+        "/swap": {
+          "shouldDisable": true
+        }
       },
       "multiChainBanner": [],
       "featureFlags": {

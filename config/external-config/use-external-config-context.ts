@@ -7,6 +7,7 @@ import { REMOTE_CONFIG_MANIFEST_URL } from 'consts/external-links';
 import { API_ROUTES } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useEarnRuntimeState } from 'features/earn/shared/hooks/use-earn-state';
+import { useAppFlag } from 'providers/app-flag';
 
 import {
   overrideManifestConfig,
@@ -35,6 +36,8 @@ export const useExternalConfigContext = (
 ): ExternalConfig => {
   const { isEarnDisabledByRuntimeContext } = useEarnRuntimeState();
   const productsUrlState = useProductsUrlState();
+  // useIsLedgerLive without the connector check: Wagmi is not mounted here yet
+  const isLedgerLive = useAppFlag() === 'ledger-live';
 
   const { defaultChain, manifestOverride } = config;
   const fallbackData = useFallbackManifestEntry(
@@ -89,17 +92,16 @@ export const useExternalConfigContext = (
   return useMemo(() => {
     const { config: cleanConfig, ...rest } = queryResult.data ?? fallbackData;
 
-    // Products disabled by URL params (and Earn by Ledger Live) are disabled as pages,
+    // Products disabled by URL params (and Earn, Swap by Ledger Live) are disabled as pages,
     // so Navigation and the route guard handle them like config-disabled pages
     // TODO: replace Earn logic with useEarnState hook, which is a single source of truth for Earn state.
     // Current blocker: the Navigation component (navigation.tsx) uses external config to disable pages,
     // we don't want to couple it with specific Earn state logic.
     const overridePages: Partial<ManifestConfig> = {
-      pages: getProductPagesOverride(
-        productsUrlState,
-        cleanConfig.pages,
-        isEarnDisabledByRuntimeContext,
-      ),
+      pages: getProductPagesOverride(productsUrlState, cleanConfig.pages, {
+        earn: isEarnDisabledByRuntimeContext,
+        swap: isLedgerLive,
+      }),
     };
 
     const overrideConfig = overrideManifestConfig(cleanConfig, overridePages);
@@ -109,6 +111,7 @@ export const useExternalConfigContext = (
     queryResult,
     fallbackData,
     isEarnDisabledByRuntimeContext,
+    isLedgerLive,
     productsUrlState,
   ]);
 };

@@ -90,6 +90,44 @@ test.describe('products via URL params', () => {
     await expectNav(page, ['navStake'], ['navEarn', 'navSwap']);
   });
 
+  test('Ledger Live: swap is hidden and guarded', async ({ page }) => {
+    await page.goto('/?app=ledger-live');
+    await expectNav(page, ['navStake'], ['navSwap']);
+
+    await page.goto('/swap?app=ledger-live');
+    await expect.poll(() => pathOf(page)).toBe('/');
+
+    // URL params cannot turn it back on
+    await page.goto('/swap?app=ledger-live&swap=enabled');
+    await expect.poll(() => pathOf(page)).toBe('/');
+  });
+
+  test('unknown earn vault hides nothing', async ({ page }) => {
+    test.skip(!baseline.earn, 'earn is disabled on this stand');
+    const vaultLinks = async () =>
+      new Set(
+        await page
+          .locator('main a[href^="/earn/"]')
+          .evaluateAll((links) =>
+            links.map(
+              (link) =>
+                new URL(link.getAttribute('href') ?? '', location.origin)
+                  .pathname,
+            ),
+          ),
+      ).size;
+
+    await page.goto('/earn');
+    await expect.poll(vaultLinks).toBeGreaterThan(1);
+    const allVaults = await vaultLinks();
+
+    await page.goto('/earn?earn=foo');
+    await expect.poll(vaultLinks).toBe(allVaults);
+
+    await page.goto('/earn?earn=foo,eth');
+    await expect.poll(vaultLinks).toBe(1);
+  });
+
   test('internal links keep product params in order', async ({ page }) => {
     test.skip(!baseline.earn || !baseline.swap, 'earn or swap is disabled');
     await page.goto('/swap?product=swap&product=earn');
