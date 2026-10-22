@@ -8,10 +8,7 @@ import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 const SwapPage: FC = () => {
   return (
     <SupportL1AndSwapL2Chains>
-      <Layout
-        title="Swap"
-        subtitle="Swap tokens across supported networks with the best available route."
-      >
+      <Layout title="Swap">
         <Head>
           <title>Swap | Lido</title>
         </Head>

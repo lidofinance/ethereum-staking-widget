@@ -3,7 +3,7 @@
   "timestamp": "2026-10-21T00:00:00.000Z",
   "version": {
     "major": 2,
-    "minor": 3,
+    "minor": 4,
     "patch": 0
   },
   "keywords": [],
@@ -231,6 +231,30 @@
       "decimals": 18,
       "chainId": 1,
       "logoURI": "https://files.cow.fi/token-lists/images/1/0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee/logo.png"
+    },
+    {
+      "symbol": "mETH",
+      "name": "Mantle Staked Ether",
+      "address": "0xd5f7838f5c461feff7fe49ea5ebaf7728bb0adfa",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://assets.coingecko.com/coins/images/33345/large/symbol_transparent_bg.png?1701697066"
+    },
+    {
+      "symbol": "ezETH",
+      "name": "Renzo Restaked ETH",
+      "address": "0xbf5495efe5db9ce00f80364c8b423567e58d2110",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xbf5495efe5db9ce00f80364c8b423567e58d2110/logo.png"
+    },
+    {
+      "symbol": "ETHx",
+      "name": "Stader ETHx",
+      "address": "0xa35b1b31ce002fbf2058d22f30f95d405200a15b",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xa35b1b31ce002fbf2058d22f30f95d405200a15b/logo.png"
     },
     {
       "symbol": "ETH",

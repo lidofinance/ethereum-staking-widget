@@ -39,6 +39,9 @@ const TOKEN_KEYS: readonly DexTokenContractKey[] = [
   'susde',
   'reth',
   'weeth',
+  'meth',
+  'ezeth',
+  'ethx',
 ];
 
 type NetworkContracts = Record<string, string | undefined>;

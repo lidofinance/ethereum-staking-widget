@@ -42,7 +42,10 @@ export type ChainlinkFeedKey =
   | 'CBETH_ETH'
   | 'SUSDE_USD'
   | 'RETH_ETH'
-  | 'WEETH_ETH';
+  | 'WEETH_ETH'
+  | 'METH_ETH'
+  | 'EZETH_ETH'
+  | 'ETHX_ETH';
 
 export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
   ETH_USD: {
@@ -180,6 +183,21 @@ export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
     maxStaleness: 87000,
     decimals: 18,
   },
+  METH_ETH: {
+    address: c.aggregatorMethEthPriceFeed,
+    maxStaleness: 87000,
+    decimals: 18,
+  },
+  EZETH_ETH: {
+    address: c.aggregatorEzethEthPriceFeed,
+    maxStaleness: 87000,
+    decimals: 18,
+  },
+  ETHX_ETH: {
+    address: c.aggregatorEthxEthPriceFeed,
+    maxStaleness: 87000,
+    decimals: 18,
+  },
 };
 
 // Token USD price as a product of feeds, e.g. LDO/ETH × ETH/USD
@@ -192,6 +210,9 @@ export type OraclePriceKey =
       | 'CBETH_ETH'
       | 'RETH_ETH'
       | 'WEETH_ETH'
+      | 'METH_ETH'
+      | 'EZETH_ETH'
+      | 'ETHX_ETH'
     >
   | 'WSTETH_USD'
   | 'LDO_USD'
@@ -199,7 +220,10 @@ export type OraclePriceKey =
   | 'LBTC_USD'
   | 'CBETH_USD'
   | 'RETH_USD'
-  | 'WEETH_USD';
+  | 'WEETH_USD'
+  | 'METH_USD'
+  | 'EZETH_USD'
+  | 'ETHX_USD';
 
 export const ORACLE_PRICES: Record<
   OraclePriceKey,
@@ -234,6 +258,9 @@ export const ORACLE_PRICES: Record<
   SUSDE_USD: ['SUSDE_USD'],
   RETH_USD: ['RETH_ETH', 'ETH_USD'],
   WEETH_USD: ['WEETH_ETH', 'ETH_USD'],
+  METH_USD: ['METH_ETH', 'ETH_USD'],
+  EZETH_USD: ['EZETH_ETH', 'ETH_USD'],
+  ETHX_USD: ['ETHX_ETH', 'ETH_USD'],
 };
 
 // Price key that applies the wstETH rate, on any network
@@ -303,7 +330,10 @@ export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
   CBETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
   // value-accruing, ≈ 1.25 USD now
   SUSDE_USD: { min: CHAINLINK_SCALE_MIN, max: 3n * CHAINLINK_SCALE },
-  // 18 decimals: 1–2 ETH, the rates only grow (≈ 1.17 and 1.11 now)
+  // 18 decimals: 1–2 ETH, the rates only grow
   RETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
   WEETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
+  METH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
+  EZETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
+  ETHX_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
 };

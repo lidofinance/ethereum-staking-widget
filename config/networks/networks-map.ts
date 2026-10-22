@@ -79,6 +79,9 @@ export const CONTRACT_NAMES = {
   aggregatorSusdeUsdPriceFeed: 'aggregatorSusdeUsdPriceFeed',
   aggregatorRethEthPriceFeed: 'aggregatorRethEthPriceFeed',
   aggregatorWeethEthPriceFeed: 'aggregatorWeethEthPriceFeed',
+  aggregatorMethEthPriceFeed: 'aggregatorMethEthPriceFeed',
+  aggregatorEzethEthPriceFeed: 'aggregatorEzethEthPriceFeed',
+  aggregatorEthxEthPriceFeed: 'aggregatorEthxEthPriceFeed',
   stethCurve: 'stethCurve',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
@@ -113,6 +116,9 @@ export const CONTRACT_NAMES = {
   susde: 'susde',
   reth: 'reth',
   weeth: 'weeth',
+  meth: 'meth',
+  ezeth: 'ezeth',
+  ethx: 'ethx',
 
   // GGV
   ggvVault: 'ggvVault',

@@ -31,7 +31,10 @@ export type DexTokenContractKey =
   | 'cbeth'
   | 'susde'
   | 'reth'
-  | 'weeth';
+  | 'weeth'
+  | 'meth'
+  | 'ezeth'
+  | 'ethx';
 
 // CoW contracts and tokens of one network; a token without an address is not traded there
 export type CowswapNetwork = Partial<Record<DexTokenContractKey, string>> & {

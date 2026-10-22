@@ -48,6 +48,9 @@ const ERC20_TOKENS = [
   c.susde,
   c.reth,
   c.weeth,
+  c.meth,
+  c.ezeth,
+  c.ethx,
 ].map(lower);
 
 describe('SWAP_COWSWAP_PROFILE', () => {
@@ -92,6 +95,9 @@ describe('SWAP_COWSWAP_PROFILE', () => {
       [lower(c.susde)]: 18,
       [lower(c.reth)]: 18,
       [lower(c.weeth)]: 18,
+      [lower(c.meth)]: 18,
+      [lower(c.ezeth)]: 18,
+      [lower(c.ethx)]: 18,
     });
   });
 
@@ -104,13 +110,16 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     }
   });
 
-  it('prices LDO, WBTC, LBTC, cbETH, rETH and weETH through composite feeds', () => {
+  it('prices LDO, WBTC, LBTC and ETH liquid staking tokens through composite feeds', () => {
     expect(profile.oracleFeeds.sell[lower(c.ldo)]).toBe('LDO_USD');
     expect(profile.oracleFeeds.sell[lower(c.wbtc)]).toBe('WBTC_USD');
     expect(profile.oracleFeeds.sell[lower(c.lbtc)]).toBe('LBTC_USD');
     expect(profile.oracleFeeds.sell[lower(c.cbeth)]).toBe('CBETH_USD');
     expect(profile.oracleFeeds.sell[lower(c.reth)]).toBe('RETH_USD');
     expect(profile.oracleFeeds.sell[lower(c.weeth)]).toBe('WEETH_USD');
+    expect(profile.oracleFeeds.sell[lower(c.meth)]).toBe('METH_USD');
+    expect(profile.oracleFeeds.sell[lower(c.ezeth)]).toBe('EZETH_USD');
+    expect(profile.oracleFeeds.sell[lower(c.ethx)]).toBe('ETHX_USD');
   });
 
   it.each([
@@ -174,6 +183,19 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     expect(profile.oracleFeeds.sell[lower(contracts.L2wstETH)]).toBe(
       'WSTETH_USD',
     );
+  });
+
+  it.each([
+    ['arbitrum', arbitrum.id],
+    ['base', base.id],
+  ])('lists mETH, ezETH and ETHx on mainnet only, not on %s', (_, chainId) => {
+    const config = profile.getNetworkTxConfig(chainId);
+    if (!config) throw new Error(`no config for ${chainId}`);
+
+    for (const address of [c.meth, c.ezeth, c.ethx].map(lower)) {
+      expect(config.sellTokens.has(address)).toBe(false);
+      expect(config.buyTokens.has(address)).toBe(false);
+    }
   });
 
   // only verified native or canonical-bridge tokens, see vault research 2026-10-19
