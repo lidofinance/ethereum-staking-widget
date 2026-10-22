@@ -1,4 +1,6 @@
-import type { ServerResponse } from 'node:http';
+import { createServer } from 'node:http';
+import type { OutgoingHttpHeaders, ServerResponse } from 'node:http';
+import type { AddressInfo } from 'node:net';
 
 import {
   CACHE_CONTROL_HEADER,
@@ -67,133 +69,120 @@ describe('page Cache-Control policy', () => {
   });
 });
 
-// The slice of ServerResponse the hook touches
-class FakeResponse {
-  headers = new Map<string, string>();
-  statusCode = 200;
-  setHeader(name: string, value: string) {
-    this.headers.set(name.toLowerCase(), value);
-    return this;
-  }
-  // Node merges headers passed here over the ones set with setHeader
-  writeHead(
-    statusCode: number,
-    ...rest: (string | Record<string, string> | string[][] | string[])[]
-  ) {
-    this.statusCode = statusCode;
-    const headers = rest.at(-1);
-    if (Array.isArray(headers)) {
-      // the hook always hands Node pairs; a flat list only arrives raw
-      const pairs = Array.isArray(headers[0])
-        ? (headers as string[][])
-        : (headers as string[]).flatMap((item, i) =>
-            i % 2 === 0 ? [[item, headers[i + 1] as string]] : [],
-          );
-      pairs.forEach(([name, value]) => this.setHeader(name, value));
-    } else if (headers && typeof headers === 'object') {
-      Object.entries(headers).forEach(([name, value]) =>
-        this.setHeader(name, value),
-      );
-    }
-    return this;
-  }
-}
+// Against a real server: the hook leans on how Node merges the headers passed
+// to writeHead, so a fake response would only test its own assumptions.
+type Respond = (res: ServerResponse) => void;
 
-const hooked = () => {
-  const res = new FakeResponse();
-  overrideCacheControl(res as unknown as ServerResponse);
-  return res;
+const serve = async (respond: Respond) => {
+  const server = createServer((_req, res) => {
+    overrideCacheControl(res);
+    respond(res);
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const { port } = server.address() as AddressInfo;
+  try {
+    const response = await fetch(`http://127.0.0.1:${port}/`);
+    await response.text();
+    return response;
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
 };
 
 describe('overrideCacheControl', () => {
-  it('promotes the override header to Cache-Control', () => {
-    const res = hooked();
-    res.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
-    expect(res.headers.get('cache-control')).toBe(CACHE_CONTROL_VALUE);
-    expect(res.headers.has(CACHE_CONTROL_HEADER)).toBe(false);
+  it('promotes the override header to Cache-Control', async () => {
+    const response = await serve((res) => {
+      res.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
+      res.end();
+    });
+    expect(response.headers.get('cache-control')).toBe(CACHE_CONTROL_VALUE);
+    expect(response.headers.has(CACHE_CONTROL_HEADER)).toBe(false);
   });
 
-  it('drops the Cache-Control Next sets after the override', () => {
-    const res = hooked();
-    res.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
-    expect(res.headers.get('cache-control')).toBe(CACHE_CONTROL_VALUE);
+  it('drops the Cache-Control Next sets after the override', async () => {
+    const response = await serve((res) => {
+      res.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
+      res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+      res.end();
+    });
+    expect(response.headers.get('cache-control')).toBe(CACHE_CONTROL_VALUE);
   });
 
-  it('leaves Cache-Control alone on a response without the override', () => {
-    const res = hooked();
-    res.setHeader('Cache-Control', 'no-store');
-    expect(res.headers.get('cache-control')).toBe('no-store');
+  it('leaves Cache-Control alone on a response without the override', async () => {
+    const response = await serve((res) => {
+      res.setHeader('Cache-Control', 'private');
+      res.end();
+    });
+    expect(response.headers.get('cache-control')).toBe('private');
   });
 
-  it('passes other headers through', () => {
-    const res = hooked();
-    res.setHeader('ETag', '"abc"');
-    expect(res.headers.get('etag')).toBe('"abc"');
+  it('passes other headers through', async () => {
+    const response = await serve((res) => {
+      res.setHeader('ETag', '"abc"');
+      res.end();
+    });
+    expect(response.headers.get('etag')).toBe('"abc"');
   });
 
-  it('keeps the policy on a successful response', () => {
-    const res = hooked();
-    res.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
-    res.writeHead(200);
-    expect(res.headers.get('cache-control')).toBe(CACHE_CONTROL_VALUE);
+  it('keeps the policy on a successful response', async () => {
+    const response = await serve((res) => {
+      res.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
+      res.writeHead(200);
+      res.end();
+    });
+    expect(response.headers.get('cache-control')).toBe(CACHE_CONTROL_VALUE);
   });
 
   it.each([400, 404, 429, 500, 503])(
     'sends a %i as no-store despite the override',
-    (statusCode) => {
-      const res = hooked();
-      res.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
-      res.writeHead(statusCode);
-      expect(res.statusCode).toBe(statusCode);
-      expect(res.headers.get('cache-control')).toBe(CACHE_CONTROL_ERROR_VALUE);
+    async (statusCode) => {
+      const response = await serve((res) => {
+        res.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);
+        // the implicit head Next relies on: statusCode, then end()
+        res.statusCode = statusCode;
+        res.end();
+      });
+      expect(response.status).toBe(statusCode);
+      expect(response.headers.get('cache-control')).toBe(
+        CACHE_CONTROL_ERROR_VALUE,
+      );
     },
   );
 
-  it('sends an error as no-store when nothing set Cache-Control', () => {
-    const res = hooked();
-    res.writeHead(500);
-    expect(res.headers.get('cache-control')).toBe(CACHE_CONTROL_ERROR_VALUE);
-  });
-
-  it('drops a Cache-Control passed to writeHead on an error', () => {
-    const asObject = hooked();
-    asObject.writeHead(404, 'Not Found', {
-      'Cache-Control': CACHE_CONTROL_VALUE,
-      'X-Other': 'kept',
+  it('sends an error as no-store when nothing set Cache-Control', async () => {
+    const response = await serve((res) => {
+      res.writeHead(500);
+      res.end();
     });
-    expect(asObject.headers.get('cache-control')).toBe(
+    expect(response.headers.get('cache-control')).toBe(
       CACHE_CONTROL_ERROR_VALUE,
     );
-    expect(asObject.headers.get('x-other')).toBe('kept');
-
-    const asPairs = hooked();
-    asPairs.writeHead(503, [
-      ['cache-control', CACHE_CONTROL_VALUE],
-      ['X-Other', 'kept'],
-    ]);
-    expect(asPairs.headers.get('cache-control')).toBe(
-      CACHE_CONTROL_ERROR_VALUE,
-    );
-    expect(asPairs.headers.get('x-other')).toBe('kept');
-
-    const asFlatList = hooked();
-    asFlatList.writeHead(502, [
-      'Cache-Control',
-      CACHE_CONTROL_VALUE,
-      'X-Other',
-      'kept',
-    ]);
-    expect(asFlatList.headers.get('cache-control')).toBe(
-      CACHE_CONTROL_ERROR_VALUE,
-    );
-    expect(asFlatList.headers.get('x-other')).toBe('kept');
   });
 
-  it('keeps a Cache-Control passed to writeHead on a success', () => {
-    const res = hooked();
-    res.writeHead(200, { 'Cache-Control': 'private' });
-    expect(res.headers.get('cache-control')).toBe('private');
+  it.each([
+    ['an object', { 'Cache-Control': CACHE_CONTROL_VALUE, 'X-Other': 'kept' }],
+    ['a flat list', ['cache-control', CACHE_CONTROL_VALUE, 'X-Other', 'kept']],
+  ])(
+    'drops a Cache-Control passed to writeHead as %s on an error',
+    async (_shape, headers) => {
+      const response = await serve((res) => {
+        res.writeHead(404, 'Not Found', headers as OutgoingHttpHeaders);
+        res.end();
+      });
+      expect(response.status).toBe(404);
+      expect(response.headers.get('cache-control')).toBe(
+        CACHE_CONTROL_ERROR_VALUE,
+      );
+      expect(response.headers.get('x-other')).toBe('kept');
+    },
+  );
+
+  it('keeps a Cache-Control passed to writeHead on a success', async () => {
+    const response = await serve((res) => {
+      res.writeHead(200, { 'Cache-Control': 'private' });
+      res.end();
+    });
+    expect(response.headers.get('cache-control')).toBe('private');
   });
 
   it('declares the error policy as no-store', () => {

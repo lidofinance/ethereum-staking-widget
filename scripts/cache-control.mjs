@@ -14,23 +14,8 @@ export const CACHE_CONTROL_VALUE =
 // cached path would carry the public policy and sit in shared caches for days.
 export const CACHE_CONTROL_ERROR_VALUE = 'no-store';
 
-const isCacheControl = (header) =>
-  typeof header === 'string' && header.toLowerCase() === 'cache-control';
-
-/**
- * The headers argument of writeHead as [name, value] pairs. Node accepts it as
- * an object, as a list of pairs or as a flat name/value list, and takes the
- * pairs back.
- * @param {Record<string, unknown> | unknown[]} headers
- * @returns {[unknown, unknown][]}
- */
-const toHeaderPairs = (headers) => {
-  if (!Array.isArray(headers)) return Object.entries(headers);
-  if (Array.isArray(headers[0])) return headers;
-  return headers.flatMap((item, i) =>
-    i % 2 === 0 ? [[item, headers[i + 1]]] : [],
-  );
-};
+const isHeader = (header, name) =>
+  typeof header === 'string' && header.toLowerCase() === name;
 
 /**
  * Lets next.config headers() win over the Cache-Control Next sets for an ISR
@@ -40,37 +25,57 @@ const toHeaderPairs = (headers) => {
  *
  * Whatever was set, a 4xx/5xx response goes out as `no-store`: the status is
  * only known when the head is written, so that is where the policy is applied.
+ *
+ * Once the override or the error policy has set Cache-Control it is final:
+ * later writes through the header API are dropped. Node merges the headers
+ * passed to writeHead through that same API (setHeader for an object,
+ * removeHeader + appendHeader for a flat list), so they are covered without
+ * this hook knowing their shape. Should Node ever merge them another way the
+ * hook degrades to that Cache-Control winning, never to a broken response.
  * @param {import('node:http').ServerResponse} res
  */
 export const overrideCacheControl = (res) => {
   // bound like the CSP hook: the hook is installed per response
   const setHeader = res.setHeader.bind(res);
+  const appendHeader = res.appendHeader.bind(res);
+  const removeHeader = res.removeHeader.bind(res);
   const writeHead = res.writeHead.bind(res);
-  let cacheControlOverwritten = false;
+  // set once the override or the error policy wrote Cache-Control: from then
+  // on every other write of it is dropped
+  let cacheControlLocked = false;
+
   res.setHeader = function (header, value) {
-    if (header.toLowerCase() === CACHE_CONTROL_HEADER) {
-      cacheControlOverwritten = true;
+    if (isHeader(header, CACHE_CONTROL_HEADER)) {
+      cacheControlLocked = true;
 
       return setHeader('Cache-Control', value);
     }
 
-    if (isCacheControl(header) && cacheControlOverwritten) {
+    if (cacheControlLocked && isHeader(header, 'cache-control')) {
       return this;
     }
 
     return setHeader(header, value);
   };
-  res.writeHead = function (statusCode, ...rest) {
-    if (statusCode < 400) return writeHead(statusCode, ...rest);
-
-    // headers passed to writeHead take precedence over setHeader ones
-    const headers = rest.at(-1);
-    if (headers && typeof headers === 'object') {
-      rest[rest.length - 1] = toHeaderPairs(headers).filter(
-        ([header]) => !isCacheControl(header),
-      );
+  res.appendHeader = function (header, value) {
+    if (cacheControlLocked && isHeader(header, 'cache-control')) {
+      return this;
     }
-    setHeader('Cache-Control', CACHE_CONTROL_ERROR_VALUE);
+
+    return appendHeader(header, value);
+  };
+  res.removeHeader = function (header) {
+    if (cacheControlLocked && isHeader(header, 'cache-control')) {
+      return;
+    }
+
+    return removeHeader(header);
+  };
+  res.writeHead = function (statusCode, ...rest) {
+    if (Number(statusCode) >= 400) {
+      setHeader('Cache-Control', CACHE_CONTROL_ERROR_VALUE);
+      cacheControlLocked = true;
+    }
 
     return writeHead(statusCode, ...rest);
   };
