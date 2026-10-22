@@ -1,5 +1,5 @@
 import { ErrorMessage, getErrorMessage } from 'utils/getErrorMessage';
-import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
+import { TxSettledError } from 'modules/web3';
 
 // Post-settlement failures: the wrapped RPC error must not leak its own
 // classification (e.g. a provider code) through to the user

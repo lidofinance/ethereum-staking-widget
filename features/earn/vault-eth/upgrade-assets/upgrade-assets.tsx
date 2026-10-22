@@ -1,4 +1,4 @@
-import { type FC, useCallback, useState } from 'react';
+import { type FC, useCallback, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
@@ -55,9 +55,13 @@ type UpgradeArgs = {
 };
 
 export const UpgradeAssetsBlock: FC = () => {
-  const { isWalletConnected } = useDappStatus();
+  const { isWalletConnected, address, chainId } = useDappStatus();
   const queryClient = useQueryClient();
-  const { balances, refetchBalances } = useUpgradableTokenBalances();
+  const { balances, fetchBalances } = useUpgradableTokenBalances();
+  // The connection as of the latest render, read when an upgrade resumes
+  // after its awaits: the upgrade itself keeps the account it started with
+  const connectionRef = useRef({ address, chainId });
+  connectionRef.current = { address, chainId };
   const [isUpgrading, setIsUpgrading] = useState(false);
   const referral = useReferralQueryValue();
   const { isDepositGeoAvailable } = useEarnGeoGate();
@@ -71,10 +75,18 @@ export const UpgradeAssetsBlock: FC = () => {
       setIsUpgrading(true);
 
       try {
-        const balancesQuery = await refetchBalances();
-        if (!balancesQuery.isSuccess) return;
+        // keyed to the account this upgrade started for, see fetchBalances
+        const balancesData = await fetchBalances().catch(() => undefined);
+        if (!balancesData) return;
+        // the deposit below would still run as the account it captured: an
+        // upgrade started for one account must not continue under another
+        if (
+          connectionRef.current.address !== address ||
+          connectionRef.current.chainId !== chainId
+        )
+          return;
 
-        const balanceAmount = balancesQuery.data?.[token] ?? 0n;
+        const balanceAmount = balancesData[token] ?? 0n;
         const depositAmount = overrideWithQAMockBigInt(
           balanceAmount,
           'mock-qa-helpers-earn-eth-upgrade-amount',
@@ -92,7 +104,7 @@ export const UpgradeAssetsBlock: FC = () => {
           if (matomoEvent) {
             trackMatomoEvent(matomoEvent);
           }
-          await refetchBalances();
+          await fetchBalances().catch(() => undefined);
           await Promise.all([
             queryClient.refetchQueries(
               { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
@@ -109,7 +121,7 @@ export const UpgradeAssetsBlock: FC = () => {
         setIsUpgrading(false);
       }
     },
-    [deposit, queryClient, referral, refetchBalances],
+    [deposit, queryClient, referral, fetchBalances, address, chainId],
   );
 
   // An upgrade is a deposit: hide the block when deposits are paused, even if

@@ -76,6 +76,7 @@ describe('createCachedProxy error responses', () => {
         return this;
       },
       json: vi.fn(),
+      send: vi.fn(),
       end: vi.fn(),
     };
     return res;
@@ -133,6 +134,7 @@ describe('createCachedProxy forwardHeaders', () => {
       setHeader: vi.fn(),
       status: vi.fn(),
       json: vi.fn(),
+      send: vi.fn(),
       end: vi.fn(),
     }) as any;
   const makeReq = (headers: Record<string, string> = {}) =>
@@ -198,5 +200,50 @@ describe('createCachedProxy forwardHeaders', () => {
       accept: 'application/json',
       'content-type': 'application/json',
     });
+  });
+});
+
+describe('createCachedProxy byte budget', () => {
+  const makeRes = () => ({
+    json: vi.fn(),
+    send: vi.fn(),
+    setHeader: vi.fn(),
+    status: vi.fn(),
+  });
+  const req = { query: { address: '0xabc' } } as unknown as NextApiRequest;
+
+  afterEach(() => {
+    vi.mocked(standardFetcher).mockReset();
+  });
+
+  it('serves a body within the budget from cache', async () => {
+    vi.mocked(standardFetcher).mockResolvedValue({ events: [1, 2, 3] });
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/',
+      cacheTTL: 60_000,
+      cacheMaxBytes: 1024,
+    });
+
+    await proxy(req, makeRes() as any);
+    await proxy(req, makeRes() as any);
+
+    expect(standardFetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it('serves a body above the budget without retaining it', async () => {
+    const body = { events: 'x'.repeat(2048) };
+    vi.mocked(standardFetcher).mockResolvedValue(body);
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/',
+      cacheTTL: 60_000,
+      cacheMaxBytes: 1024,
+    });
+
+    const res = makeRes();
+    await proxy(req, res as any);
+    await proxy(req, makeRes() as any);
+
+    expect(res.send).toHaveBeenCalledWith(JSON.stringify(body));
+    expect(standardFetcher).toHaveBeenCalledTimes(2);
   });
 });

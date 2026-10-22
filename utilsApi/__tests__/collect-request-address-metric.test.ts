@@ -9,6 +9,7 @@ vi.mock('../contractAddressesMetricsMap', () => ({
 }));
 
 import { collectRequestAddressMetric } from '../collect-request-address-metric';
+import { PROVIDER_MAX_BATCH } from 'config/groups/web3';
 
 const VALID_UNKNOWN_TO = '0x0000000000000000000000000000000000000001';
 const ETH_CALL_SELECTOR = '0xaabbccdd';
@@ -169,5 +170,24 @@ describe('collectRequestAddressMetric', () => {
     for (const args of warnSpy.mock.calls) {
       expect(args.map(String).join(' ').length).toBeLessThan(512);
     }
+  });
+});
+
+describe('collectRequestAddressMetric entry cap', () => {
+  it('processes at most PROVIDER_MAX_BATCH entries, as the route admits', async () => {
+    const warnSpy = vi
+      .spyOn(console, 'warn')
+      .mockImplementation(() => undefined);
+    const { counter, recorded } = makeCounterMock();
+    const calls = Array.from({ length: PROVIDER_MAX_BATCH * 5 }, () =>
+      makeEthCall(VALID_UNKNOWN_TO),
+    );
+    await collectRequestAddressMetric({
+      calls,
+      chainId: CHAINS.Mainnet,
+      metrics: counter,
+    });
+    expect(recorded.length).toBe(PROVIDER_MAX_BATCH);
+    warnSpy.mockRestore();
   });
 });

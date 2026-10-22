@@ -60,6 +60,12 @@ describe('setCspHeaderOnHtml', () => {
     expect(getCspHeader).not.toHaveBeenCalled();
   });
 
+  it('sets the header on a 304, which carries no content type', () => {
+    const { res } = setup();
+    res.writeHead(304);
+    expect(res.getHeader('Content-Security-Policy')).toBe(CSP[1]);
+  });
+
   it('reads the content type given to writeHead itself', () => {
     const { res } = setup();
     res.writeHead(404, 'Not Found', { 'Content-Type': 'text/html' });
@@ -106,6 +112,16 @@ describe('setCspHeaderOnHtml on a real ServerResponse', () => {
     const headers = await serve((res) => {
       res.writeHead(404, { 'Content-Type': 'text/html' });
       res.end('not found');
+    });
+    expect(headers.get('content-security-policy')).toBe(CSP[1]);
+  });
+
+  // Next answers a matching ETag this way: status set, no Content-Type, end()
+  it('sets the header on a 304 sent without a content type', async () => {
+    const headers = await serve((res) => {
+      res.statusCode = 304;
+      res.setHeader('ETag', '"abc"');
+      res.end();
     });
     expect(headers.get('content-security-policy')).toBe(CSP[1]);
   });

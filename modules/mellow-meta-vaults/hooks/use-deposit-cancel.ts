@@ -38,8 +38,8 @@ export const useDepositCancel = <DepositQueueToken extends string>({
 
       try {
         const depositQueue = depositQueueGetter({
-          publicClient: core.rpcProvider,
-          walletClient: core.web3Provider as WalletClient,
+          publicClient: core.publicClient,
+          walletClient: core.walletClient as WalletClient,
           token: token as DepositQueueToken,
         });
 

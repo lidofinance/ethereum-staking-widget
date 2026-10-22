@@ -28,13 +28,13 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
       try {
         const wstethAddress = await wstETH.contractAddress();
         const vault = getGGVVaultWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         const queue = getGGVQueueWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         // fetch actual minDiscount

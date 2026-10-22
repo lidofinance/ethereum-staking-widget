@@ -33,8 +33,8 @@ export const useSTGWithdraw = (onRetry: () => void) => {
 
       try {
         const redeemQueueContract = getSTGRedeemQueueWritableContractWSTETH(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         const { assets: amountWstETH } = await getWithdrawalParams({

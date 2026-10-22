@@ -3,13 +3,14 @@ import { getContract, WalletClient, type PublicClient } from 'viem';
 
 import { getContractAddress } from 'config/networks/contract-address';
 import {
-  VAULT_ABI,
+  ASYNC_REDEEM_QUEUE_ABI,
   COLLECTOR_ABI,
   DEPOSIT_QUEUE_ABI,
-  SYNC_DEPOSIT_QUEUE_ABI,
-  ASYNC_REDEEM_QUEUE_ABI,
+  ORACLE_ABI,
   SHARE_MANAGER_ABI,
+  SYNC_DEPOSIT_QUEUE_ABI,
   SYNC_REDEEM_QUEUE_ABI,
+  VAULT_ABI,
 } from 'modules/mellow-meta-vaults/abi';
 import type { EthDepositToken } from '../types';
 import { TOKENS } from 'consts/tokens';
@@ -139,6 +140,31 @@ export const getSyncRedeemQueueWritableContractWSTETH = <
   });
 };
 
+// The vault's oracle, whose report the sync redeem queue prices with. A
+// configured address rather than `vault.oracle()`: the RPC proxy only serves
+// eth_call to configured contracts, a runtime-resolved address would be
+// rejected and fall through to the public RPC
+export const getOracleContract = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'ethOracle',
+  );
+  invariant(
+    address,
+    `no ETH Vault Oracle contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: ORACLE_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
 export const getSyncRedeemQueueContractWSTETH = <
   TPublicClient extends PublicClient,
 >(
@@ -247,12 +273,10 @@ export const getSyncDepositQueueWritableContract = <
   });
 };
 
-// Returns a contract pointing to the LEGACY async deposit queue.
-// Used only for reading pending state of users who deposited before the sync queue migration.
-/**
- * @deprecated Use getSyncDepositQueueContractAddress instead
- */
-export const getAsyncDepositQueueContractAddress = <
+// The LEGACY async deposit queues: deposits go through the sync queues now.
+// Kept for users who deposited before the migration: reading their pending
+// request (the sync queue has no `requestOf`) and cancelling it
+const getLegacyAsyncDepositQueueContractAddress = <
   TPublicClient extends PublicClient,
 >({
   publicClient,
@@ -299,9 +323,11 @@ export const getAsyncDepositQueueContractAddress = <
 };
 
 /**
- * @deprecated Use getSyncDepositQueueContract instead
+ * Read access to a token's LEGACY async deposit queue, for the pending
+ * requests of users who deposited before the sync queue migration. Not for
+ * new deposits: those go through getSyncDepositQueueWritableContract
  */
-export const getAsyncDepositQueueContract = <
+export const getLegacyAsyncDepositQueueContract = <
   TPublicClient extends PublicClient,
 >({
   publicClient,
@@ -312,7 +338,7 @@ export const getAsyncDepositQueueContract = <
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
-    address: getAsyncDepositQueueContractAddress({ publicClient, token }),
+    address: getLegacyAsyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
     },
@@ -320,9 +346,10 @@ export const getAsyncDepositQueueContract = <
 };
 
 /**
- * @deprecated Use getSyncDepositQueueWritableContract instead
+ * Write access to a token's LEGACY async deposit queue, only to cancel a
+ * pending request made before the sync queue migration
  */
-export const getAsyncDepositQueueWritableContract = <
+export const getLegacyAsyncDepositQueueWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >({
@@ -336,7 +363,7 @@ export const getAsyncDepositQueueWritableContract = <
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
-    address: getAsyncDepositQueueContractAddress({ publicClient, token }),
+    address: getLegacyAsyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
       wallet: walletClient,

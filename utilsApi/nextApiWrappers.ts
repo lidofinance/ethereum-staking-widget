@@ -16,6 +16,7 @@ import { config, secretConfig } from 'config';
 import { collectRequestAddressMetric } from './collect-request-address-metric';
 
 export { getFunctionNameFromAbi } from './get-function-name-from-abi';
+export { enforceJsonOnly } from './enforce-json-only';
 
 export enum HttpMethod {
   GET = 'GET',

@@ -31,9 +31,12 @@ export const FormController: FC<React.ComponentProps<'form'>> = ({
     () =>
       handleSubmit(async (args) => {
         const success = await onSubmit(args);
-        if (success) reset(args);
+        // Reset from the live state, not the submitted snapshot: the form can
+        // move while the tx is pending (an account switch resets it, a chain
+        // switch may normalize a field) and the submission must not undo that
+        if (success) reset(getValues());
       }),
-    [handleSubmit, onSubmit, reset],
+    [handleSubmit, onSubmit, reset, getValues],
   );
 
   // Bind retry callback

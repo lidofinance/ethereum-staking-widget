@@ -2,7 +2,7 @@ import {
   TxStageFail,
   TxStageSuccessMultisig,
 } from 'shared/transaction-modal/tx-stages-basic';
-import { getErrorMessage } from 'utils';
+import { getErrorMessage, isRetryableTxError, isSettledTxError } from 'utils';
 import type { TransactionModalTransitStage } from './use-transaction-modal-stage';
 
 export const getGeneralTransactionModalStages = (
@@ -14,7 +14,11 @@ export const getGeneralTransactionModalStages = (
     }),
   failed: (error: unknown, onRetry?: () => void) =>
     transitStage(
-      <TxStageFail failedText={getErrorMessage(error)} onRetry={onRetry} />,
+      <TxStageFail
+        failedText={getErrorMessage(error)}
+        isSettled={isSettledTxError(error)}
+        onRetry={isRetryableTxError(error) ? onRetry : undefined}
+      />,
       {
         isClosableOnLedger: true,
       },
