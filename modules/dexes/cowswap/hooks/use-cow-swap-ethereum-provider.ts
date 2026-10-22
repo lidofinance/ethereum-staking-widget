@@ -45,7 +45,7 @@ export const useCowSwapEthereumProvider = ({
   getNetworkTxConfig,
   appCode,
 }: UseCowSwapEthereumProviderOptions): EthereumProvider | undefined => {
-  const { chainId } = useDappStatus();
+  const { chainId, walletChainId } = useDappStatus();
   const { data: walletClient } = useWalletClient();
   const { connector } = useConnection();
   const isLedgerLive = useIsLedgerLive();
@@ -64,6 +64,7 @@ export const useCowSwapEthereumProvider = ({
       !walletClient ||
       !connector ||
       walletClient.chain.id !== chainId ||
+      walletChainId !== chainId ||
       !networkTxConfig
     ) {
       return undefined;
@@ -88,6 +89,7 @@ export const useCowSwapEthereumProvider = ({
     walletClient,
     connector,
     chainId,
+    walletChainId,
     getNetworkTxConfig,
     appCode,
     verifySignedOrder,

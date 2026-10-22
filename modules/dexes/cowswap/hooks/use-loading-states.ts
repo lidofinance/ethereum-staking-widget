@@ -4,7 +4,7 @@ import { debounce, uniqueId } from 'lodash';
 import { useDappStatus } from 'modules/web3';
 
 export const useLoadingStates = () => {
-  const { address, chainId } = useDappStatus();
+  const { address, chainId, walletChainId } = useDappStatus();
   // Refresh ID is used to trigger a refresh of the widget state even when they params change
   const [refreshId, setRefreshId] = useState('<INITIAL_HYDRATION_SAFE_UUID>');
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +26,8 @@ export const useLoadingStates = () => {
 
   if (error) throw error;
 
-  // Reset loading state when address or chainId changes
+  // Reset loading state when address or chain changes, the wallet chain too:
+  // it swaps the widget provider and recreates the widget while chainId stays
   // Works specifically on clean up to avoid race conditions on first load
   useEffect(() => {
     return () => {
@@ -36,7 +37,7 @@ export const useLoadingStates = () => {
         return oldLoading;
       });
     };
-  }, [address, chainId]);
+  }, [address, chainId, walletChainId]);
 
   const onLoaded = useCallback(() => {
     setIsLoading(false);

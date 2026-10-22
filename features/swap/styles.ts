@@ -2,6 +2,7 @@ import { Block } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
 import { devicesHeaderMedia } from 'styles/global';
+import { Fallback } from 'shared/wallet/fallback/fallback';
 
 export const SwapBlock = styled(Block).attrs({ paddingLess: true })`
   padding: 0px;
@@ -13,4 +14,13 @@ export const SwapBlock = styled(Block).attrs({ paddingLess: true })`
   @media ${devicesHeaderMedia.mobile} {
     margin-top: 20px;
   }
+`;
+
+// the CoW card is capped at this width and centered in its iframe
+export const SWAP_CARD_MAX_WIDTH = 470;
+
+export const SwapFallback = styled(Fallback)`
+  max-width: ${SWAP_CARD_MAX_WIDTH}px;
+  margin-left: auto;
+  margin-right: auto;
 `;

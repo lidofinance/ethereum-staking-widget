@@ -46,15 +46,21 @@ export const DexWrapper = styled.div<{ $consumeBottomSpace?: boolean }>`
 `;
 
 const fadeOut = keyframes`
-  from { opacity: 0.8; }
+  from { opacity: var(--loader-opacity); }
   to   { opacity: 0; pointer-events: none; }
 `;
 
-export const LoaderStyled = styled(Loader)<{ $isVisible: boolean }>`
+export const LoaderStyled = styled(Loader)<{
+  $isVisible: boolean;
+  $maxWidth?: number;
+}>`
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  margin: 0 auto;
   width: 100%;
+  max-width: ${({ $maxWidth }) => ($maxWidth ? `${$maxWidth}px` : 'none')};
   height: 100%;
   z-index: 1;
   display: flex;
@@ -63,10 +69,13 @@ export const LoaderStyled = styled(Loader)<{ $isVisible: boolean }>`
   background-color: var(--custom-background-secondary);
   border-radius: 24px;
 
+  // a narrowed loader sits over the banner corners, so it must not show through
+  --loader-opacity: ${({ $maxWidth }) => ($maxWidth ? 1 : 0.8)};
+
   ${({ $isVisible }) =>
     $isVisible
       ? css`
-          opacity: 0.8;
+          opacity: var(--loader-opacity);
         `
       : css`
           animation: ${fadeOut} 0.3s ease forwards;

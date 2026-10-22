@@ -6,7 +6,7 @@ import {
   TradeType,
 } from '@cowprotocol/widget-react';
 import { useCallback, useMemo } from 'react';
-import { mainnet, sepolia } from 'viem/chains';
+import { base, mainnet, sepolia } from 'viem/chains';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
 import { debounce } from 'lodash';
@@ -67,6 +67,9 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
   boxShadow: 'none',
 };
 
+// TODO: demo, per-network primary colors
+const BASE_PAPER = { dark: '#0A4DA8', light: '#CFE0FF' };
+
 export type CowswapFrameProps = {
   profile: CowswapProfile;
   refetchBalances: () => void;
@@ -74,6 +77,8 @@ export type CowswapFrameProps = {
   chainIds?: readonly number[];
   // cancel the host Block bottom padding once loaded
   consumeBottomSpace?: boolean;
+  // px, when the widget card is narrower than its iframe
+  loaderMaxWidth?: number;
 };
 
 export const CowswapFrame: React.FC<CowswapFrameProps> = ({
@@ -81,6 +86,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   refetchBalances,
   chainIds = profile.chainIds,
   consumeBottomSpace = true,
+  loaderMaxWidth,
 }) => {
   const {
     appCode,
@@ -217,7 +223,12 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
         height: 'var(--dynamicHeight, 432px)',
       },
 
-      theme: themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight,
+      theme: {
+        ...(themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight),
+        ...(widgetChainId === base.id && {
+          paper: BASE_PAPER[themeName === 'dark' ? 'dark' : 'light'],
+        }),
+      },
       // enables opening explorer and `powered by cowswap` links
       // ONLY safe when used with pinned IPFS cowswap UI,
       // otherwise prone to security risks during domain takeover
@@ -346,7 +357,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
           }
           onReady={onLoaded}
         />
-        <LoaderStyled $isVisible={isLoading} />
+        <LoaderStyled $isVisible={isLoading} $maxWidth={loaderMaxWidth} />
       </DexWrapper>
       <TradeGuardModal state={modalState} onClose={handleModalClose} />
     </>
