@@ -55,17 +55,26 @@ describe('parseProductsUrlState', () => {
     expect(enabledProducts('?foo=disabled')).toEqual(['stake', 'earn', 'swap']);
   });
 
-  it('lets the first param win on a conflict', () => {
-    expect(enabledProducts('?earn=disabled&product=earn')).toEqual(['stake']);
+  it('lets `product` win over product params in any order', () => {
+    expect(enabledProducts('?earn=disabled&product=earn')).toEqual(['earn']);
     expect(enabledProducts('?product=earn&earn=disabled')).toEqual(['earn']);
-    expect(enabledProducts('?swap=enabled&product=earn')).toEqual([
-      'earn',
-      'swap',
-    ]);
+    expect(enabledProducts('?earn=eth&product=stake')).toEqual(['stake']);
+    expect(enabledProducts('?product=stake&earn=eth')).toEqual(['stake']);
+    expect(enabledProducts('?swap=enabled&product=earn')).toEqual(['earn']);
+  });
+
+  it('keeps the first param of a repeated product', () => {
     expect(enabledProducts('?swap=disabled&swap=enabled')).toEqual([
       'stake',
       'earn',
     ]);
+    expect(parse('?earn=eth&earn=usd').products.earn.value).toBe('eth');
+  });
+
+  it('ignores the configuration of a product left out by `product`', () => {
+    expect(parse('?product=stake&earn=eth').products.earn).toEqual({
+      enabled: false,
+    });
   });
 
   it('adds a configuration to a product enabled by `product`', () => {
@@ -73,6 +82,16 @@ describe('parseProductsUrlState', () => {
       enabled: true,
       value: 'eth',
     });
+    expect(parse('?earn=eth&product=earn').products.earn).toEqual({
+      enabled: true,
+      value: 'eth',
+    });
+    expect(parse('?product=earn&earn=disabled&earn=eth').products.earn).toEqual(
+      {
+        enabled: true,
+        value: 'eth',
+      },
+    );
   });
 
   it('keeps stake when every product is disabled', () => {

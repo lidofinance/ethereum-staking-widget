@@ -56,50 +56,47 @@ const splitProducts = (value: string): Product[] =>
     .filter(isProduct);
 
 /**
- * Products state from URL params, in URL order.
+ * Products state from URL params.
  *
- * - `?swap=disabled` disables a product, `?earn=eth` enables it with a configuration.
- * - `?product=earn&product=stake` enables only the listed products.
- * - On a conflict the param that comes first wins.
+ * - `?product=earn&product=stake` enables only the listed products and wins over the other params.
+ * - Without `product`, `?swap=disabled` disables a product, `?earn=eth` enables it with a configuration.
+ * - A configuration (`earn=eth`) applies only to an enabled product.
+ * - Repeated params of one product: the first one wins.
  * - Products not mentioned stay enabled; if all are disabled, stake stays enabled.
  */
 export const parseProductsUrlState = (
   entries: readonly (readonly [string, string])[],
 ): ProductsUrlState => {
-  const decided: Partial<Record<Product, ProductUrlState>> = {};
-
-  // `product` params act together, at the position of the first one
   const allowlist = entries
     .filter(([key]) => key === 'product')
     .flatMap(([, value]) => splitProducts(value));
   const hasAllowlist = allowlist.length > 0;
-  let isAllowlistApplied = false;
 
+  const products = Object.fromEntries(
+    PRODUCTS.map((product) => [
+      product,
+      { enabled: !hasAllowlist || allowlist.includes(product) },
+    ]),
+  ) as Record<Product, ProductUrlState>;
+
+  const seen = new Set<Product>();
   for (const [key, value] of entries) {
-    if (key === 'product') {
-      if (!hasAllowlist || isAllowlistApplied) continue;
-      isAllowlistApplied = true;
-      for (const product of PRODUCTS) {
-        decided[product] ??= { enabled: allowlist.includes(product) };
-      }
+    if (!isProduct(key)) continue;
+    const isDisabledValue = value === PRODUCT_DISABLED;
+
+    if (hasAllowlist) {
+      // `product` decides what is enabled, a product param only configures it
+      if (products[key].enabled && !isDisabledValue)
+        products[key].value ??= value;
       continue;
     }
 
-    if (!isProduct(key)) continue;
-
-    const enabled = value !== PRODUCT_DISABLED;
-    const current = decided[key];
-    if (!current) {
-      decided[key] = { enabled, value: enabled ? value : undefined };
-    } else if (current.enabled && enabled && current.value === undefined) {
-      // not a conflict: adds a configuration to an enabled product
-      current.value = value;
-    }
+    if (seen.has(key)) continue;
+    seen.add(key);
+    products[key] = isDisabledValue
+      ? { enabled: false }
+      : { enabled: true, value };
   }
-
-  const products = Object.fromEntries(
-    PRODUCTS.map((product) => [product, decided[product] ?? { enabled: true }]),
-  ) as Record<Product, ProductUrlState>;
 
   if (PRODUCTS.every((product) => !products[product].enabled)) {
     products.stake = { enabled: true };
