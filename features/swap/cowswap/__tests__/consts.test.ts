@@ -269,10 +269,10 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     ['mainnet', mainnet.id, c.lido],
     ['arbitrum', arbitrum.id, arbitrumNetwork.contracts.L2wstETH],
     ['base', base.id, baseNetwork.contracts.L2wstETH],
-  ])('starts %s from stETH or wstETH to ETH', (_, chainId, sellToken) => {
+  ])('starts %s from ETH to stETH or wstETH', (_, chainId, buyToken) => {
     expect(profile.getDefaultPair(chainId)).toEqual({
-      sell: lower(sellToken),
-      buy: 'ETH',
+      sell: 'ETH',
+      buy: lower(buyToken),
     });
   });
 });

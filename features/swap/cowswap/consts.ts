@@ -46,8 +46,8 @@ export const SWAP_COWSWAP_PROFILE = createCowswapProfile({
   appCode: 'Lido dApp Swap',
   sellTokens: SWAP_TOKENS,
   buyTokens: SWAP_TOKENS,
-  // stETH is mainnet-only, L2s start from wstETH
-  defaultPair: { sell: ['lido', 'wsteth'], buy: ['eth'] },
+  // stETH is mainnet-only, L2s buy wstETH
+  defaultPair: { sell: ['eth'], buy: ['lido', 'wsteth'] },
   tokenLists: {
     sell: {
       // TODO: temp
