@@ -6,7 +6,7 @@ import {
   TradeType,
 } from '@cowprotocol/widget-react';
 import { useCallback, useMemo } from 'react';
-import { base, mainnet, sepolia } from 'viem/chains';
+import { arbitrum, base, mainnet, sepolia } from 'viem/chains';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
 import { debounce } from 'lodash';
@@ -67,8 +67,21 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
   boxShadow: 'none',
 };
 
-// TODO: demo, per-network primary colors
-const BASE_PAPER = { dark: '#0A4DA8', light: '#CFE0FF' };
+// widget card color per network: a light tint of the network color over the theme paper
+const CHAIN_PAPER: Record<number, { light: string; dark: string }> = {
+  [base.id]: { light: '#E9F0FF', dark: '#323C59' },
+  [arbitrum.id]: { light: '#E3F5FF', dark: '#284459' },
+};
+
+const getCowSwapTheme = (
+  themeName: string,
+  chainId: number,
+): CowSwapWidgetPalette => {
+  const isDark = themeName === 'dark';
+  const palette = isDark ? cowSwapThemeDark : cowSwapThemeLight;
+  const paper = CHAIN_PAPER[chainId]?.[isDark ? 'dark' : 'light'];
+  return paper ? { ...palette, paper } : palette;
+};
 
 export type CowswapFrameProps = {
   profile: CowswapProfile;
@@ -223,12 +236,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
         height: 'var(--dynamicHeight, 432px)',
       },
 
-      theme: {
-        ...(themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight),
-        ...(widgetChainId === base.id && {
-          paper: BASE_PAPER[themeName === 'dark' ? 'dark' : 'light'],
-        }),
-      },
+      theme: getCowSwapTheme(themeName, widgetChainId),
       // enables opening explorer and `powered by cowswap` links
       // ONLY safe when used with pinned IPFS cowswap UI,
       // otherwise prone to security risks during domain takeover
