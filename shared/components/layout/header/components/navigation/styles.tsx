@@ -45,7 +45,7 @@ export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
   color: color-mix(in srgb, var(--lido-color-secondary) 80%, transparent);
   font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;
   line-height: 1.7em;
-  font-weight: 800;
+  font-weight: 700;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -244,7 +244,7 @@ export const MobileTrackClip = styled.div`
   overflow: hidden;
 `;
 
-const TRACK_PADDING = 3;
+const TRACK_PADDING = 2;
 const TRACK_GAP = 2;
 
 export const MobileTrack = styled.nav<{ $count: number }>`
@@ -290,11 +290,11 @@ export const MobileTrackLink = styled(LocalLink)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
+  height: 36px;
   border-radius: 11px;
 
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
 
   &,
@@ -307,7 +307,7 @@ export const MobileTrackLink = styled(LocalLink)`
   &::after {
     content: '';
     position: absolute;
-    inset: -2px 0;
+    inset: -4px 0;
   }
 
   &[aria-current='page'] {
@@ -345,11 +345,11 @@ export const MobileTabLink = styled(LocalLink)<{ $showNew?: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 4px;
-  min-height: 56px;
+  min-height: 48px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.md}px;
 
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
 
   &,
