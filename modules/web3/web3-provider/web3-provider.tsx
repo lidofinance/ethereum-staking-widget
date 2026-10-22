@@ -29,7 +29,7 @@ import { WalletIdsEthereum, WalletsListEthereum } from 'reef-knot/wallets';
 
 import { useThemeToggle } from '@lidofinance/lido-ui';
 
-import { config } from 'config';
+import { config, useConfig } from 'config';
 import { CHAINS } from 'consts/chains';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
@@ -44,7 +44,6 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { SupportOnlyL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './web3-transport';
 import { wagmiChainMap } from '../consts';
-import { useExternalConfigContext } from 'config/external-config';
 
 type ChainsList = [Chain, ...Chain[]];
 
@@ -89,7 +88,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
   } = useUserConfig();
-  const { wallets } = useExternalConfigContext();
+  const { wallets } = useConfig().externalConfig;
 
   const { themeName } = useThemeToggle();
 

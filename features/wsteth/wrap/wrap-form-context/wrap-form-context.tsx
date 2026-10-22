@@ -143,8 +143,8 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<WrapFormInputType> => ({
       onSubmit,
-      onReset: ({ token }: WrapFormInputType) => {
-        reset({ ...defaultValues, token });
+      onReset: ({ token, referral }: WrapFormInputType) => {
+        reset({ ...defaultValues, token, referral });
       },
       retryEvent,
       // keeps state between L1/L2 changes

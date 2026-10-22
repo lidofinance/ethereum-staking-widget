@@ -1,8 +1,11 @@
-import { SendCallsError } from 'modules/web3';
-import { TxSettledError } from 'modules/web3/utils/tx-settled-error';
-import { TxFlowInterruptedError } from 'modules/web3/utils/tx-flow-interrupted-error';
-import { TxStaleError } from 'modules/web3/utils/tx-stale-error';
-import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
+import {
+  SendCallsError,
+  TxSettledError,
+  TxSentDataUnavailableError,
+  TxFlowInterruptedError,
+  TxStaleError,
+  QuoteMismatchError,
+} from 'modules/web3';
 import { UnknownBundleIdError, UserRejectedRequestError } from 'viem';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import debounce from 'lodash/debounce';
@@ -28,6 +31,7 @@ export enum ErrorMessage {
   QUOTE_CHANGED = 'The exchange rate has changed. Check the updated amount and try again.',
   STAKE_WETH_INTERRUPTED = 'Your WETH was unwrapped, but the stake was not sent. Retry to stake the ETH.',
   STAKE_WETH_L2_INTERRUPTED = 'Your WETH was approved, but the stake was not sent. Retry to stake it.',
+  DEPOSIT_INTERRUPTED = 'Your tokens were approved, but the deposit was not sent. Retry to deposit them.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -80,6 +84,24 @@ export const getError = (error: unknown): ErrorMessage | string => {
       return ErrorMessage.SOMETHING_WRONG;
   }
 };
+
+/**
+ * Whether the failed stage may offer to submit the transaction again. Not for
+ * one that settled or was sent and never read back (it may have landed: a
+ * retry could submit it twice), nor for one the wallet cannot pay for.
+ */
+export const isRetryableTxError = (error: unknown): boolean => {
+  if (
+    error instanceof TxSettledError ||
+    error instanceof TxSentDataUnavailableError
+  )
+    return false;
+  return getError(error) !== ErrorMessage.NOT_ENOUGH_ETHER;
+};
+
+/** Whether the error only reports a follow-up read after a landed transaction */
+export const isSettledTxError = (error: unknown): boolean =>
+  error instanceof TxSettledError;
 
 export const getErrorMessage = (error: unknown): ErrorMessage | string => {
   // the UI that would show this is gone; nothing to log or track
@@ -202,6 +224,10 @@ const extractHumaneMessage = (error: unknown) => {
   // Checked first: the wrapped cause may carry a provider code of its own
   if (error instanceof TxSettledError) {
     return ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE;
+  }
+  // same wording as the AA bundle case: sent, but nothing to read back
+  if (error instanceof TxSentDataUnavailableError) {
+    return ErrorMessage.BUNDLE_NOT_FOUND;
   }
   if (error instanceof TxFlowInterruptedError) {
     return error.message;
@@ -361,6 +387,8 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
     MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED,
   [ErrorMessage.STAKE_WETH_L2_INTERRUPTED]:
     MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_L2_INTERRUPTED,
+  [ErrorMessage.DEPOSIT_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_INTERRUPTED,
 };
 
 const trackErrorDebounced = debounce((errorMessage: string) => {
