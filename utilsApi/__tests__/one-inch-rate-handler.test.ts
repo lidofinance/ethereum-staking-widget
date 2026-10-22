@@ -102,6 +102,7 @@ describe('createOneInchRateHandler', () => {
     );
     expect(options?.headers).toMatchObject({
       Authorization: `Bearer ${testApiKey}`,
+      'User-Agent': expect.stringContaining('lido-staking-widget/'),
     });
   });
 
