@@ -54,7 +54,7 @@ export class TransactionRevertedError extends Error {
  * receipt wait timed out, the status poll failed or returned no receipt.
  * The transaction may well have landed, so this must never be presented
  * as a failed transaction with a Retry: the user is told to reload.
- * Resolved to ErrorMessage.TX_SENT_DATA_UNAVAILABLE by `getErrorMessage`.
+ * Resolved to ErrorMessage.BUNDLE_NOT_FOUND by `getErrorMessage`.
  */
 export class TxSentDataUnavailableError extends Error {
   cause: unknown;

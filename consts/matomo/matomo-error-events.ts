@@ -16,7 +16,6 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   PROVIDER_DISCONNECTED = 'PROVIDER_DISCONNECTED',
   CHAIN_DISCONNECTED = 'CHAIN_DISCONNECTED',
   TX_SETTLED_DATA_UNAVAILABLE = 'TX_SETTLED_DATA_UNAVAILABLE',
-  TX_SENT_DATA_UNAVAILABLE = 'TX_SENT_DATA_UNAVAILABLE',
   QUOTE_CHANGED = 'QUOTE_CHANGED',
   STAKE_WETH_INTERRUPTED = 'STAKE_WETH_INTERRUPTED',
   STAKE_WETH_L2_INTERRUPTED = 'STAKE_WETH_L2_INTERRUPTED',
@@ -102,11 +101,6 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'Transaction settled but follow-up data could not be loaded',
     'eth_widget_errors_tx_settled_data_unavailable',
-  ],
-  [MATOMO_ERROR_EVENTS_TYPES.TX_SENT_DATA_UNAVAILABLE]: [
-    'Ethereum_Staking_Widget_Errors',
-    'Transaction sent but could not be located on chain',
-    'eth_widget_errors_tx_sent_data_unavailable',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED]: [
     'Ethereum_Staking_Widget_Errors',

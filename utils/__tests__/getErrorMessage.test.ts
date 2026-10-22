@@ -54,7 +54,7 @@ describe('getErrorMessage', () => {
   it('names a transaction that was sent but never read back, whatever the cause says', () => {
     // the cause is a wallet rejection shape: the wrapper must win over it
     const error = new TxSentDataUnavailableError({ code: 4001 }, '0x1');
-    expect(getErrorMessage(error)).toBe(ErrorMessage.TX_SENT_DATA_UNAVAILABLE);
+    expect(getErrorMessage(error)).toBe(ErrorMessage.BUNDLE_NOT_FOUND);
   });
 
   it('should return NOT_ENOUGH_ETHER error message when error code is -32000', () => {

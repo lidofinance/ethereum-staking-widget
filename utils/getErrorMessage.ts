@@ -28,7 +28,6 @@ export enum ErrorMessage {
   PROVIDER_DISCONNECTED = 'Your wallet is disconnected.\nReconnect your wallet and try again.',
   CHAIN_DISCONNECTED = 'Your wallet is not connected to the selected network.\nSwitch to the selected network in your wallet and try again.',
   TX_SETTLED_DATA_UNAVAILABLE = 'Your transaction was completed, but the updated data could not be loaded. Refresh the page to see the latest state.',
-  TX_SENT_DATA_UNAVAILABLE = 'Your transaction was sent, but could not be located on blockchain. Reload the page to see its latest state before trying again.',
   QUOTE_CHANGED = 'The exchange rate has changed. Check the updated amount and try again.',
   STAKE_WETH_INTERRUPTED = 'Your WETH was unwrapped, but the stake was not sent. Retry to stake the ETH.',
   STAKE_WETH_L2_INTERRUPTED = 'Your WETH was approved, but the stake was not sent. Retry to stake it.',
@@ -226,8 +225,9 @@ const extractHumaneMessage = (error: unknown) => {
   if (error instanceof TxSettledError) {
     return ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE;
   }
+  // same wording as the AA bundle case: sent, but nothing to read back
   if (error instanceof TxSentDataUnavailableError) {
-    return ErrorMessage.TX_SENT_DATA_UNAVAILABLE;
+    return ErrorMessage.BUNDLE_NOT_FOUND;
   }
   if (error instanceof TxFlowInterruptedError) {
     return error.message;
@@ -382,8 +382,6 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
     MATOMO_ERROR_EVENTS_TYPES.CHAIN_DISCONNECTED,
   [ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE]:
     MATOMO_ERROR_EVENTS_TYPES.TX_SETTLED_DATA_UNAVAILABLE,
-  [ErrorMessage.TX_SENT_DATA_UNAVAILABLE]:
-    MATOMO_ERROR_EVENTS_TYPES.TX_SENT_DATA_UNAVAILABLE,
   [ErrorMessage.QUOTE_CHANGED]: MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED,
   [ErrorMessage.STAKE_WETH_INTERRUPTED]:
     MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED,
