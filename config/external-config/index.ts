@@ -14,6 +14,7 @@ export type {
 } from './types';
 export {
   getManifestKey,
+  getConfiguredManifestKey,
   getLocalFallbackManifest,
   shouldRedirectToRoot,
   isDisabledPath,

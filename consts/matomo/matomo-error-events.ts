@@ -19,6 +19,7 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   QUOTE_CHANGED = 'QUOTE_CHANGED',
   STAKE_WETH_INTERRUPTED = 'STAKE_WETH_INTERRUPTED',
   STAKE_WETH_L2_INTERRUPTED = 'STAKE_WETH_L2_INTERRUPTED',
+  DEPOSIT_INTERRUPTED = 'DEPOSIT_INTERRUPTED',
   SOMETHING_WRONG = 'SOMETHING_WRONG',
 }
 
@@ -115,6 +116,11 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'WETH approved but the L2 stake was not sent',
     'eth_widget_errors_stake_weth_l2_interrupted',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_INTERRUPTED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'Tokens approved but the vault deposit was not sent',
+    'eth_widget_errors_deposit_interrupted',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG]: [
     'Ethereum_Staking_Widget_Errors',

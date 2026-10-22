@@ -20,7 +20,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption =
     trustedHosts: secretConfig.cspTrustedHosts
       ? secretConfig.cspTrustedHosts.split(',')
       : [],
-    reportUri: secretConfig.cspReportUri,
+    reportUri: secretConfig.cspReportUri || undefined,
     reportOnly: secretConfig.cspReportOnly,
     cowswapBaseUrl: COWSWAP_BASE_URL,
     developmentMode: config.developmentMode,

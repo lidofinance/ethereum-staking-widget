@@ -1,9 +1,13 @@
 import type { Hash } from 'viem';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { TransactionRevertedError } from '../../utils/transaction-reverted-error';
-import { TxSettledError } from '../../utils/tx-settled-error';
-import { TxStaleError } from '../../utils/tx-stale-error';
+import {
+  SendCallsError,
+  TransactionRevertedError,
+  TxSentDataUnavailableError,
+  TxSettledError,
+  TxStaleError,
+} from '../../utils/errors';
 import { isStepProposed, isStepSent, isStepSettled } from './context';
 import type {
   LegacyTxFlowArgs,
@@ -33,14 +37,7 @@ const PRE_SEND_STAGES = new Set<TxCallbackProps['stage']>([
  */
 export const runTxFlow = async <TData = undefined>(
   args: TxFlowArgs<TData>,
-  {
-    isAA,
-    address,
-    validateAddress,
-    sendAACalls,
-    isCurrent,
-    txHash,
-  }: TxFlowDeps,
+  { isAA, address, validateAddress, sendAACalls, isCurrent }: TxFlowDeps,
 ): Promise<TxFlowResult<TData>> => {
   const { callsFn } = args;
   // a legacy flow carries no data (TData is undefined there), so both shapes
@@ -61,6 +58,16 @@ export const runTxFlow = async <TData = undefined>(
   // window is not a failed transaction and must never get a Retry. Cleared
   // after DONE so a chained transaction (approve, then deposit) reports its own
   let isSettled = false;
+  // True from the receipt (a hash or call id came back) until the outcome is
+  // known: a confirmation, a multisig proposal or DONE. A failure in that
+  // window left a transaction on the network whose fate was never read, so
+  // it must not get a Retry either; the id is kept for the report
+  let isSent = false;
+  let sentId: string | undefined;
+  // The hash of the current transaction: a legacy sender reports it at
+  // RECEIPT and the flow hands it to onSuccess at DONE; cleared after, so a
+  // chained transaction reports its own
+  let currentTxHash: Hash | undefined;
 
   const ctx: TxFlowContext<TData | undefined> = {
     stepId: undefined,
@@ -113,15 +120,21 @@ export const runTxFlow = async <TData = undefined>(
     switch (txArgs.stage) {
       case TransactionCallbackStage.RECEIPT:
         setStatus('sent');
+        isSent = true;
+        sentId = 'callId' in txArgs ? txArgs.callId : txArgs.payload;
         break;
       case TransactionCallbackStage.CONFIRMATION:
+        // the outcome is known either way, a revert included
+        isSent = false;
         if (txArgs.payload?.status !== 'reverted') setStatus('settled');
         break;
       case TransactionCallbackStage.DONE:
         setStatus('done');
+        isSent = false;
         break;
       case TransactionCallbackStage.MULTISIG_DONE:
         setStatus('proposed');
+        isSent = false;
         break;
       default:
         break;
@@ -136,7 +149,7 @@ export const runTxFlow = async <TData = undefined>(
         return onSign?.(args);
       case TransactionCallbackStage.RECEIPT:
         // Legacy reports the tx hash here; AA reports a callId and the hash at DONE
-        txHash.current = args.payload;
+        currentTxHash = args.payload;
         return onReceipt?.({
           ...args,
           txHashOrCallId:
@@ -153,10 +166,10 @@ export const runTxFlow = async <TData = undefined>(
         isSettled = true;
         await onSuccess?.({
           ...args,
-          txHash: 'txHash' in args ? args.txHash : txHash.current,
+          txHash: 'txHash' in args ? args.txHash : currentTxHash,
         });
         isSettled = false;
-        txHash.current = undefined;
+        currentTxHash = undefined;
         return;
       case TransactionCallbackStage.MULTISIG_DONE:
         return onMultisigDone?.(args);
@@ -214,10 +227,16 @@ export const runTxFlow = async <TData = undefined>(
       throw new TxStaleError();
     }
     // The tx did complete: with a handler the caller finishes as a success
-    // (reset form, track completion); without one its own catch must show it
+    // (reset form, track completion); without one its own catch must show it.
+    // A tx that was sent but never read back is reported as such, unless the
+    // sender already knows the outcome (an AA batch that failed or reverted)
     const reported = isSettled
-      ? new TxSettledError(error, txHash.current)
-      : error;
+      ? new TxSettledError(error, currentTxHash)
+      : isSent &&
+          !(error instanceof SendCallsError) &&
+          !(error instanceof TxSentDataUnavailableError)
+        ? new TxSentDataUnavailableError(error, sentId)
+        : error;
     // a stepwise flow reports every failure here, with the context saying
     // what landed; a legacy one only the settled ones
     if ((!isStepwise && !isSettled) || !onFailure) throw reported;

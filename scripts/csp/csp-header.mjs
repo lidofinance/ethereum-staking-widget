@@ -40,7 +40,12 @@ const headerOf = (headers, name) => {
  * Sets the CSP header on every HTML response of the server. The server is
  * the one place that sets it: Next renders the pages statically (ISR), so
  * nothing in the app runs per request for a page served from the cache.
- * Hooks writeHead, which Node calls for explicit and implicit header flushes
+ * Hooks writeHead, which Node calls for explicit and implicit header flushes.
+ *
+ * A 304 is sent too: Next answers a matching ETag before it sets Content-Type,
+ * and the browser merges 304 headers into its cached copy, so a policy that is
+ * not resent stays pinned to whatever the cached 200 carried. Asset 304s get
+ * the header as well, which is harmless.
  * @param {import('node:http').ServerResponse} res
  * @param {() => [string, string]} getCspHeader
  */
@@ -50,7 +55,7 @@ export const setCspHeaderOnHtml = (res, getCspHeader) => {
     const headers = rest.find((arg) => arg && typeof arg === 'object');
     const contentType =
       this.getHeader('content-type') ?? headerOf(headers, 'content-type');
-    if (isHtml(contentType)) {
+    if (statusCode === 304 || isHtml(contentType)) {
       const [name, value] = getCspHeader();
       this.setHeader(name, value);
     }

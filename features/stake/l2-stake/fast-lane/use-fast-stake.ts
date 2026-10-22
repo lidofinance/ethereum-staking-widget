@@ -4,6 +4,7 @@ import type { Address } from 'viem';
 
 import { useConfig } from 'config';
 import {
+  ACCOUNT_READ_QUERY_KEYS,
   applyRoundUpTxParameter,
   useDappStatus,
   useLidoSDK,
@@ -12,12 +13,13 @@ import {
   useLidoSDKL2,
   TxSettledError,
   TxFlowInterruptedError,
+  QuoteMismatchError,
 } from 'modules/web3';
-import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import {
   L2StakeModule,
   LIDO_L2_FAST_STAKE_ETH_GAS_LIMIT_FALLBACK,
   LIDO_L2_FAST_STAKE_WETH_GAS_LIMIT_FALLBACK,
+  LIDO_L2_STAKING_QUERY_SCOPE,
 } from 'modules/l2-staking';
 
 import { useBells } from 'features/stake/stake-form/hooks/use-bells';
@@ -100,6 +102,12 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
       let minReceiveAmount = 0n;
 
       const { isSuccess } = await txFlow<FastStakeData>({
+        // a stake that was sent but never read back moved the pool and the
+        // account's balances and allowance, nothing else the app holds
+        refetchScope: [
+          [LIDO_L2_STAKING_QUERY_SCOPE],
+          ...ACCOUNT_READ_QUERY_KEYS,
+        ],
         prepare: async () => {
           invariant(amount, 'amount is null');
           invariant(address, 'account is not defined');

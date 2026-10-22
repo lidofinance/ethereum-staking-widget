@@ -44,7 +44,7 @@ export const UsdVaultWithdrawWillReceiveSelect = () => {
   const { field } = useController<UsdVaultWithdrawFormValues, 'token'>({
     name: 'token',
   });
-  const { disabled } = useFormState();
+  const { disabled, isSubmitting } = useFormState();
   const amount = useWatch<UsdVaultWithdrawFormValues, 'amount'>({
     name: 'amount',
   });
@@ -66,7 +66,7 @@ export const UsdVaultWithdrawWillReceiveSelect = () => {
   return (
     <WillReceiveSelectStyle
       {...field}
-      disabled={disabled}
+      disabled={disabled || isSubmitting}
       fullwidth
       arrow="small"
       leftDecorator={renderTokenIcon(field.value)}

@@ -14,7 +14,7 @@ import {
   useFallbackManifestEntry,
 } from './frontend-fallback';
 import { ManifestSchema } from './validate';
-import { getManifestKey } from './utils';
+import { getConfiguredManifestKey } from './utils';
 import type { ExternalConfig, ManifestConfig, ManifestEntry } from './types';
 
 // IPFS builds (no backend) and legacy builds (no CONFIG_MANIFEST_PATH) fetch
@@ -30,33 +30,27 @@ const getManifestUrl = (): string => {
 };
 
 export const useExternalConfigContext = (
-  prefetchedManifest?: unknown,
+  prefetchedManifest: unknown | undefined,
 ): ExternalConfig => {
   const { isEarnDisabledByRuntimeContext } = useEarnRuntimeState();
 
-  const { defaultChain, manifestOverride } = config;
+  const manifestKey = getConfiguredManifestKey();
   const fallbackData = useFallbackManifestEntry(
     prefetchedManifest,
-    defaultChain,
-    manifestOverride,
+    manifestKey,
   );
 
   const manifestUrl = getManifestUrl();
 
   const queryResult = useQuery<ManifestEntry>({
-    queryKey: [
-      'external-config',
-      { defaultChain, manifestOverride, manifestUrl },
-    ],
+    queryKey: ['external-config', { manifestKey, manifestUrl }],
     ...STRATEGY_MANIFEST,
-    enabled: !!defaultChain,
+    enabled: !!config.defaultChain,
     queryFn: async () => {
       try {
         const result = await standardFetcher<Record<string, any>>(manifestUrl, {
           headers: { Accept: 'application/json' },
         });
-
-        const manifestKey = getManifestKey(defaultChain, manifestOverride);
 
         const parseResult = ManifestSchema.safeParse(result);
 
