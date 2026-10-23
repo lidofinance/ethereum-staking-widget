@@ -63,11 +63,11 @@ export const SWAP_COWSWAP_PROFILE = createCowswapProfile({
   // every network with CoW contracts and a partner fee recipient
   networks: COWSWAP_NETWORKS,
   analytics: {
-    quoteViewed: MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteViewed,
-    quoteError: MATOMO_TX_EVENTS_TYPES.withdrawalDexQuoteError,
-    swapStart: MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart,
-    swapPosted: MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapPosted,
-    swapFinish: MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapFinish,
-    swapCancel: MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapCancel,
+    quoteViewed: MATOMO_TX_EVENTS_TYPES.swapQuoteViewed,
+    quoteError: MATOMO_TX_EVENTS_TYPES.swapQuoteError,
+    swapStart: MATOMO_TX_EVENTS_TYPES.swapStart,
+    swapPosted: MATOMO_TX_EVENTS_TYPES.swapPosted,
+    swapFinish: MATOMO_TX_EVENTS_TYPES.swapFinish,
+    swapCancel: MATOMO_TX_EVENTS_TYPES.swapCancel,
   },
 });
