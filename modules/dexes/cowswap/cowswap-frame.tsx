@@ -68,10 +68,6 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     oracleFeeds,
   } = profile;
 
-  // throws on loading timeout/onError
-  const { isLoading, isLoaded, onLoaded, onError, triggerRefresh, refreshId } =
-    useLoadingStates();
-
   const { address, chainId, isTestnet } = useDappStatus();
   // dapp chain if enabled, else mainnet (sepolia on testnets)
   const widgetChainId = chainIds.includes(chainId)
@@ -134,6 +130,10 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     getNetworkTxConfig,
     appCode,
   });
+
+  // throws on loading timeout/onError; a new provider or a pending one recreates the widget
+  const { isLoading, isLoaded, onLoaded, onError, triggerRefresh, refreshId } =
+    useLoadingStates(provider ?? isProviderPending);
 
   const isDarkTheme = themeName === 'dark';
   const chainStyle =
