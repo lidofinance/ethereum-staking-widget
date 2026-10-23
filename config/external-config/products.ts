@@ -15,10 +15,12 @@ import type { ManifestConfig, ManifestConfigPage } from './types';
 export const PRODUCTS = ['stake', 'earn', 'swap'] as const;
 export type Product = (typeof PRODUCTS)[number];
 
-// URL params that control products, kept on internal links
-export const PRODUCT_QUERY_KEYS = ['product', ...PRODUCTS] as const;
-
+const PRODUCT_PARAM = 'product';
 const PRODUCT_DISABLED = 'disabled';
+
+// URL params that control products, kept on internal links
+export const PRODUCT_QUERY_KEYS = [PRODUCT_PARAM, ...PRODUCTS] as const;
+type ProductQueryKey = (typeof PRODUCT_QUERY_KEYS)[number];
 
 // entry page of a product
 export const PRODUCT_PATHS: Record<Product, string> = {
@@ -47,13 +49,24 @@ export type ProductsUrlState = {
 };
 
 const isProduct = (value: string): value is Product =>
-  (PRODUCTS as readonly string[]).includes(value);
+  PRODUCTS.some((product) => product === value);
+
+export const isProductQueryKey = (key: string): key is ProductQueryKey =>
+  PRODUCT_QUERY_KEYS.some((queryKey) => queryKey === key);
 
 const splitProducts = (value: string): Product[] =>
   value
     .split(',')
     .map((item) => item.trim())
     .filter(isProduct);
+
+// products listed in `product` params, in URL order
+const getAllowlist = (
+  entries: readonly (readonly [string, string])[],
+): Product[] =>
+  entries
+    .filter(([key]) => key === PRODUCT_PARAM)
+    .flatMap(([, value]) => splitProducts(value));
 
 /**
  * Products state from URL params.
@@ -67,17 +80,16 @@ const splitProducts = (value: string): Product[] =>
 export const parseProductsUrlState = (
   entries: readonly (readonly [string, string])[],
 ): ProductsUrlState => {
-  const allowlist = entries
-    .filter(([key]) => key === 'product')
-    .flatMap(([, value]) => splitProducts(value));
+  const allowlist = getAllowlist(entries);
   const hasAllowlist = allowlist.length > 0;
+  const isAllowed = (product: Product) =>
+    !hasAllowlist || allowlist.includes(product);
 
-  const products = Object.fromEntries(
-    PRODUCTS.map((product) => [
-      product,
-      { enabled: !hasAllowlist || allowlist.includes(product) },
-    ]),
-  ) as Record<Product, ProductUrlState>;
+  const products: Record<Product, ProductUrlState> = {
+    stake: { enabled: isAllowed('stake') },
+    earn: { enabled: isAllowed('earn') },
+    swap: { enabled: isAllowed('swap') },
+  };
 
   const seen = new Set<Product>();
   for (const [key, value] of entries) {
@@ -121,9 +133,9 @@ export const toProductQuery = (
 ): ProductQuery => {
   const query: ProductQuery = {};
   for (const [key, value] of entries) {
-    if (!(PRODUCT_QUERY_KEYS as readonly string[]).includes(key)) continue;
-    if (key === 'product' && query.product !== undefined) {
-      query.product = `${query.product},${value}`;
+    if (!isProductQueryKey(key)) continue;
+    if (key === PRODUCT_PARAM && query[PRODUCT_PARAM] !== undefined) {
+      query[PRODUCT_PARAM] = `${query[PRODUCT_PARAM]},${value}`;
     } else {
       query[key] ??= value;
     }
@@ -137,11 +149,27 @@ export const withProductQuery = (
   productQuery: ProductQuery,
 ): ParsedUrlQuery => {
   const rest = Object.fromEntries(
-    Object.entries(query).filter(
-      ([key]) => !(PRODUCT_QUERY_KEYS as readonly string[]).includes(key),
-    ),
+    Object.entries(query).filter(([key]) => !isProductQueryKey(key)),
   );
   return { ...rest, ...productQuery };
+};
+
+// redirect query: current query without dynamic route params (e.g. [vault]), with product params
+export const getRedirectQuery = (
+  pathname: string,
+  query: ParsedUrlQuery,
+  productQuery: ProductQuery,
+): ParsedUrlQuery => {
+  // Extract dynamic path segment names (e.g. [vault], [action]) to exclude them from query
+  const dynamicParams = new Set(
+    pathname.match(/\[(\w+)\]/g)?.map((p) => p.slice(1, -1)) ?? [],
+  );
+  return withProductQuery(
+    Object.fromEntries(
+      Object.entries(query).filter(([key]) => !dynamicParams.has(key)),
+    ),
+    productQuery,
+  );
 };
 
 // products disabled at runtime regardless of URL params, e.g. by Ledger Live
@@ -156,16 +184,15 @@ export const getProductPagesOverride = (
   pages: ManifestConfig['pages'],
   runtimeDisabled: RuntimeDisabledProducts,
 ): ManifestConfig['pages'] => {
+  const isOptionalDisabled = (product: keyof RuntimeDisabledProducts) =>
+    !products[product].enabled ||
+    runtimeDisabled[product] ||
+    isDisabledPath(PRODUCT_PATHS[product], pages);
+
   const isDisabled: Record<Product, boolean> = {
     stake: !products.stake.enabled,
-    earn:
-      !products.earn.enabled ||
-      runtimeDisabled.earn ||
-      isDisabledPath(EARN_PATH, pages),
-    swap:
-      !products.swap.enabled ||
-      runtimeDisabled.swap ||
-      isDisabledPath(SWAP_PATH, pages),
+    earn: isOptionalDisabled('earn'),
+    swap: isOptionalDisabled('swap'),
   };
   if (isDisabled.earn && isDisabled.swap) isDisabled.stake = false;
 

@@ -1,13 +1,8 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 vi.mock('utils/standardFetcher', () => ({
   standardFetcher: vi.fn(),
 }));
-
-import { keccak256, toHex } from 'viem';
-// json-stringify-deterministic is a transitive dependency (see utils.ts)
-import stringify from 'json-stringify-deterministic';
 
 import {
   validateSignTypedData,
@@ -20,13 +15,16 @@ import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
 import {
+  ATTACKER,
+  CHAIN_MAINNET,
+  CHAIN_SEPOLIA,
+  MAINNET_CTX,
   MAINNET_TX_CONFIG,
-  SEPOLIA_TX_CONFIG,
+  SEPOLIA_CTX,
+  SIGNER,
   TEST_APP_CODE,
+  hashFullAppData,
 } from '../../__tests__/fixtures';
-
-const CHAIN_MAINNET = 1;
-const CHAIN_SEPOLIA = 11155111;
 
 // All addresses from network configs (source of truth)
 const COW_SETTLEMENT = mainnetNetwork.contracts.cowSettlement.toLowerCase();
@@ -46,29 +44,8 @@ const SEPOLIA_WETH = sepoliaNetwork.contracts.weth.toLowerCase();
 const SEPOLIA_FEE_RECIPIENT = sepoliaNetwork.contracts.daoAgent.toLowerCase();
 
 const ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-const ATTACKER = '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef';
-const SIGNER = '0x2222222222222222222222222222222222222222';
-
-const mainnetCtx = {
-  chainId: CHAIN_MAINNET,
-  signer: SIGNER as `0x${string}`,
-  networkTxConfig: MAINNET_TX_CONFIG,
-  appCode: TEST_APP_CODE,
-};
-const sepoliaCtx = {
-  chainId: CHAIN_SEPOLIA,
-  signer: SIGNER as `0x${string}`,
-  networkTxConfig: SEPOLIA_TX_CONFIG,
-  appCode: TEST_APP_CODE,
-};
 
 // ---- App data response helper ----
-
-// keccak256 of the deterministically-stringified appData document — mirrors
-// getAppDataHex() in utils.ts, which is how the validator derives the hash the
-// order's appData field is checked against.
-const hashFullAppData = (fullAppData: string): `0x${string}` =>
-  keccak256(toHex(stringify(JSON.parse(fullAppData))));
 
 const REAL_APP_DATA_HASH =
   '0x04c6e64bf43a255e35ceb6178cc12b21d3feb190c8cf003927f868dcd1a6c189';
@@ -236,7 +213,7 @@ describe('validateSignTypedData', () => {
     it('allows valid stETH → WETH order on mainnet', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams(),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -244,7 +221,7 @@ describe('validateSignTypedData', () => {
     it('allows wstETH → USDC order', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: WSTETH, buyToken: USDC }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -252,7 +229,7 @@ describe('validateSignTypedData', () => {
     it('allows stETH → USDT order', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: USDT }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -260,7 +237,7 @@ describe('validateSignTypedData', () => {
     it('allows stETH → USDS order', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: USDS }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -268,7 +245,7 @@ describe('validateSignTypedData', () => {
     it('allows stETH → WBTC order', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: WBTC }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -276,7 +253,7 @@ describe('validateSignTypedData', () => {
     it('allows stETH → ETH (0xeeee) order', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: ETH_ADDRESS }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -292,7 +269,7 @@ describe('validateSignTypedData', () => {
           buyToken: SEPOLIA_WETH,
           appData: hashFullAppData(sepoliaAppData.fullAppData),
         }),
-        sepoliaCtx,
+        SEPOLIA_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -338,7 +315,7 @@ describe('validateSignTypedData', () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ appData: REAL_APP_DATA_HASH }),
         // hash is from a real order placed under the legacy appCode
-        { ...mainnetCtx, appCode: 'Lido Staking Widget' },
+        { ...MAINNET_CTX, appCode: 'Lido Staking Widget' },
       );
       expect(result.allowed).toBe(true);
     });
@@ -348,7 +325,7 @@ describe('validateSignTypedData', () => {
     it('returns parsed order message as result on success', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams(),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
       if (!result.allowed) return;
@@ -366,20 +343,20 @@ describe('validateSignTypedData', () => {
 
   describe('invalid params', () => {
     it('rejects undefined params', async () => {
-      const result = await validateSignTypedData(undefined, mainnetCtx);
+      const result = await validateSignTypedData(undefined, MAINNET_CTX);
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
 
     it('rejects non-array params', async () => {
-      const result = await validateSignTypedData({}, mainnetCtx);
+      const result = await validateSignTypedData({}, MAINNET_CTX);
       expect(result.allowed).toBe(false);
     });
 
     it('rejects when signer element is not an address', async () => {
       const result = await validateSignTypedData(
         ['not-an-address', '{}'],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -387,7 +364,7 @@ describe('validateSignTypedData', () => {
     it('rejects when typed data element is not a JSON string', async () => {
       const result = await validateSignTypedData(
         [SIGNER, 'not-json{{{'],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -396,7 +373,7 @@ describe('validateSignTypedData', () => {
     it('rejects when typed data JSON has wrong domain name', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ domainName: 'Evil Protocol' }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -404,7 +381,7 @@ describe('validateSignTypedData', () => {
     it('rejects when typed data JSON has wrong version', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ version: 'v1' }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -412,7 +389,7 @@ describe('validateSignTypedData', () => {
     it('rejects when primaryType is not Order', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ primaryType: 'Transfer' }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -420,7 +397,7 @@ describe('validateSignTypedData', () => {
     it('rejects when kind is not sell', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ kind: 'buy' }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -428,7 +405,7 @@ describe('validateSignTypedData', () => {
     it('rejects when partiallyFillable is true', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ partiallyFillable: true }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -436,7 +413,7 @@ describe('validateSignTypedData', () => {
     it('rejects when sellTokenBalance is not erc20', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellTokenBalance: 'external' }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -445,7 +422,7 @@ describe('validateSignTypedData', () => {
       // bigintStringSchema rejects a non-numeric amount (BigInt() throws).
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellAmount: 'not-a-number' }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -454,7 +431,7 @@ describe('validateSignTypedData', () => {
     it('rejects when sellAmount is a negative bigint string', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellAmount: '-1' }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -464,7 +441,7 @@ describe('validateSignTypedData', () => {
     it('rejects when params signer differs from ctx.signer', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ signer: ATTACKER }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -473,7 +450,7 @@ describe('validateSignTypedData', () => {
     it('rejects when domain chainId differs from ctx.chainId', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ chainId: CHAIN_SEPOLIA }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -482,7 +459,7 @@ describe('validateSignTypedData', () => {
     it('rejects when verifyingContract is not CoW Settlement', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ verifyingContract: ATTACKER }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -493,7 +470,7 @@ describe('validateSignTypedData', () => {
     it('rejects sell token not in allowlist', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: WETH }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -502,7 +479,7 @@ describe('validateSignTypedData', () => {
     it('rejects buy token not in allowlist', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: STETH }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -510,12 +487,12 @@ describe('validateSignTypedData', () => {
 
     it('rejects order selling a token for itself', async () => {
       const ctx = {
-        ...mainnetCtx,
+        ...MAINNET_CTX,
         networkTxConfig: {
           ...MAINNET_TX_CONFIG,
           buyTokens: new Set([...MAINNET_TX_CONFIG.buyTokens, STETH]),
         },
-      } as typeof mainnetCtx;
+      } as typeof MAINNET_CTX;
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: STETH, buyToken: STETH }),
         ctx,
@@ -532,7 +509,7 @@ describe('validateSignTypedData', () => {
     ])('rejects order with %s signed fee', async (_, feeAmount) => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ feeAmount }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result).toEqual({
         allowed: false,
@@ -543,7 +520,7 @@ describe('validateSignTypedData', () => {
     it('rejects arbitrary attacker address as sell token', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: ATTACKER }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -556,7 +533,7 @@ describe('validateSignTypedData', () => {
           sellToken: STETH,
           buyToken: SEPOLIA_WETH,
         }),
-        sepoliaCtx,
+        SEPOLIA_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -567,7 +544,7 @@ describe('validateSignTypedData', () => {
     it('rejects when receiver differs from signer', async () => {
       const result = await validateSignTypedData(
         buildTypedDataParams({ receiver: ATTACKER }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -601,7 +578,7 @@ describe('validateSignTypedData', () => {
           appData: REAL_APP_DATA_HASH,
           receiver: ATTACKER,
         }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -613,7 +590,7 @@ describe('validateSignTypedData', () => {
       const expiredValidTo = Math.floor(Date.now() / 1000) - 60;
       const result = await validateSignTypedData(
         buildTypedDataParams({ validTo: expiredValidTo }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -623,7 +600,7 @@ describe('validateSignTypedData', () => {
       const tooFarValidTo = Math.floor(Date.now() / 1000) + 1800 + 600;
       const result = await validateSignTypedData(
         buildTypedDataParams({ validTo: tooFarValidTo }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -635,7 +612,7 @@ describe('validateSignTypedData', () => {
       vi.mocked(standardFetcher).mockRejectedValue(new Error('Network error'));
       const result = await validateSignTypedData(
         buildTypedDataParams(),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -647,7 +624,7 @@ describe('validateSignTypedData', () => {
       );
       const result = await validateSignTypedData(
         buildTypedDataParams(),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe(TRANSACTION_ERROR(2038));
@@ -655,7 +632,7 @@ describe('validateSignTypedData', () => {
 
     it('rejects default appCode for integration with another appCode', async () => {
       const result = await validateSignTypedData(buildTypedDataParams(), {
-        ...mainnetCtx,
+        ...MAINNET_CTX,
         appCode: 'Lido Swap',
       });
       expect(result.allowed).toBe(false);
@@ -671,7 +648,7 @@ describe('validateSignTypedData', () => {
         buildTypedDataParams({
           appData: hashFullAppData(appData.fullAppData),
         }),
-        { ...mainnetCtx, appCode: 'Lido Swap' },
+        { ...MAINNET_CTX, appCode: 'Lido Swap' },
       );
       expect(result.allowed).toBe(true);
     });
@@ -682,7 +659,7 @@ describe('validateSignTypedData', () => {
       );
       const result = await validateSignTypedData(
         buildTypedDataParams(),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -694,7 +671,7 @@ describe('validateSignTypedData', () => {
       );
       const result = await validateSignTypedData(
         buildTypedDataParams(),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -706,7 +683,7 @@ describe('validateSignTypedData', () => {
       );
       const result = await validateSignTypedData(
         buildTypedDataParams(),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -718,7 +695,7 @@ describe('validateSignTypedData', () => {
       );
       const result = await validateSignTypedData(
         buildTypedDataParams(),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -731,7 +708,7 @@ describe('validateSignTypedData', () => {
         '0x1111111111111111111111111111111111111111111111111111111111111111';
       const result = await validateSignTypedData(
         buildTypedDataParams({ appData: wrongHash }),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -741,26 +718,29 @@ describe('validateSignTypedData', () => {
 
 describe('validateSignTypedData — order cancellation (OrderCancellations)', () => {
   it('allows a valid cancellation on mainnet', async () => {
-    const result = await validateSignTypedData(buildCancelParams(), mainnetCtx);
+    const result = await validateSignTypedData(
+      buildCancelParams(),
+      MAINNET_CTX,
+    );
     expect(result.allowed).toBe(true);
   });
 
   it('rejects cancellation when domain chainId differs from ctx.chainId', async () => {
     const result = await validateSignTypedData(
       buildCancelParams({ chainId: CHAIN_SEPOLIA }),
-      mainnetCtx,
+      MAINNET_CTX,
     );
     expect(result.allowed).toBe(false);
-    expect(result.reason).toBeDefined();
+    expect(result.reason).toBe(TRANSACTION_ERROR(2057));
   });
 
   it('rejects cancellation when verifyingContract is not CoW Settlement', async () => {
     const result = await validateSignTypedData(
       buildCancelParams({ verifyingContract: ATTACKER }),
-      mainnetCtx,
+      MAINNET_CTX,
     );
     expect(result.allowed).toBe(false);
-    expect(result.reason).toBeDefined();
+    expect(result.reason).toBe(TRANSACTION_ERROR(2021));
   });
 
   it('rejects cancellation with more than one order UID', async () => {
@@ -781,7 +761,7 @@ describe('validateSignTypedData — order cancellation (OrderCancellations)', ()
     };
     const result = await validateSignTypedData(
       [SIGNER, JSON.stringify(order)],
-      mainnetCtx,
+      MAINNET_CTX,
     );
     expect(result.allowed).toBe(false);
   });
@@ -799,7 +779,7 @@ describe('validateCowSwapOrderMessage — prefetched appData', () => {
     kind: 'sell' as const,
     partiallyFillable: false as const,
     appData: APP_DATA,
-    receiver: SIGNER as `0x${string}`,
+    receiver: SIGNER,
     feeAmount: 0n,
     sellTokenBalance: 'erc20' as const,
     buyTokenBalance: 'erc20' as const,
@@ -808,7 +788,7 @@ describe('validateCowSwapOrderMessage — prefetched appData', () => {
   it('rejects when prefetched appData fails schema validation', async () => {
     const result = await validateCowSwapOrderMessage(
       buildOrderMessage(),
-      mainnetCtx,
+      MAINNET_CTX,
       { not: 'valid-app-data' } as never,
     );
     expect(result.allowed).toBe(false);
@@ -850,7 +830,7 @@ describe('validateCowSwapOrderMessage — hooks in appData', () => {
     );
     const result = await validateSignTypedData(
       buildTypedDataParams(),
-      mainnetCtx,
+      MAINNET_CTX,
     );
     expect(result.allowed).toBe(false);
     expect(result.reason).toBeDefined();
@@ -862,7 +842,7 @@ describe('validateCowSwapOrderMessage — hooks in appData', () => {
     );
     const result = await validateSignTypedData(
       buildTypedDataParams(),
-      mainnetCtx,
+      MAINNET_CTX,
     );
     expect(result.allowed).toBe(false);
     expect(result.reason).toBeDefined();
@@ -872,7 +852,7 @@ describe('validateCowSwapOrderMessage — hooks in appData', () => {
     // Default mock has no hooks — already covered but explicitly test
     const result = await validateSignTypedData(
       buildTypedDataParams(),
-      mainnetCtx,
+      MAINNET_CTX,
     );
     expect(result.allowed).toBe(true);
   });
@@ -882,7 +862,7 @@ describe('validateCowSwapOrderMessage — hooks in appData', () => {
     vi.mocked(standardFetcher).mockResolvedValue(appData);
     const result = await validateSignTypedData(
       buildTypedDataParams({ appData: hashFullAppData(appData.fullAppData) }),
-      mainnetCtx,
+      MAINNET_CTX,
     );
     expect(result.allowed).toBe(true);
   });

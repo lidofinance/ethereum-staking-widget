@@ -11,7 +11,13 @@ import { LinkIpfs } from 'shared/components/link-ipfs';
 // since routing in IPFS is using hashes like this: /#/path
 // Ideally, LocalLink must be compatible with href as object
 
-const KEPT_QUERY_KEYS = ['ref', 'embed', 'app', 'theme', 'forceAllowance'];
+const KEPT_QUERY_KEYS = [
+  'ref',
+  'embed',
+  'app',
+  'theme',
+  'forceAllowance',
+] as const;
 
 type LocalLinkProps = PropsWithChildren<
   LinkProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps>
@@ -22,7 +28,7 @@ export const LocalLink: FC<LocalLinkProps> = (props) => {
   const productQuery = useProductQuery();
   const { href, ...restProps } = props;
 
-  const extraQuery = {} as Record<string, string>;
+  const extraQuery: Record<string, string> = {};
   // does not support duplicates ?ref=01234&ref=56789
   for (const key of KEPT_QUERY_KEYS) {
     const value = router.query[key];

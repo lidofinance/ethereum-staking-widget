@@ -4,7 +4,6 @@
 export type PageRoute = {
   name: string;
   icon: React.ReactNode;
-  subPaths?: string[];
   showNew?: boolean;
 } & (
   | {

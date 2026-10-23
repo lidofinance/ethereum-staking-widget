@@ -6,12 +6,10 @@ import arbitrumNetwork from 'networks/l2/arbitrum.json';
 import baseNetwork from 'networks/l2/base.json';
 import lineaNetwork from 'networks/l2/linea.json';
 
-import type {
-  CowswapNetwork,
-  DexTokenContractKey,
-} from './guards/tx/utils/types';
+import type { CowswapNetwork } from './guards/tx/utils/types';
 
-const TOKEN_KEYS: readonly DexTokenContractKey[] = [
+// every DexTokenContractKey, checked in __tests__/networks.test.ts
+export const COWSWAP_TOKEN_KEYS = [
   'lido',
   'wsteth',
   'ldo',
@@ -42,7 +40,7 @@ const TOKEN_KEYS: readonly DexTokenContractKey[] = [
   'meth',
   'ezeth',
   'ethx',
-];
+] as const;
 
 type NetworkContracts = Record<string, string | undefined>;
 
@@ -60,7 +58,7 @@ const toCowswapNetwork = (
     weth,
     partnerFeeRecipient: contracts.cowPartnerFeeRecipient,
   };
-  for (const key of TOKEN_KEYS) {
+  for (const key of COWSWAP_TOKEN_KEYS) {
     const address = contracts[key];
     if (address) network[key] = address;
   }

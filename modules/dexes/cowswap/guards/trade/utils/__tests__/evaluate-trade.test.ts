@@ -544,7 +544,9 @@ describe('verifyOrderAgainstSnapshot', () => {
   });
 
   it('fails closed for token without decimals in profile', () => {
-    expect(verifyOrderAgainstSnapshot(ORDER, SNAPSHOT, {})).not.toBeNull();
+    expect(verifyOrderAgainstSnapshot(ORDER, SNAPSHOT, {})).toBe(
+      TRADE_VERIFICATION_ERROR(1003),
+    );
   });
 
   it('accepts order matching snapshot', () => {
@@ -560,6 +562,6 @@ describe('verifyOrderAgainstSnapshot', () => {
         SNAPSHOT,
         TOKEN_DECIMALS,
       ),
-    ).not.toBeNull();
+    ).toBe(TRADE_VERIFICATION_ERROR(1006));
   });
 });

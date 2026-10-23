@@ -52,10 +52,10 @@ export type CowswapProfileConfig = {
 // widget assets: token address, or 'ETH' for native ETH
 export type CowswapDefaultPair = { sell: string; buy: string };
 
-export type CowswapProfile = Omit<
-  CowswapProfileConfig,
-  'networks' | 'sellTokens' | 'buyTokens' | 'defaultPair'
-> & {
+export type CowswapProfile = {
+  appCode: string;
+  tokenLists: CowswapProfileConfig['tokenLists'];
+  analytics: CowswapAnalyticsEvents;
   // networks with a partner fee recipient; undefined disables the swap
   chainIds: readonly number[];
   getNetworkTxConfig: (chainId: number) => NetworkTxConfig | undefined;
@@ -147,11 +147,12 @@ export const createCowswapProfile = ({
   });
   invariant(enabled.length > 0, 'CoW Swap profile has no enabled networks');
 
+  const enabledTx = enabled.map((network) => ({
+    ...network,
+    txConfig: buildNetworkTxConfig(network.contracts, sellKeys, buyKeys),
+  }));
   const txConfigs = new Map<number, NetworkTxConfig>(
-    enabled.map(({ chainId, contracts }) => [
-      chainId,
-      buildNetworkTxConfig(contracts, sellKeys, buyKeys),
-    ]),
+    enabledTx.map(({ chainId, txConfig }) => [chainId, txConfig]),
   );
   const enabledContracts = enabled.map(({ contracts }) => contracts);
 
@@ -174,8 +175,7 @@ export const createCowswapProfile = ({
   };
 
   const defaultPairs = new Map<number, CowswapDefaultPair>(
-    enabled.map(({ chainId, contracts }) => {
-      const txConfig = txConfigs.get(chainId) as NetworkTxConfig;
+    enabledTx.map(({ chainId, contracts, txConfig }) => {
       const sell = pickAsset(contracts, txConfig.sellTokens, defaultPair.sell);
       const buy = pickAsset(contracts, txConfig.buyTokens, defaultPair.buy);
       invariant(

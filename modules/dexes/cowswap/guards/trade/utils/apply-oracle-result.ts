@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
 
-import type { OracleResult } from '../../oracles/types';
+import type { OracleResult } from '../../oracles';
 
 import {
   TRADE_BUILD_ERROR,
@@ -10,6 +10,14 @@ import {
 import type { OracleOutcome } from '../types';
 
 import { resolveLevel } from './resolve-level';
+
+const ORACLE_FAILURE_CODES: Record<
+  Extract<OracleResult, { ok: false }>['reason'],
+  number
+> = {
+  unavailable: 1004,
+  unsupported: 1005,
+};
 
 export const applyOracleResult = (
   result: OracleResult,
@@ -30,20 +38,15 @@ export const applyOracleResult = (
     return { level, messages, verified: true };
   }
 
-  switch (result.reason) {
-    case 'unavailable':
-      return {
-        level: 'blocked',
-        messages: [TRADE_BUILD_ERROR(1004)],
-        verified: false,
-      };
-    case 'unsupported':
-      return {
-        level: 'blocked',
-        messages: [TRADE_BUILD_ERROR(1005)],
-        verified: false,
-      };
-    default:
-      invariant(false, `Unknown oracle result reason: ${result.reason}`);
-  }
+  const code = ORACLE_FAILURE_CODES[result.reason];
+  invariant(
+    typeof code === 'number',
+    `Unknown oracle result reason: ${result.reason}`,
+  );
+
+  return {
+    level: 'blocked',
+    messages: [TRADE_BUILD_ERROR(code)],
+    verified: false,
+  };
 };

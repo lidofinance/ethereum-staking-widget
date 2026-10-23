@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/router';
+import type { ParsedUrlQuery } from 'querystring';
 
 import {
-  PRODUCT_QUERY_KEYS,
+  isProductQueryKey,
   parseProductsUrlState,
   toProductQuery,
   type ProductQuery,
@@ -15,9 +16,9 @@ type QueryEntries = [string, string][];
 let cachedEntries: QueryEntries | undefined;
 
 // product params in URL order; repeated params keep their values
-const getProductEntries = (query: ReturnType<typeof useRouter>['query']) =>
+const getProductEntries = (query: ParsedUrlQuery) =>
   Object.entries(query).flatMap(([key, value]): QueryEntries => {
-    if (!(PRODUCT_QUERY_KEYS as readonly string[]).includes(key)) return [];
+    if (!isProductQueryKey(key)) return [];
     const values = Array.isArray(value) ? value : [value];
     return values
       .filter((item): item is string => typeof item === 'string')

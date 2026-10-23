@@ -1,3 +1,4 @@
+import { TRADE_VERIFICATION_ERROR } from '../../consts';
 import { verifyOrderAmounts } from '../verify-order';
 import type { ValidatedTradeSnapshot } from '../verify-order';
 import type { OrderData } from '../../../tx';
@@ -55,63 +56,65 @@ describe('verifyOrderAmounts', () => {
 
   it('rejects when order sells more than validated', () => {
     const order = makeOrder({ sellAmount: 200000000000000000n }); // 0.2
-    expect(
-      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
-    ).toBeDefined();
+    expect(verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS)).toBe(
+      TRADE_VERIFICATION_ERROR(1005),
+    );
   });
 
   it('rejects when order buys less than validated minimum', () => {
     const order = makeOrder({ buyAmount: 50000000000000000n }); // 0.05
-    expect(
-      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
-    ).toBeDefined();
+    expect(verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS)).toBe(
+      TRADE_VERIFICATION_ERROR(1006),
+    );
   });
 
   it('rejects sell token mismatch', () => {
     const order = makeOrder({ sellToken: USDC });
-    expect(
-      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
-    ).toBeDefined();
+    expect(verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS)).toBe(
+      TRADE_VERIFICATION_ERROR(1001),
+    );
   });
 
   it('rejects buy token mismatch', () => {
     const order = makeOrder({ buyToken: USDC });
-    expect(
-      verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS),
-    ).toBeDefined();
+    expect(verifyOrderAmounts(order, makeSnapshot(), TOKEN_DECIMALS)).toBe(
+      TRADE_VERIFICATION_ERROR(1002),
+    );
   });
 
   it('rejects when token decimals unknown (fail-closed)', () => {
     const order = makeOrder({ sellToken: UNKNOWN, sellAmount: 999999n });
     const snapshot = makeSnapshot({ sellToken: UNKNOWN });
-    expect(verifyOrderAmounts(order, snapshot, TOKEN_DECIMALS)).toBeDefined();
+    expect(verifyOrderAmounts(order, snapshot, TOKEN_DECIMALS)).toBe(
+      TRADE_VERIFICATION_ERROR(1003),
+    );
   });
 
   it('rejects when sell units string is unparseable (fail-closed)', () => {
     // Known token (decimals defined) but parseUnits throws on a bad decimal
     // string → unitsToRaw returns null → verification fails.
     const snapshot = makeSnapshot({ sellAmountUnits: 'not-a-number' });
-    expect(
-      verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS),
-    ).toBeDefined();
+    expect(verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS)).toBe(
+      TRADE_VERIFICATION_ERROR(1003),
+    );
   });
 
   it('rejects when buy-min units string is unparseable (fail-closed)', () => {
     // Sell units convert fine, but the buy-min units string is invalid →
     // expectedBuyMin is null → verification fails.
     const snapshot = makeSnapshot({ buyAmountMinUnits: '0.1.2' });
-    expect(
-      verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS),
-    ).toBeDefined();
+    expect(verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS)).toBe(
+      TRADE_VERIFICATION_ERROR(1004),
+    );
   });
 
   it.each(['.5', '1.', '1.0000000000000000001'])(
     'rejects lenient decimal formats parseUnits would accept (%p)',
     (units) => {
       const snapshot = makeSnapshot({ buyAmountMinUnits: units });
-      expect(
-        verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS),
-      ).toBeDefined();
+      expect(verifyOrderAmounts(makeOrder(), snapshot, TOKEN_DECIMALS)).toBe(
+        TRADE_VERIFICATION_ERROR(1004),
+      );
     },
   );
 
@@ -135,9 +138,9 @@ describe('verifyOrderAmounts', () => {
 
     it('rejects USDC amount below minimum', () => {
       const order = { ...usdcOrder, buyAmount: 199000000n }; // 199 USDC
-      expect(
-        verifyOrderAmounts(order, usdcSnapshot, TOKEN_DECIMALS),
-      ).toBeDefined();
+      expect(verifyOrderAmounts(order, usdcSnapshot, TOKEN_DECIMALS)).toBe(
+        TRADE_VERIFICATION_ERROR(1006),
+      );
     });
   });
 });

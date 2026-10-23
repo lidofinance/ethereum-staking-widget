@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { OptionStyled, POPUP_MENU_Z_INDEX } from '../popup';
+import { OptionStyled, POPUP_MENU_Z_INDEX, popupItemHoverBg } from '../popup';
 
 export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
@@ -43,7 +43,8 @@ export const ChainSwitcherStyled = styled.button<{
 
   &:not(:disabled):hover,
   &:focus-visible {
-    background: ${({ theme, $disabled }) => !$disabled && (theme.name === 'dark' ? '#34343D' : '#000A3D08')};
+    background: ${({ theme, $disabled }) =>
+      !$disabled && popupItemHoverBg(theme)};
   }
 `;
 

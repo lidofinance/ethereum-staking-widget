@@ -22,6 +22,11 @@ const getBaseline = async (page: Page) => {
 
 const pathOf = (page: Page) => new URL(page.url()).pathname;
 
+// Next.js exposes its router on window.next
+type NextWindow = Window & {
+  next: { router: { push: (url: string) => Promise<boolean> } };
+};
+
 test.describe('products via URL params', () => {
   let baseline: { earn: boolean; swap: boolean };
 
@@ -146,7 +151,9 @@ test.describe('products via URL params', () => {
     await expectNav(page, ['navEarn'], ['navStake']);
 
     // client-side transition without params, like a link rendered without LocalLink
-    await page.evaluate(() => (window as any).next.router.push('/'));
+    await page.evaluate(() =>
+      (window as unknown as NextWindow).next.router.push('/'),
+    );
     await expect.poll(() => pathOf(page)).toBe('/earn');
     await expect
       .poll(() => new URL(page.url()).searchParams.get('product'))

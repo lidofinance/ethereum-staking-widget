@@ -7,6 +7,10 @@ type MainStyleProps = ContainerProps & {
   isEarnVault?: boolean;
 };
 
+// mobile room for the holiday decor above the content
+const HOLIDAY_DECOR_OFFSET = 48;
+const HOLIDAY_DECOR_EARN_VAULT_OFFSET = 88;
+
 export const MainStyle = styled(Container)<MainStyleProps>`
   position: relative;
   padding-top: ${({ theme }) => theme.spaceMap.sm}px;
@@ -14,7 +18,9 @@ export const MainStyle = styled(Container)<MainStyleProps>`
 
   @media ${devicesHeaderMedia.mobile} {
     margin-top: ${({ isHolidayDecorEnabled, isEarnVault }) =>
-      isHolidayDecorEnabled ? (isEarnVault ? '88px' : '48px') : 'unset'};
-    padding-top: 0px;
+      isHolidayDecorEnabled
+        ? `${isEarnVault ? HOLIDAY_DECOR_EARN_VAULT_OFFSET : HOLIDAY_DECOR_OFFSET}px`
+        : 'unset'};
+    padding-top: 0;
   }
 `;

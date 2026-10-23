@@ -7,9 +7,6 @@ import type { Manifest, ManifestConfigPage } from './types';
 
 import FallbackLocalManifest from 'REMOTE_CONFIG_MANIFEST.json';
 
-// no `config` imports, so products.ts can use it without an import cycle
-export { isDisabledPath } from './disabled-path';
-
 export const getManifestKey = (
   defaultChain: number,
   manifestOverride?: string,

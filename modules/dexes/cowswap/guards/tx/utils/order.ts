@@ -1,5 +1,4 @@
 import { encodePacked, hashTypedData, type Address, type Hex } from 'viem';
-import { z } from 'zod';
 
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -10,14 +9,11 @@ import {
 } from '../../../consts';
 import { TRANSACTION_ERROR } from '../consts';
 
-import {
-  CowSwapGPv2OrderSchema,
-  CowSwapGetOrderResponseSchema,
-} from './schemas';
+import { CowSwapGetOrderResponseSchema } from './schemas';
 import { type OrderData, type CancelOrderData } from './types';
 
 export const hashCowswapOrder = (
-  order: z.infer<typeof CowSwapGPv2OrderSchema>,
+  order: OrderData,
   chainId: number,
   cowSettler: Address,
 ): Hex => {

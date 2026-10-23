@@ -42,7 +42,7 @@ export type CreateCowSwapProviderParams = {
   isLedgerLive: boolean;
   networkTxConfig: NetworkTxConfig;
   appCode: string;
-  verifySignedOrder: (order: OrderData) => string | null;
+  consumeSignedOrder: (order: OrderData) => string | null;
   verifyApproval: (approval: ApprovalData) => string | null;
   openTransactionGuardModal: (reason: string) => Promise<void>;
   openSigningErrorModal: (
@@ -59,7 +59,7 @@ export const createCowSwapProvider = ({
   isLedgerLive,
   networkTxConfig,
   appCode,
-  verifySignedOrder,
+  consumeSignedOrder,
   verifyApproval,
   openTransactionGuardModal,
   openSigningErrorModal,
@@ -93,7 +93,7 @@ export const createCowSwapProvider = ({
 
         // Validate order trade  params, order can be recovered from different signing methods
         if (order) {
-          const error = verifySignedOrder(order);
+          const error = consumeSignedOrder(order);
 
           if (error) throw new Error(error);
         }

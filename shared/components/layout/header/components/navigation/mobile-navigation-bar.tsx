@@ -69,6 +69,7 @@ export const MobileNavigationBar: FC<MobileNavigationBarProps> = ({
         >
           <MobileTrackClip>
             <MobileTrack
+              role="group"
               aria-label={sectionRoute.name}
               $count={sectionRoute.subRoutes.length}
             >

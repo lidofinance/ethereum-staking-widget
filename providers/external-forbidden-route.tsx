@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useConfig } from 'config';
 import { isDisabledPath } from 'config/external-config';
-import { getHomePath, withProductQuery } from 'config/external-config/products';
+import { getHomePath, getRedirectQuery } from 'config/external-config/products';
 import {
   useProductQuery,
   useProductsUrlState,
@@ -27,16 +27,9 @@ export const ExternalForbiddenRouteProvider = ({
   const checkPathEffect = useCallback(() => {
     if (pages && isDisabledPath(path, pages)) {
       setShowContent(false);
-      // Extract dynamic path segment names (e.g. [vault], [action]) to exclude them from query
-      const dynamicParams = new Set(
-        router.pathname.match(/\[(\w+)\]/g)?.map((p) => p.slice(1, -1)) ?? [],
-      );
-      const query = withProductQuery(
-        Object.fromEntries(
-          Object.entries(router.query).filter(
-            ([key]) => !dynamicParams.has(key),
-          ),
-        ),
+      const query = getRedirectQuery(
+        router.pathname,
+        router.query,
         productQuery,
       );
       // `/` when stake is enabled, else the first enabled product

@@ -20,7 +20,13 @@ import {
   cowSwapOrderSchema,
   cowSwapCancelOrderSchema,
 } from './schemas';
-import { ValidationContext, ValidationResult, OrderData } from './types';
+import { deny } from './deny';
+import {
+  ValidationContext,
+  ValidationResult,
+  OrderData,
+  AppData,
+} from './types';
 
 const typedMessageSchema = z.tuple([
   addressSchema, // signer
@@ -34,7 +40,7 @@ const AppDataApiResponseSchema = z.object({
 const fetchAppData = async (
   appDataHex: string,
   chainId: number,
-): Promise<z.infer<typeof AppDataApiResponseSchema>['fullAppData']> => {
+): Promise<AppData> => {
   const environment = COWSWAP_API_NETWORKS[chainId];
   if (!environment) throw new Error(TRANSACTION_ERROR(2001));
 
@@ -52,70 +58,46 @@ const fetchAppData = async (
 };
 
 export const validateCowSwapOrderMessage = async (
-  orderMessage: z.infer<typeof cowSwapOrderSchema>['message'],
+  orderMessage: OrderData,
   ctx: ValidationContext,
-  appDataPrefetched?: z.infer<typeof AppDataApiResponseSchema>['fullAppData'],
+  appDataPrefetched?: AppData,
 ): Promise<ValidationResult<OrderData>> => {
   const { sellTokens, buyTokens, feeRecipient } = ctx.networkTxConfig;
 
   if (!sellTokens.has(orderMessage.sellToken)) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2004),
-    };
+    return deny(2004);
   }
 
   if (!buyTokens.has(orderMessage.buyToken)) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2005),
-    };
+    return deny(2005);
   }
 
   if (isAddressEqual(orderMessage.sellToken, orderMessage.buyToken)) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2039),
-    };
+    return deny(2039);
   }
 
   // Settlement debits sellAmount + feeAmount; CoW orders are zero-fee
   if (orderMessage.feeAmount !== 0n) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2050),
-    };
+    return deny(2050);
   }
 
   if (!isAddressEqual(orderMessage.receiver, ctx.signer)) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2006),
-    };
+    return deny(2006);
   }
 
   const nowSeconds = Math.floor(Date.now() / 1000);
 
   if (orderMessage.validTo - nowSeconds > MAX_ORDER_AGE_SECONDS) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2007),
-    };
+    return deny(2007);
   }
   if (orderMessage.validTo < nowSeconds) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2008),
-    };
+    return deny(2008);
   }
 
   if (appDataPrefetched) {
     const parseResult = AppDataSchema.safeParse(appDataPrefetched); // validate prefetched app data
     if (!parseResult.success) {
-      return {
-        allowed: false,
-        reason: TRANSACTION_ERROR(2009),
-      };
+      return deny(2009);
     }
   }
 
@@ -125,17 +107,11 @@ export const validateCowSwapOrderMessage = async (
       (await fetchAppData(orderMessage.appData, ctx.chainId));
 
     if (appData.appCode !== ctx.appCode) {
-      return {
-        allowed: false,
-        reason: TRANSACTION_ERROR(2038),
-      };
+      return deny(2038);
     }
 
     if (!isAddressEqual(appData.metadata.partnerFee.recipient, feeRecipient)) {
-      return {
-        allowed: false,
-        reason: TRANSACTION_ERROR(2010),
-      };
+      return deny(2010);
     }
 
     // Disallow hooks
@@ -145,25 +121,16 @@ export const validateCowSwapOrderMessage = async (
       ((appData.metadata.hooks.pre?.length ?? 0) > 0 ||
         (appData.metadata.hooks.post?.length ?? 0) > 0)
     ) {
-      return {
-        allowed: false,
-        reason: TRANSACTION_ERROR(2011),
-      };
+      return deny(2011);
     }
 
     const appDataHex = getAppDataHex(appData);
 
     if (appDataHex !== orderMessage.appData) {
-      return {
-        allowed: false,
-        reason: TRANSACTION_ERROR(2012),
-      };
+      return deny(2012);
     }
   } catch (error) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2013),
-    };
+    return deny(2013);
   }
 
   return {
@@ -179,19 +146,13 @@ export const validateCowSwapOrder = async (
   ctx: ValidationContext,
 ): Promise<ValidationResult<OrderData>> => {
   if (order.domain.chainId !== ctx.chainId) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2014),
-    };
+    return deny(2014);
   }
 
   const { cowSettlement } = ctx.networkTxConfig;
 
   if (!isAddressEqual(order.domain.verifyingContract, cowSettlement)) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2015),
-    };
+    return deny(2015);
   }
 
   return await validateCowSwapOrderMessage(order.message, ctx);
@@ -202,19 +163,13 @@ export const validateCowSwapCancelOrder = async (
   ctx: ValidationContext,
 ): Promise<ValidationResult<undefined>> => {
   if (order.domain.chainId !== ctx.chainId) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2020),
-    };
+    return deny(2057);
   }
 
   const { cowSettlement } = ctx.networkTxConfig;
 
   if (!isAddressEqual(order.domain.verifyingContract, cowSettlement)) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2021),
-    };
+    return deny(2021);
   }
 
   return { allowed: true, result: undefined };
@@ -241,10 +196,7 @@ export const validateSignTypedData = async (
   const [signer, order] = parseResult.data;
 
   if (!isAddressEqual(signer, ctx.signer)) {
-    return {
-      allowed: false,
-      reason: TRANSACTION_ERROR(2017),
-    };
+    return deny(2017);
   }
 
   if (order.primaryType === 'OrderCancellations')

@@ -26,7 +26,7 @@ const cleanup = () => {
 };
 
 type UseCowSwapEthereumProviderOptions = {
-  verifySignedOrder: (order: OrderData) => string | null;
+  consumeSignedOrder: (order: OrderData) => string | null;
   verifyApproval: (approval: ApprovalData) => string | null;
   openTransactionGuardModal: (reason: string) => Promise<void>;
   openSigningErrorModal: (
@@ -38,7 +38,7 @@ type UseCowSwapEthereumProviderOptions = {
 };
 
 export const useCowSwapEthereumProvider = ({
-  verifySignedOrder,
+  consumeSignedOrder,
   verifyApproval,
   openTransactionGuardModal,
   openSigningErrorModal,
@@ -79,7 +79,7 @@ export const useCowSwapEthereumProvider = ({
       isLedgerLive,
       networkTxConfig,
       appCode,
-      verifySignedOrder,
+      consumeSignedOrder,
       verifyApproval,
       openTransactionGuardModal,
       openSigningErrorModal,
@@ -92,7 +92,7 @@ export const useCowSwapEthereumProvider = ({
     walletChainId,
     getNetworkTxConfig,
     appCode,
-    verifySignedOrder,
+    consumeSignedOrder,
     verifyApproval,
     openTransactionGuardModal,
     isLedgerLive,

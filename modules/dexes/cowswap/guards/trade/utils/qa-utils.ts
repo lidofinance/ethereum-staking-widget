@@ -1,7 +1,7 @@
 import { overrideWithQAMockString, overrideWithQAMockNumber } from 'utils/qa';
 
 import { DEFAULT_THRESHOLDS, type Thresholds, LEVEL_ORDER } from '../consts';
-import { TradeGuardLevel } from '../types';
+import type { TradeGuardLevel } from '../types';
 
 const QA_KEY_LEVEL = 'mock-qa-helpers-trade-guard-level';
 
@@ -22,11 +22,11 @@ export const applyQALevelOverride = (
   level: TradeGuardLevel,
 ): TradeGuardLevel => {
   const v = overrideWithQAMockString(level, QA_KEY_LEVEL);
-  if (!LEVEL_ORDER.includes(v as TradeGuardLevel)) return level;
+  const qaIdx = (LEVEL_ORDER as readonly string[]).indexOf(v);
+  if (qaIdx === -1) return level;
   // QA can only escalate severity, never downgrade (e.g. safe→blocked OK, blocked→safe NO)
-  const qaIdx = LEVEL_ORDER.indexOf(v as TradeGuardLevel);
   const curIdx = LEVEL_ORDER.indexOf(level);
-  return qaIdx >= curIdx ? (v as TradeGuardLevel) : level;
+  return qaIdx >= curIdx ? LEVEL_ORDER[qaIdx] : level;
 };
 
 export const readThresholds = (): Thresholds => {

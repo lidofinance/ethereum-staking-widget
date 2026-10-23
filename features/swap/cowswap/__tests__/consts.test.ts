@@ -8,7 +8,7 @@ import baseNetwork from 'networks/l2/base.json';
 import sellTokenList from '../../../../public/token-lists/swap-dex-sell-tokenlist.json';
 import buyTokenList from '../../../../public/token-lists/swap-dex-buy-tokenlist.json';
 
-import { COWSWAP_NETWORKS } from 'modules/dexes/cowswap';
+import { COWSWAP_NETWORKS, COWSWAP_TOKEN_KEYS } from 'modules/dexes/cowswap';
 
 import { SWAP_COWSWAP_PROFILE as profile } from '../consts';
 
@@ -20,38 +20,8 @@ const mainnetConfig = () => {
   return config;
 };
 
-const ERC20_TOKENS = [
-  c.lido,
-  c.wsteth,
-  c.ldo,
-  c.weth,
-  c.usdc,
-  c.usdt,
-  c.usde,
-  c.dai,
-  c.usds,
-  c.pyusd,
-  c.wbtc,
-  c.cbbtc,
-  c.rlusd,
-  c.usdg,
-  c.link,
-  c.uni,
-  c.aave,
-  c.ausd,
-  c.eurc,
-  c.gho,
-  c.paxg,
-  c.tbtc,
-  c.lbtc,
-  c.cbeth,
-  c.susde,
-  c.reth,
-  c.weeth,
-  c.meth,
-  c.ezeth,
-  c.ethx,
-].map(lower);
+// swap lists every module token key
+const ERC20_TOKENS = COWSWAP_TOKEN_KEYS.map((key) => lower(c[key]));
 
 describe('SWAP_COWSWAP_PROFILE', () => {
   it('uses Lido dApp Swap appCode', () => {
@@ -104,8 +74,6 @@ describe('SWAP_COWSWAP_PROFILE', () => {
   it('has oracle price for every token', () => {
     for (const address of [ethAddress, ...ERC20_TOKENS]) {
       expect(profile.oracleFeeds.buy[address]).toBeDefined();
-    }
-    for (const address of [ethAddress, ...ERC20_TOKENS]) {
       expect(profile.oracleFeeds.sell[address]).toBeDefined();
     }
   });

@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, type DefaultTheme } from 'styled-components';
 
 export const POPUP_BASE_Z_INDEX = 200;
 export const POPUP_MENU_Z_INDEX = POPUP_BASE_Z_INDEX + 1;
@@ -13,6 +13,12 @@ export const PopoverNoClickBackdrop = styled.div<{ $backdrop: boolean }>`
   width: 100%;
   height: ${({ $backdrop }) => ($backdrop ? '100%' : '0px')};
 `;
+
+// light hover #000a3d08 (alpha ~0.03) is lighter than the active rgba(0, 10, 61, 0.04)
+export const popupItemActiveBg = (theme: DefaultTheme) =>
+  theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)';
+export const popupItemHoverBg = (theme: DefaultTheme) =>
+  theme.name === 'dark' ? '#34343D' : '#000a3d08';
 
 type PopupMenuProps = {
   $opened: boolean;
@@ -105,25 +111,11 @@ export const OptionStyled = styled.button<PopupMenuOptionProps>`
   // Backgrounds
   background: var(--lido-color-controlBg);
 
-  ${({ theme, $active }) =>
-    theme.name === 'dark'
-      ? css`
-          background: ${$active && '#34343D'};
-        `
-      : css`
-          background: ${$active && 'rgba(0, 10, 61, 0.04)'};
-        `}
+  background: ${({ theme, $active }) => $active && popupItemActiveBg(theme)};
 
   &:not(:disabled):hover,
   &:focus-visible {
-    ${({ theme }) =>
-      theme.name === 'dark'
-        ? css`
-            background: #34343d;
-          `
-        : css`
-            background: #000a3d08;
-          `}
+    background: ${({ theme }) => popupItemHoverBg(theme)};
   }
 
   // Option.Text

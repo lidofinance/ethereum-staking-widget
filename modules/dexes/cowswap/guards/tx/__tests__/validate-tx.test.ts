@@ -1,8 +1,14 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-vi.mock('../utils/validate-tx-signing', () => ({
+vi.mock('../utils/validate-send-transaction', () => ({
   validateSendTransaction: vi.fn(),
+}));
+
+vi.mock('../utils/validate-send-calls', () => ({
   validateSendCalls: vi.fn(),
+}));
+
+vi.mock('../utils/params', () => ({
   extractApprovals: vi.fn(() => []),
   hasWethDeposit: vi.fn(() => false),
   sanitizeTransactionParams: vi.fn(
@@ -26,29 +32,15 @@ import {
 import type { OrderData } from '../utils';
 
 import {
+  MAINNET_CTX,
   MAINNET_TX_CONFIG,
-  SEPOLIA_TX_CONFIG,
+  SEPOLIA_CTX,
+  SIGNER,
   TEST_APP_CODE,
 } from './fixtures';
 
-const CHAIN_MAINNET = 1;
-const CHAIN_SEPOLIA = 11155111;
 const CHAIN_POLYGON = 137;
 
-const SIGNER = '0x2222222222222222222222222222222222222222' as `0x${string}`;
-
-const mainnetCtx = {
-  chainId: CHAIN_MAINNET,
-  signer: SIGNER,
-  networkTxConfig: MAINNET_TX_CONFIG,
-  appCode: TEST_APP_CODE,
-};
-const sepoliaCtx = {
-  chainId: CHAIN_SEPOLIA,
-  signer: SIGNER,
-  networkTxConfig: SEPOLIA_TX_CONFIG,
-  appCode: TEST_APP_CODE,
-};
 const polygonCtx = {
   chainId: CHAIN_POLYGON,
   signer: SIGNER,
@@ -100,23 +92,23 @@ describe('validateTx', () => {
   describe('request parsing', () => {
     it('throws for missing method', async () => {
       await expect(
-        validateRpcRequest({ params: [], id: 1 }, mainnetCtx),
+        validateRpcRequest({ params: [], id: 1 }, MAINNET_CTX),
       ).rejects.toThrow();
     });
 
     it('throws for non-string method', async () => {
       await expect(
-        validateRpcRequest({ method: 123, params: [], id: 1 }, mainnetCtx),
+        validateRpcRequest({ method: 123, params: [], id: 1 }, MAINNET_CTX),
       ).rejects.toThrow();
     });
 
     it('throws for null input', async () => {
-      await expect(validateRpcRequest(null, mainnetCtx)).rejects.toThrow();
+      await expect(validateRpcRequest(null, MAINNET_CTX)).rejects.toThrow();
     });
 
     it('accepts valid request without params field', async () => {
       await expect(
-        validateRpcRequest({ method: 'eth_chainId', id: 1 }, mainnetCtx),
+        validateRpcRequest({ method: 'eth_chainId', id: 1 }, MAINNET_CTX),
       ).resolves.toBeDefined();
     });
   });
@@ -139,13 +131,13 @@ describe('validateTx', () => {
 
     it.each(signingMethods)('%s is allowed on mainnet', async (method) => {
       await expect(
-        validateRpcRequest(makeRequest(method), mainnetCtx),
+        validateRpcRequest(makeRequest(method), MAINNET_CTX),
       ).resolves.toBeDefined();
     });
 
     it.each(signingMethods)('%s is allowed on sepolia', async (method) => {
       await expect(
-        validateRpcRequest(makeRequest(method), sepoliaCtx),
+        validateRpcRequest(makeRequest(method), SEPOLIA_CTX),
       ).resolves.toBeDefined();
     });
   });
@@ -157,7 +149,7 @@ describe('validateTx', () => {
         reason: 'Invalid order structure',
       });
       await expect(
-        validateRpcRequest(makeRequest('eth_signTypedData_v4'), mainnetCtx),
+        validateRpcRequest(makeRequest('eth_signTypedData_v4'), MAINNET_CTX),
       ).rejects.toThrow();
     });
 
@@ -168,7 +160,7 @@ describe('validateTx', () => {
       });
       const { order } = await validateRpcRequest(
         makeRequest('eth_signTypedData_v4'),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(order).toBeUndefined();
     });
@@ -180,7 +172,7 @@ describe('validateTx', () => {
       });
       const { order } = await validateRpcRequest(
         makeRequest('eth_signTypedData_v4'),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(order).toBe(MOCK_ORDER);
     });
@@ -189,11 +181,11 @@ describe('validateTx', () => {
       const params = ['0xsigner', '{"typed":"data"}'];
       await validateRpcRequest(
         makeRequest('eth_signTypedData_v4', params),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(vi.mocked(validateSignTypedData)).toHaveBeenCalledWith(
         params,
-        mainnetCtx,
+        MAINNET_CTX,
       );
     });
   });
@@ -205,7 +197,7 @@ describe('validateTx', () => {
         reason: 'Transaction to unknown target',
       });
       await expect(
-        validateRpcRequest(makeRequest('eth_sendTransaction'), mainnetCtx),
+        validateRpcRequest(makeRequest('eth_sendTransaction'), MAINNET_CTX),
       ).rejects.toThrow('Transaction to unknown target');
     });
 
@@ -216,7 +208,7 @@ describe('validateTx', () => {
       });
       const { order } = await validateRpcRequest(
         makeRequest('eth_sendTransaction'),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(order).toBe(MOCK_ORDER);
     });
@@ -225,11 +217,11 @@ describe('validateTx', () => {
       const params = [{ to: '0xabc', data: '0x1234' }];
       await validateRpcRequest(
         makeRequest('eth_sendTransaction', params),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(vi.mocked(validateSendTransaction)).toHaveBeenCalledWith(
         params,
-        mainnetCtx,
+        MAINNET_CTX,
       );
     });
   });
@@ -241,7 +233,7 @@ describe('validateTx', () => {
         reason: 'Multiple order messages in batch',
       });
       await expect(
-        validateRpcRequest(makeRequest('wallet_sendCalls'), mainnetCtx),
+        validateRpcRequest(makeRequest('wallet_sendCalls'), MAINNET_CTX),
       ).rejects.toThrow();
     });
 
@@ -252,7 +244,7 @@ describe('validateTx', () => {
       });
       const { order } = await validateRpcRequest(
         makeRequest('wallet_sendCalls'),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(order).toBe(MOCK_ORDER);
     });
@@ -261,11 +253,11 @@ describe('validateTx', () => {
       const params = [{ calls: [] }];
       await validateRpcRequest(
         makeRequest('wallet_sendCalls', params),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(vi.mocked(validateSendCalls)).toHaveBeenCalledWith(
         params,
-        mainnetCtx,
+        MAINNET_CTX,
       );
     });
   });
@@ -293,7 +285,7 @@ describe('validateTx', () => {
       async (method) => {
         const result = await validateRpcRequest(
           makeRequest(method),
-          mainnetCtx,
+          MAINNET_CTX,
         );
         expect(result).toBeDefined();
         expect(result.order).toBeUndefined();
@@ -304,26 +296,26 @@ describe('validateTx', () => {
     );
 
     it.each(allowedAaMethods)('%s passes through', async (method) => {
-      const result = await validateRpcRequest(makeRequest(method), mainnetCtx);
+      const result = await validateRpcRequest(makeRequest(method), MAINNET_CTX);
       expect(result).toBeDefined();
       expect(result.order).toBeUndefined();
     });
 
     it('throws for personal_sign (not in allowlist)', async () => {
       await expect(
-        validateRpcRequest(makeRequest('personal_sign'), mainnetCtx),
+        validateRpcRequest(makeRequest('personal_sign'), MAINNET_CTX),
       ).rejects.toThrow();
     });
 
     it('throws for eth_sign (not in allowlist)', async () => {
       await expect(
-        validateRpcRequest(makeRequest('eth_sign'), mainnetCtx),
+        validateRpcRequest(makeRequest('eth_sign'), MAINNET_CTX),
       ).rejects.toThrow();
     });
 
     it('throws for completely unknown method', async () => {
       await expect(
-        validateRpcRequest(makeRequest('some_unknown_method'), mainnetCtx),
+        validateRpcRequest(makeRequest('some_unknown_method'), MAINNET_CTX),
       ).rejects.toThrow();
     });
   });
@@ -332,7 +324,7 @@ describe('validateTx', () => {
     it('returns sanitizedRequest with correct method and id', async () => {
       const { sanitizedRequest } = await validateRpcRequest(
         makeRequest('eth_chainId', ['0x1']),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(sanitizedRequest.method).toBe('eth_chainId');
       expect(sanitizedRequest.id).toBe(1);
@@ -341,7 +333,7 @@ describe('validateTx', () => {
     it('returns order=undefined for non-signing methods', async () => {
       const { order } = await validateRpcRequest(
         makeRequest('eth_chainId'),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(order).toBeUndefined();
     });
@@ -353,7 +345,7 @@ describe('validateTx', () => {
       });
       const { order } = await validateRpcRequest(
         makeRequest('eth_sendTransaction'),
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(order).toBeUndefined();
     });
@@ -373,7 +365,7 @@ describe('validateRpcRequest — approvals', () => {
     vi.mocked(extractApprovals).mockReturnValueOnce([approval]);
     const request = makeRequest('eth_sendTransaction');
 
-    const { approvals } = await validateRpcRequest(request, mainnetCtx);
+    const { approvals } = await validateRpcRequest(request, MAINNET_CTX);
 
     expect(approvals).toEqual([approval]);
     expect(extractApprovals).toHaveBeenCalledWith(
@@ -392,7 +384,7 @@ describe('validateRpcRequest — sanitized params', () => {
     vi.mocked(sanitizeTransactionParams).mockReturnValueOnce(['clean']);
     const request = makeRequest('eth_sendTransaction', [{ dirty: true }]);
 
-    const { sanitizedRequest } = await validateRpcRequest(request, mainnetCtx);
+    const { sanitizedRequest } = await validateRpcRequest(request, MAINNET_CTX);
 
     expect(sanitizedRequest.params).toEqual(['clean']);
     expect(sanitizeTransactionParams).toHaveBeenCalledWith(
@@ -419,7 +411,7 @@ describe('validateRpcRequest — Safe ETH sale approvals', () => {
 
     const { approvals } = await validateRpcRequest(
       makeRequest('wallet_sendCalls'),
-      mainnetCtx,
+      MAINNET_CTX,
     );
 
     expect(approvals).toEqual([
@@ -442,7 +434,7 @@ describe('validateRpcRequest — Safe ETH sale approvals', () => {
 
     const { approvals } = await validateRpcRequest(
       makeRequest('wallet_sendCalls'),
-      mainnetCtx,
+      MAINNET_CTX,
     );
 
     expect(approvals).toEqual([{ token: weth, amount: 5n }]);

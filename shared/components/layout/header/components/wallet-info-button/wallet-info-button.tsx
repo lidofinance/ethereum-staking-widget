@@ -8,13 +8,14 @@ import { AddressBadge } from 'shared/wallet/components/address-badge/address-bad
 import { useWalletModal } from 'shared/wallet/wallet-modal/use-wallet-modal';
 
 import {
-  WalledButtonStyle,
-  WalledButtonWrapperStyle,
-  WalledButtonBalanceStyle,
-  WalledButtonLoaderStyle,
+  WalletButtonStyle,
+  WalletButtonWrapperStyle,
+  WalletButtonBalanceStyle,
+  WalletButtonLoaderStyle,
 } from './styles';
 
 export const WalletInfoButton: FC<ButtonProps> = (props) => {
+  // onClick is stripped so a passed handler can't replace openModal
   const { onClick, ...rest } = props;
 
   const isMobile = useBreakpoint('md');
@@ -24,7 +25,7 @@ export const WalletInfoButton: FC<ButtonProps> = (props) => {
   const { data: balance, isLoading } = useEthereumBalance();
 
   return (
-    <WalledButtonStyle
+    <WalletButtonStyle
       size="sm"
       variant="text"
       color="secondary"
@@ -32,10 +33,10 @@ export const WalletInfoButton: FC<ButtonProps> = (props) => {
       $isAddPaddingLeft={!isLoading && !isDappActive && !isMobile}
       {...rest}
     >
-      <WalledButtonWrapperStyle>
-        <WalledButtonBalanceStyle>
+      <WalletButtonWrapperStyle>
+        <WalletButtonBalanceStyle>
           {isLoading ? (
-            <WalledButtonLoaderStyle />
+            <WalletButtonLoaderStyle />
           ) : (
             isDappActive && (
               <FormatToken
@@ -46,9 +47,9 @@ export const WalletInfoButton: FC<ButtonProps> = (props) => {
               />
             )
           )}
-        </WalledButtonBalanceStyle>
+        </WalletButtonBalanceStyle>
         <AddressBadge address={address} />
-      </WalledButtonWrapperStyle>
-    </WalledButtonStyle>
+      </WalletButtonWrapperStyle>
+    </WalletButtonStyle>
   );
 };

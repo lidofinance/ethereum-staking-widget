@@ -1,12 +1,19 @@
-import { resolveTriggerPress } from './resolve-trigger-press';
+import {
+  resolveTriggerPress,
+  type PopupTriggerMode,
+} from './resolve-trigger-press';
+
+const pressIn =
+  (mode: PopupTriggerMode) =>
+  (
+    pointerType: string | undefined,
+    { isKeyboard = false, canOpen = true } = {},
+  ) =>
+    resolveTriggerPress({ mode, pointerType, isKeyboard, canOpen });
 
 describe('resolveTriggerPress', () => {
   describe('link mode', () => {
-    const press = (
-      pointerType: string | undefined,
-      { isKeyboard = false, canOpen = true } = {},
-    ) =>
-      resolveTriggerPress({ mode: 'link', pointerType, isKeyboard, canOpen });
+    const press = pressIn('link');
 
     it('follows the link on mouse click', () => {
       expect(press('mouse')).toBe('follow');
@@ -26,26 +33,27 @@ describe('resolveTriggerPress', () => {
       expect(press(undefined)).toBe('follow');
     });
 
-    it('follows the link on touch when menu cannot open', () => {
+    it('follows the link when menu cannot open', () => {
       expect(press('touch', { canOpen: false })).toBe('follow');
+      expect(press('mouse', { canOpen: false })).toBe('follow');
     });
   });
 
   describe('button mode', () => {
-    const press = (
-      pointerType: string | undefined,
-      { isKeyboard = false, canOpen = true } = {},
-    ) =>
-      resolveTriggerPress({ mode: 'button', pointerType, isKeyboard, canOpen });
+    const press = pressIn('button');
 
     it('toggles the menu on any press', () => {
       expect(press('mouse')).toBe('toggle');
       expect(press('touch')).toBe('toggle');
+      expect(press('pen')).toBe('toggle');
       expect(press(undefined, { isKeyboard: true })).toBe('toggle');
     });
 
     it('ignores presses when menu cannot open', () => {
       expect(press('mouse', { canOpen: false })).toBe('ignore');
+      expect(press(undefined, { isKeyboard: true, canOpen: false })).toBe(
+        'ignore',
+      );
     });
   });
 });

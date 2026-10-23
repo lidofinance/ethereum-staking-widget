@@ -48,7 +48,7 @@ export const SubNavigation: FC<SubNavigationProps> = ({
     <NavigationDropDownButton {...wrapperProps}>
       <PopoverNoClickBackdrop {...backdropProps} />
       <NavigationDropDownTrigger href={primaryPath} {...triggerProps}>
-        <NavLink active={isActive}>
+        <NavLink $active={isActive}>
           {route.icon}
           <span>{route.name}</span>
           <NavigationDropDownArrow

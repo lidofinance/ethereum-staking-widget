@@ -30,13 +30,7 @@ export const useLoadingStates = () => {
   // it swaps the widget provider and recreates the widget while chainId stays
   // Works specifically on clean up to avoid race conditions on first load
   useEffect(() => {
-    return () => {
-      setIsLoading((oldLoading) => {
-        if (!oldLoading) return true;
-
-        return oldLoading;
-      });
-    };
+    return () => setIsLoading(true);
   }, [address, chainId, walletChainId]);
 
   const onLoaded = useCallback(() => {
@@ -49,6 +43,8 @@ export const useLoadingStates = () => {
     () => debounce(() => setRefreshId(uniqueId('cow-refresh-')), 500),
     [],
   );
+  useEffect(() => () => triggerRefresh.cancel(), [triggerRefresh]);
+
   return {
     isLoading,
     isLoaded: !isLoading && !error,

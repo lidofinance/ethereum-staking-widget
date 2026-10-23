@@ -1,7 +1,7 @@
 import { type Address, type Hex } from 'viem';
 import { z } from 'zod';
 
-import { CowSwapGPv2OrderSchema } from './schemas';
+import { AppDataSchema, CowSwapGPv2OrderSchema } from './schemas';
 
 // ERC-20 token keys usable in CoW Swap profiles
 export type DexTokenContractKey =
@@ -77,6 +77,8 @@ export type ValidationContext = {
 };
 
 export type OrderData = z.infer<typeof CowSwapGPv2OrderSchema>;
+
+export type AppData = z.infer<typeof AppDataSchema>;
 
 export type ApprovalData = {
   token: Address;

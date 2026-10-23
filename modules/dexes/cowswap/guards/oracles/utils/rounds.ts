@@ -1,4 +1,4 @@
-import { PRICE_BOUNDS } from '../feeds';
+import { PRICE_BOUNDS, type ChainlinkFeedKey } from '../feeds';
 
 // Pure oracle helpers and constants — no React/wagmi imports.
 // Kept separate so they're testable without pulling in wagmi ESM.
@@ -19,7 +19,10 @@ export const isValidRound = (
   return nowSec - updatedAt <= BigInt(maxStaleness);
 };
 
-export const isInBounds = (answer: bigint, feedKey: string): boolean => {
+export const isInBounds = (
+  answer: bigint,
+  feedKey: ChainlinkFeedKey,
+): boolean => {
   const bounds = PRICE_BOUNDS[feedKey];
   if (!bounds) return false;
 

@@ -1,4 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import { keccak256, toHex, type Address, type Hex } from 'viem';
 import { mainnet, sepolia } from 'viem/chains';
+// json-stringify-deterministic is a transitive dependency (see app-data.ts)
+import stringify from 'json-stringify-deterministic';
 
 import invariant from 'tiny-invariant';
 
@@ -10,6 +14,7 @@ import {
   createCowswapProfile,
   type CowswapProfileConfig,
 } from '../../../profile';
+import type { ValidationContext } from '../utils';
 
 export const TEST_APP_CODE = 'Lido dApp Staking';
 
@@ -63,3 +68,28 @@ const txConfig = (chainId: number) => {
 
 export const MAINNET_TX_CONFIG = txConfig(mainnet.id);
 export const SEPOLIA_TX_CONFIG = txConfig(sepolia.id);
+
+export const CHAIN_MAINNET = mainnet.id;
+export const CHAIN_SEPOLIA = sepolia.id;
+
+export const SIGNER: Address = '0x2222222222222222222222222222222222222222';
+export const ATTACKER: Address = '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef';
+
+export const MAINNET_CTX: ValidationContext = {
+  chainId: CHAIN_MAINNET,
+  signer: SIGNER,
+  networkTxConfig: MAINNET_TX_CONFIG,
+  appCode: TEST_APP_CODE,
+};
+export const SEPOLIA_CTX: ValidationContext = {
+  chainId: CHAIN_SEPOLIA,
+  signer: SIGNER,
+  networkTxConfig: SEPOLIA_TX_CONFIG,
+  appCode: TEST_APP_CODE,
+};
+
+// keccak256 of the deterministically-stringified appData document — mirrors
+// getAppDataHex() in app-data.ts, which is how the validator derives the hash the
+// order's appData field is checked against, so order UIDs must be computed with it.
+export const hashFullAppData = (fullAppData: string): Hex =>
+  keccak256(toHex(stringify(JSON.parse(fullAppData))));

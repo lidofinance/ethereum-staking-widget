@@ -1,7 +1,7 @@
 import { type Address, isAddress, isAddressEqual } from 'viem';
 
-import type { ApprovalData, OrderData } from '../../tx/utils/types';
-import type { OracleResult } from '../../oracles/types';
+import type { ApprovalData, OrderData } from '../../tx';
+import type { OracleResult } from '../../oracles';
 import { safeParseDecimal } from '../../utils';
 
 import {
@@ -103,28 +103,25 @@ export const evaluateTrade = async (
   const tradeThresholds = readThresholds();
   const { level, messages, isStructural } = analyzeParams(payload);
 
-  let finalLevel = level;
-  let finalMessages = messages;
-  let oracleVerified = false;
-
   const sellUnits = safeParseDecimal(payload.sellTokenAmount.units?.toString());
 
   if (!sellUnits) return reject('blocked', [TRADE_BUILD_ERROR(1007)]);
 
   // USD limits need the oracle price; skipped for structural blocks and testnet
-  if (!isTestnet && !isStructural) {
-    const result = await verifyWithOracle(payload);
-    const outcome = applyTradeLimits(result, sellUnits, tradeThresholds);
-    finalLevel = outcome.level;
-    finalMessages = outcome.messages;
-    oracleVerified = outcome.verified;
-  }
+  const outcome: OracleOutcome =
+    isTestnet || isStructural
+      ? { level, messages, verified: false }
+      : applyTradeLimits(
+          await verifyWithOracle(payload),
+          sellUnits,
+          tradeThresholds,
+        );
 
-  finalLevel = applyQALevelOverride(finalLevel);
+  const finalLevel = applyQALevelOverride(outcome.level);
 
   // Gate decision — only safe passes, everything else is blocked
   if (finalLevel !== 'safe') {
-    return reject(finalLevel, finalMessages, oracleVerified);
+    return reject(finalLevel, outcome.messages, outcome.verified);
   }
 
   return {

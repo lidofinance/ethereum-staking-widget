@@ -11,6 +11,13 @@ import {
 } from 'react';
 
 import { useClickOutside } from './use-click-outside';
+import { useCloseOnEscape } from './use-close-on-escape';
+import {
+  forgetHoverOpened,
+  isHoverOpenedPersisted,
+  usePersistHoverOpened,
+  type OpenedBy,
+} from './use-persist-hover-opened';
 import {
   resolveTriggerPress,
   type PopupTriggerMode,
@@ -19,8 +26,6 @@ import {
 const HOVER_OPEN_DELAY_MS = 100;
 const HOVER_CLOSE_DELAY_MS = 250;
 const MENU_ITEM_SELECTOR = 'a[href], button:not([disabled])';
-
-type OpenedBy = 'hover' | 'press' | 'keyboard';
 
 type UsePopupMenuOptions = {
   mode: PopupTriggerMode;
@@ -31,37 +36,6 @@ type UsePopupMenuOptions = {
 
 const getMenuItems = (menu: HTMLElement | null) =>
   Array.from(menu?.querySelectorAll<HTMLElement>(MENU_ITEM_SELECTOR) ?? []);
-
-const useCloseOnEscape = (opened: boolean, onEscape: () => void) => {
-  useEffect(() => {
-    if (!opened) return;
-
-    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') onEscape();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [opened, onEscape]);
-};
-
-// survives header remounts on page navigation
-const hoverOpenedMenus = new Set<string>();
-
-const isHoverOpenedPersisted = (persistKey?: string) =>
-  !!persistKey && hoverOpenedMenus.has(persistKey);
-
-const usePersistHoverOpened = (
-  persistKey: string | undefined,
-  openedBy: OpenedBy | null,
-) => {
-  useEffect(() => {
-    if (!persistKey) return;
-    if (openedBy === 'hover') hoverOpenedMenus.add(persistKey);
-    else hoverOpenedMenus.delete(persistKey);
-  }, [persistKey, openedBy]);
-};
 
 export const usePopupMenu = ({
   mode,
@@ -94,7 +68,7 @@ export const usePopupMenu = ({
   const close = useCallback(() => {
     clearHoverTimer();
     // cleared synchronously so a navigation right after close can't restore it
-    if (persistKey) hoverOpenedMenus.delete(persistKey);
+    forgetHoverOpened(persistKey);
     setOpenedBy(null);
   }, [clearHoverTimer, persistKey]);
 
@@ -119,7 +93,7 @@ export const usePopupMenu = ({
     }, HOVER_CLOSE_DELAY_MS);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  useClickOutside(wrapperRef, close);
+  useClickOutside(wrapperRef, close, opened);
   useCloseOnEscape(opened, handleEscape);
   useEffect(() => clearHoverTimer, [clearHoverTimer]);
 
@@ -158,15 +132,15 @@ export const usePopupMenu = ({
     },
     onBlur: (event: FocusEvent) => {
       // null relatedTarget means a press on a non-focusable area, handled by useClickOutside
-      const next = event.relatedTarget as Node | null;
+      const next = event.relatedTarget;
       if (next && !wrapperRef.current?.contains(next)) close();
     },
   };
 
   const triggerProps = {
-    'aria-haspopup': true,
     'aria-expanded': opened,
-    'aria-controls': menuId,
+    // a disabled trigger renders no menu to control
+    'aria-controls': disabled ? undefined : menuId,
     onPointerDown: (event: PointerEvent) => {
       pointerTypeRef.current = event.pointerType;
     },
@@ -205,7 +179,8 @@ export const usePopupMenu = ({
 
       event.preventDefault();
       const items = getMenuItems(menuRef.current);
-      const index = items.indexOf(document.activeElement as HTMLElement);
+      const active = document.activeElement;
+      const index = active instanceof HTMLElement ? items.indexOf(active) : -1;
       const step = event.key === 'ArrowDown' ? 1 : -1;
 
       items[(index + step + items.length) % items.length]?.focus();

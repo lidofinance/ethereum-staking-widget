@@ -2,9 +2,10 @@ import { ArrowBottom } from '@lidofinance/lido-ui';
 import { LocalLink } from 'shared/components/local-link';
 import styled, { css } from 'styled-components';
 import { devicesHeaderMedia } from 'styles/global';
-import { POPUP_MENU_Z_INDEX, PopupStyled } from '../popup';
+import { NAV_Z_INDEX } from 'styles/constants';
+import { POPUP_MENU_Z_INDEX, PopupStyled, popupItemActiveBg } from '../popup';
 
-export const desktopCss = css`
+const desktopCss = css`
   margin: 0 ${({ theme }) => theme.spaceMap.xxl}px 0 var(--nav-desktop-gutter-x);
   display: flex;
   gap: ${({ theme }) => theme.spaceMap.xxl}px;
@@ -20,7 +21,7 @@ export const Nav = styled.nav`
   @media ${devicesHeaderMedia.mobile} {
     display: none;
   }
-  z-index: 60;
+  z-index: ${NAV_Z_INDEX};
 `;
 
 const newBadgeCss = css`
@@ -39,7 +40,7 @@ const newBadgeCss = css`
 // Not wrapping <a> inside <a> in IPFS mode
 // Also avoid problems with migrate to Next v13
 // see: https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration#link-component
-export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
+export const NavLink = styled.span<{ $active: boolean; $showNew?: boolean }>`
   cursor: pointer;
   position: relative;
   color: color-mix(in srgb, var(--lido-color-secondary) 80%, transparent);
@@ -56,7 +57,7 @@ export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
   user-select: none;
 
   & > svg {
-    opacity: ${(props) => (props.active ? 1 : 0.8)};
+    opacity: ${(props) => (props.$active ? 1 : 0.8)};
     color: var(--lido-color-secondary);
     fill: var(--lido-color-secondary);
   }
@@ -68,8 +69,8 @@ export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
     }
   }
 
-  ${({ active }) =>
-    active &&
+  ${({ $active }) =>
+    $active &&
     css`
       color: var(--lido-color-secondary);
       svg {
@@ -79,7 +80,7 @@ export const NavLink = styled.span<{ active: boolean; showNew?: boolean }>`
       }
     `}
 
-  ${({ showNew }) => showNew && newBadgeCss}
+  ${({ $showNew }) => $showNew && newBadgeCss}
 `;
 
 /**
@@ -137,7 +138,7 @@ export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
   ${({ theme, $active }) =>
     $active &&
     css`
-      background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
+      background: ${popupItemActiveBg(theme)};
 
       ${NavigationDropDownIcon} {
         color: var(--lido-color-primary);
@@ -146,9 +147,7 @@ export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
 
   &:not(:disabled):hover,
   &:focus-visible {
-    ${({ theme }) => css`
-      background: ${theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)'};
-    `}
+    background: ${({ theme }) => popupItemActiveBg(theme)};
   }
 `;
 
@@ -187,7 +186,7 @@ export const MobileNav = styled.nav`
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 60;
+  z-index: ${NAV_Z_INDEX};
   padding-bottom: var(--nav-mobile-bottom-inset);
 
   background: var(--lido-color-foreground);
@@ -247,7 +246,7 @@ export const MobileTrackClip = styled.div`
 const TRACK_PADDING = 2;
 const TRACK_GAP = 2;
 
-export const MobileTrack = styled.nav<{ $count: number }>`
+export const MobileTrack = styled.div<{ $count: number }>`
   position: relative;
   display: grid;
   // equal columns, the pill position is computed from the index

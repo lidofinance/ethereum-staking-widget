@@ -179,6 +179,26 @@ export const sendTransactionParamsSchema = z.tuple([
   }),
 ]);
 
+// EIP-5792 batch; unknown top-level keys (e.g. capabilities) are dropped
+export const sendCallsParamsSchema = z.tuple([
+  z.object({
+    version: z.string().optional(),
+    chainId: hexSchema.optional(),
+    from: addressSchema.optional(),
+    atomicRequired: z.boolean().optional(),
+    calls: z
+      .array(
+        z.object({
+          to: addressSchema,
+          data: hexSchema,
+          value: hexSchema.optional(),
+        }),
+      )
+      .min(1, { message: 'calls array cannot be empty' })
+      .max(10, { message: 'calls array cannot have more than 10 items' }),
+  }),
+]);
+
 export const CowSwapGetOrderResponseSchema = z.object({
   creationDate: z.string(),
   owner: addressSchema,

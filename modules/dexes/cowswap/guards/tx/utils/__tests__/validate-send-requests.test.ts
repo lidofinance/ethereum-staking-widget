@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 vi.mock('utils/standardFetcher', () => ({
@@ -9,21 +8,18 @@ import {
   extractApprovals,
   hasWethDeposit,
   sanitizeTransactionParams,
-  validateSendTransaction,
-  validateSendCalls,
-} from '../validate-tx-signing';
+} from '../params';
+import { validateSendTransaction } from '../validate-send-transaction';
+import { validateSendCalls } from '../validate-send-calls';
 import { hashCowswapOrder, calculateOrderUID } from '../order';
 import {
   encodeFunctionData,
   erc20Abi,
   ethAddress,
-  keccak256,
   maxUint32,
   parseEther,
   toHex,
 } from 'viem';
-// json-stringify-deterministic is a transitive dependency (see utils.ts)
-import stringify from 'json-stringify-deterministic';
 import { CowEthFlowAbi, CowSettlementAbi } from '../../../../abi';
 import { TRANSACTION_ERROR } from '../../consts';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -32,13 +28,15 @@ import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
 import {
+  ATTACKER,
+  CHAIN_MAINNET,
+  CHAIN_SEPOLIA,
+  MAINNET_CTX,
   MAINNET_TX_CONFIG,
-  SEPOLIA_TX_CONFIG,
-  TEST_APP_CODE,
+  SEPOLIA_CTX,
+  SIGNER,
+  hashFullAppData,
 } from '../../__tests__/fixtures';
-
-const CHAIN_MAINNET = 1;
-const CHAIN_SEPOLIA = 11155111;
 
 // All addresses from network configs (source of truth)
 const COW_VAULT_RELAYER =
@@ -58,22 +56,7 @@ const SEPOLIA_COW_VAULT_RELAYER =
 const SEPOLIA_FEE_RECIPIENT = sepoliaNetwork.contracts.daoAgent.toLowerCase();
 const FEE_RECIPIENT = mainnetNetwork.contracts.daoAgent.toLowerCase();
 
-const ATTACKER = '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef';
 const UNKNOWN = '0x1111111111111111111111111111111111111111';
-const SIGNER = '0x2222222222222222222222222222222222222222' as `0x${string}`;
-
-const mainnetCtx = {
-  chainId: CHAIN_MAINNET,
-  signer: SIGNER,
-  networkTxConfig: MAINNET_TX_CONFIG,
-  appCode: TEST_APP_CODE,
-};
-const sepoliaCtx = {
-  chainId: CHAIN_SEPOLIA,
-  signer: SIGNER,
-  networkTxConfig: SEPOLIA_TX_CONFIG,
-  appCode: TEST_APP_CODE,
-};
 
 // ---- Order data for Settlement tests ----
 
@@ -89,12 +72,6 @@ const buildFullAppData = (feeRecipient: string): string =>
     },
     version: '1.0.0',
   });
-
-// keccak256 of the deterministically-stringified appData — mirrors
-// getAppDataHex() in utils.ts. The validator derives the order's appData from
-// this, so order UIDs must be computed with the matching hash.
-const hashFullAppData = (fullAppData: string): `0x${string}` =>
-  keccak256(toHex(stringify(JSON.parse(fullAppData))));
 
 const APP_DATA = hashFullAppData(buildFullAppData(FEE_RECIPIENT));
 const SEPOLIA_APP_DATA = hashFullAppData(
@@ -289,19 +266,19 @@ describe('TRANSACTION_ERROR', () => {
 describe('validateSendTransaction', () => {
   describe('basic validation', () => {
     it('rejects undefined params', async () => {
-      const result = await validateSendTransaction(undefined, mainnetCtx);
+      const result = await validateSendTransaction(undefined, MAINNET_CTX);
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
 
     it('rejects empty params array', async () => {
-      const result = await validateSendTransaction([], mainnetCtx);
+      const result = await validateSendTransaction([], MAINNET_CTX);
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
 
     it('rejects non-object params', async () => {
-      const result = await validateSendTransaction(['string'], mainnetCtx);
+      const result = await validateSendTransaction(['string'], MAINNET_CTX);
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
@@ -309,7 +286,7 @@ describe('validateSendTransaction', () => {
     it('rejects tx with no to field', async () => {
       const result = await validateSendTransaction(
         [{ data: '0x' }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -318,7 +295,7 @@ describe('validateSendTransaction', () => {
     it('rejects unknown target address', async () => {
       const result = await validateSendTransaction(
         [{ to: UNKNOWN, data: '0x' }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -327,7 +304,7 @@ describe('validateSendTransaction', () => {
     it('rejects ETH transfer to unknown address', async () => {
       const result = await validateSendTransaction(
         [{ to: UNKNOWN, value: '0xDE0B6B3A7640000', data: '0x' }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -346,7 +323,7 @@ describe('validateSendTransaction', () => {
       async (_name, tokenAddr) => {
         const result = await validateSendTransaction(
           [{ to: tokenAddr, data: buildApprove(COW_VAULT_RELAYER) }],
-          mainnetCtx,
+          MAINNET_CTX,
         );
         expect(result.allowed).toBe(true);
       },
@@ -357,7 +334,7 @@ describe('validateSendTransaction', () => {
       async (_name, tokenAddr) => {
         const result = await validateSendTransaction(
           [{ to: tokenAddr, data: buildApprove(ATTACKER) }],
-          mainnetCtx,
+          MAINNET_CTX,
         );
         expect(result.allowed).toBe(false);
         expect(result.reason).toBeDefined();
@@ -367,7 +344,7 @@ describe('validateSendTransaction', () => {
     it.each(sellTokens)('blocks transfer() on %s', async (_name, tokenAddr) => {
       const result = await validateSendTransaction(
         [{ to: tokenAddr, data: buildTransfer(ATTACKER) }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -381,7 +358,7 @@ describe('validateSendTransaction', () => {
       async (_name, tokenAddr) => {
         const result = await validateSendTransaction(
           [{ to: tokenAddr, data: buildApprove(COW_VAULT_RELAYER) }],
-          mainnetCtx,
+          MAINNET_CTX,
         );
         expect(result.allowed).toBe(false);
         expect(result.reason).toBeDefined();
@@ -397,7 +374,7 @@ describe('validateSendTransaction', () => {
             value: '0xDE0B6B3A7640000',
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -412,7 +389,7 @@ describe('validateSendTransaction', () => {
             value: '0x0',
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -421,7 +398,7 @@ describe('validateSendTransaction', () => {
       const checksummedSteth = '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84';
       const result = await validateSendTransaction(
         [{ to: checksummedSteth, data: buildApprove(COW_VAULT_RELAYER) }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -429,10 +406,22 @@ describe('validateSendTransaction', () => {
     it('blocks approve with truncated calldata', async () => {
       const result = await validateSendTransaction(
         [{ to: STETH, data: '0x095ea7b3' }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
+    });
+
+    it('blocks a non-approve ERC-20 call on a sell token', async () => {
+      const result = await validateSendTransaction(
+        [{ to: STETH, data: buildTransfer(ATTACKER) }],
+        MAINNET_CTX,
+      );
+      expect(result).toEqual({
+        allowed: false,
+        reason: TRANSACTION_ERROR(2020),
+        result: undefined,
+      });
     });
 
     it('rejects infinite (maxUint256) approve on stETH', async () => {
@@ -442,7 +431,7 @@ describe('validateSendTransaction', () => {
         'f'.repeat(64);
       const result = await validateSendTransaction(
         [{ to: STETH, data: infiniteApprove }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -456,7 +445,7 @@ describe('validateSendTransaction', () => {
             data: buildApproveAmount(COW_VAULT_RELAYER, parseEther('6000')),
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -466,7 +455,7 @@ describe('validateSendTransaction', () => {
     it('blocks deposit() on WETH (ETH value not allowed)', async () => {
       const result = await validateSendTransaction(
         [{ to: WETH, data: DEPOSIT_SELECTOR, value: '0xDE0B6B3A7640000' }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -475,7 +464,7 @@ describe('validateSendTransaction', () => {
     it('blocks withdraw() on WETH (only approve() allowed)', async () => {
       const result = await validateSendTransaction(
         [{ to: WETH, data: WITHDRAW_SELECTOR }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -483,7 +472,7 @@ describe('validateSendTransaction', () => {
     it('rejects approve(VaultRelayer) on WETH (buy token, not in sell-token allowlist)', async () => {
       const result = await validateSendTransaction(
         [{ to: WETH, data: buildApprove(COW_VAULT_RELAYER) }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -492,7 +481,7 @@ describe('validateSendTransaction', () => {
     it('blocks approve(attacker) on WETH', async () => {
       const result = await validateSendTransaction(
         [{ to: WETH, data: buildApprove(ATTACKER) }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -500,7 +489,7 @@ describe('validateSendTransaction', () => {
     it('blocks transfer() on WETH', async () => {
       const result = await validateSendTransaction(
         [{ to: WETH, data: buildTransfer(ATTACKER) }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -508,7 +497,7 @@ describe('validateSendTransaction', () => {
     it('blocks unknown selector on WETH', async () => {
       const result = await validateSendTransaction(
         [{ to: WETH, data: '0x12345678' + '0'.repeat(128) }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -518,7 +507,7 @@ describe('validateSendTransaction', () => {
     it('allows setPreSignature(signed=true) on GPv2Settlement', async () => {
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -542,7 +531,7 @@ describe('validateSendTransaction', () => {
 
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: buildSetPreSignature(uid) }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result).toEqual({
         allowed: false,
@@ -553,7 +542,7 @@ describe('validateSendTransaction', () => {
     it('rejects presign of order with appCode of another integration', async () => {
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
-        { ...mainnetCtx, appCode: 'Lido Swap' },
+        { ...MAINNET_CTX, appCode: 'Lido Swap' },
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe(TRANSACTION_ERROR(2038));
@@ -562,7 +551,7 @@ describe('validateSendTransaction', () => {
     it('rejects direct call to CoW VaultRelayer (removed from allowedTargets)', async () => {
       const result = await validateSendTransaction(
         [{ to: COW_VAULT_RELAYER, data: '0x12345678' }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -572,7 +561,7 @@ describe('validateSendTransaction', () => {
       const checksummed = '0x9008D19f58AAbD9eD0D60971565AA8510560ab41';
       const result = await validateSendTransaction(
         [{ to: checksummed, data: buildSetPreSignature() }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -585,7 +574,7 @@ describe('validateSendTransaction', () => {
             data: buildSetPreSignature(TEST_ORDER_UID, false),
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -593,7 +582,7 @@ describe('validateSendTransaction', () => {
     it('rejects non-setPreSignature calldata on CoW Settlement', async () => {
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: '0xabcdef12' }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -603,7 +592,7 @@ describe('validateSendTransaction', () => {
       const zeroUID = ('0x' + '00'.repeat(56)) as `0x${string}`;
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: buildSetPreSignature(zeroUID) }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -615,7 +604,7 @@ describe('validateSendTransaction', () => {
       );
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -635,7 +624,7 @@ describe('validateSendTransaction', () => {
             data: buildSetPreSignature(ATTACKER_ORDER_UID),
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -644,7 +633,7 @@ describe('validateSendTransaction', () => {
     it('allows invalidateOrder (order cancellation) on CoW Settlement', async () => {
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: buildInvalidateOrder() }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
       if (!result.allowed) return;
@@ -659,7 +648,7 @@ describe('validateSendTransaction', () => {
       // nor invalidateOrder — must be rejected.
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: buildUnknownSettlerCall() }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -670,7 +659,7 @@ describe('validateSendTransaction', () => {
     it('blocks deposit() on Sepolia WETH (only approve() allowed)', async () => {
       const result = await validateSendTransaction(
         [{ to: SEPOLIA_WETH, data: DEPOSIT_SELECTOR }],
-        sepoliaCtx,
+        SEPOLIA_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -678,7 +667,7 @@ describe('validateSendTransaction', () => {
     it('rejects approve(VaultRelayer) on Sepolia WETH (buy token, not in sell-token allowlist)', async () => {
       const result = await validateSendTransaction(
         [{ to: SEPOLIA_WETH, data: buildApprove(SEPOLIA_COW_VAULT_RELAYER) }],
-        sepoliaCtx,
+        SEPOLIA_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -686,7 +675,7 @@ describe('validateSendTransaction', () => {
     it('rejects mainnet WETH on Sepolia', async () => {
       const result = await validateSendTransaction(
         [{ to: WETH, data: DEPOSIT_SELECTOR }],
-        sepoliaCtx,
+        SEPOLIA_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -707,7 +696,7 @@ describe('validateSendTransaction', () => {
             data: buildSetPreSignature(SEPOLIA_ORDER_UID),
           },
         ],
-        sepoliaCtx,
+        SEPOLIA_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -717,7 +706,7 @@ describe('validateSendTransaction', () => {
     it('rejects tx with no data field (data is required)', async () => {
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -725,13 +714,13 @@ describe('validateSendTransaction', () => {
     it('handles tx with empty data (0x)', async () => {
       const result = await validateSendTransaction(
         [{ to: COW_SETTLEMENT, data: '0x' }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
 
     it('rejects null param', async () => {
-      const result = await validateSendTransaction([null], mainnetCtx);
+      const result = await validateSendTransaction([null], MAINNET_CTX);
       expect(result.allowed).toBe(false);
     });
   });
@@ -749,7 +738,7 @@ describe('validateSendCalls', () => {
             ],
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -761,7 +750,7 @@ describe('validateSendCalls', () => {
             calls: [{ to: STETH, data: buildApprove(COW_VAULT_RELAYER) }],
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -777,7 +766,7 @@ describe('validateSendCalls', () => {
             ],
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
     });
@@ -785,7 +774,7 @@ describe('validateSendCalls', () => {
     it('allows a lone invalidateOrder (cancel) batch', async () => {
       const result = await validateSendCalls(
         [{ calls: [{ to: COW_SETTLEMENT, data: buildInvalidateOrder() }] }],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(true);
       if (!result.allowed) return;
@@ -807,7 +796,7 @@ describe('validateSendCalls', () => {
             ],
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -824,7 +813,7 @@ describe('validateSendCalls', () => {
             ],
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -840,7 +829,7 @@ describe('validateSendCalls', () => {
             ],
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
@@ -857,31 +846,31 @@ describe('validateSendCalls', () => {
             ],
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       );
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
 
     it('rejects empty calls array', async () => {
-      const result = await validateSendCalls([{ calls: [] }], mainnetCtx);
+      const result = await validateSendCalls([{ calls: [] }], MAINNET_CTX);
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
 
     it('rejects missing calls field', async () => {
-      const result = await validateSendCalls([{}], mainnetCtx);
+      const result = await validateSendCalls([{}], MAINNET_CTX);
       expect(result.allowed).toBe(false);
       expect(result.reason).toBeDefined();
     });
 
     it('rejects undefined params', async () => {
-      const result = await validateSendCalls(undefined, mainnetCtx);
+      const result = await validateSendCalls(undefined, MAINNET_CTX);
       expect(result.allowed).toBe(false);
     });
 
     it('rejects non-object params', async () => {
-      const result = await validateSendCalls(['string'], mainnetCtx);
+      const result = await validateSendCalls(['string'], MAINNET_CTX);
       expect(result.allowed).toBe(false);
     });
   });
@@ -911,7 +900,7 @@ describe('validateSendCalls', () => {
             ],
           },
         ],
-        sepoliaCtx,
+        SEPOLIA_CTX,
       );
       expect(result.allowed).toBe(true);
     });
@@ -978,7 +967,7 @@ describe('extractApprovals', () => {
 describe('EthFlow', () => {
   const ETH_FLOW = mainnetNetwork.contracts.cowEthFlow.toLowerCase();
   const ethFlowCtx = {
-    ...mainnetCtx,
+    ...MAINNET_CTX,
     networkTxConfig: {
       ...MAINNET_TX_CONFIG,
       sellTokens: new Set([...MAINNET_TX_CONFIG.sellTokens, ethAddress]),
@@ -1007,7 +996,7 @@ describe('EthFlow', () => {
   const sendEthFlow = (
     data: `0x${string}`,
     value = parseEther('1'),
-    ctx: typeof mainnetCtx = ethFlowCtx,
+    ctx: typeof MAINNET_CTX = ethFlowCtx,
   ) =>
     validateSendTransaction([{ to: ETH_FLOW, data, value: toHex(value) }], ctx);
 
@@ -1038,7 +1027,7 @@ describe('EthFlow', () => {
   });
 
   it.each([
-    ['ETH not sellable in the profile', {}, parseEther('1'), mainnetCtx, 2004],
+    ['ETH not sellable in the profile', {}, parseEther('1'), MAINNET_CTX, 2004],
     ['value below sell amount', {}, parseEther('0.5'), ethFlowCtx, 2045],
     ['zero value', {}, 0n, ethFlowCtx, 2045],
     ['non-zero fee', { feeAmount: 1n }, parseEther('1'), ethFlowCtx, 2044],
@@ -1274,7 +1263,7 @@ describe('validateSendTransaction — from', () => {
             data: buildApproveAmount(COW_VAULT_RELAYER, 1n),
           },
         ],
-        mainnetCtx,
+        MAINNET_CTX,
       ),
     ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2047) });
   });
@@ -1290,20 +1279,20 @@ describe('validateSendCalls — batch fields', () => {
 
   it('blocks a batch for another chain', async () => {
     expect(
-      await validateSendCalls(presignBatch({ chainId: '0x2105' }), mainnetCtx),
+      await validateSendCalls(presignBatch({ chainId: '0x2105' }), MAINNET_CTX),
     ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2048) });
   });
 
   it('blocks a batch from another account', async () => {
     expect(
-      await validateSendCalls(presignBatch({ from: ATTACKER }), mainnetCtx),
+      await validateSendCalls(presignBatch({ from: ATTACKER }), MAINNET_CTX),
     ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2047) });
   });
 
   it('allows a batch for the guarded chain and account', async () => {
     const result = await validateSendCalls(
       presignBatch({ chainId: '0x1', from: SIGNER }),
-      mainnetCtx,
+      MAINNET_CTX,
     );
     expect(result.allowed).toBe(true);
   });
@@ -1312,12 +1301,12 @@ describe('validateSendCalls — batch fields', () => {
 describe('validateSendCalls — Safe ETH sale', () => {
   const ETH_VALUE = 10n ** 18n;
   const safeEthCtx = {
-    ...mainnetCtx,
+    ...MAINNET_CTX,
     networkTxConfig: {
       ...MAINNET_TX_CONFIG,
       sellTokens: new Set([...MAINNET_TX_CONFIG.sellTokens, ethAddress, WETH]),
     },
-  } as typeof mainnetCtx;
+  } as typeof MAINNET_CTX;
   const WETH_ORDER = {
     ...TEST_ORDER,
     sellToken: WETH as `0x${string}`,
@@ -1402,7 +1391,7 @@ describe('validateSendCalls — Safe ETH sale', () => {
 
   it('blocks the wrap when the profile does not sell ETH', async () => {
     expect(
-      await validateSendCalls(batch([deposit(), presign()]), mainnetCtx),
+      await validateSendCalls(batch([deposit(), presign()]), MAINNET_CTX),
     ).toEqual({ allowed: false, reason: TRANSACTION_ERROR(2053) });
   });
 });

@@ -17,6 +17,9 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
   minSellUsdToTriggerOracle: 1_000,
 };
 
+// +1 bps absorbs the widget's atom-level truncation.
+export const SLIPPAGE_TRUNCATION_BPS = 1;
+
 // Trade build/verification errors
 export const TRADE_BUILD_ERROR = (code?: number) =>
   `Trade build failed — order information unavailable${

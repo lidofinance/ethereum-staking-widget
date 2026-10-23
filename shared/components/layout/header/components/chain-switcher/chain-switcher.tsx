@@ -1,4 +1,4 @@
-import { FC, useMemo, createElement, ComponentType } from 'react';
+import { FC, useMemo, createElement } from 'react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 import {
   CHAIN_ICONS_MAP,
@@ -32,10 +32,7 @@ export const ChainSwitcher: FC = () => {
     supportedChainIds,
     requestChangeChain,
   } = useDappStatus();
-  const isLocked = useMemo(
-    () => supportedChainIds.length < 2 || isSwitchChainPending,
-    [supportedChainIds, isSwitchChainPending],
-  );
+  const isLocked = supportedChainIds.length < 2 || isSwitchChainPending;
   const {
     opened,
     close,
@@ -47,14 +44,13 @@ export const ChainSwitcher: FC = () => {
 
   const iconsMap = useMemo(
     () =>
-      supportedChainIds.reduce((acc: IconsMapType, chainId: number) => {
-        acc[chainId] = {
-          name: CHAIN_NAME_OVERRIDE[chainId] ?? wagmiChainMap[chainId].name,
-          iconComponent: CHAIN_ICONS_MAP.has(Number(chainId))
-            ? createElement(
-                CHAIN_ICONS_MAP.get(Number(chainId)) as ComponentType,
-              )
-            : null,
+      supportedChainIds.reduce((acc: IconsMapType, optionChainId: number) => {
+        const Icon = CHAIN_ICONS_MAP.get(optionChainId);
+        acc[optionChainId] = {
+          name:
+            CHAIN_NAME_OVERRIDE[optionChainId] ??
+            wagmiChainMap[optionChainId].name,
+          iconComponent: Icon ? createElement(Icon) : null,
         };
         return acc;
       }, {}),
@@ -66,6 +62,9 @@ export const ChainSwitcher: FC = () => {
       <ChainSwitcherStyled
         type="button"
         data-testid={`currentChain=${chainId}`}
+        // icon-only button: the label names the current network
+        aria-label={`Network: ${getPrettyChainName(chainId)}`}
+        aria-haspopup={isLocked ? undefined : 'menu'}
         aria-disabled={isLocked}
         $disabled={isLocked}
         $loading={isSwitchChainPending}
@@ -79,19 +78,17 @@ export const ChainSwitcher: FC = () => {
       </ChainSwitcherStyled>
 
       {!isLocked && (
-        <>
-          <ChainSwitcherOptions
-            currentChainId={chainId}
-            onSelect={(chainId) => {
-              close();
-              requestChangeChain(chainId);
-            }}
-            opened={opened}
-            options={iconsMap}
-            menuProps={menuProps}
-            backdropProps={backdropProps}
-          />
-        </>
+        <ChainSwitcherOptions
+          currentChainId={chainId}
+          onSelect={(nextChainId) => {
+            close();
+            requestChangeChain(nextChainId);
+          }}
+          opened={opened}
+          options={iconsMap}
+          menuProps={menuProps}
+          backdropProps={backdropProps}
+        />
       )}
       {!isDappActive && (
         <SelectIconTooltip showArrow>

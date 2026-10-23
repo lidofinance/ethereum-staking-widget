@@ -1,17 +1,15 @@
 import {
   CowSwapWidget,
-  CowSwapWidgetPalette,
   CowSwapWidgetParams,
   CowSwapWidgetProps,
   TradeType,
 } from '@cowprotocol/widget-react';
 import { useCallback, useMemo } from 'react';
-import { arbitrum, base, mainnet, sepolia } from 'viem/chains';
+import { mainnet, sepolia } from 'viem/chains';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
 import { debounce } from 'lodash';
 import { useTheme } from 'styled-components';
-import { themeDark, themeLight } from '@lidofinance/lido-ui';
 
 import { useDappStatus } from 'modules/web3';
 import { LOCALE } from 'config/groups/locale';
@@ -21,7 +19,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import {
   MAX_SLIPPAGE,
   PARTNER_FEE_BPS,
-  WHEN_PRICE_IMPACT_IS_HIGH_THAN,
+  MAX_PRICE_IMPACT_PERCENT,
   COWSWAP_BASE_URL,
   MAX_ORDER_AGE_MINUTES,
   TRADE_REPORT_EVENT_DEBOUNCE_MS,
@@ -33,57 +31,15 @@ import {
   useLoadingStates,
 } from './hooks';
 import { useTradeGuard, TradeGuardModal } from './guards/trade';
-import type { CowswapDefaultPair, CowswapProfile } from './profile';
+import type { CowswapProfile } from './profile';
 import { shouldRefreshForSellToken } from './utils';
 import { LoaderStyled, DexWrapper } from './styles';
-
-const cowSwapThemeDark: CowSwapWidgetPalette = {
-  baseTheme: 'dark',
-  primary: themeDark.colors.primary,
-  background: themeDark.colors.background,
-  paper: '#2D2D35',
-  text: themeDark.colors.text,
-  warning: themeDark.colors.warning,
-  alert: themeDark.colors.warningBackground,
-  danger: themeDark.colors.error,
-  info: themeDark.colors.warning,
-  success: themeDark.colors.success,
-  // boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)', // TODO: wait fix from CowSwap team
-  boxShadow: 'none',
-};
-
-const cowSwapThemeLight: CowSwapWidgetPalette = {
-  baseTheme: 'light',
-  primary: themeLight.colors.primary,
-  background: '#F2F2F2',
-  paper: themeLight.colors.foreground,
-  text: themeLight.colors.text,
-  warning: themeLight.colors.warning,
-  alert: themeLight.colors.warning,
-  danger: themeLight.colors.error,
-  info: themeLight.colors.warning,
-  success: themeLight.colors.success,
-  // boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)', // TODO: wait fix from CowSwap team
-  boxShadow: 'none',
-};
-
-const BASE_GRADIENT = 'linear-gradient(52deg, #1D1E35 0.01%, #4782FC 100%)';
-const ARBITRUM_GRADIENT = 'linear-gradient(52deg, #1D1E35 0.01%, #12AAFF 100%)';
-
-// Widget card background per network, set as an inline style of the card:
-// the palette `paper` is parsed as a color and cannot hold a gradient.
-// The gradients are dark, so these networks use the dark palette in any app theme
-const CHAIN_CARD_BACKGROUND: Record<number, string> = {
-  [base.id]: BASE_GRADIENT,
-  [arbitrum.id]: `${ARBITRUM_GRADIENT}, ${BASE_GRADIENT}`,
-};
-
-// dark palette over a network gradient: the inner blocks derive from `paper` and keep its alpha,
-// so a translucent gradient-start color softens them against the gradient
-const cowSwapThemeOnGradient: CowSwapWidgetPalette = {
-  ...cowSwapThemeDark,
-  paper: 'rgba(29, 30, 53, 0.5)',
-};
+import {
+  CHAIN_CARD_BACKGROUND,
+  cowSwapThemeDark,
+  cowSwapThemeLight,
+  cowSwapThemeOnGradient,
+} from './theme';
 
 export type CowswapFrameProps = {
   profile: CowswapProfile;
@@ -125,19 +81,18 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       ? sepolia.id
       : mainnet.id;
   const networkTxConfig = getNetworkTxConfig(widgetChainId);
+  // set for every enabled network by createCowswapProfile
+  const defaultPair = getDefaultPair(widgetChainId);
   // shown as the error boundary fallback
-  if (!networkTxConfig)
+  if (!networkTxConfig || !defaultPair)
     throw new Error('CoW Swap is not enabled on this network');
   const { sellTokens, feeRecipient } = networkTxConfig;
-  // set for every enabled network by createCowswapProfile
-  const defaultPair = getDefaultPair(widgetChainId) as CowswapDefaultPair;
   const { validateAddress } = useAddressValidation();
   const { name: themeName } = useTheme();
   // Fall back to self-hosted token lists if GitHub is unavailable
   const isGithubAvailable = useIsGhAvailable(tokenLists.sell.url);
   // throw on CSP violation
   useCspBlocked();
-  // throw on loading timeout
 
   const {
     modalState,
@@ -147,7 +102,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     reportTradeParams,
     openTransactionGuardModal,
     openSigningErrorModal,
-    verifySignedOrder,
+    consumeSignedOrder,
     verifyApproval,
     rejectWrapOrUnwrap,
   } = useTradeGuard({
@@ -166,13 +121,13 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     [analytics.quoteViewed],
   );
 
-  const validate = useCallback(async () => {
-    const isValid = await validateAddress(address);
-    return isValid;
-  }, [validateAddress, address]);
+  const validate = useCallback(
+    () => validateAddress(address),
+    [validateAddress, address],
+  );
 
   const provider = useCowSwapEthereumProvider({
-    verifySignedOrder,
+    consumeSignedOrder,
     verifyApproval,
     openTransactionGuardModal,
     openSigningErrorModal,
@@ -223,7 +178,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       },
       disableTrade: {
         whenPriceImpactIsUnknown: true,
-        whenPriceImpactIsHigherThan: WHEN_PRICE_IMPACT_IS_HIGH_THAN,
+        whenPriceImpactIsHigherThan: MAX_PRICE_IMPACT_PERCENT,
       },
       disableCrossChainSwap: true,
       disableCustomRecipient: true,

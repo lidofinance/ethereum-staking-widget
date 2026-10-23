@@ -1,6 +1,21 @@
 import { CHAINS } from 'config/chains';
 import { z } from 'zod';
 
+// keeps valid entries; a dropped entry can leave a page or chain enabled, so make it visible
+const keepValidEntries = <V>(
+  section: string,
+  entries: [string, unknown][],
+  isValid: (key: string, value: unknown) => value is V,
+): [string, V][] =>
+  entries.filter((entry): entry is [string, V] => {
+    const [key, value] = entry;
+    const valid = isValid(key, value);
+    if (!valid) {
+      console.warn(`[manifest] dropped invalid ${section} entry:`, key, value);
+    }
+    return valid;
+  });
+
 ///
 /// Earn
 ///
@@ -224,20 +239,13 @@ const PagesEntrySchema = z
     (obj) => {
       if (typeof obj === 'object' && obj !== null) {
         return Object.fromEntries(
-          Object.entries(obj).filter(([key, value]) => {
-            const isValid =
+          keepValidEntries(
+            'page',
+            Object.entries(obj),
+            (key, value): value is z.input<typeof PageSchema> =>
               PageNameSchema.safeParse(key).success &&
-              PageSchema.safeParse(value).success;
-            // a dropped entry can leave a page enabled, so make it visible
-            if (!isValid) {
-              console.warn(
-                '[manifest] dropped invalid page entry:',
-                key,
-                value,
-              );
-            }
-            return isValid;
-          }),
+              PageSchema.safeParse(value).success,
+          ),
         );
       }
       return obj;
@@ -368,6 +376,7 @@ const L2StakeTransformSchema = L2StakeSchema.transform((data) => {
     ) as Record<CHAINS, z.infer<typeof L2StakeConfigurationSchema>>,
   };
 });
+
 //
 // Swap
 //
@@ -382,26 +391,14 @@ const SwapSchema = z
         : {};
       return {
         perChain: Object.fromEntries(
-          Object.entries(perChain)
-            .filter(([key, entry]) => {
-              const isValid =
-                /^[1-9]\d*$/.test(key) &&
-                isUnknownRecord(entry) &&
-                typeof entry.enabled === 'boolean';
-              // a dropped entry leaves the chain enabled, so make it visible
-              if (!isValid) {
-                console.warn(
-                  '[manifest] dropped invalid swap entry:',
-                  key,
-                  entry,
-                );
-              }
-              return isValid;
-            })
-            .map(([key, entry]) => [
-              key,
-              { enabled: (entry as UnknownRecord).enabled },
-            ]),
+          keepValidEntries(
+            'swap',
+            Object.entries(perChain),
+            (key, entry): entry is { enabled: boolean } =>
+              /^[1-9]\d*$/.test(key) &&
+              isUnknownRecord(entry) &&
+              typeof entry.enabled === 'boolean',
+          ).map(([key, entry]) => [key, { enabled: entry.enabled }]),
         ),
       };
     },

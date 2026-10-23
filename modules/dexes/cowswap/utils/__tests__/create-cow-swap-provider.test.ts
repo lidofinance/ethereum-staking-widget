@@ -76,7 +76,7 @@ const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
     isLedgerLive: false,
     networkTxConfig: MAINNET_TX_CONFIG,
     appCode: 'Test App',
-    verifySignedOrder: vi.fn().mockReturnValue(null),
+    consumeSignedOrder: vi.fn().mockReturnValue(null),
     verifyApproval: vi.fn().mockReturnValue(null),
     openTransactionGuardModal: vi.fn().mockResolvedValue(undefined),
     openSigningErrorModal: vi.fn().mockResolvedValue(undefined),
@@ -180,13 +180,13 @@ describe('request — validation', () => {
       approvals: [],
       sanitizedRequest: SIGN_REQUEST,
     });
-    const verifySignedOrder = vi.fn().mockReturnValue('amount mismatch');
-    const { provider, params, walletClient } = setup({ verifySignedOrder });
+    const consumeSignedOrder = vi.fn().mockReturnValue('amount mismatch');
+    const { provider, params, walletClient } = setup({ consumeSignedOrder });
 
     await expect(provider.request(SIGN_REQUEST)).rejects.toMatchObject({
       code: InvalidRequestRpcError.code,
     });
-    expect(verifySignedOrder).toHaveBeenCalledWith(ORDER);
+    expect(consumeSignedOrder).toHaveBeenCalledWith(ORDER);
     expect(params.openTransactionGuardModal).toHaveBeenCalledWith(
       'amount mismatch',
     );
@@ -228,7 +228,7 @@ describe('request — validation', () => {
     expect(
       vi.mocked(params.verifyApproval).mock.invocationCallOrder[0],
     ).toBeLessThan(
-      vi.mocked(params.verifySignedOrder).mock.invocationCallOrder[0],
+      vi.mocked(params.consumeSignedOrder).mock.invocationCallOrder[0],
     );
   });
 

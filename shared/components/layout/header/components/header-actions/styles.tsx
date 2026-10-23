@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { ThemeToggler } from '@lidofinance/lido-ui';
 
 import { devicesHeaderMedia } from 'styles/global';
+import { HEADER_BANNER_Z_INDEX } from 'styles/constants';
 import { Connect } from 'shared/wallet';
 
 export const HeaderActionsStyle = styled.div`
@@ -37,24 +38,12 @@ export const HeaderWalletChainLabel = styled.span<{ $color: string }>`
   }
 `;
 
-export const IPFSInfoBoxOnlyDesktopWrapper = styled.div`
+export const BannerOnlyDesktopWrapper = styled.div`
   position: absolute;
   right: 0;
   top: calc(100% + 15px);
   width: 255px;
-  z-index: 3;
-
-  @media ${devicesHeaderMedia.mobile} {
-    display: none;
-  }
-`;
-
-export const AmountBannerOnlyDesktopWrapper = styled.div`
-  position: absolute;
-  right: 0;
-  top: calc(100% + 15px);
-  width: 255px;
-  z-index: 3;
+  z-index: ${HEADER_BANNER_Z_INDEX};
 
   @media ${devicesHeaderMedia.mobile} {
     display: none;

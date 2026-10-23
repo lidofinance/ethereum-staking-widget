@@ -14,6 +14,14 @@ export const EARN_STATE_KEYWORDS = [
   EARN_STATES.DISABLED,
 ] as const;
 
+const isEarnStateKeyword = (
+  value: string,
+): value is (typeof EARN_STATE_KEYWORDS)[number] =>
+  EARN_STATE_KEYWORDS.some((keyword) => keyword === value);
+
+const isEarnVault = (value: string): value is (typeof EARN_VAULTS)[number] =>
+  EARN_VAULTS.some((vault) => vault === value);
+
 /**
  * Pure function that computes earn runtime state from inputs.
  * Extracted for testability.
@@ -42,13 +50,13 @@ export const computeEarnRuntimeState = ({
     isReady &&
     earnParam &&
     typeof earnParam === 'string' &&
-    !EARN_STATE_KEYWORDS.includes(earnParam as any) // Only treat as vault names if it's not a keyword (enabled/disabled)
+    !isEarnStateKeyword(earnParam) // Only treat as vault names if it's not a keyword (enabled/disabled)
   ) {
     // unknown names must not hide anything
     vaultsEnabledByUrl = earnParam
       .split(',')
       .map((vault) => vault.trim())
-      .filter((vault) => (EARN_VAULTS as readonly string[]).includes(vault));
+      .filter(isEarnVault);
   }
 
   const someVaultsEnabledByURL = vaultsEnabledByUrl.length > 0;

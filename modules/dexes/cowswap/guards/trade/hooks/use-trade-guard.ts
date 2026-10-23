@@ -5,8 +5,7 @@ import type { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import type { ApprovalData, OrderData } from '../../tx';
-import { useOracleRates } from '../../oracles';
-import type { OracleFeedMaps } from '../../oracles/utils';
+import { useOracleRates, type OracleFeedMaps } from '../../oracles';
 
 import {
   approvalSnapshotFromTrade,
@@ -172,7 +171,7 @@ export const useTradeGuard = ({
   );
 
   /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
-  const verifySignedOrder = useCallback(
+  const consumeSignedOrder = useCallback(
     (order: OrderData): string | null => {
       const error = verifyOrderAgainstSnapshot(
         order,
@@ -226,7 +225,7 @@ export const useTradeGuard = ({
     reportTradeParams,
     openTransactionGuardModal,
     openSigningErrorModal,
-    verifySignedOrder,
+    consumeSignedOrder,
     verifyApproval,
     rejectWrapOrUnwrap,
   };

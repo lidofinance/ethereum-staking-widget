@@ -4,7 +4,7 @@ import { MAX_SLIPPAGE, SLIPPAGE_TOTAL_BPS } from '../../../consts';
 
 import { safeParseDecimal } from '../../utils';
 
-import { TRADE_BUILD_ERROR } from '../consts';
+import { SLIPPAGE_TRUNCATION_BPS, TRADE_BUILD_ERROR } from '../consts';
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
 
 type AnalysisResult = {
@@ -47,8 +47,7 @@ export const analyzeParams = (params: OnTradeParamsPayload): AnalysisResult => {
     };
   }
 
-  // +1 bps absorbs the widget's atom-level truncation.
-  const ADJUSTED_MAX_SLIPPAGE = MAX_SLIPPAGE + 1;
+  const ADJUSTED_MAX_SLIPPAGE = MAX_SLIPPAGE + SLIPPAGE_TRUNCATION_BPS;
   if (
     params.minimumReceiveBuyAmount !== undefined &&
     (buyUnits === null ||

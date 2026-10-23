@@ -18,8 +18,7 @@ import { HeaderSettingsButton } from './header-settings-button';
 
 import {
   HeaderWalletChainLabel,
-  IPFSInfoBoxOnlyDesktopWrapper,
-  AmountBannerOnlyDesktopWrapper,
+  BannerOnlyDesktopWrapper,
   HeaderActionsStyle,
   ThemeTogglerStyled,
   ConnectButtonStyled,
@@ -58,13 +57,13 @@ export const HeaderActions: FC = () => {
         {config.ipfsMode && <HeaderSettingsButton />}
         {!queryTheme && <ThemeTogglerStyled data-testid="themeToggler" />}
         {config.ipfsMode && (
-          <IPFSInfoBoxOnlyDesktopWrapper>
+          <BannerOnlyDesktopWrapper>
             <IPFSInfoBox />
-          </IPFSInfoBoxOnlyDesktopWrapper>
+          </BannerOnlyDesktopWrapper>
         )}
-        <AmountBannerOnlyDesktopWrapper>
+        <BannerOnlyDesktopWrapper>
           <AmountBanner isDismissible placement="connect_wallet" />
-        </AmountBannerOnlyDesktopWrapper>
+        </BannerOnlyDesktopWrapper>
       </NoSSRWrapper>
     </HeaderActionsStyle>
   );

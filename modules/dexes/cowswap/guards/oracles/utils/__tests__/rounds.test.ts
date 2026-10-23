@@ -5,6 +5,7 @@ import {
   PRICE_BOUNDS,
   WSTETH_RATE_MIN,
   WSTETH_RATE_MAX,
+  type ChainlinkFeedKey,
 } from '../../feeds';
 
 // ---------------------------------------------------------------------------
@@ -90,7 +91,7 @@ describe('isValidRound', () => {
 // ---------------------------------------------------------------------------
 describe('PRICE_BOUNDS', () => {
   it('has bounds for all expected feeds', () => {
-    const expected = [
+    const expected: ChainlinkFeedKey[] = [
       'ETH_USD',
       'STETH_USD',
       'USDC_USD',
@@ -156,7 +157,9 @@ describe('isInBounds', () => {
   });
 
   it('returns false (fail-closed) for unknown feed key', () => {
-    expect(isInBounds(100n * CHAINLINK_SCALE, 'UNKNOWN_FEED')).toBe(false);
+    expect(
+      isInBounds(100n * CHAINLINK_SCALE, 'UNKNOWN_FEED' as ChainlinkFeedKey),
+    ).toBe(false);
   });
 });
 
