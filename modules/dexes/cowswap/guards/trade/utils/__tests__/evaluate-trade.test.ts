@@ -22,6 +22,7 @@ import {
   approvalSnapshotFromTrade,
   evaluateTrade,
   evaluateApproval,
+  toNativeSaleSnapshot,
   verifyApprovalAgainstSnapshot,
   verifyOrderAgainstSnapshot,
   type ValidatedApprovalSnapshot,
@@ -504,6 +505,7 @@ describe('verifyOrderAgainstSnapshot', () => {
     buyAmountMinUnits: '1980',
   };
 
+  // a native ETH snapshot comes from toNativeSaleSnapshot
   it('verifies an EthFlow order against a native ETH snapshot', () => {
     const ETH = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
     const ethOrder = {
@@ -563,5 +565,72 @@ describe('verifyOrderAgainstSnapshot', () => {
         TOKEN_DECIMALS,
       ),
     ).toBe(TRADE_VERIFICATION_ERROR(1006));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// toNativeSaleSnapshot
+// ---------------------------------------------------------------------------
+describe('toNativeSaleSnapshot', () => {
+  const ETH = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const WETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
+  // onBeforeTrade reports a native ETH sale with WETH as the sell token
+  const WETH_SNAPSHOT: ValidatedTradeSnapshot = {
+    sellToken: WETH.toLowerCase() as `0x${string}`,
+    buyToken: STETH,
+    sellAmountUnits: '1',
+    buyAmountMinUnits: '0.99',
+  };
+
+  it('maps a WETH snapshot to native ETH when the widget reports ETH', () => {
+    expect(toNativeSaleSnapshot(WETH_SNAPSHOT, ETH, WETH)).toEqual({
+      ...WETH_SNAPSHOT,
+      sellToken: ETH.toLowerCase(),
+    });
+  });
+
+  it('compares addresses case-insensitively', () => {
+    expect(
+      toNativeSaleSnapshot(WETH_SNAPSHOT, ETH.toLowerCase(), WETH).sellToken,
+    ).toBe(ETH.toLowerCase());
+  });
+
+  it('keeps a real WETH sale as WETH', () => {
+    expect(toNativeSaleSnapshot(WETH_SNAPSHOT, WETH, WETH)).toBe(WETH_SNAPSHOT);
+  });
+
+  it('keeps a non-WETH snapshot when the widget reports ETH', () => {
+    const stethSnapshot: ValidatedTradeSnapshot = {
+      ...WETH_SNAPSHOT,
+      sellToken: STETH,
+    };
+    expect(toNativeSaleSnapshot(stethSnapshot, ETH, WETH)).toBe(stethSnapshot);
+  });
+
+  it('keeps the snapshot when no sell token was reported', () => {
+    expect(toNativeSaleSnapshot(WETH_SNAPSHOT, undefined, WETH)).toBe(
+      WETH_SNAPSHOT,
+    );
+  });
+
+  it('lets an EthFlow order through only after the mapping', () => {
+    const ethOrder = {
+      sellToken: ETH.toLowerCase(),
+      buyToken: STETH,
+      sellAmount: 10n ** 18n,
+      buyAmount: 99n * 10n ** 16n,
+    } as unknown as OrderData;
+
+    expect(
+      verifyOrderAgainstSnapshot(ethOrder, WETH_SNAPSHOT, TOKEN_DECIMALS),
+    ).toBe(TRADE_VERIFICATION_ERROR(1001));
+    expect(
+      verifyOrderAgainstSnapshot(
+        ethOrder,
+        toNativeSaleSnapshot(WETH_SNAPSHOT, ETH, WETH),
+        TOKEN_DECIMALS,
+      ),
+    ).toBeNull();
   });
 });

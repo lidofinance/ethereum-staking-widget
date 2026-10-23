@@ -1,4 +1,4 @@
-import { type Address, isAddress, isAddressEqual } from 'viem';
+import { type Address, ethAddress, isAddress, isAddressEqual } from 'viem';
 
 import type { ApprovalData, OrderData } from '../../tx';
 import type { OracleResult } from '../../oracles';
@@ -134,6 +134,17 @@ export const evaluateTrade = async (
     },
   };
 };
+
+// EthFlow: the widget sends a native ETH sale to onBeforeTrade as WETH
+export const toNativeSaleSnapshot = (
+  snapshot: ValidatedTradeSnapshot,
+  reportedSellToken: string | undefined,
+  weth: Address,
+): ValidatedTradeSnapshot =>
+  reportedSellToken?.toLowerCase() === ethAddress.toLowerCase() &&
+  snapshot.sellToken === weth.toLowerCase()
+    ? { ...snapshot, sellToken: ethAddress.toLowerCase() as Address }
+    : snapshot;
 
 type EvaluateApprovalOptions = {
   isTestnet: boolean;

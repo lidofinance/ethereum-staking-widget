@@ -1,4 +1,4 @@
-import { ethAddress, isAddressEqual } from 'viem';
+import { type Address, ethAddress, isAddressEqual } from 'viem';
 import { useCallback, useRef, useState } from 'react';
 
 import type { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
@@ -11,6 +11,7 @@ import {
   approvalSnapshotFromTrade,
   evaluateTrade,
   evaluateApproval,
+  toNativeSaleSnapshot,
   verifyApprovalAgainstSnapshot,
   verifyOrderAgainstSnapshot,
   type TokenDecimalsMap,
@@ -35,6 +36,7 @@ type UseTradeGuardOptions = {
   tokenDecimals: TokenDecimalsMap;
   oracleFeeds: OracleFeedMaps;
   quoteErrorEvent: MATOMO_TX_EVENTS_TYPES;
+  weth: Address;
 };
 
 export const useTradeGuard = ({
@@ -42,6 +44,7 @@ export const useTradeGuard = ({
   tokenDecimals,
   oracleFeeds,
   quoteErrorEvent,
+  weth,
 }: UseTradeGuardOptions) => {
   const [modalState, setModalState] =
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
@@ -51,6 +54,7 @@ export const useTradeGuard = ({
     null,
   );
   const approvalCallIdRef = useRef(0);
+  const lastTradeParamsRef = useRef<OnTradeParamsPayload | null>(null);
   const { verifyWithOracle, readSellTokenUsd } = useOracleRates(oracleFeeds);
 
   const handleModalClose = useCallback((result: boolean) => {
@@ -88,6 +92,7 @@ export const useTradeGuard = ({
   // Swap gate: structural checks → oracle check → modal
   const validateTrade = useCallback(
     async (payload: OnTradeParamsPayload): Promise<boolean> => {
+      const reportedSellToken = lastTradeParamsRef.current?.sellToken?.address;
       const decision = await evaluateTrade(payload, {
         isTestnet,
         verifyWithOracle,
@@ -107,18 +112,20 @@ export const useTradeGuard = ({
       }
 
       // Store validated params for provider-level EIP-712 verification
-      lastValidatedTradeRef.current = decision.snapshot;
+      lastValidatedTradeRef.current = toNativeSaleSnapshot(
+        decision.snapshot,
+        reportedSellToken,
+        weth,
+      );
 
       return true;
     },
-    [isTestnet, verifyWithOracle, showModal],
+    [isTestnet, verifyWithOracle, showModal, weth],
   );
 
   // ---------------------------------------------------------------------------
   // ON_CHANGE_TRADE_PARAMS → store latest payload for pre-approval checks
   // ---------------------------------------------------------------------------
-
-  const lastTradeParamsRef = useRef<OnTradeParamsPayload | null>(null);
 
   /** Call from ON_CHANGE_TRADE_PARAMS to track current params. */
   const reportTradeParams = useCallback((payload: OnTradeParamsPayload) => {

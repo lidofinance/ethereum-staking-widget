@@ -47,7 +47,11 @@ export const SubNavigation: FC<SubNavigationProps> = ({
   return (
     <NavigationDropDownButton {...wrapperProps}>
       <PopoverNoClickBackdrop {...backdropProps} />
-      <NavigationDropDownTrigger href={primaryPath} {...triggerProps}>
+      <NavigationDropDownTrigger
+        href={primaryPath}
+        aria-current={isActive ? 'page' : undefined}
+        {...triggerProps}
+      >
         <NavLink $active={isActive}>
           {route.icon}
           <span>{route.name}</span>
@@ -71,6 +75,7 @@ export const SubNavigation: FC<SubNavigationProps> = ({
               key={subRoute.path}
               onClick={close}
               $active={isSubRouteActive}
+              aria-current={isSubRouteActive ? 'page' : undefined}
               href={subRoute.path}
             >
               <NavigationDropDownIcon>{subRoute.icon}</NavigationDropDownIcon>

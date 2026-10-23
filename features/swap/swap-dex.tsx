@@ -16,6 +16,7 @@ export const SwapDex = () => {
   return (
     <SwapBlock data-testid="swapForm">
       <SwapFallback
+        toActionText="to swap"
         multichainMessage={
           <>
             Swap isn&apos;t available on {chainName}.

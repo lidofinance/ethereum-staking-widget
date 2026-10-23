@@ -86,7 +86,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   // shown as the error boundary fallback
   if (!networkTxConfig || !defaultPair)
     throw new Error('CoW Swap is not enabled on this network');
-  const { sellTokens, feeRecipient } = networkTxConfig;
+  const { sellTokens, feeRecipient, weth } = networkTxConfig;
   const { validateAddress } = useAddressValidation();
   const { name: themeName } = useTheme();
   // Fall back to self-hosted token lists if GitHub is unavailable
@@ -110,6 +110,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     tokenDecimals,
     oracleFeeds,
     quoteErrorEvent: analytics.quoteError,
+    weth,
   });
 
   const trackQuoteViewed = useMemo(
@@ -126,7 +127,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     [validateAddress, address],
   );
 
-  const provider = useCowSwapEthereumProvider({
+  const { provider, isProviderPending } = useCowSwapEthereumProvider({
     consumeSignedOrder,
     verifyApproval,
     openTransactionGuardModal,
@@ -320,18 +321,21 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   return (
     <>
       <DexWrapper $consumeBottomSpace={consumeBottomSpace && isLoaded}>
-        <CowSwapWidget
-          // remount with the loader reset: READY fires once per widget, params updates don't recreate it
-          key={`${chainId}:${address ?? ''}`}
-          provider={provider}
-          params={params}
-          listeners={listeners}
-          enableSafeSdkBridge={false}
-          onLoadingError={() =>
-            onError(new Error('Failed to load CoW Swap widget'))
-          }
-          onReady={onLoaded}
-        />
+        {/* a widget created before the provider is recreated at once; that cuts its token list loading */}
+        {!isProviderPending && (
+          <CowSwapWidget
+            // remount with the loader reset: READY fires once per widget, params updates don't recreate it
+            key={`${chainId}:${address ?? ''}`}
+            provider={provider}
+            params={params}
+            listeners={listeners}
+            enableSafeSdkBridge={false}
+            onLoadingError={() =>
+              onError(new Error('Failed to load CoW Swap widget'))
+            }
+            onReady={onLoaded}
+          />
+        )}
         <LoaderStyled $isVisible={isLoading} $maxWidth={loaderMaxWidth} />
       </DexWrapper>
       <TradeGuardModal state={modalState} onClose={handleModalClose} />

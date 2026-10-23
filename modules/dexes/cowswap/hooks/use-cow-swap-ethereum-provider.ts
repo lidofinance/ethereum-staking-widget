@@ -44,7 +44,11 @@ export const useCowSwapEthereumProvider = ({
   openSigningErrorModal,
   getNetworkTxConfig,
   appCode,
-}: UseCowSwapEthereumProviderOptions): EthereumProvider | undefined => {
+}: UseCowSwapEthereumProviderOptions): {
+  provider: EthereumProvider | undefined;
+  // wallet is on the dapp chain but its client is not ready yet
+  isProviderPending: boolean;
+} => {
   const { chainId, walletChainId } = useDappStatus();
   const { data: walletClient } = useWalletClient();
   const { connector } = useConnection();
@@ -60,19 +64,16 @@ export const useCowSwapEthereumProvider = ({
   return useMemo(() => {
     // resolved from the same chainId the validators receive
     const networkTxConfig = getNetworkTxConfig(chainId);
-    if (
-      !walletClient ||
-      !connector ||
-      walletClient.chain.id !== chainId ||
-      walletChainId !== chainId ||
-      !networkTxConfig
-    ) {
-      return undefined;
+    if (walletChainId !== chainId || !networkTxConfig) {
+      return { provider: undefined, isProviderPending: false };
+    }
+    if (!walletClient || !connector || walletClient.chain.id !== chainId) {
+      return { provider: undefined, isProviderPending: true };
     }
 
     cleanup();
 
-    return createCowSwapProvider({
+    const provider = createCowSwapProvider({
       walletClient,
       connector,
       chainId,
@@ -85,6 +86,7 @@ export const useCowSwapEthereumProvider = ({
       openSigningErrorModal,
       addCleanup,
     });
+    return { provider, isProviderPending: false };
   }, [
     walletClient,
     connector,

@@ -12,7 +12,7 @@ type NavigationLinkProps = {
 export const NavigationLink = ({ route, isActive }: NavigationLinkProps) => {
   invariant(route.path, 'NavigationLink requires a route with a path');
   return (
-    <LocalLink href={route.path}>
+    <LocalLink href={route.path} aria-current={isActive ? 'page' : undefined}>
       <NavLink $active={isActive} $showNew={route.showNew}>
         {route.icon}
         <span>{route.name}</span>
