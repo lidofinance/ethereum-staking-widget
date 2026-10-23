@@ -150,6 +150,7 @@ export const CONTRACT_NAMES = {
   ethRedeemQueueWSTETH: 'ethRedeemQueueWSTETH',
   ethSyncRedeemQueueWSTETH: 'ethSyncRedeemQueueWSTETH',
   ethCollector: 'ethCollector',
+  ethOracle: 'ethOracle',
   // Lido USD
   usdVault: 'usdVault',
   usdDepositQueueUSDC: 'usdDepositQueueUSDC',

@@ -1,12 +1,16 @@
 import { renderToStaticMarkup } from 'react-dom/server';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { Address, Hash, TransactionReceipt } from 'viem';
 import {
   TransactionCallbackStage,
   type TransactionCallback,
 } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { TxSettledError } from '../../utils/tx-settled-error';
-import { TxStaleError } from '../../utils/tx-stale-error';
+import {
+  TxSentDataUnavailableError,
+  TxSettledError,
+  TxStaleError,
+} from '../../utils/errors';
 import type { AACall, TxCallbackProps } from './types';
 
 const ADDRESS: Address = '0x00000000000000000000000000000000000000aa';
@@ -35,6 +39,10 @@ vi.mock('./use-send-aa-calls', () => ({
 
 import { useTxFlow } from './use-tx-flow';
 
+// The hook refetches through the app's query client after an unread outcome
+const queryClient = new QueryClient();
+const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries');
+
 // Hooks run during a server render; the returned function is then driven
 // outside of React like a form submit would
 const renderHook = <T,>(useHook: () => T): T => {
@@ -43,7 +51,11 @@ const renderHook = <T,>(useHook: () => T): T => {
     value = useHook();
     return null;
   };
-  renderToStaticMarkup(<Probe />);
+  renderToStaticMarkup(
+    <QueryClientProvider client={queryClient}>
+      <Probe />
+    </QueryClientProvider>,
+  );
   return value as T;
 };
 
@@ -185,6 +197,69 @@ describe('useTxFlow with a legacy flow', () => {
     expect(error).toBeInstanceOf(TxSettledError);
     expect(error.cause).toBe(readError);
     expect(error.txHash).toBe(TX_HASH);
+    expect(invalidateQueries).not.toHaveBeenCalled();
+  });
+
+  it('refetches everything after a tx that was sent but never read back', async () => {
+    const txFlow = renderHook(useTxFlow);
+    const timeout = new Error('Timed out while waiting for transaction');
+    const args = createLegacyArgs(
+      vi.fn(
+        legacySdk(
+          { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+          () => {
+            throw timeout;
+          },
+        ),
+      ),
+    );
+
+    await expect(txFlow(args)).rejects.toBeInstanceOf(
+      TxSentDataUnavailableError,
+    );
+    // the tx may have landed: every balance and request the UI holds is stale
+    expect(invalidateQueries).toHaveBeenCalledTimes(1);
+    expect(args.onSuccess).not.toHaveBeenCalled();
+  });
+
+  it('refetches only the given scope after a tx that was never read back', async () => {
+    const txFlow = renderHook(useTxFlow);
+    const args = {
+      ...createLegacyArgs(
+        vi.fn(
+          legacySdk(
+            { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+            () => {
+              throw new Error('Timed out while waiting for transaction');
+            },
+          ),
+        ),
+      ),
+      refetchScope: [['feature-scope'], ['balance']],
+    };
+
+    await expect(txFlow(args)).rejects.toBeInstanceOf(
+      TxSentDataUnavailableError,
+    );
+    expect(invalidateQueries).toHaveBeenCalledTimes(2);
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ['feature-scope'],
+    });
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ['balance'] });
+  });
+
+  it('does not refetch after a failure before the tx was sent', async () => {
+    const txFlow = renderHook(useTxFlow);
+    const args = createLegacyArgs(
+      vi.fn(
+        legacySdk({ stage: TransactionCallbackStage.SIGN }, () => {
+          throw new Error('User rejected the request');
+        }),
+      ),
+    );
+
+    await expect(txFlow(args)).rejects.toThrow('User rejected the request');
+    expect(invalidateQueries).not.toHaveBeenCalled();
   });
 
   it('does nothing for an address that fails validation', async () => {

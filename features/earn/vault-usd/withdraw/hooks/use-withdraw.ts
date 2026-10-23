@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useLidoSDK, useMainnetOnlyWagmi } from 'modules/web3';
 import { useWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw';
 import { useTxModalStagesWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw-tx-modal';
+import { getVaultRefetchScope } from 'modules/mellow-meta-vaults/consts';
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
@@ -12,6 +13,7 @@ import {
   getRedeemQueueWritableContract,
   getSyncRedeemQueueWritableContract,
 } from '../../contracts';
+import { USD_VAULT_QUERY_SCOPE } from '../../consts';
 import type { UsdWithdrawToken } from '../../types';
 
 export const useUsdVaultWithdraw = (
@@ -58,5 +60,6 @@ export const useUsdVaultWithdraw = (
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalStart,
     matomoEventSuccess: MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalFinish,
+    refetchScope: getVaultRefetchScope(USD_VAULT_QUERY_SCOPE),
   });
 };

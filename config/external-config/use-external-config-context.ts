@@ -14,7 +14,7 @@ import {
   useFallbackManifestEntry,
 } from './frontend-fallback';
 import { ManifestSchema } from './validate';
-import { getManifestKey } from './utils';
+import { getConfiguredManifestKey } from './utils';
 import { getProductPagesOverride } from './products';
 import { useProductsUrlState } from './use-products-url-state';
 import type { ExternalConfig, ManifestConfig, ManifestEntry } from './types';
@@ -32,36 +32,30 @@ const getManifestUrl = (): string => {
 };
 
 export const useExternalConfigContext = (
-  prefetchedManifest?: unknown,
+  prefetchedManifest: unknown | undefined,
 ): ExternalConfig => {
   const { isEarnDisabledByRuntimeContext } = useEarnRuntimeState();
   const productsUrlState = useProductsUrlState();
   // useIsLedgerLive without the connector check: Wagmi is not mounted here yet
   const isLedgerLive = useAppFlag() === 'ledger-live';
 
-  const { defaultChain, manifestOverride } = config;
+  const manifestKey = getConfiguredManifestKey();
   const fallbackData = useFallbackManifestEntry(
     prefetchedManifest,
-    defaultChain,
-    manifestOverride,
+    manifestKey,
   );
 
   const manifestUrl = getManifestUrl();
 
   const queryResult = useQuery<ManifestEntry>({
-    queryKey: [
-      'external-config',
-      { defaultChain, manifestOverride, manifestUrl },
-    ],
+    queryKey: ['external-config', { manifestKey, manifestUrl }],
     ...STRATEGY_MANIFEST,
-    enabled: !!defaultChain,
+    enabled: !!config.defaultChain,
     queryFn: async () => {
       try {
         const result = await standardFetcher<Record<string, any>>(manifestUrl, {
           headers: { Accept: 'application/json' },
         });
-
-        const manifestKey = getManifestKey(defaultChain, manifestOverride);
 
         const parseResult = ManifestSchema.safeParse(result);
 

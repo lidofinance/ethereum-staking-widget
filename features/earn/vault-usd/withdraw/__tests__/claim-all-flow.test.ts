@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { TransactionCallbackStage as Stage } from '@lidofinance/lido-ethereum-sdk/core';
-import { TransactionRevertedError } from 'modules/web3/utils/transaction-reverted-error';
+import { TransactionRevertedError } from 'modules/web3/utils/errors';
 import type {
   LegacyTxFlowArgs,
   TxFlowContext,

@@ -16,6 +16,12 @@ export const getManifestKey = (
       ? `-${manifestOverride}`
       : '')) as ManifestKey;
 
+// The one place the deployment's entry key is derived from config. Server
+// admission, page props and the browser query must all read the same entry,
+// base (`1`) or override (`1-staging`), or they disagree on policy.
+export const getConfiguredManifestKey = (): ManifestKey =>
+  getManifestKey(config.defaultChain, config.manifestOverride);
+
 export const getLocalFallbackManifest = () => {
   const fallbackParsing = ManifestSchema.safeParse(FallbackLocalManifest);
   invariant(
@@ -29,8 +35,7 @@ export const shouldRedirectToRoot = (
   currentPath: string,
   manifest: Manifest | null,
 ): boolean => {
-  const { defaultChain } = config;
-  const chainSettings = manifest?.[getManifestKey(defaultChain)];
+  const chainSettings = manifest?.[getConfiguredManifestKey()];
   const pages = chainSettings?.config?.pages;
   const isDisabled =
     !!pages?.[currentPath as ManifestConfigPage]?.shouldDisable;

@@ -16,9 +16,9 @@ export const useEthVaultDepositClaim = (onRetry?: () => void) => {
     () =>
       getVaultWritableContract(
         publicClientMainnet,
-        core.web3Provider as WalletClient,
+        core.walletClient as WalletClient,
       ),
-    [publicClientMainnet, core.web3Provider],
+    [publicClientMainnet, core.walletClient],
   );
 
   const { txModalStages } = useTxModalStagesDepositClaim({
