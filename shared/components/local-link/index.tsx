@@ -1,8 +1,9 @@
-import React, { FC, PropsWithChildren } from 'react';
+import React, { AnchorHTMLAttributes, FC, PropsWithChildren } from 'react';
 import { useRouter } from 'next/router';
 import Link, { LinkProps } from 'next/link';
 
 import { config } from 'config';
+import { useProductQuery } from 'config/external-config/use-products-url-state';
 import { LinkIpfs } from 'shared/components/link-ipfs';
 
 // TODO: make LocalLink support passing hash
@@ -10,21 +11,31 @@ import { LinkIpfs } from 'shared/components/link-ipfs';
 // since routing in IPFS is using hashes like this: /#/path
 // Ideally, LocalLink must be compatible with href as object
 
-export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
+const KEPT_QUERY_KEYS = [
+  'ref',
+  'embed',
+  'app',
+  'theme',
+  'forceAllowance',
+] as const;
+
+type LocalLinkProps = PropsWithChildren<
+  LinkProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps>
+>;
+
+export const LocalLink: FC<LocalLinkProps> = (props) => {
   const router = useRouter();
-  const { ref, embed, app, theme, earn, forceAllowance } = router.query;
+  const productQuery = useProductQuery();
   const { href, ...restProps } = props;
 
-  const extraQuery = {} as Record<string, string>;
+  const extraQuery: Record<string, string> = {};
   // does not support duplicates ?ref=01234&ref=56789
-
-  if (ref && typeof ref === 'string') extraQuery.ref = ref;
-  if (embed && typeof embed === 'string') extraQuery.embed = embed;
-  if (app && typeof app === 'string') extraQuery.app = app;
-  if (theme && typeof theme === 'string') extraQuery.theme = theme;
-  if (earn && typeof earn === 'string') extraQuery.earn = earn;
-  if (forceAllowance && typeof forceAllowance === 'string')
-    extraQuery.forceAllowance = forceAllowance;
+  for (const key of KEPT_QUERY_KEYS) {
+    const value = router.query[key];
+    if (value && typeof value === 'string') extraQuery[key] = value;
+  }
+  // from the products state, so they survive a navigation that lost them
+  Object.assign(extraQuery, productQuery);
 
   if (typeof href === 'string') {
     if (config.ipfsMode) {

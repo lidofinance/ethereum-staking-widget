@@ -4,4 +4,5 @@ export { useLidoSDKL2 } from './lido-sdk-l2';
 export {
   SupportL1AndL2WrapChains,
   SupportL1andL2StakingChains,
+  SupportL1AndCustomL2Chains,
 } from './dapp-chain';

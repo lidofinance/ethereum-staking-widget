@@ -3,7 +3,7 @@ import { config } from 'config';
 
 import { ManifestSchema, type ManifestKey } from './validate';
 
-import type { Manifest, ManifestConfig, ManifestConfigPage } from './types';
+import type { Manifest, ManifestConfigPage } from './types';
 
 import FallbackLocalManifest from 'REMOTE_CONFIG_MANIFEST.json';
 
@@ -43,26 +43,4 @@ export const shouldRedirectToRoot = (
   const isBuild = process.env.npm_lifecycle_event === 'build';
 
   return isDisabled && !isBuild;
-};
-
-// Route part of a router path or IPFS hash path: no query, no hash and no
-// trailing slash, so `/earn/?tab=deposit` and `/earn` compare equal
-const normalizePath = (path: string): string => {
-  const route = path.split(/[?#]/u, 1)[0] ?? '';
-  return route.replace(/\/+$/u, '') || '/';
-};
-
-// A path is disabled when its route is a disabled page key or a child of one.
-// Query values are ignored: `/wrap?next=/earn` is the wrap page. `/` is only
-// matched exactly, and the schema guarantees the stake page is never disabled
-export const isDisabledPath = (
-  path: string,
-  pages: ManifestConfig['pages'],
-): boolean => {
-  const route = normalizePath(path);
-  return Object.entries(pages).some(([pathKey, page]) => {
-    if (!page?.shouldDisable) return false;
-    const key = normalizePath(pathKey);
-    return route === key || (key !== '/' && route.startsWith(`${key}/`));
-  });
 };

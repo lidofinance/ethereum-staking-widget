@@ -1,6 +1,21 @@
 import { CHAINS } from 'config/chains';
 import { z } from 'zod';
 
+// keeps valid entries; a dropped entry can leave a page or chain enabled, so make it visible
+const keepValidEntries = <V>(
+  section: string,
+  entries: [string, unknown][],
+  isValid: (key: string, value: unknown) => value is V,
+): [string, V][] =>
+  entries.filter((entry): entry is [string, V] => {
+    const [key, value] = entry;
+    const valid = isValid(key, value);
+    if (!valid) {
+      console.warn(`[manifest] dropped invalid ${section} entry:`, key, value);
+    }
+    return valid;
+  });
+
 ///
 /// Earn
 ///
@@ -208,6 +223,7 @@ export const ManifestConfigPages = {
   Rewards: '/rewards',
   Settings: '/settings',
   Earn: '/earn',
+  Swap: '/swap',
 } as const;
 
 export const PageNameSchema = z.enum(Object.values(ManifestConfigPages));
@@ -223,8 +239,10 @@ const PagesEntrySchema = z
     (obj) => {
       if (typeof obj === 'object' && obj !== null) {
         return Object.fromEntries(
-          Object.entries(obj).filter(
-            ([key, value]) =>
+          keepValidEntries(
+            'page',
+            Object.entries(obj),
+            (key, value): value is z.input<typeof PageSchema> =>
               PageNameSchema.safeParse(key).success &&
               PageSchema.safeParse(value).success,
           ),
@@ -358,6 +376,45 @@ const L2StakeTransformSchema = L2StakeSchema.transform((data) => {
     ) as Record<CHAINS, z.infer<typeof L2StakeConfigurationSchema>>,
   };
 });
+
+//
+// Swap
+//
+
+// Per-chain switch for the swap tab; it can only turn a chain off, the chain list is in code
+const SwapSchema = z
+  .preprocess(
+    (value) => {
+      const section = isUnknownRecord(value) ? value : {};
+      const perChain = isUnknownRecord(section.perChain)
+        ? section.perChain
+        : {};
+      return {
+        perChain: Object.fromEntries(
+          keepValidEntries(
+            'swap',
+            Object.entries(perChain),
+            (key, entry): entry is { enabled: boolean } =>
+              /^[1-9]\d*$/.test(key) &&
+              isUnknownRecord(entry) &&
+              typeof entry.enabled === 'boolean',
+          ).map(([key, entry]) => [key, { enabled: entry.enabled }]),
+        ),
+      };
+    },
+    z.object({
+      perChain: z.record(
+        z
+          .string()
+          .transform((v) => Number(v))
+          .pipe(z.number().min(1)),
+        z.object({ enabled: z.boolean() }),
+      ),
+    }),
+  )
+  .optional()
+  .default({ perChain: {} });
+
 //
 // Wallets
 //
@@ -378,6 +435,7 @@ const WalletsConfigSchema = z
 const ManifestConfigSchema = z.object({
   withdrawalDex: DexWithdrawalIntegrationEntrySchema,
   l2Stake: L2StakeTransformSchema,
+  swap: SwapSchema,
   multiChainBanner: MultiChainBannerSchema.optional().default([]),
   featureFlags: FeatureFlagsSchema.optional().default({}),
   earnVaults: EarnVaultListSchema.optional().default([]),

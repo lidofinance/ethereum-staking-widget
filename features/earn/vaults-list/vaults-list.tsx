@@ -56,8 +56,8 @@ export const EarnVaultsList: FC = () => {
   return (
     <>
       <ListSubtitle>
-        Deploy ETH and USD stablecoins into DeFi vaults for on-chain rewards
-        through the world&apos;s leading protocols.
+        Deploy ETH and USD stablecoins into DeFi vaults for&nbsp;on&#8209;chain
+        rewards through the world&apos;s leading protocols.
         <br />
         <ButtonInline
           onClick={(event) => {

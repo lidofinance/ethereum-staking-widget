@@ -51,6 +51,7 @@ export const WIDGET_PAGES = [
   '/earn/usd/withdraw',
   '/earn/eth/deposit',
   '/earn/eth/withdraw',
+  '/swap',
 ];
 
 // cache control: the header name and value live in scripts/cache-control.mjs
