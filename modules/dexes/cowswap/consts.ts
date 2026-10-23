@@ -30,7 +30,8 @@ export const SLIPPAGE_TOTAL_BPS = 10_000; // 100% (bps)
 export const MAX_SLIPPAGE = 300; // 3% (bps)
 export const PARTNER_FEE_BPS = 30; // 0.3% — Lido DAO treasury
 export const MAX_PRICE_IMPACT_PERCENT = 3; // 3%
-export const COWSWAP_WIDGET_LOADING_TIMEOUT_MS = 1_000 * 60 * 2; // 2 minutes
+// just above the widget-lib 30s load timeout: a backup when its error callback is lost
+export const COWSWAP_WIDGET_LOADING_TIMEOUT_MS = 1_000 * 35; // 35 seconds
 export const MAX_ORDER_AGE_SECONDS = 60 * 30; // 30 minutes
 export const MAX_ORDER_AGE_MINUTES = Math.floor(MAX_ORDER_AGE_SECONDS / 60);
 export const TRADE_REPORT_EVENT_DEBOUNCE_MS = 3_000; // 3 seconds
