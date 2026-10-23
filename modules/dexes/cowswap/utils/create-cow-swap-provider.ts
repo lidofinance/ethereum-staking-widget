@@ -66,6 +66,14 @@ export const createCowSwapProvider = ({
   addCleanup,
 }: CreateCowSwapProviderParams): EthereumProvider => ({
   request: async <T>(payload: JsonRpcRequest): Promise<T> => {
+    // the app owns the network; the widget asks to switch back while it is remounted for a new wallet chain
+    if (payload.method === 'wallet_switchEthereumChain') {
+      throw {
+        code: UserRejectedRequestError.code,
+        message: 'Network switching is not available',
+      };
+    }
+
     // transaction request block
     try {
       // validation block, opens modal and throws error if validation fails

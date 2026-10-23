@@ -114,6 +114,23 @@ afterEach(() => {
 });
 
 // ---------------------------------------------------------------------------
+// request — network switch
+// ---------------------------------------------------------------------------
+describe('request — network switch', () => {
+  it('declines wallet_switchEthereumChain quietly', async () => {
+    const { provider, params, walletClient } = setup();
+
+    await expect(
+      provider.request(rpc('wallet_switchEthereumChain', [{ chainId: '0x1' }])),
+    ).rejects.toMatchObject({ code: UserRejectedRequestError.code });
+
+    expect(validateRpcRequest).not.toHaveBeenCalled();
+    expect(params.openTransactionGuardModal).not.toHaveBeenCalled();
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // request — validation
 // ---------------------------------------------------------------------------
 describe('request — validation', () => {
