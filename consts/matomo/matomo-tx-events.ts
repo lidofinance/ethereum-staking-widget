@@ -128,8 +128,8 @@ export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
     ],
     [MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapFinish]: [
       'Ethereum_Staking_Widget',
-      'Swap order successfully finished',
-      'eth_widget_withdrawal_swap_order_successfully_finished',
+      'Swap order succesfully finished',
+      'eth_widget_withdrawal_swap_order_sucessfully_finished',
     ],
     [MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapCancel]: [
       'Ethereum_Staking_Widget',
