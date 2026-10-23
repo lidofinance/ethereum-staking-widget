@@ -35,10 +35,9 @@ import type { CowswapProfile } from './profile';
 import { shouldRefreshForSellToken } from './utils';
 import { LoaderStyled, DexWrapper } from './styles';
 import {
-  CHAIN_CARD_BACKGROUND,
+  CHAIN_WIDGET_STYLE,
   cowSwapThemeDark,
   cowSwapThemeLight,
-  cowSwapThemeOnGradient,
 } from './theme';
 
 export type CowswapFrameProps = {
@@ -136,7 +135,9 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     appCode,
   });
 
-  const cardBackground = CHAIN_CARD_BACKGROUND[widgetChainId];
+  const isDarkTheme = themeName === 'dark';
+  const chainStyle =
+    CHAIN_WIDGET_STYLE[widgetChainId]?.[isDarkTheme ? 'dark' : 'light'];
 
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
@@ -196,12 +197,10 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
         height: 'var(--dynamicHeight, 432px)',
       },
 
-      theme: cardBackground
-        ? cowSwapThemeOnGradient
-        : themeName === 'dark'
-          ? cowSwapThemeDark
-          : cowSwapThemeLight,
-      cardStyle: cardBackground ? { background: cardBackground } : undefined,
+      theme:
+        chainStyle?.palette ??
+        (isDarkTheme ? cowSwapThemeDark : cowSwapThemeLight),
+      cardStyle: chainStyle ? { background: chainStyle.card } : undefined,
       // enables opening explorer and `powered by cowswap` links
       // ONLY safe when used with pinned IPFS cowswap UI,
       // otherwise prone to security risks during domain takeover
@@ -257,8 +256,8 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       widgetChainId,
       isGithubAvailable,
       feeRecipient,
-      themeName,
-      cardBackground,
+      isDarkTheme,
+      chainStyle,
       refreshId,
       validateApproval,
       validate,

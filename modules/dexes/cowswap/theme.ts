@@ -1,5 +1,5 @@
 import { CowSwapWidgetPalette } from '@cowprotocol/widget-react';
-import { arbitrum, base } from 'viem/chains';
+import { arbitrum, base, linea } from 'viem/chains';
 import { themeDark, themeLight } from '@lidofinance/lido-ui';
 
 export const cowSwapThemeDark: CowSwapWidgetPalette = {
@@ -32,20 +32,40 @@ export const cowSwapThemeLight: CowSwapWidgetPalette = {
   boxShadow: 'none',
 };
 
-const BASE_GRADIENT = 'linear-gradient(52deg, #1D1E35 0.01%, #4782FC 100%)';
-const ARBITRUM_GRADIENT = 'linear-gradient(52deg, #1D1E35 0.01%, #12AAFF 100%)';
-
-// Widget card background per network, set as an inline style of the card:
-// the palette `paper` is parsed as a color and cannot hold a gradient.
-// The gradients are dark, so these networks use the dark palette in any app theme
-export const CHAIN_CARD_BACKGROUND: Record<number, string> = {
-  [base.id]: BASE_GRADIENT,
-  [arbitrum.id]: `${ARBITRUM_GRADIENT}, ${BASE_GRADIENT}`,
+type ChainWidgetStyle = {
+  // card background, set as an inline style: the palette `paper` is parsed as a color
+  card: string;
+  // inner blocks, popups and modals derive from the palette `paper`
+  palette: CowSwapWidgetPalette;
 };
 
-// dark palette over a network gradient: the inner blocks, popups and modals derive from `paper`,
-// so it is an opaque mid navy: popups stay solid and the derived inner blocks are not near-black
-export const cowSwapThemeOnGradient: CowSwapWidgetPalette = {
-  ...cowSwapThemeDark,
-  paper: '#33386A',
+const chainStyle = (
+  light: string,
+  dark: string,
+  darkPaper: string,
+): Record<'light' | 'dark', ChainWidgetStyle> => ({
+  light: { card: light, palette: cowSwapThemeLight },
+  dark: { card: dark, palette: { ...cowSwapThemeDark, paper: darkPaper } },
+});
+
+// widget colors per network from the design; Linea and the dark `paper` are sampled from a mockup, TODO: exact values
+export const CHAIN_WIDGET_STYLE: Record<
+  number,
+  Record<'light' | 'dark', ChainWidgetStyle>
+> = {
+  [base.id]: chainStyle(
+    'linear-gradient(180deg, #A9C5FF 0%, #DCE8FF 100%)',
+    'linear-gradient(180deg, #294985 0%, #213474 100%)',
+    '#20304E',
+  ),
+  [arbitrum.id]: chainStyle(
+    'linear-gradient(180deg, #8DD6FA 0%, #D1EAF7 100%)',
+    'linear-gradient(180deg, #155B83 0%, #2B4A86 100%)',
+    '#1F3347',
+  ),
+  [linea.id]: chainStyle(
+    'linear-gradient(180deg, #B2DDF2 0%, #99DAF8 100%)',
+    'linear-gradient(180deg, #436CB1 0%, #382482 100%)',
+    '#29254C',
+  ),
 };
