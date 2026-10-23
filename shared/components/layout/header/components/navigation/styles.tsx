@@ -15,8 +15,14 @@ const desktopCss = css`
   }
 `;
 
-export const Nav = styled.nav`
+// hidden until the router reads the URL product params, so hidden products do not flash
+const pendingCss = css<{ $isPending?: boolean }>`
+  visibility: ${({ $isPending }) => ($isPending ? 'hidden' : 'visible')};
+`;
+
+export const Nav = styled.nav<{ $isPending?: boolean }>`
   ${desktopCss}
+  ${pendingCss}
   // mobile layout uses MobileNavigationBar instead
   @media ${devicesHeaderMedia.mobile} {
     display: none;
@@ -178,7 +184,8 @@ export const NavigationDropDownMenu = styled(PopupStyled)`
  * Mobile Navigation styles
  */
 
-export const MobileNav = styled.nav`
+export const MobileNav = styled.nav<{ $isPending?: boolean }>`
+  ${pendingCss}
   display: none;
   @media ${devicesHeaderMedia.mobile} {
     display: block;

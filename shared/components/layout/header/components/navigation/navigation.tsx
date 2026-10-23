@@ -1,4 +1,5 @@
 import { type FC, useMemo, Fragment } from 'react';
+import { useRouter } from 'next/router';
 
 import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 
@@ -10,6 +11,7 @@ import {
   WITHDRAWALS_PATH,
   SWAP_PATH,
 } from 'consts/urls';
+
 import { useConfig } from 'config';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { NavIconEarn } from 'assets/earn';
@@ -76,29 +78,33 @@ const useNavigation = () => {
   }, [pages]);
 
   const pathnameWithoutQuery = sanitizePath(pathname);
+  // URL product params are read only once the router is ready
+  const { isReady } = useRouter();
 
   return {
     availableRoutes,
     pathnameWithoutQuery,
+    isPending: !isReady,
   };
 };
 
 export const MobileNavigation: FC = () => {
-  const { availableRoutes, pathnameWithoutQuery } = useNavigation();
+  const { availableRoutes, pathnameWithoutQuery, isPending } = useNavigation();
 
   return (
     <MobileNavigationBar
       routes={availableRoutes}
       currentPath={pathnameWithoutQuery}
+      isPending={isPending}
     />
   );
 };
 
 export const Navigation: FC = () => {
-  const { availableRoutes, pathnameWithoutQuery } = useNavigation();
+  const { availableRoutes, pathnameWithoutQuery, isPending } = useNavigation();
 
   return (
-    <Nav>
+    <Nav $isPending={isPending}>
       {availableRoutes.map((route) => {
         const isActive = isRouteActive(route, pathnameWithoutQuery);
 

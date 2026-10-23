@@ -18,6 +18,7 @@ import type { PageRoute } from './types';
 type MobileNavigationBarProps = {
   routes: PageRoute[];
   currentPath: string;
+  isPending?: boolean;
 };
 
 // Layout remounts per page: a value starts from the last mount and animates to the new one.
@@ -47,6 +48,7 @@ const ariaCurrent = (isActive: boolean) => (isActive ? 'page' : undefined);
 export const MobileNavigationBar: FC<MobileNavigationBarProps> = ({
   routes,
   currentPath,
+  isPending,
 }) => {
   const sectionRoute = routes.find((route) => route.subRoutes);
   const isSectionActive =
@@ -61,7 +63,7 @@ export const MobileNavigationBar: FC<MobileNavigationBarProps> = ({
   );
 
   return (
-    <MobileNav aria-label="Main">
+    <MobileNav aria-label="Main" $isPending={isPending}>
       {sectionRoute?.subRoutes && (
         <MobileTrackCollapse
           $expanded={isTrackExpanded}
