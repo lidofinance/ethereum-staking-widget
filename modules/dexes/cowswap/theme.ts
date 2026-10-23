@@ -43,9 +43,9 @@ export const CHAIN_CARD_BACKGROUND: Record<number, string> = {
   [arbitrum.id]: `${ARBITRUM_GRADIENT}, ${BASE_GRADIENT}`,
 };
 
-// dark palette over a network gradient: the inner blocks derive from `paper` and keep its alpha,
-// so a translucent gradient-start color softens them against the gradient
+// dark palette over a network gradient: the inner blocks, popups and modals derive from `paper`,
+// so it is an opaque mid navy: popups stay solid and the derived inner blocks are not near-black
 export const cowSwapThemeOnGradient: CowSwapWidgetPalette = {
   ...cowSwapThemeDark,
-  paper: 'rgba(29, 30, 53, 0.5)',
+  paper: '#33386A',
 };
