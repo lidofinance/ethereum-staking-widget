@@ -27,7 +27,6 @@ export const COWSWAP_TOKEN_KEYS = [
   'aave',
   'rlusd',
   'usdg',
-  'ausd',
   'eurc',
   'gho',
   'paxg',
@@ -38,8 +37,6 @@ export const COWSWAP_TOKEN_KEYS = [
   'reth',
   'weeth',
   'meth',
-  'ezeth',
-  'ethx',
 ] as const;
 
 type NetworkContracts = Record<string, string | undefined>;

@@ -55,7 +55,6 @@ describe('SWAP_COWSWAP_PROFILE', () => {
       [lower(c.link)]: 18,
       [lower(c.uni)]: 18,
       [lower(c.aave)]: 18,
-      [lower(c.ausd)]: 6,
       [lower(c.eurc)]: 6,
       [lower(c.gho)]: 18,
       [lower(c.paxg)]: 18,
@@ -66,8 +65,6 @@ describe('SWAP_COWSWAP_PROFILE', () => {
       [lower(c.reth)]: 18,
       [lower(c.weeth)]: 18,
       [lower(c.meth)]: 18,
-      [lower(c.ezeth)]: 18,
-      [lower(c.ethx)]: 18,
     });
   });
 
@@ -86,8 +83,6 @@ describe('SWAP_COWSWAP_PROFILE', () => {
     expect(profile.oracleFeeds.sell[lower(c.reth)]).toBe('RETH_USD');
     expect(profile.oracleFeeds.sell[lower(c.weeth)]).toBe('WEETH_USD');
     expect(profile.oracleFeeds.sell[lower(c.meth)]).toBe('METH_USD');
-    expect(profile.oracleFeeds.sell[lower(c.ezeth)]).toBe('EZETH_USD');
-    expect(profile.oracleFeeds.sell[lower(c.ethx)]).toBe('ETHX_USD');
   });
 
   it.each([
@@ -156,11 +151,11 @@ describe('SWAP_COWSWAP_PROFILE', () => {
   it.each([
     ['arbitrum', arbitrum.id],
     ['base', base.id],
-  ])('lists mETH, ezETH and ETHx on mainnet only, not on %s', (_, chainId) => {
+  ])('lists mETH on mainnet only, not on %s', (_, chainId) => {
     const config = profile.getNetworkTxConfig(chainId);
     if (!config) throw new Error(`no config for ${chainId}`);
 
-    for (const address of [c.meth, c.ezeth, c.ethx].map(lower)) {
+    for (const address of [c.meth].map(lower)) {
       expect(config.sellTokens.has(address)).toBe(false);
       expect(config.buyTokens.has(address)).toBe(false);
     }
@@ -175,7 +170,6 @@ describe('SWAP_COWSWAP_PROFILE', () => {
         'eth',
         'wsteth',
         'weth',
-        'ldo',
         'usdc',
         'usdt',
         'usde',
@@ -215,7 +209,6 @@ describe('SWAP_COWSWAP_PROFILE', () => {
         'reth',
         'weeth',
         'link',
-        'uni',
         'aave',
       ],
     ],

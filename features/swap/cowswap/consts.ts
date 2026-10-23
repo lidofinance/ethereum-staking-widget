@@ -27,7 +27,6 @@ const SWAP_TOKENS: CowswapToken[] = [
   { key: 'link', decimals: 18, oracleFeed: 'LINK_USD' },
   { key: 'uni', decimals: 18, oracleFeed: 'UNI_USD' },
   { key: 'aave', decimals: 18, oracleFeed: 'AAVE_USD' },
-  { key: 'ausd', decimals: 6, oracleFeed: 'AUSD_USD' },
   { key: 'eurc', decimals: 6, oracleFeed: 'EURC_USD' },
   { key: 'gho', decimals: 18, oracleFeed: 'GHO_USD' },
   { key: 'paxg', decimals: 18, oracleFeed: 'PAXG_USD' },
@@ -38,8 +37,6 @@ const SWAP_TOKENS: CowswapToken[] = [
   { key: 'reth', decimals: 18, oracleFeed: 'RETH_USD' },
   { key: 'weeth', decimals: 18, oracleFeed: 'WEETH_USD' },
   { key: 'meth', decimals: 18, oracleFeed: 'METH_USD' },
-  { key: 'ezeth', decimals: 18, oracleFeed: 'EZETH_USD' },
-  { key: 'ethx', decimals: 18, oracleFeed: 'ETHX_USD' },
 ];
 
 export const SWAP_COWSWAP_PROFILE = createCowswapProfile({

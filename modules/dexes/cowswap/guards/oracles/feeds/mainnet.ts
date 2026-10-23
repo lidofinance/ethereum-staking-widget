@@ -35,7 +35,6 @@ export type ChainlinkFeedKey =
   | 'AAVE_USD'
   | 'RLUSD_USD'
   | 'USDG_USD'
-  | 'AUSD_USD'
   | 'EURC_USD'
   | 'GHO_USD'
   | 'PAXG_USD'
@@ -45,9 +44,7 @@ export type ChainlinkFeedKey =
   | 'SUSDE_USD'
   | 'RETH_ETH'
   | 'WEETH_ETH'
-  | 'METH_ETH'
-  | 'EZETH_ETH'
-  | 'ETHX_ETH';
+  | 'METH_ETH';
 
 export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
   ETH_USD: {
@@ -135,11 +132,6 @@ export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
     maxStaleness: MAX_STALENESS_24H,
     decimals: 8,
   },
-  AUSD_USD: {
-    address: c.aggregatorAusdUsdPriceFeed,
-    maxStaleness: MAX_STALENESS_24H,
-    decimals: 18,
-  },
   EURC_USD: {
     address: c.aggregatorEurcUsdPriceFeed,
     maxStaleness: MAX_STALENESS_24H,
@@ -190,16 +182,6 @@ export const CHAINLINK_FEEDS: Record<ChainlinkFeedKey, ChainlinkFeedConfig> = {
     maxStaleness: MAX_STALENESS_24H,
     decimals: 18,
   },
-  EZETH_ETH: {
-    address: c.aggregatorEzethEthPriceFeed,
-    maxStaleness: MAX_STALENESS_24H,
-    decimals: 18,
-  },
-  ETHX_ETH: {
-    address: c.aggregatorEthxEthPriceFeed,
-    maxStaleness: MAX_STALENESS_24H,
-    decimals: 18,
-  },
 };
 
 // Token USD price as a product of feeds, e.g. LDO/ETH × ETH/USD
@@ -213,8 +195,6 @@ export type OraclePriceKey =
       | 'RETH_ETH'
       | 'WEETH_ETH'
       | 'METH_ETH'
-      | 'EZETH_ETH'
-      | 'ETHX_ETH'
     >
   | 'WSTETH_USD'
   | 'LDO_USD'
@@ -223,9 +203,7 @@ export type OraclePriceKey =
   | 'CBETH_USD'
   | 'RETH_USD'
   | 'WEETH_USD'
-  | 'METH_USD'
-  | 'EZETH_USD'
-  | 'ETHX_USD';
+  | 'METH_USD';
 
 export const ORACLE_PRICES: Record<
   OraclePriceKey,
@@ -250,7 +228,6 @@ export const ORACLE_PRICES: Record<
   AAVE_USD: ['AAVE_USD'],
   RLUSD_USD: ['RLUSD_USD'],
   USDG_USD: ['USDG_USD'],
-  AUSD_USD: ['AUSD_USD'],
   EURC_USD: ['EURC_USD'],
   GHO_USD: ['GHO_USD'],
   PAXG_USD: ['PAXG_USD'],
@@ -261,8 +238,6 @@ export const ORACLE_PRICES: Record<
   RETH_USD: ['RETH_ETH', 'ETH_USD'],
   WEETH_USD: ['WEETH_ETH', 'ETH_USD'],
   METH_USD: ['METH_ETH', 'ETH_USD'],
-  EZETH_USD: ['EZETH_ETH', 'ETH_USD'],
-  ETHX_USD: ['ETHX_ETH', 'ETH_USD'],
 };
 
 // Price key that applies the wstETH rate, on any network
@@ -316,8 +291,6 @@ export const PRICE_BOUNDS: Record<
   AAVE_USD: { min: 10n * CHAINLINK_SCALE, max: 2_000n * CHAINLINK_SCALE },
   RLUSD_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
   USDG_USD: { min: CHAINLINK_SCALE_MIN, max: CHAINLINK_SCALE_MAX },
-  // 18 decimals: 0.5–2 USD
-  AUSD_USD: { min: 5n * 10n ** 17n, max: 2n * 10n ** 18n },
   // EUR, not USD
   EURC_USD: {
     min: (CHAINLINK_SCALE * 8n) / 10n,
@@ -339,6 +312,4 @@ export const PRICE_BOUNDS: Record<
   RETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
   WEETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
   METH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
-  EZETH_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
-  ETHX_ETH: { min: 10n ** 18n, max: 2n * 10n ** 18n },
 };

@@ -69,7 +69,6 @@ export const CONTRACT_NAMES = {
   aggregatorAaveUsdPriceFeed: 'aggregatorAaveUsdPriceFeed',
   aggregatorRlusdUsdPriceFeed: 'aggregatorRlusdUsdPriceFeed',
   aggregatorUsdgUsdPriceFeed: 'aggregatorUsdgUsdPriceFeed',
-  aggregatorAusdUsdPriceFeed: 'aggregatorAusdUsdPriceFeed',
   aggregatorEurcUsdPriceFeed: 'aggregatorEurcUsdPriceFeed',
   aggregatorGhoUsdPriceFeed: 'aggregatorGhoUsdPriceFeed',
   aggregatorPaxgUsdPriceFeed: 'aggregatorPaxgUsdPriceFeed',
@@ -80,8 +79,6 @@ export const CONTRACT_NAMES = {
   aggregatorRethEthPriceFeed: 'aggregatorRethEthPriceFeed',
   aggregatorWeethEthPriceFeed: 'aggregatorWeethEthPriceFeed',
   aggregatorMethEthPriceFeed: 'aggregatorMethEthPriceFeed',
-  aggregatorEzethEthPriceFeed: 'aggregatorEzethEthPriceFeed',
-  aggregatorEthxEthPriceFeed: 'aggregatorEthxEthPriceFeed',
   stethCurve: 'stethCurve',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
@@ -106,7 +103,6 @@ export const CONTRACT_NAMES = {
   aave: 'aave',
   rlusd: 'rlusd',
   usdg: 'usdg',
-  ausd: 'ausd',
   eurc: 'eurc',
   gho: 'gho',
   paxg: 'paxg',
@@ -117,8 +113,6 @@ export const CONTRACT_NAMES = {
   reth: 'reth',
   weeth: 'weeth',
   meth: 'meth',
-  ezeth: 'ezeth',
-  ethx: 'ethx',
 
   // GGV
   ggvVault: 'ggvVault',

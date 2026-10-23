@@ -1,9 +1,9 @@
 {
   "name": "Lido swap buy",
-  "timestamp": "2026-10-21T00:00:00.000Z",
+  "timestamp": "2026-10-23T00:00:00.000Z",
   "version": {
     "major": 2,
-    "minor": 4,
+    "minor": 5,
     "patch": 0
   },
   "keywords": [],
@@ -153,14 +153,6 @@
       "logoURI": "https://files.cow.fi/token-lists/images/1/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9/logo.png"
     },
     {
-      "symbol": "AUSD",
-      "name": "AUSD",
-      "address": "0x00000000efe302beaa2b3e6e1b18d08d69a9012a",
-      "decimals": 6,
-      "chainId": 1,
-      "logoURI": "https://assets.coingecko.com/coins/images/39284/large/AUSD_1024px.png?1764684132"
-    },
-    {
       "symbol": "EURC",
       "name": "Euro Coin",
       "address": "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c",
@@ -241,22 +233,6 @@
       "logoURI": "https://assets.coingecko.com/coins/images/33345/large/symbol_transparent_bg.png?1701697066"
     },
     {
-      "symbol": "ezETH",
-      "name": "Renzo Restaked ETH",
-      "address": "0xbf5495efe5db9ce00f80364c8b423567e58d2110",
-      "decimals": 18,
-      "chainId": 1,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0xbf5495efe5db9ce00f80364c8b423567e58d2110/logo.png"
-    },
-    {
-      "symbol": "ETHx",
-      "name": "Stader ETHx",
-      "address": "0xa35b1b31ce002fbf2058d22f30f95d405200a15b",
-      "decimals": 18,
-      "chainId": 1,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0xa35b1b31ce002fbf2058d22f30f95d405200a15b/logo.png"
-    },
-    {
       "symbol": "ETH",
       "name": "Ether",
       "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
@@ -279,14 +255,6 @@
       "decimals": 18,
       "chainId": 42161,
       "logoURI": "https://files.cow.fi/token-lists/images/42161/0x5979d7b546e38e414f7e9822514be443a4800529/logo.png"
-    },
-    {
-      "symbol": "LDO",
-      "name": "Lido DAO Token",
-      "address": "0x13ad51ed4f1b7e9dc168d8a00cb3f4ddd85efa60",
-      "decimals": 18,
-      "chainId": 42161,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0x5a98fcbea516cf06857215779fd812ca3bef1b32/logo.png"
     },
     {
       "symbol": "USDC",
@@ -551,14 +519,6 @@
       "decimals": 18,
       "chainId": 8453,
       "logoURI": "https://files.cow.fi/token-lists/images/1/0x514910771af9ca656af840dff83e8264ecf986ca/logo.png"
-    },
-    {
-      "symbol": "UNI",
-      "name": "Uniswap",
-      "address": "0xc3de830ea07524a0761646a6a4e4be0e114a3c83",
-      "decimals": 18,
-      "chainId": 8453,
-      "logoURI": "https://files.cow.fi/token-lists/images/1/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984/logo.png"
     },
     {
       "symbol": "AAVE",
