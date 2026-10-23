@@ -36,6 +36,8 @@ export const L1_RECEIVER_BYTES = encodeAbiParameters(
   [L1_RECEIVER],
 );
 export const CCIP_FEE_QUOTE = 414_816_763_674_386n; // ~0.000415 ETH
+// unix seconds of block 0 in the stubbed chains; two seconds per block
+export const BLOCK_TIME_ORIGIN = 1_700_000_000n;
 // the outbound bucket of the lane's WETH pool
 export const CCIP_BUCKET = {
   tokens: 60n * P,
@@ -96,6 +98,10 @@ export const createReceiptsClient = ({
   blockNumber = 100n,
 }: Omit<ChainStub, 'reads'>) => ({
   getBlockNumber: vi.fn(async () => blockNumber),
+  getBlock: vi.fn(async ({ blockNumber }: { blockNumber: bigint }) => ({
+    number: blockNumber,
+    timestamp: BLOCK_TIME_ORIGIN + blockNumber * 2n,
+  })),
   getTransactionReceipt: vi.fn(async ({ hash }: { hash: Hash }) => {
     const receipt = receipts[hash];
     if (!receipt) throw new TransactionReceiptNotFoundError({ hash });

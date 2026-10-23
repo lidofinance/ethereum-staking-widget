@@ -26,8 +26,7 @@ import {
   LIDO_L2_SLOW_STAKE_LANES,
 } from 'modules/l2-staking';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
-import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
-import { StakeLimitError } from 'modules/web3/utils/stake-limit-error';
+import { QuoteMismatchError, StakeLimitError } from 'modules/web3/utils';
 import {
   aaSendCalls,
   legacyPerformTransaction,
@@ -111,7 +110,6 @@ vi.mock('modules/web3', async () => {
         validateAddress: async () => true,
         sendAACalls: state.sendAACalls,
         isCurrent: () => true,
-        txHash: { current: undefined },
       }),
     applyRoundUpTxParameter: (value: bigint) => value,
   };

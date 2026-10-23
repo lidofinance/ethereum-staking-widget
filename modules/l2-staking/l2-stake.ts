@@ -131,6 +131,13 @@ type TokenBucket = {
   rate: bigint;
 };
 
+// the API's send time in ms, when it carries one
+const parseSendTimestampMs = (message: CcipMessage): number | undefined => {
+  if (!message.sendTimestamp) return undefined;
+  const ms = Date.parse(message.sendTimestamp);
+  return Number.isNaN(ms) ? undefined : ms;
+};
+
 // receipt logs by emitter, case-insensitively
 const isFrom = (address: Address) => (log: { address: Address }) =>
   isAddressEqual(log.address, address);
@@ -155,7 +162,10 @@ type L1Outcome =
       failedMessage: L1FailedMessage;
     };
 
-type L2SlowStakeStatusBase = L2SlowStakeSent & { ccipExplorerUrl: string };
+type L2SlowStakeStatusBase = L2SlowStakeSent & {
+  sendTimestampMs: number;
+  ccipExplorerUrl: string;
+};
 
 // executed on Ethereum, the wstETH handed to the bridge back
 type L2SlowStakeStaked = {
@@ -1169,6 +1179,7 @@ export class L2StakeModule extends LidoSDKModule {
             amount,
             sendTxHash: message.sendTransactionHash,
             sendBlockNumber: BigInt(message.sendBlockNumber),
+            sendTimestampMs: parseSendTimestampMs(message),
           },
         },
       ];
@@ -1207,6 +1218,7 @@ export class L2StakeModule extends LidoSDKModule {
         amount,
         sendTxHash: message.sendTransactionHash,
         sendBlockNumber: BigInt(message.sendBlockNumber),
+        sendTimestampMs: parseSendTimestampMs(message),
       },
       message,
     );
@@ -1235,11 +1247,17 @@ export class L2StakeModule extends LidoSDKModule {
     sent: L2SlowStakeSent,
     message?: CcipMessage | null,
   ): Promise<L2SlowStakeStatus> {
+    const ccip = message ?? (await this.fetchCcipMessage(sent.messageId));
+    // the send time: known with the send, else the API's, else the block's
+    const sendTimestampMs =
+      sent.sendTimestampMs ??
+      (ccip ? parseSendTimestampMs(ccip) : undefined) ??
+      (await this.readL2BlockTimestampMs(sent.sendBlockNumber));
     const base = {
       ...sent,
+      sendTimestampMs,
       ccipExplorerUrl: getCcipExplorerMessageUrl(sent.messageId),
     };
-    const ccip = message ?? (await this.fetchCcipMessage(sent.messageId));
     if (!ccip) {
       return {
         ...base,
@@ -1605,6 +1623,13 @@ export class L2StakeModule extends LidoSDKModule {
         { cause: error },
       );
     }
+  }
+
+  private async readL2BlockTimestampMs(blockNumber: bigint): Promise<number> {
+    const block = await this.lookup('l2', () =>
+      this.core.publicClient.getBlock({ blockNumber }),
+    );
+    return Number(block.timestamp) * 1000;
   }
 
   private async fetchCcipMessage(messageId: Hash): Promise<CcipMessage | null> {

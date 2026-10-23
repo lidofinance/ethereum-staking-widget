@@ -38,6 +38,7 @@ const toSentStatus = (pending: PendingSlowStake): L2SlowStakeStatus => ({
   amount: pending.amount,
   sendTxHash: pending.sendTxHash ?? '0x',
   sendBlockNumber: pending.sendBlockNumber ?? 0n,
+  sendTimestampMs: pending.addedAt,
   ccipExplorerUrl: getCcipExplorerMessageUrl(pending.messageId),
 });
 

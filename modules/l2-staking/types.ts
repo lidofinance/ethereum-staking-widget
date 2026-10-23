@@ -176,6 +176,9 @@ export type L2SlowStakeSent = {
   amount: bigint;
   sendTxHash: Hash;
   sendBlockNumber: bigint;
+  // when the send was mined, in ms since the epoch; read from the block
+  // when not known
+  sendTimestampMs?: number;
 };
 
 // The CCIP message as the receiver got it; what a retry on L1 needs
@@ -203,6 +206,7 @@ export type L2SlowStakeReturnLeg =
   | { bridge: 'linea'; messageHash: Hash };
 
 type L2SlowStakeStatusBase = L2SlowStakeSent & {
+  sendTimestampMs: number;
   ccipExplorerUrl: string;
 };
 
@@ -214,50 +218,48 @@ type L2SlowStakeStaked = {
   returnLeg: L2SlowStakeReturnLeg;
 };
 
-export type L2SlowStakeStatus =
-  | (L2SlowStakeStatusBase & { outcome: 'inflight'; stage: 'sent' })
-  | (L2SlowStakeStatusBase & {
-      outcome: 'inflight';
-      stage: 'in_transit';
-      ccipStatus: string;
-    })
-  | (L2SlowStakeStatusBase &
-      L2SlowStakeStaked & { outcome: 'inflight'; stage: 'bridging' })
-  | (L2SlowStakeStatusBase & {
-      outcome: 'error';
-      stage: 'transport_failed';
-      ccipStatus: string;
-      readyForManualExecution: boolean;
-    })
-  | (L2SlowStakeStatusBase & {
-      outcome: 'error';
-      stage: 'parked';
-      l1TxHash: Hash;
-      l1BlockNumber: bigint;
-      failedMessage: L1FailedMessage;
-    })
-  | (L2SlowStakeStatusBase &
-      L2SlowStakeStaked & {
+export type L2SlowStakeStatus = L2SlowStakeStatusBase &
+  (
+    | { outcome: 'inflight'; stage: 'sent' }
+    | {
+        outcome: 'inflight';
+        stage: 'in_transit';
+        ccipStatus: string;
+      }
+    | (L2SlowStakeStaked & { outcome: 'inflight'; stage: 'bridging' })
+    | {
+        outcome: 'error';
+        stage: 'transport_failed';
+        ccipStatus: string;
+        readyForManualExecution: boolean;
+      }
+    | {
+        outcome: 'error';
+        stage: 'parked';
+        l1TxHash: Hash;
+        l1BlockNumber: bigint;
+        failedMessage: L1FailedMessage;
+      }
+    | (L2SlowStakeStaked & {
         outcome: 'error';
         stage: 'relay_failed';
         // the failed relay or redeem on the L2, when it was mined
         l2TxHash?: Hash;
       })
-  | (L2SlowStakeStatusBase &
-      L2SlowStakeStaked & { outcome: 'error'; stage: 'unresolved' })
-  | (L2SlowStakeStatusBase &
-      L2SlowStakeStaked & {
+    | (L2SlowStakeStaked & { outcome: 'error'; stage: 'unresolved' })
+    | (L2SlowStakeStaked & {
         outcome: 'success';
         stage: 'delivered';
         // the landing transaction; Linea's claim has no key to read it by
         l2TxHash?: Hash;
       })
-  | (L2SlowStakeStatusBase & {
-      outcome: 'success';
-      stage: 'recovered';
-      l1TxHash: Hash;
-      l1BlockNumber: bigint;
-    });
+    | {
+        outcome: 'success';
+        stage: 'recovered';
+        l1TxHash: Hash;
+        l1BlockNumber: bigint;
+      }
+  );
 
 export type L2SlowStakeApiLookupProps = {
   account: Address;

@@ -5,6 +5,7 @@ import {
   TxFlowInterruptedError,
   TxStaleError,
   QuoteMismatchError,
+  StakeLimitError,
 } from 'modules/web3';
 import { UnknownBundleIdError, UserRejectedRequestError } from 'viem';
 import { trackMatomoEvent } from 'utils/track-matomo-event';

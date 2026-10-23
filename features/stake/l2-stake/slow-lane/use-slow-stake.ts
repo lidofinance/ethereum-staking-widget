@@ -12,8 +12,8 @@ import {
   StakeLimitError,
   TxSettledError,
   TxFlowInterruptedError,
+  QuoteMismatchError,
 } from 'modules/web3';
-import { QuoteMismatchError } from 'modules/web3/utils/quote-mismatch-error';
 import {
   L2StakeModule,
   LIDO_L2_SLOW_STAKE_ETH_GAS_LIMIT_FALLBACK,

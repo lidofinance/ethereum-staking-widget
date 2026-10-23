@@ -1,59 +1,105 @@
 import type { FC } from 'react';
-import { Block, Link, Text } from '@lidofinance/lido-ui';
+import { Link } from '@lidofinance/lido-ui';
 
 import type { L2SlowStakeStatus } from 'modules/l2-staking';
-import { FormatToken } from 'shared/formatters';
+import {
+  SlowStakeStatusItemContainer,
+  StatusContent,
+  EthIconStyled,
+  AmountStyled,
+  EndCell,
+} from './styles';
+import { FormatPrice } from 'shared/formatters';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useDappStatus } from 'modules/web3';
+
+import { getSlowStakeExplorerLink } from './get-slow-stake-explorer-link';
 
 type SlowStakeStatusItemProps = {
   status: L2SlowStakeStatus;
 };
 
-// Placeholder: the stage as plain text, pending a design
-const describe = (status: L2SlowStakeStatus): string => {
+// "21 Aug 2026 12:23", in the viewer's time zone; the en-GB order, as the
+// day-first shape is not the app locale's
+const formatSentAt = (timestampMs: number): string => {
+  const sentAt = new Date(timestampMs);
+  const date = sentAt.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+  const time = sentAt.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  return `${date} ${time}`;
+};
+
+const getStatusTitle = (status: L2SlowStakeStatus): string => {
   switch (status.stage) {
+    // in progress
     case 'sent':
-      return 'Sent, waiting for CCIP to pick the message up';
     case 'in_transit':
-      return `In transit to Ethereum (${status.ccipStatus})`;
     case 'bridging':
-      return 'Staked on Ethereum, wstETH is on its way back';
-    case 'transport_failed':
-      return status.readyForManualExecution
-        ? 'CCIP could not deliver it; manual execution is open'
-        : 'CCIP could not deliver it';
-    case 'parked':
-      return 'Delivered to Ethereum, but the stake failed; funds are parked and can be retried';
-    case 'relay_failed':
-      return 'wstETH reached the bridge, but was not credited; the relay can be replayed';
-    case 'unresolved':
-      return 'The bridge no longer tracks the wstETH on its way back';
+      return 'Staking Shuttle is in flight';
+    // completed successfully/recovered
+    case 'recovered':
     case 'delivered':
       return 'wstETH delivered';
+    // there was an error
+    case 'transport_failed':
+    case 'parked':
+    case 'relay_failed':
+    case 'unresolved':
+      return 'Staking Shuttle encountered an error and will be recovered';
+  }
+};
+
+const getStatusDescription = (status: L2SlowStakeStatus): string => {
+  switch (status.stage) {
+    // in progress
+    case 'sent':
+    case 'in_transit':
+    case 'bridging':
+      return 'Your dedicated Staking Shuttle is processing your stake. The process usually takes about 1 hour 30 minutes.';
+    // completed successfully/recovered
     case 'recovered':
-      return 'The failed stake was retried or its funds recovered';
+    case 'delivered':
+      return 'The wstETH has been successfully delivered to your wallet.';
+    // there was an error
+    case 'transport_failed':
+    case 'parked':
+    case 'relay_failed':
+    case 'unresolved':
+      return 'The Staking Shuttle encountered an error. The funds are safe and will be recovered soon by automated process.';
   }
 };
 
 export const SlowStakeStatusItem: FC<SlowStakeStatusItemProps> = ({
   status,
-}) => (
-  <Block data-testid="slowStakeStatus">
-    <Text size="xs">
-      <FormatToken amount={status.amount} symbol="ETH" /> via Ethereum
-    </Text>
-    <Text size="xs">{describe(status)}</Text>
-    {'stakedAmount' in status && (
-      <Text size="xs">
-        Staked: <FormatToken amount={status.stakedAmount} symbol="wstETH" />
-      </Text>
-    )}
-    <Text size="xs">
-      <Link href={status.ccipExplorerUrl} target="_blank" rel="noreferrer">
-        CCIP message
-      </Link>
-      {'l2TxHash' in status && status.l2TxHash && (
-        <> · L2 landing {status.l2TxHash.slice(0, 10)}…</>
-      )}
-    </Text>
-  </Block>
-);
+}) => {
+  const { usdAmount } = useEthUsd(status.amount);
+  const { chainId } = useDappStatus();
+  const explorerLink = getSlowStakeExplorerLink(status, chainId);
+  return (
+    <SlowStakeStatusItemContainer data-testid="slowStakeStatus">
+      <span>{getStatusTitle(status)}</span>
+      <StatusContent>
+        {/* first column, span two rows */}
+        <EthIconStyled />
+        {/* row 1 */}
+        <AmountStyled amount={status.amount} symbol="ETH" />
+        <EndCell>{formatSentAt(status.sendTimestampMs)}</EndCell>
+        {/* row 2 */}
+        <FormatPrice amount={usdAmount} />
+        <EndCell>
+          <Link href={explorerLink.url} target="_blank" rel="noreferrer">
+            {explorerLink.text}
+          </Link>
+        </EndCell>
+      </StatusContent>
+      <span>{getStatusDescription(status)}</span>
+    </SlowStakeStatusItemContainer>
+  );
+};

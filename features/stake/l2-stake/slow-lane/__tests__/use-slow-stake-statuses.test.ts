@@ -180,6 +180,7 @@ describe('useSlowStakeStatuses', () => {
       expect(result.inflight[0]).toMatchObject({
         outcome: 'inflight',
         stage: 'sent',
+        sendTimestampMs: expect.any(Number),
         user: ACCOUNT,
         token: WETH,
         amount: 10n ** 18n,

@@ -25,6 +25,7 @@ const SAMPLE = {
   sendTransactionHash:
     '0x3435a1409eafa7a896e7ac3b3222d5d5379373d412a480e3463f358217ab075e',
   sendBlockNumber: 155730938,
+  sendTimestamp: '2026-08-18T13:44:13.000Z',
   tokenAmounts: [
     {
       destTokenAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',

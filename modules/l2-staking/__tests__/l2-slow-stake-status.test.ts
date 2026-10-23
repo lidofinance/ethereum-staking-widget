@@ -35,6 +35,7 @@ import {
 import { decodeSlowStakeData, encodeSlowStakeData } from '../utils/fee-codec';
 import {
   ACCOUNT,
+  BLOCK_TIME_ORIGIN,
   L1_RECEIVER,
   P,
   WETH,
@@ -61,6 +62,7 @@ const L1_BRIDGE: Address = '0x00000000000000000000000000000000000000b1';
 const AMOUNT = 2n * P;
 const STAKED = 1_650_000_000_000_000_000n; // the wstETH it bought
 const SEND_BLOCK = 155_730_938n;
+const SEND_TIME = '2026-08-18T13:44:13.000Z';
 const L1_BLOCK = 25_782_450n;
 const L2_WSTETH = l2Addresses(CHAINS.Base).wsteth;
 const SENDER = l2Addresses(CHAINS.Base).stakeReceiver;
@@ -220,6 +222,7 @@ const ccipMessage = (
   status,
   sendTransactionHash: SEND_TX,
   sendBlockNumber: Number(SEND_BLOCK),
+  sendTimestamp: SEND_TIME,
   readyForManualExecution: false,
   tokenAmounts: [],
   data: encodeSlowStakeData(
@@ -294,25 +297,43 @@ const STAKED_ON_BASE = {
 };
 
 describe('getSlowStakeStatus', () => {
-  it('is sent while the API does not list the message', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, { fetcher: ccipApi({}) });
+  it('is sent while the API does not list the message, timed by its block', async () => {
+    const { l2Stake, publicClient } = createModule(CHAINS.Base, {
+      fetcher: ccipApi({}),
+    });
     await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toEqual({
       ...SENT,
       outcome: 'inflight',
       stage: 'sent',
+      sendTimestampMs: Number(BLOCK_TIME_ORIGIN + SEND_BLOCK * 2n) * 1000,
       ccipExplorerUrl: `https://ccip.chain.link/msg/${MESSAGE_ID}`,
+    });
+    expect(publicClient.getBlock).toHaveBeenCalledWith({
+      blockNumber: SEND_BLOCK,
     });
   });
 
-  it('is in transit until CCIP executes it', async () => {
-    const { l2Stake } = createModule(CHAINS.Base, {
+  it('is in transit until CCIP executes it, timed by the API', async () => {
+    const { l2Stake, publicClient } = createModule(CHAINS.Base, {
       fetcher: ccipApi({ [MESSAGE_ID]: ccipMessage('COMMITTED') }),
     });
     await expect(l2Stake.getSlowStakeStatus(SENT)).resolves.toMatchObject({
       outcome: 'inflight',
       stage: 'in_transit',
       ccipStatus: 'COMMITTED',
+      sendTimestampMs: Date.parse(SEND_TIME),
     });
+    expect(publicClient.getBlock).not.toHaveBeenCalled();
+  });
+
+  it('keeps the send time it was given', async () => {
+    const { l2Stake, publicClient } = createModule(CHAINS.Base, {
+      fetcher: ccipApi({}),
+    });
+    await expect(
+      l2Stake.getSlowStakeStatus({ ...SENT, sendTimestampMs: 1_000 }),
+    ).resolves.toMatchObject({ sendTimestampMs: 1_000 });
+    expect(publicClient.getBlock).not.toHaveBeenCalled();
   });
 
   it('reports a transport failure with whether manual execution is open', async () => {

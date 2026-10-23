@@ -61,6 +61,7 @@ export const ccipMessageSchema = z.object({
   destNetworkInfo: networkInfoSchema,
   sendTransactionHash: hash,
   sendBlockNumber: z.number().int(),
+  sendTimestamp: z.string().optional(),
   // present once executed on the destination
   receiptTransactionHash: hash.nullish(),
   receiptBlockNumber: z.number().int().nullish(),
