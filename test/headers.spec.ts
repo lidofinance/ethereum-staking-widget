@@ -5,11 +5,8 @@ import {
   CACHE_CONTROL_HEADER,
   CACHE_CONTROL_VALUE,
 } from 'scripts/cache-control.mjs';
-import { CONFIG } from './config.js';
 
 test.describe('Page Headers', () => {
-  const isPreview = !CONFIG.STAND_URL?.includes('branch-preview');
-
   CACHE_CONTROL_PAGES.forEach((route) =>
     test(`Page ${route} should have proper headers`, async ({ request }) => {
       // case for only wildcard in config
@@ -44,7 +41,7 @@ test.describe('Page Headers', () => {
 
         // only pages carry CSP; static assets in CACHE_CONTROL_PAGES do not.
         // Also skipped on preview stands.
-        if (WIDGET_PAGES.includes(route) && isPreview)
+        if (WIDGET_PAGES.includes(route))
           expect
             .soft(headers['content-security-policy'])
             .toContain('default-src');

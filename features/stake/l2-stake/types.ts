@@ -1,5 +1,7 @@
 import type { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import type { ValidationContextByToken } from 'features/stake/shared/validation-context-by-token';
+import type { L2SlowStakeFee, L2SlowStakeLimits } from 'modules/l2-staking';
+import type { L2StakeLane } from './lane';
 
 export type L2StakeFormInputType = {
   amount: bigint | null;
@@ -19,6 +21,12 @@ export type L2StakeFormDataContextValue = Pick<
 > & {
   token: TOKENS_TO_STAKE;
   isWeth: boolean;
+  // the lane the entered amount goes to, see resolveL2StakeLane
+  lane: L2StakeLane;
+  isFastLane: boolean;
+  isSlowLane: boolean;
+  // the CCIP quote for the entered amount, on the slow lane only
+  slowStakeFee?: L2SlowStakeFee;
   // values resolved for the selected token
   stakeableAmount?: bigint;
   isStakeableAmountLoading: boolean;
@@ -30,8 +38,19 @@ export type L2StakeFormDataContextValue = Pick<
 export type L2StakeFormValidationContext = {
   isWalletActive: boolean;
   isSmartAccount: boolean;
+  // which lanes the chain offers right now; the resolver routes by them
+  isFastLaneAvailable: boolean;
+  isSlowLaneAvailable: boolean;
+  // fast lane
   gasCostEth: bigint;
   gasCostWeth: bigint;
+  // slow lane: the L2 gas, and a quote of the CCIP cap plus return budget
+  // the send fronts in value, for the amount being validated
+  gasCostEthSlow: bigint;
+  gasCostWethSlow: bigint;
+  fetchSlowStakeFrontedFee?: (amount: bigint) => Promise<bigint>;
+  // undefined only while the bucket cannot be read on the current SDK chain
+  slowStakeLimits?: L2SlowStakeLimits;
   etherBalance: bigint;
   wethBalance: bigint;
   // undefined only while the pool cannot be read on the current SDK chain
@@ -54,10 +73,15 @@ export type L2StakeFormNetworkData = {
   stakeableEther?: bigint;
   stakeableWeth?: bigint;
   fastStakeLiquidityEth?: bigint;
+  slowStakeLimits?: L2SlowStakeLimits;
   gasCostEth?: bigint;
   gasCostWeth?: bigint;
+  gasCostEthSlow?: bigint;
+  gasCostWethSlow?: bigint;
   gasLimitEth?: bigint;
   gasLimitWeth?: bigint;
+  gasLimitEthSlow?: bigint;
+  gasLimitWethSlow?: bigint;
   maxAmountEth?: bigint;
   maxAmountWeth?: bigint;
   loading: {
@@ -67,6 +91,7 @@ export type L2StakeFormNetworkData = {
     isEtherBalanceLoading: boolean;
     isWethBalanceLoading: boolean;
     isFastStakeLiquidityLoading: boolean;
+    isSlowStakeLimitsLoading: boolean;
     isStakeableEtherLoading: boolean;
     isStakeableWethLoading: boolean;
   };

@@ -10,6 +10,7 @@ export type {
   ManifestConfigPage,
   ManifestConfigDexIntegration,
   ManifestConfigEarnVault,
+  ManifestConfigL2StakeMode,
 } from './types';
 export {
   getManifestKey,
@@ -22,4 +23,5 @@ export {
   ManifestSchema,
   ManifestConfigPages,
   ManifestConfigWithdrawalDexIntegrations,
+  ManifestConfigL2StakeModes,
 } from './validate';

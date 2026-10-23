@@ -54,6 +54,9 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
 
   const { data: walletClient } = useWalletClient({ chainId: sdkChainId });
   const publicClient = usePublicClient({ chainId: sdkChainId });
+  // The slow stake's status has legs on Ethereum: the lanes exist on mainnet
+  // L2s only, so their L1 is mainnet whatever the dapp's default chain
+  const l1PublicClient = usePublicClient({ chainId: CHAINS.Mainnet });
 
   const contextValue = useMemo(() => {
     // @ts-expect-error: typing (viem + LidoSDK)
@@ -73,13 +76,13 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
       chainId: core.chainId,
       core,
       l2: new LidoSDKL2({ core }),
-      l2Stake: new L2StakeModule({ core }),
+      l2Stake: new L2StakeModule({ core, l1PublicClient }),
 
       isL2: isSupportedL2Chain(sdkChainId),
       isL2Stake: isSupportedL2StakingChain(sdkChainId),
       isL2Wrap: isSupportedL2WrapChain(sdkChainId),
     };
-  }, [publicClient, sdkChainId, walletClient]);
+  }, [publicClient, l1PublicClient, sdkChainId, walletClient]);
   return (
     <LidoSDKL2Context.Provider value={contextValue}>
       {children}

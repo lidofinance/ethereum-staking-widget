@@ -6,6 +6,7 @@
     "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
     "stakingRouter": "0xFdDf38947aFB03C621C71b06C9C70bce73f12999",
     "withdrawalQueue": "0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1",
+    "L1stakingReceiver": "0x6F357d53d6bE3238180316BA5F8f11467e164588",
 
     "wstethReferralStaker": "0xa88f0329C2c4ce51ba3fc619BBf44efE7120Dd0d",
     "dualGovernance": "0xC1db28B3301331277e307FDCfF8DE28242A4486E",

@@ -278,8 +278,28 @@ const isUnknownRecord = (value: unknown): value is UnknownRecord =>
 // Default liquidity target for L2 stake in ETH that the pool aims to maintain
 const DEFAULT_L2_STAKE_LIQUIDITY_TARGET_ETH = 25;
 
+// Which staking routes a chain offers: the fast lane swaps against the L2
+// pool, the slow lane sends the stake to Ethereum over CCIP
+export const ManifestConfigL2StakeModes = {
+  all: 'all',
+  fastLaneOnly: 'fastLaneOnly',
+  slowLaneOnly: 'slowLaneOnly',
+} as const;
+
+const L2StakeModeSchema = z.enum([
+  ManifestConfigL2StakeModes.all,
+  ManifestConfigL2StakeModes.fastLaneOnly,
+  ManifestConfigL2StakeModes.slowLaneOnly,
+]);
+
+const isL2StakeMode = (
+  value: unknown,
+): value is z.infer<typeof L2StakeModeSchema> =>
+  typeof value === 'string' && value in ManifestConfigL2StakeModes;
+
 const L2StakeConfigurationSchema = z.object({
   enabled: z.boolean().optional().default(true),
+  mode: L2StakeModeSchema.optional().default(ManifestConfigL2StakeModes.all),
   // Target wsteth liquidity for L2 stake in integer ETH
   liquidityTarget: z
     .number()
@@ -294,6 +314,7 @@ const L2StakeConfigurationSchema = z.object({
 // fall through to `common` (e.g. a common `enabled: false`), not to a default
 const L2StakePerChainConfigurationSchema = z.object({
   enabled: z.boolean().optional(),
+  mode: L2StakeModeSchema.optional(),
   liquidityTarget: z.number().int().min(0).optional(),
   disableReason: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
 });
@@ -303,6 +324,8 @@ const sanitizeL2StakeEntry = (entry: unknown) => {
   const { enabled, liquidityTarget } = entry;
   return {
     ...(enabled !== undefined && { enabled: enabled === true }),
+    // an unknown mode falls through to common rather than closing a lane
+    ...(isL2StakeMode(entry.mode) && { mode: entry.mode }),
     ...(typeof liquidityTarget === 'number' &&
       Number.isInteger(liquidityTarget) &&
       liquidityTarget >= 0 && { liquidityTarget }),
