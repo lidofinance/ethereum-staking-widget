@@ -43,7 +43,7 @@ const link = (rest: object) => getSlowStakeExplorerLink(status(rest), base.id);
 describe('getSlowStakeExplorerLink', () => {
   it('points a send at the L2 explorer', () => {
     expect(link({ outcome: 'inflight', stage: 'sent' })).toEqual({
-      text: 'View on Basescan',
+      text: 'View on Block Explorer',
       url: `https://basescan.org/tx/${SEND_TX}`,
     });
   });
@@ -78,7 +78,7 @@ describe('getSlowStakeExplorerLink', () => {
     'points %s at the L2 landing when it has one',
     (stage) => {
       expect(link({ ...staked, stage, l2TxHash: L2_TX })).toEqual({
-        text: 'View on Basescan',
+        text: 'View on Block Explorer',
         url: `https://basescan.org/tx/${L2_TX}`,
       });
       expect(link({ ...staked, stage })).toMatchObject({

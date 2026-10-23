@@ -1,6 +1,8 @@
 import styled from 'styled-components';
-import { Block } from '@lidofinance/lido-ui';
+import { Block, Link } from '@lidofinance/lido-ui';
 import { ReactComponent as EthereumIcon } from 'assets/icons/eth-slow-stake.svg';
+import { ReactComponent as ExternalLinkIcon } from 'assets/icons/external-link-icon.svg';
+
 import { FormatToken } from 'shared/formatters';
 
 export const SlowStakeStatusListContainer = styled.div`
@@ -51,4 +53,23 @@ export const EthIconStyled = styled(EthereumIcon).attrs({
   grid-column: 1;
   grid-row: 1 / span 3;
   align-self: center;
+`;
+
+export const ExternalLinkIconStyled = styled(ExternalLinkIcon).attrs({
+  width: 10,
+  height: 10,
+  viewBox: '0 0 12 12',
+})`
+  padding: 0px 5px;
+  width: 20px;
+  box-sizing: border-box;
+`;
+
+export const ScanLink = styled(Link)`
+  justify-self: end;
+  text-align: right;
+
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
 `;

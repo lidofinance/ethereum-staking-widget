@@ -1,19 +1,20 @@
 import type { FC } from 'react';
-import { Link } from '@lidofinance/lido-ui';
 
 import type { L2SlowStakeStatus } from 'modules/l2-staking';
+import { FormatPrice } from 'shared/formatters';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useDappStatus } from 'modules/web3';
+
+import { getSlowStakeExplorerLink } from './get-slow-stake-explorer-link';
 import {
   SlowStakeStatusItemContainer,
   StatusContent,
   EthIconStyled,
   AmountStyled,
   EndCell,
+  ExternalLinkIconStyled,
+  ScanLink,
 } from './styles';
-import { FormatPrice } from 'shared/formatters';
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
-import { useDappStatus } from 'modules/web3';
-
-import { getSlowStakeExplorerLink } from './get-slow-stake-explorer-link';
 
 type SlowStakeStatusItemProps = {
   status: L2SlowStakeStatus;
@@ -43,10 +44,12 @@ const getStatusTitle = (status: L2SlowStakeStatus): string => {
     case 'in_transit':
     case 'bridging':
       return 'Staking Shuttle is in flight';
-    // completed successfully/recovered
-    case 'recovered':
+    // completed successfully
     case 'delivered':
       return 'wstETH delivered';
+    // failed on Ethereum and pushed through by the recovery process
+    case 'recovered':
+      return 'Staking Shuttle recovered';
     // there was an error
     case 'transport_failed':
     case 'parked':
@@ -63,10 +66,12 @@ const getStatusDescription = (status: L2SlowStakeStatus): string => {
     case 'in_transit':
     case 'bridging':
       return 'Your dedicated Staking Shuttle is processing your stake. The process usually takes about 1 hour 30 minutes.';
-    // completed successfully/recovered
-    case 'recovered':
+    // completed successfully
     case 'delivered':
       return 'The wstETH has been successfully delivered to your wallet.';
+    // failed on Ethereum and pushed through by the recovery process
+    case 'recovered':
+      return 'The Staking Shuttle hit an error on Ethereum and was recovered. The wstETH has been sent to your wallet through the bridge.';
     // there was an error
     case 'transport_failed':
     case 'parked':
@@ -86,18 +91,17 @@ export const SlowStakeStatusItem: FC<SlowStakeStatusItemProps> = ({
     <SlowStakeStatusItemContainer data-testid="slowStakeStatus">
       <span>{getStatusTitle(status)}</span>
       <StatusContent>
-        {/* first column, span two rows */}
+        {/* first column, spans two rows */}
         <EthIconStyled />
         {/* row 1 */}
         <AmountStyled amount={status.amount} symbol="ETH" />
         <EndCell>{formatSentAt(status.sendTimestampMs)}</EndCell>
         {/* row 2 */}
         <FormatPrice amount={usdAmount} />
-        <EndCell>
-          <Link href={explorerLink.url} target="_blank" rel="noreferrer">
-            {explorerLink.text}
-          </Link>
-        </EndCell>
+        <ScanLink href={explorerLink.url} target="_blank" rel="noreferrer">
+          {explorerLink.text}
+          <ExternalLinkIconStyled />
+        </ScanLink>
       </StatusContent>
       <span>{getStatusDescription(status)}</span>
     </SlowStakeStatusItemContainer>
