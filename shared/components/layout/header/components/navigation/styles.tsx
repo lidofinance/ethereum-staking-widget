@@ -123,6 +123,8 @@ export const NavigationDropDownLink = styled(LocalLink)<{ $active: boolean }>`
   font-size: 12px;
   line-height: 20px;
   text-transform: initial;
+  // keeps long items like "Wrap & Unwrap" on one line, the menu grows instead
+  white-space: nowrap;
 
   &:visited {
     color: var(--lido-color-secondary);

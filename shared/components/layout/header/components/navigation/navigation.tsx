@@ -36,6 +36,7 @@ const routes: PageRoute[] = [
       },
       {
         name: 'Wrap',
+        menuName: 'Wrap & Unwrap',
         path: WRAP_PATH,
         icon: <Wrap data-testid="navWrap" />,
       },

@@ -3,6 +3,8 @@
  */
 export type PageRoute = {
   name: string;
+  // longer label for the desktop dropdown, the mobile track keeps `name`
+  menuName?: string;
   icon: React.ReactNode;
   showNew?: boolean;
 } & (

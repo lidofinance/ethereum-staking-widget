@@ -17,7 +17,7 @@ const StakePageLayout: FC<PropsWithChildren> = ({ children }) => {
     : 'Stake ETH and receive stETH while staking';
 
   return (
-    <Layout title="Stake Ethereum" subtitle={subtitle}>
+    <Layout title="Stake Ether" subtitle={subtitle}>
       <Head>
         <title>Stake with Lido | Lido</title>
       </Head>

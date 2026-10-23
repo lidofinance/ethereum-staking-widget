@@ -79,7 +79,7 @@ export const SubNavigation: FC<SubNavigationProps> = ({
               href={subRoute.path}
             >
               <NavigationDropDownIcon>{subRoute.icon}</NavigationDropDownIcon>
-              {subRoute.name}
+              {subRoute.menuName ?? subRoute.name}
             </NavigationDropDownLink>
           );
         })}
