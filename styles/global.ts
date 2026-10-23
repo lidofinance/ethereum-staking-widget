@@ -9,7 +9,8 @@ export const devicesHeaderMedia = {
 const GlobalStyle = createGlobalStyle`
   :root {
     --nav-mobile-height: ${NAV_MOBILE_HEIGHT}px;
-    --nav-mobile-bottom-inset: max(8px, env(safe-area-inset-bottom));
+    // only the device safe area, the bar itself has no extra bottom gap
+    --nav-mobile-bottom-inset: env(safe-area-inset-bottom, 0px);
     --nav-mobile-max-width: ${NAV_MOBILE_MAX_WIDTH}px;
     --nav-desktop-gutter-x: 46px;
 
