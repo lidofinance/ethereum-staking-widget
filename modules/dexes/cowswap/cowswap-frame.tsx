@@ -67,20 +67,22 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
   boxShadow: 'none',
 };
 
-// widget card color per network: a light tint of the network color over the theme paper
-const CHAIN_PAPER: Record<number, { light: string; dark: string }> = {
-  [base.id]: { light: '#E9F0FF', dark: '#323C59' },
-  [arbitrum.id]: { light: '#E3F5FF', dark: '#284459' },
+const BASE_GRADIENT = 'linear-gradient(52deg, #1D1E35 0.01%, #4782FC 100%)';
+const ARBITRUM_GRADIENT = 'linear-gradient(52deg, #1D1E35 0.01%, #12AAFF 100%)';
+
+// Widget card background per network, set as an inline style of the card:
+// the palette `paper` is parsed as a color and cannot hold a gradient.
+// The gradients are dark, so these networks use the dark palette in any app theme
+const CHAIN_CARD_BACKGROUND: Record<number, string> = {
+  [base.id]: BASE_GRADIENT,
+  [arbitrum.id]: `${ARBITRUM_GRADIENT}, ${BASE_GRADIENT}`,
 };
 
-const getCowSwapTheme = (
-  themeName: string,
-  chainId: number,
-): CowSwapWidgetPalette => {
-  const isDark = themeName === 'dark';
-  const palette = isDark ? cowSwapThemeDark : cowSwapThemeLight;
-  const paper = CHAIN_PAPER[chainId]?.[isDark ? 'dark' : 'light'];
-  return paper ? { ...palette, paper } : palette;
+// dark palette over a network gradient: the inner blocks derive from `paper` and keep its alpha,
+// so a translucent gradient-start color softens them against the gradient
+const cowSwapThemeOnGradient: CowSwapWidgetPalette = {
+  ...cowSwapThemeDark,
+  paper: 'rgba(29, 30, 53, 0.5)',
 };
 
 export type CowswapFrameProps = {
@@ -178,6 +180,8 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     appCode,
   });
 
+  const cardBackground = CHAIN_CARD_BACKGROUND[widgetChainId];
+
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
       //
@@ -236,7 +240,12 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
         height: 'var(--dynamicHeight, 432px)',
       },
 
-      theme: getCowSwapTheme(themeName, widgetChainId),
+      theme: cardBackground
+        ? cowSwapThemeOnGradient
+        : themeName === 'dark'
+          ? cowSwapThemeDark
+          : cowSwapThemeLight,
+      cardStyle: cardBackground ? { background: cardBackground } : undefined,
       // enables opening explorer and `powered by cowswap` links
       // ONLY safe when used with pinned IPFS cowswap UI,
       // otherwise prone to security risks during domain takeover
@@ -249,6 +258,8 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       hideFavoriteTokens: true,
       disableToastMessages: true,
       disableProgressBar: false,
+      // no scrollbar flash while the iframe height catches up after a remount
+      disableScrollbars: true,
       sounds: {
         postOrder: null,
         orderExecuted: null,
@@ -291,6 +302,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       isGithubAvailable,
       feeRecipient,
       themeName,
+      cardBackground,
       refreshId,
       validateApproval,
       validate,
