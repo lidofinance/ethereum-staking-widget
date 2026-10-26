@@ -1,4 +1,4 @@
-import { type FC, useMemo, Fragment } from 'react';
+import { type FC, useEffect, useMemo, useState, Fragment } from 'react';
 import { useRouter } from 'next/router';
 
 import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
@@ -78,13 +78,16 @@ const useNavigation = () => {
   }, [pages]);
 
   const pathnameWithoutQuery = sanitizePath(pathname);
-  // URL product params are read only once the router is ready
+  // URL product params are read only once the router is ready;
+  // set in an effect, so the first client render matches the server one
   const { isReady } = useRouter();
+  const [isPending, setIsPending] = useState(true);
+  useEffect(() => setIsPending(!isReady), [isReady]);
 
   return {
     availableRoutes,
     pathnameWithoutQuery,
-    isPending: !isReady,
+    isPending,
   };
 };
 
