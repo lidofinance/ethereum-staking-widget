@@ -125,20 +125,26 @@ export type ProductQuery = Record<string, string>;
 
 /**
  * Product params as a query object that parses to the same state:
- * keys keep the position of their first param, repeated `product` values are joined,
- * other repeated keys keep the first value, since the first param wins.
+ * repeated `product` values are joined, other repeated keys keep the value the parser uses:
+ * the first one, or under `product` the first one that is not `disabled`.
  */
 export const toProductQuery = (
   entries: readonly (readonly [string, string])[],
 ): ProductQuery => {
+  const hasAllowlist = getAllowlist(entries).length > 0;
   const query: ProductQuery = {};
   for (const [key, value] of entries) {
     if (!isProductQueryKey(key)) continue;
-    if (key === PRODUCT_PARAM && query[PRODUCT_PARAM] !== undefined) {
-      query[PRODUCT_PARAM] = `${query[PRODUCT_PARAM]},${value}`;
-    } else {
-      query[key] ??= value;
+    if (key === PRODUCT_PARAM) {
+      query[PRODUCT_PARAM] =
+        query[PRODUCT_PARAM] === undefined
+          ? value
+          : `${query[PRODUCT_PARAM]},${value}`;
+      continue;
     }
+    // the parser ignores `disabled` under `product`
+    if (hasAllowlist && value === PRODUCT_DISABLED) continue;
+    query[key] ??= value;
   }
   return query;
 };

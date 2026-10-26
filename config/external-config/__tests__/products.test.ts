@@ -202,6 +202,14 @@ describe('toProductQuery', () => {
     });
   });
 
+  it('keeps the value the parser uses under `product`', () => {
+    expect(toQuery('?product=earn&earn=disabled&earn=eth')).toEqual({
+      product: 'earn',
+      earn: 'eth',
+    });
+    expect(toQuery('?product=earn&earn=disabled')).toEqual({ product: 'earn' });
+  });
+
   it('keeps the first value of other repeated params', () => {
     expect(toQuery('?swap=disabled&swap=enabled')).toEqual({
       swap: 'disabled',
@@ -220,6 +228,9 @@ describe('toProductQuery', () => {
     '?swap=disabled&swap=enabled',
     '?earn=eth&earn=disabled',
     '?product=earn&earn=eth&earn=usd',
+    '?product=earn&earn=disabled&earn=eth',
+    '?earn=disabled&product=earn&earn=eth',
+    '?earn=eth&product=stake',
     '?stake=disabled&earn=disabled&swap=disabled',
   ])('parses to the same state: %s', (search) => {
     const query = new URLSearchParams(toQuery(search));
