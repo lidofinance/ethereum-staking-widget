@@ -83,10 +83,82 @@ test.describe('products via URL params', () => {
     await expectNav(page, ['navStake'], ['navEarn', 'navSwap']);
   });
 
-  test('on a conflict the first param wins', async ({ page }) => {
+  test('a repeated product param: the first one wins', async ({ page }) => {
     test.skip(!baseline.swap, 'swap is disabled on this stand');
     await page.goto('/?swap=disabled&swap=enabled');
     await expectNav(page, ['navStake'], ['navSwap']);
+  });
+
+  test('`product` wins over other product params in any order', async ({
+    page,
+  }) => {
+    test.skip(!baseline.earn, 'earn is disabled on this stand');
+    // earn is left out of `product`, its configuration is ignored
+    for (const query of ['earn=eth&product=stake', 'product=stake&earn=eth']) {
+      await page.goto(`/earn?${query}`);
+      await expect.poll(() => pathOf(page)).toBe('/');
+      await expectNav(page, ['navStake'], ['navEarn', 'navSwap']);
+    }
+  });
+
+  test('`product` turns on a product its own param disables', async ({
+    page,
+  }) => {
+    test.skip(!baseline.swap, 'swap is disabled on this stand');
+    for (const query of [
+      'swap=disabled&product=swap',
+      'product=swap&swap=disabled',
+    ]) {
+      await page.goto(`/?${query}`);
+      await expect.poll(() => pathOf(page)).toBe('/swap');
+      await expectNav(page, ['navSwap'], ['navStake', 'navEarn']);
+    }
+  });
+
+  test('stake only: flat desktop navigation without the dropdown', async ({
+    page,
+  }) => {
+    // the stake pages are links in the dropdown, hidden until it opens
+    await page.goto('/');
+    await expect(nav(page, 'navStake').first()).toBeVisible();
+    await expect(page.getByTestId('navWrap').first()).toBeHidden();
+
+    for (const query of ['product=stake', 'app=ledger-live']) {
+      await page.goto(`/?${query}`);
+      for (const item of [
+        'navStake',
+        'navWrap',
+        'navWithdrawals',
+        'navRewards',
+      ])
+        await expect(page.getByTestId(item).first()).toBeVisible();
+      await expectNav(page, ['navStake'], ['navEarn', 'navSwap']);
+    }
+  });
+
+  test('stake only: mobile tabs without the sub-route track', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 400, height: 800 });
+    const mobileNav = page.locator('nav[aria-label="Main"]');
+    const track = mobileNav.locator('[aria-label="Stake"]');
+
+    // the track holds text links; tabs are Stake, Earn, Swap
+    await page.goto('/');
+    await expect(track).toBeVisible();
+    await expect(mobileNav.getByTestId('navWrap').first()).toBeHidden();
+
+    for (const query of ['product=stake', 'app=ledger-live']) {
+      await page.goto(`/?${query}`);
+      for (const item of [
+        'navStake',
+        'navWrap',
+        'navWithdrawals',
+        'navRewards',
+      ])
+        await expect(mobileNav.getByTestId(item).first()).toBeVisible();
+      await expect(track).toHaveCount(0);
+    }
   });
 
   test('Ledger Live: earn is off, stake is forced on', async ({ page }) => {

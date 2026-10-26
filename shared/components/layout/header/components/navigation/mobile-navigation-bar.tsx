@@ -2,7 +2,13 @@ import { useEffect, useState, type FC } from 'react';
 import invariant from 'tiny-invariant';
 
 import {
+  NAV_MOBILE_COLLAPSED_HEIGHT,
+  NAV_MOBILE_HEIGHT,
+} from 'styles/constants';
+
+import {
   MobileNav,
+  MobileNavHeight,
   MobileTabIcon,
   MobileTabLink,
   MobileTabs,
@@ -63,58 +69,65 @@ export const MobileNavigationBar: FC<MobileNavigationBarProps> = ({
   );
 
   return (
-    <MobileNav aria-label="Main" $isPending={isPending}>
-      {sectionRoute?.subRoutes && (
-        <MobileTrackCollapse
-          $expanded={isTrackExpanded}
-          aria-hidden={!isSectionActive}
-        >
-          <MobileTrackClip>
-            <MobileTrack
-              role="group"
-              aria-label={sectionRoute.name}
-              $count={sectionRoute.subRoutes.length}
-            >
-              <MobileTrackPill
+    <>
+      <MobileNavHeight
+        $height={
+          isTrackExpanded ? NAV_MOBILE_HEIGHT : NAV_MOBILE_COLLAPSED_HEIGHT
+        }
+      />
+      <MobileNav aria-label="Main" $isPending={isPending}>
+        {sectionRoute?.subRoutes && (
+          <MobileTrackCollapse
+            $expanded={isTrackExpanded}
+            aria-hidden={!isSectionActive}
+          >
+            <MobileTrackClip>
+              <MobileTrack
+                role="group"
+                aria-label={sectionRoute.name}
                 $count={sectionRoute.subRoutes.length}
-                $index={pillIndex}
-              />
-              {sectionRoute.subRoutes.map((subRoute) => {
-                invariant(subRoute.path, 'SubRoute requires a path');
-                return (
-                  <MobileTrackLink
-                    key={subRoute.path}
-                    href={subRoute.path}
-                    aria-current={ariaCurrent(
-                      isRouteActive(subRoute, currentPath),
-                    )}
-                    tabIndex={isSectionActive ? undefined : -1}
-                  >
-                    {subRoute.name}
-                  </MobileTrackLink>
-                );
-              })}
-            </MobileTrack>
-          </MobileTrackClip>
-        </MobileTrackCollapse>
-      )}
-      <MobileTabs $count={routes.length}>
-        {routes.map((route) => {
-          const href = route.path ?? route.subRoutes?.[0]?.path;
-          invariant(href, 'Route requires a path or a sub-route');
-          return (
-            <MobileTabLink
-              key={href}
-              href={href}
-              aria-current={ariaCurrent(isRouteActive(route, currentPath))}
-              $showNew={route.showNew}
-            >
-              <MobileTabIcon>{route.icon}</MobileTabIcon>
-              <span>{route.name}</span>
-            </MobileTabLink>
-          );
-        })}
-      </MobileTabs>
-    </MobileNav>
+              >
+                <MobileTrackPill
+                  $count={sectionRoute.subRoutes.length}
+                  $index={pillIndex}
+                />
+                {sectionRoute.subRoutes.map((subRoute) => {
+                  invariant(subRoute.path, 'SubRoute requires a path');
+                  return (
+                    <MobileTrackLink
+                      key={subRoute.path}
+                      href={subRoute.path}
+                      aria-current={ariaCurrent(
+                        isRouteActive(subRoute, currentPath),
+                      )}
+                      tabIndex={isSectionActive ? undefined : -1}
+                    >
+                      {subRoute.name}
+                    </MobileTrackLink>
+                  );
+                })}
+              </MobileTrack>
+            </MobileTrackClip>
+          </MobileTrackCollapse>
+        )}
+        <MobileTabs $count={routes.length}>
+          {routes.map((route) => {
+            const href = route.path ?? route.subRoutes?.[0]?.path;
+            invariant(href, 'Route requires a path or a sub-route');
+            return (
+              <MobileTabLink
+                key={href}
+                href={href}
+                aria-current={ariaCurrent(isRouteActive(route, currentPath))}
+                $showNew={route.showNew}
+              >
+                <MobileTabIcon>{route.icon}</MobileTabIcon>
+                <span>{route.name}</span>
+              </MobileTabLink>
+            );
+          })}
+        </MobileTabs>
+      </MobileNav>
+    </>
   );
 };

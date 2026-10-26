@@ -51,6 +51,10 @@ export const filterAvailableRoutes = (
   );
 };
 
+// the only section left (e.g. stake-only integrations) is shown as a flat list of its pages
+export const flattenSingleSection = (routes: PageRoute[]): PageRoute[] =>
+  routes.length === 1 && routes[0].subRoutes ? routes[0].subRoutes : routes;
+
 /**
  * Sanitizes a URL path by removing query parameters and trailing slashes.
  * @param path The URL path to sanitize.

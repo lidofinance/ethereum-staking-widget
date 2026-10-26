@@ -1,7 +1,6 @@
 import styled, { css } from 'styled-components';
 import { Block, Button } from '@lidofinance/lido-ui';
 import { devicesHeaderMedia } from 'styles/global';
-import { NAV_MOBILE_HEIGHT } from 'styles/constants';
 import {
   REQUESTS_LIST_MIN_HEIGHT,
   REQUESTS_LIST_ITEM_SIZE,
@@ -113,7 +112,7 @@ export const ClaimFormFooterWrapper = styled.div<{ isSticked: boolean }>`
       bottom: 0;
 
       @media ${devicesHeaderMedia.mobile} {
-        bottom: calc(${NAV_MOBILE_HEIGHT}px + var(--nav-mobile-bottom-inset));
+        bottom: calc(var(--nav-mobile-height) + var(--nav-mobile-bottom-inset));
       }
     `};
 `;

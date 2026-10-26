@@ -23,7 +23,12 @@ import { MobileNavigationBar } from './mobile-navigation-bar';
 import { NavigationLink } from './navigation-link';
 import { Nav } from './styles';
 
-import { filterAvailableRoutes, sanitizePath, isRouteActive } from './utils';
+import {
+  filterAvailableRoutes,
+  flattenSingleSection,
+  sanitizePath,
+  isRouteActive,
+} from './utils';
 import type { PageRoute } from './types';
 
 const routes: PageRoute[] = [
@@ -74,7 +79,7 @@ const useNavigation = () => {
   } = useConfig();
 
   const availableRoutes = useMemo(() => {
-    return filterAvailableRoutes(routes, pages);
+    return flattenSingleSection(filterAvailableRoutes(routes, pages));
   }, [pages]);
 
   const pathnameWithoutQuery = sanitizePath(pathname);

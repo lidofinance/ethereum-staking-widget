@@ -1,6 +1,6 @@
 import { ArrowBottom } from '@lidofinance/lido-ui';
 import { LocalLink } from 'shared/components/local-link';
-import styled, { css } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 import { devicesHeaderMedia } from 'styles/global';
 import { NAV_Z_INDEX } from 'styles/constants';
 import { POPUP_MENU_Z_INDEX, PopupStyled, popupItemActiveBg } from '../popup';
@@ -381,4 +381,12 @@ export const MobileTabLink = styled(LocalLink)<{ $showNew?: boolean }>`
 
   ${({ $showNew }) => $showNew && newBadgeCss}
   ${mobileNavFocusCss}
+`;
+
+// actual mobile navigation height for the footer and sticky elements;
+// `html:root` wins over the default `:root` value in the global styles
+export const MobileNavHeight = createGlobalStyle<{ $height: number }>`
+  html:root {
+    --nav-mobile-height: ${({ $height }) => $height}px;
+  }
 `;
