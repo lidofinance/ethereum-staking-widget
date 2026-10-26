@@ -4,6 +4,9 @@ import { useCallback, useRef, useState } from 'react';
 import type { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
+// direct file import: the utils index pulls the provider, which imports the guards
+import { getTokenPair } from '../../../utils/token-pair-tracker';
+
 import type { ApprovalData, OrderData } from '../../tx';
 import { useOracleRates, type OracleFeedMaps } from '../../oracles';
 
@@ -73,7 +76,10 @@ export const useTradeGuard = ({
       helpTip?: SigningHelpTip,
     ): Promise<boolean> =>
       new Promise((resolve) => {
-        trackMatomoEvent(quoteErrorEvent);
+        const params = lastTradeParamsRef.current;
+        trackMatomoEvent(quoteErrorEvent, {
+          token: getTokenPair(params?.sellToken, params?.buyToken),
+        });
         // Resolve any pending modal before opening a new one
         resolveRef.current?.(false);
         resolveRef.current = resolve;

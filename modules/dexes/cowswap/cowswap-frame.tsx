@@ -4,7 +4,7 @@ import {
   CowSwapWidgetProps,
   TradeType,
 } from '@cowprotocol/widget-react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { mainnet, sepolia } from 'viem/chains';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
@@ -32,7 +32,7 @@ import {
 } from './hooks';
 import { useTradeGuard, TradeGuardModal } from './guards/trade';
 import type { CowswapProfile } from './profile';
-import { shouldRefreshForSellToken } from './utils';
+import { createTokenPairTracker, shouldRefreshForSellToken } from './utils';
 import { LoaderStyled, DexWrapper } from './styles';
 import {
   CHAIN_WIDGET_STYLE,
@@ -108,13 +108,19 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     weth,
   });
 
+  // token pairs for the Matomo token dimension, kept for the order lifecycle events
+  const [tokenPairs] = useState(createTokenPairTracker);
+
   const trackQuoteViewed = useMemo(
     () =>
       debounce(
-        () => trackMatomoEvent(analytics.quoteViewed),
+        (payload: OnTradeParamsPayload) =>
+          trackMatomoEvent(analytics.quoteViewed, {
+            token: tokenPairs.pair(payload.sellToken, payload.buyToken),
+          }),
         TRADE_REPORT_EVENT_DEBOUNCE_MS,
       ),
-    [analytics.quoteViewed],
+    [analytics.quoteViewed, tokenPairs],
   );
 
   const validate = useCallback(
@@ -235,7 +241,9 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
         onBeforeTrade: async (payload) => {
           if (!(await validateTrade(payload))) return false;
 
-          trackMatomoEvent(analytics.swapStart);
+          trackMatomoEvent(analytics.swapStart, {
+            token: tokenPairs.pair(payload.sellToken, payload.buyToken),
+          });
           return await validate();
         },
         onBeforeOrderCancel: async () => {
@@ -253,6 +261,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       defaultPair,
       tokenLists,
       analytics.swapStart,
+      tokenPairs,
       widgetChainId,
       isGithubAvailable,
       feeRecipient,
@@ -270,33 +279,41 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     const handlers: CowSwapWidgetProps['listeners'] = [
       {
         event: CowWidgetEvents.ON_POSTED_ORDER,
-        handler: () => {
-          trackMatomoEvent(analytics.swapPosted);
+        handler: ({ orderUid, inputToken, outputToken }) => {
+          trackMatomoEvent(analytics.swapPosted, {
+            token: tokenPairs.postedOrder(orderUid, inputToken, outputToken),
+          });
         },
       },
       {
         event: CowWidgetEvents.ON_FULFILLED_ORDER,
-        handler: () => {
+        handler: ({ order }) => {
           void refetchBalances();
-          trackMatomoEvent(analytics.swapFinish);
+          trackMatomoEvent(analytics.swapFinish, {
+            token: tokenPairs.order(order),
+          });
         },
       },
       {
         event: CowWidgetEvents.ON_CANCELLED_ORDER,
-        handler: () => {
-          trackMatomoEvent(analytics.swapCancel);
+        handler: ({ order }) => {
+          trackMatomoEvent(analytics.swapCancel, {
+            token: tokenPairs.order(order),
+          });
         },
       },
       {
         event: CowWidgetEvents.ON_EXPIRED_ORDER,
-        handler: () => {
-          trackMatomoEvent(analytics.swapCancel);
+        handler: ({ order }) => {
+          trackMatomoEvent(analytics.swapCancel, {
+            token: tokenPairs.order(order),
+          });
         },
       },
       {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
         handler: (payload: OnTradeParamsPayload) => {
-          trackQuoteViewed();
+          trackQuoteViewed(payload);
           // Force widget refresh to reset token selection outside the profile
           if (shouldRefreshForSellToken(payload, sellTokens)) {
             triggerRefresh();
@@ -311,6 +328,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   }, [
     analytics,
     sellTokens,
+    tokenPairs,
     trackQuoteViewed,
     refetchBalances,
     reportTradeParams,
