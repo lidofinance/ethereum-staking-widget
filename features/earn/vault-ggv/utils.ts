@@ -3,15 +3,11 @@ import { bnAmountToNumber } from 'utils/bn';
 import { GGV_INCENTIVES, GGV_START_DATE, GGV_STATS_ORIGIN } from './consts';
 import { z } from 'zod';
 import { standardFetcher } from 'utils/standardFetcher';
-import { DECIMAL_STRING_SCHEMA } from 'utils/zod';
 import { ManifestConfigVaultApyType } from 'config/external-config';
 
 // Only the fields the widget reads are validated, the rest passes through
 const SEVEN_SEAS_DAILY_ITEM_SCHEMA = z.looseObject({
   daily_apy: z.number(),
-  timestamp: z.string(),
-  unix_seconds: z.number(),
-  total_assets: DECIMAL_STRING_SCHEMA,
 });
 
 const SEVEN_SEAS_DAILY_RESPONSE_SCHEMA = z.object({
@@ -21,24 +17,8 @@ const SEVEN_SEAS_DAILY_RESPONSE_SCHEMA = z.object({
 const SEVEN_SEAS_PERFORMANCE_RESPONSE_SCHEMA = z.object({
   Response: z.looseObject({
     apy: z.number(),
-    timestamp: z.string(),
-    real_apy_breakdown: z.array(
-      z.looseObject({
-        allocation: z.number(),
-        apy: z.number(),
-        chain: z.string(),
-        protocol: z.string(),
-      }),
-    ),
   }),
 });
-
-export type SevenSeasAPIDailyResponseItem = z.infer<
-  typeof SEVEN_SEAS_DAILY_ITEM_SCHEMA
->;
-export type SevenSeasAPIPerformanceResponse = z.infer<
-  typeof SEVEN_SEAS_PERFORMANCE_RESPONSE_SCHEMA
->;
 
 const fetchDailyData = async (url: string) =>
   SEVEN_SEAS_DAILY_RESPONSE_SCHEMA.parse(await standardFetcher<unknown>(url));
@@ -75,24 +55,6 @@ export const fetchWeeklyGGVApy = async (vault: Address) => {
   const data = await fetchPerformance(url);
 
   return data.Response.apy * 100;
-};
-
-export const fetchGGVPerformance = async (vault: Address) => {
-  const url = `${GGV_STATS_ORIGIN}/performance/ethereum/${vault}`;
-
-  const data = await fetchPerformance(url);
-
-  return data;
-};
-
-export const fetchDailyGGVChainData = async (vault: Address) => {
-  const last3DaysTimestamp = Math.floor(Date.now() / 1000) - 86400 * 3;
-  const url = `${GGV_STATS_ORIGIN}/dailyData/all/${vault}/${last3DaysTimestamp}/latest`;
-
-  const data = await fetchDailyData(url);
-  const latestData = data.Response;
-
-  return latestData;
 };
 
 export const fetchWeeklyGGVApyAverage = async (vault: Address) => {
