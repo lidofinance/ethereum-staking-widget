@@ -17,10 +17,12 @@ import { ReactComponent as TokenStrethIcon } from './token-streth.svg';
 import { ReactComponent as IconChartColumnIncreasingRaw } from './icon-chart-column-increasing.svg';
 import { ReactComponent as IconChartPieRaw } from './icon-chart-pie.svg';
 import { ReactComponent as IconRotateCwRaw } from './icon-rotate-cw.svg';
+import { ReactComponent as IconSparkles } from './icon-sparkles.svg';
 import { ReactComponent as PartnerNethermindIconCircle } from './partner-nethermind-icon-circle.svg';
 import { ReactComponent as PartnerUltrafieldsIconCircle } from './partner-ultra-fields-icon-circle.svg';
 import { ReactComponent as PartnerVedaIconCircle } from './partner-veda-icon-circle.svg';
 import { ReactComponent as TokenEthIcon } from './token-eth.svg';
+import { ReactComponent as TokenWethIcon } from './token-weth.svg';
 
 const themedFill = css`
   path,
@@ -59,9 +61,11 @@ export {
   TokenDvstethIcon,
   TokenStrethIcon,
   TokenEthIcon,
+  TokenWethIcon,
   IconChartColumnIncreasing,
   IconChartPie,
   IconRotateCw,
+  IconSparkles,
   PartnerNethermindIconCircle,
   PartnerUltrafieldsIconCircle,
   PartnerVedaIconCircle,

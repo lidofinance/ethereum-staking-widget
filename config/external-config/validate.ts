@@ -153,6 +153,7 @@ const FeatureFlagsSchema = z
     holidayDecorEnabled: z.boolean(),
     forceAllowance: z.boolean(),
     amountBannerEnabled: z.boolean(),
+    earnSmartSuggestEnabled: z.boolean(),
   })
   .partial();
 
