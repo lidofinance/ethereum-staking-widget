@@ -30,7 +30,8 @@
       "rewardsMaintenance": false,
       "holidayDecorEnabled": false,
       "forceAllowance": false,
-      "amountBannerEnabled": true
+      "amountBannerEnabled": true,
+      "earnSmartSuggestEnabled": true
     },
     "earnAllocation": {
       "labelAllowList": [],
@@ -81,7 +82,8 @@
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
         "forceAllowance": false,
-        "amountBannerEnabled": true
+        "amountBannerEnabled": true,
+        "earnSmartSuggestEnabled": true
       },
       "earnAllocation": {
         "labelAllowList": [],
@@ -130,7 +132,8 @@
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
         "forceAllowance": false,
-        "amountBannerEnabled": true
+        "amountBannerEnabled": true,
+        "earnSmartSuggestEnabled": true
       },
       "earnAllocation": {
         "labelAllowList": [],
@@ -166,7 +169,8 @@
       "featureFlags": {
         "ledgerLiveL2": true,
         "dgBannerEnabled": false,
-        "amountBannerEnabled": false
+        "amountBannerEnabled": false,
+        "earnSmartSuggestEnabled": false
       },
       "pages": {
         "/withdrawals": {
