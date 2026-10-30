@@ -11,12 +11,15 @@ type FallbackProps = React.ComponentProps<WalletCardComponent> & {
   showMultichainBanner?: boolean;
   toActionText?: string;
   error?: string;
+  // text of the Lido Multichain banner instead of the default one
+  multichainMessage?: React.ReactNode;
 };
 export const Fallback = ({
   showMultichainBanner = true,
   children,
   toActionText,
   error: errorProp,
+  multichainMessage,
   ...props
 }: FallbackProps) => {
   const { multiChainBanner } = useConfig().externalConfig;
@@ -34,7 +37,11 @@ export const Fallback = ({
 
   if (showMultichainBanner && isLidoMultichain) {
     return (
-      <LidoMultichainFallback textEnding={toActionText ?? ''} {...props} />
+      <LidoMultichainFallback
+        textEnding={toActionText ?? ''}
+        message={multichainMessage}
+        {...props}
+      />
     );
   }
 

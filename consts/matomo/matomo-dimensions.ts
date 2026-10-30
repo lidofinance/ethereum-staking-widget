@@ -4,8 +4,8 @@ import { DISCONNECTED_CHAIN_ID } from 'utils/tracked-chain';
 // Action-scope custom dimensions, ids as registered in the Matomo admin.
 // Dimension 1 is reserved: the analytics package sets it from the meta-info cookie
 export const MATOMO_DIMENSIONS = {
-  chain: 2,
   token: 3,
+  chain: 4,
 } as const;
 
 // "mainnet-1", "base-8453", "unknown-1337", "disconnected-0"
