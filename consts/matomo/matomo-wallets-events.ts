@@ -7,7 +7,7 @@ import type { WalletIdsEthereum } from 'reef-knot/wallets';
 import { MATOMO_CLICK_EVENTS } from './matomo-click-events';
 
 type MetricProps = Pick<
-  ReefKnotWalletsModalConfig<WalletIdsEthereum>,
+  ReefKnotWalletsModalConfig<WalletIdsEthereum | 'oath'>,
   | 'onClickTermsAccept'
   | 'onClickWalletsMore'
   | 'onClickWalletsLess'
@@ -16,7 +16,7 @@ type MetricProps = Pick<
 > &
   Pick<ReefKnotConfig, 'onAutoConnect' | 'onReconnect'>;
 
-type EventsData = Partial<Record<WalletIdsEthereum, [string, string]>>;
+type EventsData = Partial<Record<WalletIdsEthereum | 'oath', [string, string]>>;
 
 const EVENTS_DATA_CONNECT_START: EventsData = {
   ambire: ['on Ambire', 'ambire'],
@@ -28,6 +28,7 @@ const EVENTS_DATA_CONNECT_START: EventsData = {
   metaMask: ['Metamask', 'metamask'],
   okx: ['OKX', 'okx'],
   walletConnect: ['WalletConnect', 'walletconnect'],
+  oath: ['Oath Wallet', 'oath'],
   anchorageDigital: ['Anchorage Digital', 'anchorage_digital'],
 } as const;
 
