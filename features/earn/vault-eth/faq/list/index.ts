@@ -14,3 +14,4 @@ export { PendingWithdrawalRewards } from './pending-withdrawal-rewards';
 export { HowManyWithdrawalRequests } from './how-many-withdrawal-requests';
 export { CanICancelMyWithdrawalRequest } from './can-i-cancel-withdrawal-request';
 export { HowDoIClaimMyRewards } from './how-do-i-claim-my-rewards';
+export { HowDoesLossProtectionWork } from './how-does-loss-protection-work';

@@ -1,17 +1,19 @@
-import { Link } from '@lidofinance/lido-ui';
-import { config } from 'config';
+import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
+import { USD_DEPOSIT_PATH } from 'features/earn/consts';
+import { FAQ_IDS } from './faq/faq';
 
 export const ProtectedTooltip = () => {
   return (
     <>
-      In the event of a ≥1% mark-to-market loss, dedicated protocol reserves
-      absorb losses first, before user deposits.{' '}
-      <Link
-        href={`${config.researchOrigin}/t/lido-earn-competing-on-trust-5m-treasury-allocation/11228`}
-        target="_blank"
+      Two layers of loss protection: Firelight provides protection for up to 5%
+      of the vault&apos;s total value, followed by Lido DAO-funded loss
+      protection. Eligibility conditions and limits apply.{' '}
+      <LinkInpageAnchor
+        pagePath={USD_DEPOSIT_PATH}
+        hash={`#${FAQ_IDS.lossProtection}`}
       >
         Learn more
-      </Link>
+      </LinkInpageAnchor>
     </>
   );
 };
