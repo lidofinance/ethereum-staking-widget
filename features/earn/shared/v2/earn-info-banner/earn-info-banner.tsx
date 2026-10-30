@@ -14,12 +14,18 @@ export const EarnInfoBanner: FC = () => {
   const { featureFlags, earnInfoBanner } = useConfig().externalConfig;
   const { title, text } = earnInfoBanner;
   const isSsr = useSsrMode();
-  const [isDismissed, setDismissed] = useLocalStorage(
-    EARN_INFO_BANNER_DISMISSED_STORAGE_KEY,
-    false,
-  );
 
-  const dismiss = useCallback(() => setDismissed(true), [setDismissed]);
+  // A new text in the manifest shows the banner again.
+  const [dismissedText, setDismissedText] = useLocalStorage<string | null>(
+    EARN_INFO_BANNER_DISMISSED_STORAGE_KEY,
+    null,
+  );
+  const isDismissed = !!text && dismissedText === text;
+
+  const dismiss = useCallback(
+    () => setDismissedText(text ?? null),
+    [setDismissedText, text],
+  );
 
   // The server does not know the localStorage state.
   // Show the banner only after mount to prevent a hydration mismatch.
