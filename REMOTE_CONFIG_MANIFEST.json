@@ -33,8 +33,8 @@
       "amountBannerEnabled": true
     },
     "earnInfoBanner": {
-      "title": "Yields are temporarily lower.",
-      "text": "After the 29 Oct Binance incident, Aave froze new deposits and borrowing as a precaution, which raised borrowing costs for some Earn strategies. Earn has no exposure to Binance, and the vaults are fully operational."
+      "title": "Yields are recovering.",
+      "text": "Aave has reopened the markets it froze after the 29 Oct Binance incident, and borrowing costs for Earn strategies are normalizing. Earn has no exposure to Binance, and the vaults are fully operational."
     },
     "earnAllocation": {
       "labelAllowList": [],
