@@ -44,17 +44,19 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { SupportOnlyL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './web3-transport';
 import { wagmiChainMap } from '../consts';
+import { OathWallet, isOathAvailable } from '../wallets/oath-wallet';
 
 type ChainsList = [Chain, ...Chain[]];
 
 const WALLETS_PINNED: WalletIdsEthereum[] = ['browserExtension'];
 
-const WALLETS_SHOWN: WalletIdsEthereum[] = [
+const WALLETS_SHOWN: (WalletIdsEthereum | 'oath')[] = [
   'browserExtension',
   'metaMask',
   'okx',
   'ledgerHID',
   'ledgerLive',
+  'oath',
   'walletConnect',
   'bitget',
   'anchorageDigital',
@@ -169,7 +171,9 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       (walletId) => !disabledSet.has(walletId),
     );
     const walletsShown = WALLETS_SHOWN.filter(
-      (walletId) => !disabledSet.has(walletId),
+      (walletId) =>
+        !disabledSet.has(walletId) &&
+        (walletId !== 'oath' || isOathAvailable()),
     );
 
     const filteredConfigs = getDefaultConfig({
@@ -177,7 +181,10 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       rpc: backendRPC,
       defaultChain: defaultChain,
       walletconnectProjectId,
-      walletsList: WalletsListEthereum,
+      walletsList: {
+        ...WalletsListEthereum,
+        ...(isOathAvailable() ? { oath: OathWallet } : {}),
+      },
 
       // Wagmi config args
       transports: transportMap,
