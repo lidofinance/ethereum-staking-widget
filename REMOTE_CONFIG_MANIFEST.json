@@ -32,6 +32,10 @@
       "forceAllowance": false,
       "amountBannerEnabled": true
     },
+    "earnInfoBanner": {
+      "title": "Yields are recovering.",
+      "text": "Aave has reopened the markets it froze after the 29 Oct Binance incident, and borrowing costs for Earn strategies are normalizing. Earn has no exposure to Binance, and the vaults are fully operational."
+    },
     "earnAllocation": {
       "labelAllowList": [],
       "hiddenIds": []
@@ -81,7 +85,8 @@
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
         "forceAllowance": false,
-        "amountBannerEnabled": true
+        "amountBannerEnabled": true,
+        "earnInfoBannerEnabled": true
       },
       "earnAllocation": {
         "labelAllowList": [],
@@ -130,7 +135,8 @@
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
         "forceAllowance": false,
-        "amountBannerEnabled": true
+        "amountBannerEnabled": true,
+        "earnInfoBannerEnabled": true
       },
       "earnAllocation": {
         "labelAllowList": [],
