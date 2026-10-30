@@ -85,6 +85,22 @@ const EarnVaultsBannerSchema = z
   });
 
 //
+// Earn Info Banner
+//
+
+const EarnInfoBannerConfigSchema = z.object({
+  title: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
+  text: z.string().max(MAX_REASON_TEXT_LENGTH).optional(),
+});
+
+// Replace an invalid section with an empty one.
+// A bad text hides the banner, but the rest of the manifest stays valid.
+const EarnInfoBannerSchema = z.preprocess(
+  (obj) => (EarnInfoBannerConfigSchema.safeParse(obj).success ? obj : {}),
+  EarnInfoBannerConfigSchema,
+);
+
+//
 // Earn allocation
 //
 
@@ -153,6 +169,7 @@ const FeatureFlagsSchema = z
     holidayDecorEnabled: z.boolean(),
     forceAllowance: z.boolean(),
     amountBannerEnabled: z.boolean(),
+    earnInfoBannerEnabled: z.boolean(),
   })
   .partial();
 
@@ -382,6 +399,7 @@ const ManifestConfigSchema = z.object({
   featureFlags: FeatureFlagsSchema.optional().default({}),
   earnVaults: EarnVaultListSchema.optional().default([]),
   earnVaultsBanner: EarnVaultsBannerSchema,
+  earnInfoBanner: EarnInfoBannerSchema,
   earnAllocation: EarnAllocationSchema,
   geo: GeoSchema,
   pages: PagesEntrySchema.optional().default({}),

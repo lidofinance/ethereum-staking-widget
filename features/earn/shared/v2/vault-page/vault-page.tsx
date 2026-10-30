@@ -14,6 +14,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { useInpageNavigation } from 'providers/inpage-navigation';
 
 import { VaultChart } from '../vault-chart';
+import { EarnInfoBanner } from '../earn-info-banner';
 
 import type { VaultBalanceProp } from './content/top-section';
 import { SidePanel } from './side-panel';
@@ -141,6 +142,7 @@ export const VaultPage: FC<Props> = (props) => {
           protectedBadgeTooltipText={protectedBadgeTooltipText}
           balance={props.balance}
         />
+        <EarnInfoBanner />
         <VaultPageContent>
           <TabsStyled>
             <Tab
