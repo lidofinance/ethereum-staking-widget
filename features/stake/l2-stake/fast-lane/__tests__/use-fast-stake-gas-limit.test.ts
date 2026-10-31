@@ -28,13 +28,13 @@ const createModule = () => ({
   fastStakeEthEstimateGas: vi.fn(async ({ token }: StakeArgs) =>
     token === 'ETH' ? 180_000n : 190_000n,
   ),
-  approveWethForFastStakeEstimateGas: vi.fn(async () => 40_000n),
+  approveWethEstimateGas: vi.fn(async () => 40_000n),
   fastStakeEthPopulateTx: vi.fn(async ({ token, amount }: StakeArgs) => ({
     to: RECEIVER,
     data: token === 'ETH' ? '0x01' : '0x02',
     value: token === 'ETH' ? amount : 0n,
   })),
-  approveWethForFastStakePopulateTx: vi.fn(
+  approveWethPopulateTx: vi.fn(
     async (): Promise<{ to: Address; data?: Hex }> => ({
       to: WETH,
       data: '0x03',
@@ -92,7 +92,7 @@ vi.mock('modules/web3', () => ({
   }),
 }));
 
-import { useFastStakeGasLimit } from '../hooks/use-fast-stake-gas-limit';
+import { useFastStakeGasLimit } from '../use-fast-stake-gas-limit';
 
 const render = () => renderHook(() => useFastStakeGasLimit());
 
@@ -171,7 +171,7 @@ describe('useFastStakeGasLimit', () => {
     expect(l2Module().fastStakeEthEstimateGas).toHaveBeenCalledWith(
       stakeProps('WETH'),
     );
-    expect(l2Module().approveWethForFastStakeEstimateGas).toHaveBeenCalledWith({
+    expect(l2Module().approveWethEstimateGas).toHaveBeenCalledWith({
       account: ACCOUNT,
       amount: ESTIMATE_AMOUNT,
     });
@@ -186,7 +186,7 @@ describe('useFastStakeGasLimit', () => {
     expect(l2Module().fastStakeEthPopulateTx).toHaveBeenCalledWith(
       stakeProps('WETH'),
     );
-    expect(l2Module().approveWethForFastStakePopulateTx).toHaveBeenCalledWith({
+    expect(l2Module().approveWethPopulateTx).toHaveBeenCalledWith({
       account: ACCOUNT,
       amount: ESTIMATE_AMOUNT,
     });
@@ -209,7 +209,7 @@ describe('useFastStakeGasLimit', () => {
   });
 
   it('fails the estimates when the approve estimate fails', async () => {
-    l2Module().approveWethForFastStakeEstimateGas.mockRejectedValue(
+    l2Module().approveWethEstimateGas.mockRejectedValue(
       new Error('execution reverted'),
     );
 
@@ -239,7 +239,7 @@ describe('useFastStakeGasLimit', () => {
   });
 
   it('drops a representative tx that carries no calldata', async () => {
-    l2Module().approveWethForFastStakePopulateTx.mockResolvedValue({
+    l2Module().approveWethPopulateTx.mockResolvedValue({
       to: WETH,
     });
 

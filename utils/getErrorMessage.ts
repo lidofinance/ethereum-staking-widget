@@ -5,6 +5,7 @@ import {
   TxFlowInterruptedError,
   TxStaleError,
   QuoteMismatchError,
+  StakeLimitError,
 } from 'modules/web3';
 import { UnknownBundleIdError, UserRejectedRequestError } from 'viem';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -234,6 +235,9 @@ const extractHumaneMessage = (error: unknown) => {
   }
   if (error instanceof QuoteMismatchError) {
     return ErrorMessage.QUOTE_CHANGED;
+  }
+  if (error instanceof StakeLimitError) {
+    return error.message;
   }
   if (error instanceof SendCallsError) {
     return error.message;

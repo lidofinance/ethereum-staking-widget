@@ -5,7 +5,7 @@
       "enabled": true
     },
     "l2Stake": {
-      "common": { "enabled": true, "liquidityTarget": 25 },
+      "common": { "enabled": true, "mode": "all", "liquidityTarget": 25 },
       "perChain": {}
     },
     "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],

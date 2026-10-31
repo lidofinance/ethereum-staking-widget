@@ -1,109 +1,31 @@
 import {
   decodeFunctionData,
+  encodeAbiParameters,
+  encodeEventTopics,
   encodeFunctionData,
   getAddress,
   zeroAddress,
   type Address,
   type Hash,
 } from 'viem';
+import { CHAINS, ERROR_CODE } from '@lidofinance/lido-ethereum-sdk/common';
+
+import { L2_STAKING_RECEIVER_ABI } from '../abi/l2-staking-receiver';
+import { L2StakeModule } from '../l2-stake';
 import {
-  CHAINS,
-  ERROR_CODE,
-  LIDO_L2_CONTRACT_ADDRESSES,
-} from '@lidofinance/lido-ethereum-sdk/common';
-import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
-
-import { L2_STAKING_RECEIVER_ABI } from '../l2-staking-abi';
-import {
-  L2StakeModule,
-  calcFastStakeEthByWsteth,
-  calcFastStakeWstethByEth,
-} from '../l2-staking-module';
-
-const P = 10n ** 18n;
-const FEE = 10n ** 15n; // 0.1%
-const PRICE = 12n * 10n ** 17n; // 1 wstETH = 1.2 ETH
-const LIQUIDITY = 7n * 10n ** 18n + 123_456_789n; // pool wstETH balance
-
-const ACCOUNT: Address = '0x00000000000000000000000000000000000000aa';
-const REFERRAL: Address = '0x00000000000000000000000000000000000000bb';
-const POOL: Address = '0x00000000000000000000000000000000000000cc';
-const FEED: Address = '0x00000000000000000000000000000000000000dd';
-const WETH: Address = '0x00000000000000000000000000000000000000ee';
-const TX_HASH: Hash =
-  '0x1111111111111111111111111111111111111111111111111111111111111111';
-// linea_estimateGas reply: 7 wei base fee, 0x100 tip
-const LINEA_QUOTE = {
-  gasLimit: '0x30000',
-  baseFeePerGas: '0x7',
-  priorityFeePerGas: '0x100',
-};
-
-const l2Addresses = (chainId: CHAINS) => {
-  const addresses = LIDO_L2_CONTRACT_ADDRESSES[chainId];
-  if (!addresses?.wsteth || !addresses.stakeReceiver)
-    throw new Error(`no L2 staking addresses for ${chainId}`);
-  return { wsteth: addresses.wsteth, stakeReceiver: addresses.stakeReceiver };
-};
-
-type ReadCall = { address: Address; functionName: string; args?: unknown[] };
-
-// The module only needs `core` for its clients, account and chain: a plain
-// stub keeps real viem encoding in the loop while the RPC is a lookup table
-const createModule = (chainId: CHAINS = CHAINS.Base) => {
-  const reads: Record<string, unknown> = {
-    getOraclePool: POOL,
-    getOracle: FEED,
-    getFee: FEE,
-    getLatestAnswer: PRICE,
-    TOKEN: LIDO_L2_CONTRACT_ADDRESSES[chainId]?.wsteth,
-    WNATIVE: WETH,
-    MIN_PROCESS_MESSAGE_GAS: 200_000,
-    LINK_TOKEN: '0x00000000000000000000000000000000000000f1',
-    CCIP_ROUTER: '0x00000000000000000000000000000000000000f2',
-    balanceOf: LIQUIDITY,
-  };
-  const publicClient = {
-    readContract: vi.fn(async ({ functionName }: ReadCall) => {
-      if (!(functionName in reads))
-        throw new Error(`unexpected read: ${functionName}`);
-      return reads[functionName];
-    }),
-    estimateContractGas: vi.fn(async () => 120_000n),
-    // raw RPC for chain-specific fee quotes (linea_estimateGas)
-    request: vi.fn(async () => LINEA_QUOTE),
-  };
-  const walletClient = { writeContract: vi.fn(async () => TX_HASH) };
-  const core = {
-    chain: { id: chainId },
-    chainId,
-    logMode: 'none',
-    publicClient,
-    keyedClient: { public: publicClient, wallet: walletClient },
-    useAccount: vi.fn(async (account?: Address) => ({
-      address: account ?? ACCOUNT,
-      type: 'json-rpc',
-    })),
-    useWalletClient: vi.fn(() => walletClient),
-    // Mirrors the SDK: estimate, then send with the estimated gas
-    performTransaction: vi.fn(
-      async (props: {
-        account: { address: Address };
-        getGasLimit: (options: object) => Promise<bigint>;
-        sendTransaction: (options: object) => Promise<Hash>;
-      }) => {
-        const gas = await props.getGasLimit({ account: props.account });
-        const hash = await props.sendTransaction({
-          account: props.account,
-          gas,
-        });
-        return { hash };
-      },
-    ),
-  };
-  const l2Stake = new L2StakeModule({ core: core as unknown as LidoSDKCore });
-  return { l2Stake, core, publicClient, walletClient };
-};
+  ACCOUNT,
+  CCIP_BUCKET,
+  FEE,
+  FEED,
+  LIQUIDITY,
+  P,
+  POOL,
+  PRICE,
+  REFERRAL,
+  WETH,
+  createModule,
+  l2Addresses,
+} from './module-harness';
 
 const decodeFastStake = (data?: Hash) => {
   if (!data) throw new Error('populated tx has no calldata');
@@ -115,20 +37,20 @@ const decodeFastStake = (data?: Hash) => {
 describe('calcFastStakeWstethByEth', () => {
   it('takes the fee from the ETH and prices the remainder', () => {
     // (1 - 0.001) / 1.2
-    expect(calcFastStakeWstethByEth(P, FEE, PRICE)).toBe(
+    expect(L2StakeModule.calcFastStakeWstethByEth(P, FEE, PRICE)).toBe(
       832_500_000_000_000_000n,
     );
   });
 
   it('rounds down', () => {
-    expect(calcFastStakeWstethByEth(P, 0n, PRICE)).toBe(
+    expect(L2StakeModule.calcFastStakeWstethByEth(P, 0n, PRICE)).toBe(
       833_333_333_333_333_333n,
     );
-    expect(calcFastStakeWstethByEth(1n, 0n, PRICE)).toBe(0n);
+    expect(L2StakeModule.calcFastStakeWstethByEth(1n, 0n, PRICE)).toBe(0n);
   });
 
   it('is identity at par without a fee', () => {
-    expect(calcFastStakeWstethByEth(P, 0n, P)).toBe(P);
+    expect(L2StakeModule.calcFastStakeWstethByEth(P, 0n, P)).toBe(P);
   });
 });
 
@@ -154,22 +76,26 @@ describe('calcFastStakeEthByWsteth', () => {
     'returns the largest ETH that stays within the wstETH (fee $feeRate, price $price)',
     ({ feeRate, price }) => {
       for (const wsteth of samples) {
-        const eth = calcFastStakeEthByWsteth(wsteth, feeRate, price);
+        const eth = L2StakeModule.calcFastStakeEthByWsteth(
+          wsteth,
+          feeRate,
+          price,
+        );
         expect(
-          calcFastStakeWstethByEth(eth, feeRate, price),
+          L2StakeModule.calcFastStakeWstethByEth(eth, feeRate, price),
         ).toBeLessThanOrEqual(wsteth);
         expect(
-          calcFastStakeWstethByEth(eth + 1n, feeRate, price),
+          L2StakeModule.calcFastStakeWstethByEth(eth + 1n, feeRate, price),
         ).toBeGreaterThan(wsteth);
       }
     },
   );
 
   it('rejects a rate that cannot be inverted', () => {
-    expect(() => calcFastStakeEthByWsteth(P, P, PRICE)).toThrow(
+    expect(() => L2StakeModule.calcFastStakeEthByWsteth(P, P, PRICE)).toThrow(
       'Invalid fast stake rate',
     );
-    expect(() => calcFastStakeEthByWsteth(P, FEE, 0n)).toThrow(
+    expect(() => L2StakeModule.calcFastStakeEthByWsteth(P, FEE, 0n)).toThrow(
       'Invalid fast stake rate',
     );
   });
@@ -230,10 +156,10 @@ describe('L2StakeModule', () => {
     it('converts both ways with the live rate', async () => {
       const { l2Stake } = createModule();
       await expect(l2Stake.getFastStakeWstethByEth(P)).resolves.toBe(
-        calcFastStakeWstethByEth(P, FEE, PRICE),
+        L2StakeModule.calcFastStakeWstethByEth(P, FEE, PRICE),
       );
       await expect(l2Stake.getFastStakeEthByWsteth(P)).resolves.toBe(
-        calcFastStakeEthByWsteth(P, FEE, PRICE),
+        L2StakeModule.calcFastStakeEthByWsteth(P, FEE, PRICE),
       );
     });
 
@@ -262,7 +188,11 @@ describe('L2StakeModule', () => {
 
   describe('transaction construction', () => {
     const amount = 3n * P;
-    const minReceiveAmount = calcFastStakeWstethByEth(amount, FEE, PRICE);
+    const minReceiveAmount = L2StakeModule.calcFastStakeWstethByEth(
+      amount,
+      FEE,
+      PRICE,
+    );
     const receiver = l2Addresses(CHAINS.Base).stakeReceiver;
 
     it('populates an ETH stake call for the receiver', async () => {
@@ -405,12 +335,157 @@ describe('L2StakeModule', () => {
     });
   });
 
+  describe('receipt decoding', () => {
+    const fastStakeLog = (address: Address) => ({
+      address,
+      topics: encodeEventTopics({
+        abi: L2_STAKING_RECEIVER_ABI,
+        eventName: 'FastStake',
+        args: { user: ACCOUNT, token: zeroAddress },
+      }),
+      data: encodeAbiParameters(
+        [{ type: 'uint256' }, { type: 'uint256' }],
+        [3n * P, 2n * P],
+      ),
+    });
+    const referralLog = (address: Address) => ({
+      address,
+      topics: encodeEventTopics({
+        abi: L2_STAKING_RECEIVER_ABI,
+        eventName: 'Referral',
+        args: { user: ACCOUNT, referral: REFERRAL },
+      }),
+      data: encodeAbiParameters([{ type: 'uint256' }], [2n * P]),
+    });
+    const sender = l2Addresses(CHAINS.Base).stakeReceiver;
+
+    it('reads the amounts and the referral from the sender events', async () => {
+      const { l2Stake } = createModule();
+      await expect(
+        l2Stake.decodeFastStakeEvents({
+          logs: [fastStakeLog(sender), referralLog(sender)],
+        } as never),
+      ).resolves.toEqual({
+        user: getAddress(ACCOUNT),
+        token: zeroAddress,
+        amountIn: 3n * P,
+        amountOut: 2n * P,
+        referral: getAddress(REFERRAL),
+      });
+    });
+
+    it('leaves the referral out when none was emitted', async () => {
+      const { l2Stake } = createModule();
+      const result = await l2Stake.decodeFastStakeEvents({
+        logs: [fastStakeLog(sender)],
+      } as never);
+      expect(result.referral).toBeUndefined();
+    });
+
+    it('ignores the same event from another contract', async () => {
+      const { l2Stake } = createModule();
+      await expect(
+        l2Stake.decodeFastStakeEvents({
+          logs: [fastStakeLog(POOL)],
+        } as never),
+      ).rejects.toMatchObject({ code: ERROR_CODE.TRANSACTION_ERROR });
+    });
+
+    it('decodes the receipt of a sent stake', async () => {
+      const { l2Stake, core } = createModule();
+      await l2Stake.fastStakeEth({
+        token: 'ETH',
+        amount: P,
+        minReceiveAmount: 0n,
+      });
+      expect(core.performTransaction).toHaveBeenCalledWith(
+        expect.objectContaining({ decodeResult: expect.any(Function) }),
+      );
+    });
+  });
+
+  describe('state', () => {
+    const open = { isFastLaneAvailable: true, isSlowLaneAvailable: true };
+
+    it('reports both lanes open from the sender, the pool, the router and the CCIP pool', async () => {
+      const { l2Stake, publicClient } = createModule();
+      await expect(l2Stake.fetchStakeState()).resolves.toEqual(open);
+      const calls = publicClient.readContract.mock.calls.map(([call]) => call);
+      expect(calls).toContainEqual(
+        expect.objectContaining({ address: POOL, functionName: 'paused' }),
+      );
+      expect(calls).toContainEqual(
+        expect.objectContaining({ functionName: 'getReceiver' }),
+      );
+    });
+
+    it.each([
+      ['pool is paused', { paused: true }],
+      ['admin unset the oracle pool', { getOraclePool: zeroAddress }],
+    ])('closes the fast lane when the %s', async (_, reads) => {
+      const { l2Stake } = createModule(CHAINS.Base, { reads });
+      await expect(l2Stake.fetchStakeState()).resolves.toEqual({
+        ...open,
+        isFastLaneAvailable: false,
+      });
+    });
+
+    it('never reads a pool that is unset', async () => {
+      const { l2Stake, publicClient } = createModule(CHAINS.Base, {
+        reads: { getOraclePool: zeroAddress },
+      });
+      await l2Stake.fetchStakeState();
+      expect(publicClient.readContract).not.toHaveBeenCalledWith(
+        expect.objectContaining({ functionName: 'paused' }),
+      );
+    });
+
+    it.each([
+      ['admin unset the L1 receiver', { getReceiver: '0x' }],
+      ['router drops the lane', { isChainSupported: false }],
+      ['pool drops the chain', { isSupportedChain: false }],
+      [
+        'limiter closes with a zero capacity',
+        {
+          getCurrentOutboundRateLimiterState: {
+            ...CCIP_BUCKET,
+            capacity: 0n,
+            tokens: 0n,
+          },
+        },
+      ],
+    ])('closes the slow lane when the %s', async (_, reads) => {
+      const { l2Stake } = createModule(CHAINS.Base, { reads });
+      await expect(l2Stake.fetchStakeState()).resolves.toEqual({
+        ...open,
+        isSlowLaneAvailable: false,
+      });
+    });
+
+    it('treats a disabled limiter as open', async () => {
+      const { l2Stake } = createModule(CHAINS.Base, {
+        reads: {
+          getCurrentOutboundRateLimiterState: {
+            ...CCIP_BUCKET,
+            isEnabled: false,
+            capacity: 0n,
+          },
+        },
+      });
+      await expect(l2Stake.fetchStakeState()).resolves.toEqual(open);
+    });
+  });
+
   // The core prices txs from a fee-history sample; on Linea that sample is
   // unrelated to the L1-cost-driven tip the sequencer wants and gets charged
   // in full, so the stake and the approval are re-priced per tx
   describe('Linea fee quoting', () => {
     const amount = 3n * P;
-    const minReceiveAmount = calcFastStakeWstethByEth(amount, FEE, PRICE);
+    const minReceiveAmount = L2StakeModule.calcFastStakeWstethByEth(
+      amount,
+      FEE,
+      PRICE,
+    );
     const lineaFees = { maxFeePerGas: 14n + 256n, maxPriorityFeePerGas: 256n };
 
     it('re-prices the stake from linea_estimateGas for the exact calldata', async () => {
@@ -452,7 +527,7 @@ describe('L2StakeModule', () => {
       const { l2Stake, publicClient, walletClient } = createModule(
         CHAINS.Linea,
       );
-      await l2Stake.approveWethForFastStake({ amount });
+      await l2Stake.approveWeth({ amount });
 
       expect(publicClient.request).toHaveBeenCalledWith(
         expect.objectContaining({ method: 'linea_estimateGas' }),
