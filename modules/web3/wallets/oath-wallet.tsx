@@ -50,17 +50,36 @@ export const OathWallet: WalletAdapterType = ({ walletconnectProjectId }) => {
           // The provider still owns pairing and cancellation. Select the named
           // wallet view only for this attempt, after its native modal opens.
           // Desktop renders the QR; iOS renders the native app handoff.
-          const unsubscribe = ModalController.subscribeKey('open', (open) => {
-            if (open) {
+          const showOath = () => {
+            if (ModalController.state.open) {
               RouterController.reset('ConnectingWalletConnect', {
                 wallet: OATH_WALLET,
               });
             }
-          });
+          };
+          const unsubscribeOpen = ModalController.subscribeKey(
+            'open',
+            (open) => {
+              if (open) showOath();
+            },
+          );
+          const unsubscribeView = RouterController.subscribeKey(
+            'view',
+            (view) => {
+              // Reopening an already-open modal does not notify the open listener.
+              if (
+                view === 'ConnectingWalletConnectBasic' ||
+                view === 'AllWallets'
+              ) {
+                showOath();
+              }
+            },
+          );
           try {
             return await base.connect.call(this, parameters);
           } finally {
-            unsubscribe();
+            unsubscribeOpen();
+            unsubscribeView();
           }
         } as typeof base.connect,
       };

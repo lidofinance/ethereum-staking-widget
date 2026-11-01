@@ -20,8 +20,8 @@ vi.mock('wagmi/connectors', () => ({
 }));
 vi.mock('@reown/appkit-controllers', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@reown/appkit-controllers')>()),
-  ModalController: { subscribeKey: mocks.subscribe },
-  RouterController: { reset: mocks.reset },
+  ModalController: { state: { open: true }, subscribeKey: mocks.subscribe },
+  RouterController: { reset: mocks.reset, subscribeKey: mocks.subscribe },
 }));
 
 const adapterArgs = {
@@ -92,7 +92,7 @@ describe('Oath Reef-Knot adapter', () => {
     await connector.connect({ chainId: 1 });
     expect(mocks.connect.mock.calls[0][0]).toEqual({ chainId: 1 });
     expect(mocks.connect.mock.contexts[0]).toBe(connector);
-    expect(mocks.unsubscribe).toHaveBeenCalledOnce();
+    expect(mocks.unsubscribe).toHaveBeenCalledTimes(2);
   });
 
   it('preserves rejection and removes the route listener so the generic wallet remains independent', async () => {
@@ -101,7 +101,7 @@ describe('Oath Reef-Knot adapter', () => {
     const connector =
       OathWallet(adapterArgs).createConnectorFn(connectorConfig);
     await expect(connector.connect()).rejects.toBe(failure);
-    expect(mocks.unsubscribe).toHaveBeenCalledOnce();
+    expect(mocks.unsubscribe).toHaveBeenCalledTimes(2);
   });
 
   it.each([
