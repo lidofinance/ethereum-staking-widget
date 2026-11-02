@@ -10,13 +10,19 @@ const expectNav = async (page: Page, visible: NavItem[], hidden: NavItem[]) => {
   for (const item of hidden) await expect(nav(page, item)).toHaveCount(0);
 };
 
-// swap/earn can be disabled by the stand manifest; such tests are skipped
+const STAKE_SUB_PAGES = ['navWrap', 'navWithdrawals', 'navRewards'] as const;
+
+// products and stake pages can be disabled by the stand manifest; tests adapt or skip
 const getBaseline = async (page: Page) => {
   await page.goto('/');
   await expect(nav(page, 'navStake').first()).toBeAttached();
+  const stakeSubPages: string[] = [];
+  for (const item of STAKE_SUB_PAGES)
+    if ((await page.getByTestId(item).count()) > 0) stakeSubPages.push(item);
   return {
     earn: (await nav(page, 'navEarn').count()) > 0,
     swap: (await nav(page, 'navSwap').count()) > 0,
+    stakePages: ['navStake', ...stakeSubPages],
   };
 };
 
@@ -28,7 +34,7 @@ type NextWindow = Window & {
 };
 
 test.describe('products via URL params', () => {
-  let baseline: { earn: boolean; swap: boolean };
+  let baseline: Awaited<ReturnType<typeof getBaseline>>;
 
   test.beforeEach(async ({ page }) => {
     baseline = await getBaseline(page);
@@ -118,19 +124,17 @@ test.describe('products via URL params', () => {
   test('stake only: flat desktop navigation without the dropdown', async ({
     page,
   }) => {
-    // the stake pages are links in the dropdown, hidden until it opens
-    await page.goto('/');
-    await expect(nav(page, 'navStake').first()).toBeVisible();
-    await expect(page.getByTestId('navWrap').first()).toBeHidden();
+    // beforeEach is already on `/`; with Earn or Swap on the stand the stake pages
+    // are links in the closed dropdown, without them the navigation is flat already
+    if (baseline.earn || baseline.swap) {
+      await expect(nav(page, 'navStake').first()).toBeVisible();
+      for (const item of baseline.stakePages.slice(1))
+        await expect(page.getByTestId(item).first()).toBeHidden();
+    }
 
     for (const query of ['product=stake', 'app=ledger-live']) {
       await page.goto(`/?${query}`);
-      for (const item of [
-        'navStake',
-        'navWrap',
-        'navWithdrawals',
-        'navRewards',
-      ])
+      for (const item of baseline.stakePages)
         await expect(page.getByTestId(item).first()).toBeVisible();
       await expectNav(page, ['navStake'], ['navEarn', 'navSwap']);
     }
@@ -143,19 +147,20 @@ test.describe('products via URL params', () => {
     const mobileNav = page.locator('nav[aria-label="Main"]');
     const track = mobileNav.locator('[aria-label="Stake"]');
 
-    // the track holds text links; tabs are Stake, Earn, Swap
+    // the track holds text links; tabs are Stake, Earn, Swap.
+    // Without Earn and Swap on the stand the navigation is flat already
     await page.goto('/');
-    await expect(track).toBeVisible();
-    await expect(mobileNav.getByTestId('navWrap').first()).toBeHidden();
+    if (baseline.earn || baseline.swap) {
+      await expect(track).toBeVisible();
+      for (const item of baseline.stakePages.slice(1))
+        await expect(mobileNav.getByTestId(item)).toHaveCount(0);
+    } else {
+      await expect(track).toHaveCount(0);
+    }
 
     for (const query of ['product=stake', 'app=ledger-live']) {
       await page.goto(`/?${query}`);
-      for (const item of [
-        'navStake',
-        'navWrap',
-        'navWithdrawals',
-        'navRewards',
-      ])
+      for (const item of baseline.stakePages)
         await expect(mobileNav.getByTestId(item).first()).toBeVisible();
       await expect(track).toHaveCount(0);
     }
