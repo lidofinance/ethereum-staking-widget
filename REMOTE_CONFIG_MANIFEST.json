@@ -32,6 +32,10 @@
       "forceAllowance": false,
       "amountBannerEnabled": true
     },
+    "earnInfoBanner": {
+      "title": "",
+      "text": ""
+    },
     "earnAllocation": {
       "labelAllowList": [],
       "hiddenIds": []
@@ -84,7 +88,8 @@
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
         "forceAllowance": false,
-        "amountBannerEnabled": true
+        "amountBannerEnabled": true,
+        "earnInfoBannerEnabled": false
       },
       "earnAllocation": {
         "labelAllowList": [],
@@ -132,7 +137,8 @@
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
         "forceAllowance": false,
-        "amountBannerEnabled": true
+        "amountBannerEnabled": true,
+        "earnInfoBannerEnabled": false
       },
       "earnAllocation": {
         "labelAllowList": [],
