@@ -46,7 +46,7 @@ export const DexWrapper = styled.div<{ $consumeBottomSpace?: boolean }>`
 `;
 
 const fadeOut = keyframes`
-  from { opacity: var(--loader-opacity); }
+  from { opacity: 1; }
   to   { opacity: 0; pointer-events: none; }
 `;
 
@@ -69,13 +69,11 @@ export const LoaderStyled = styled(Loader)<{
   background-color: var(--custom-background-secondary);
   border-radius: 24px;
 
-  // a narrowed loader sits over the banner corners, so it must not show through
-  --loader-opacity: ${({ $maxWidth }) => ($maxWidth ? 1 : 0.8)};
-
   ${({ $isVisible }) =>
     $isVisible
       ? css`
-          opacity: var(--loader-opacity);
+          // opaque: the widget behind it shows its default colors until its styles apply
+          opacity: 1;
         `
       : css`
           animation: ${fadeOut} 0.3s ease forwards;

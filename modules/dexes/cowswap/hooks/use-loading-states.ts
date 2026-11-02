@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { COWSWAP_WIDGET_LOADING_TIMEOUT_MS } from '../consts';
+import {
+  COWSWAP_WIDGET_LOADING_TIMEOUT_MS,
+  COWSWAP_WIDGET_STYLES_DELAY_MS,
+} from '../consts';
+import { createDelayedCall } from '../utils';
 import { debounce, uniqueId } from 'lodash';
 import { useDappStatus } from 'modules/web3';
 
@@ -10,6 +14,10 @@ export const useLoadingStates = (widgetKey: unknown) => {
   const [refreshId, setRefreshId] = useState('<INITIAL_HYDRATION_SAFE_UUID>');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  // READY comes before the widget styles: the loader stays a bit longer to hide the default colors
+  const [readyDelay] = useState(() =>
+    createDelayedCall(COWSWAP_WIDGET_STYLES_DELAY_MS),
+  );
 
   useEffect(() => {
     if (!isLoading) {
@@ -30,13 +38,17 @@ export const useLoadingStates = (widgetKey: unknown) => {
   // Reset loading state when the widget is recreated: READY fires once per widget.
   // Not on the wallet chain alone: a provider that stays undefined recreates nothing.
   // Works specifically on clean up to avoid race conditions on first load
+  // a pending READY of the previous widget must not hide the loader of the new one
   useEffect(() => {
-    return () => setIsLoading(true);
-  }, [address, chainId, widgetKey]);
+    return () => {
+      readyDelay.cancel();
+      setIsLoading(true);
+    };
+  }, [address, chainId, widgetKey, readyDelay]);
 
   const onLoaded = useCallback(() => {
-    setIsLoading(false);
-  }, []);
+    readyDelay.schedule(() => setIsLoading(false));
+  }, [readyDelay]);
   const onError = useCallback((error: Error) => setError(error), []);
 
   // Gives widget time to process refresh

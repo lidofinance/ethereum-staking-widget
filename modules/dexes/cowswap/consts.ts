@@ -32,6 +32,8 @@ export const PARTNER_FEE_BPS = 30; // 0.3% — Lido DAO treasury
 export const MAX_PRICE_IMPACT_PERCENT = 3; // 3%
 // just above the widget-lib 30s load timeout: a backup when its error callback is lost
 export const COWSWAP_WIDGET_LOADING_TIMEOUT_MS = 1_000 * 35; // 35 seconds
+// the widget applies its palette and card style shortly after READY
+export const COWSWAP_WIDGET_STYLES_DELAY_MS = 300;
 export const MAX_ORDER_AGE_SECONDS = 60 * 30; // 30 minutes
 export const MAX_ORDER_AGE_MINUTES = Math.floor(MAX_ORDER_AGE_SECONDS / 60);
 export const TRADE_REPORT_EVENT_DEBOUNCE_MS = 3_000; // 3 seconds
