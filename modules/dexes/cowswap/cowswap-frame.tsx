@@ -198,20 +198,25 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       // UI options
       //
 
-      width: '100%',
       rootStyle: {
+        width: '100%',
         height: 'var(--dynamicHeight, 432px)',
       },
 
       theme:
         chainStyle?.palette ??
         (isDarkTheme ? cowSwapThemeDark : cowSwapThemeLight),
-      cardStyle: chainStyle ? { background: chainStyle.card } : undefined,
+      cardStyle: {
+        boxShadow: 'none',
+        ...(chainStyle && { background: chainStyle.card }),
+      },
       // enables opening explorer and `powered by cowswap` links
       // ONLY safe when used with pinned IPFS cowswap UI,
       // otherwise prone to security risks during domain takeover
       disableWindowOpen: false,
       disableSwitchingTokens: true,
+      // wrapping ETH is blocked by the trade guard, so the banner offering it is hidden
+      hideWrapBanner: true,
       disablePostedOrderConfirmationModal: true,
       disableTokenImport: true,
       disablePostTradeTips: true,

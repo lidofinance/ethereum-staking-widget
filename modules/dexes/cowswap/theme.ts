@@ -13,8 +13,6 @@ export const cowSwapThemeDark: CowSwapWidgetPalette = {
   danger: themeDark.colors.error,
   info: themeDark.colors.warning,
   success: themeDark.colors.success,
-  // boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)', // TODO: wait fix from CowSwap team
-  boxShadow: 'none',
 };
 
 export const cowSwapThemeLight: CowSwapWidgetPalette = {
@@ -28,8 +26,6 @@ export const cowSwapThemeLight: CowSwapWidgetPalette = {
   danger: themeLight.colors.error,
   info: themeLight.colors.warning,
   success: themeLight.colors.success,
-  // boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)', // TODO: wait fix from CowSwap team
-  boxShadow: 'none',
 };
 
 type ChainWidgetStyle = {
