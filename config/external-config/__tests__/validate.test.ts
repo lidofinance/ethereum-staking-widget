@@ -469,6 +469,49 @@ describe('ManifestSchema', () => {
     });
   });
 
+  describe('config.earnInfoBanner', () => {
+    it('defaults to empty object when omitted', () => {
+      const result = parseManifest({ '1': validEntry });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+
+    it('accepts title and text at max length boundary', () => {
+      const maxText = 'a'.repeat(250);
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: { earnInfoBanner: { title: maxText, text: maxText } },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({
+        title: maxText,
+        text: maxText,
+      });
+    });
+
+    it('drops the section when text exceeds max length', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: {
+            earnInfoBanner: { title: 'Title', text: 'a'.repeat(251) },
+          },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+
+    it('drops the section when a field has a non-string value', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: { earnInfoBanner: { title: 42, text: 'Text' } },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+  });
+
   describe('config.featureFlags', () => {
     it('accepts known feature flags', () => {
       const result = parseManifest({

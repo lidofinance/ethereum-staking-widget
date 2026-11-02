@@ -33,6 +33,10 @@
       "amountBannerEnabled": true,
       "earnSmartSuggestEnabled": true
     },
+    "earnInfoBanner": {
+      "title": "",
+      "text": ""
+    },
     "earnAllocation": {
       "labelAllowList": [],
       "hiddenIds": []
@@ -83,7 +87,8 @@
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true,
-        "earnSmartSuggestEnabled": true
+        "earnSmartSuggestEnabled": true,
+        "earnInfoBannerEnabled": false
       },
       "earnAllocation": {
         "labelAllowList": [],
@@ -133,7 +138,8 @@
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true,
-        "earnSmartSuggestEnabled": true
+        "earnSmartSuggestEnabled": true,
+        "earnInfoBannerEnabled": false
       },
       "earnAllocation": {
         "labelAllowList": [],
