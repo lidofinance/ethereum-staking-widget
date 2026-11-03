@@ -59,11 +59,10 @@ export const validateSendCalls = async (
 
     const result = await validateSendTransaction([call], ctx);
     if (!result.allowed) {
-      // TODO: temp debug, 2034 hides the code of the failed call
+      // 2034 hides the code of the failed call
       console.warn(
         `[DEX Provider] Batch call ${index} blocked:`,
         result.reason,
-        calls.map(({ to, data, value }) => ({ to, data, value })),
       );
       return deny(2034);
     }

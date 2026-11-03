@@ -1,4 +1,4 @@
-// import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
+import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import {
   COWSWAP_NETWORKS,
@@ -47,13 +47,11 @@ export const SWAP_COWSWAP_PROFILE = createCowswapProfile({
   defaultPair: { sell: ['eth'], buy: ['lido', 'wsteth'] },
   tokenLists: {
     sell: {
-      // TODO: temp
-      url: 'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/feature/si-2786-new-navigation/public/token-lists/swap-dex-sell-tokenlist.json',
+      url: `${GITHUB_RAW_MAIN_PATH}/public/token-lists/swap-dex-sell-tokenlist.json`,
       fallback: 'token-lists/swap-dex-sell-tokenlist.json',
     },
     buy: {
-      // TODO: temp
-      url: 'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/feature/si-2786-new-navigation/public/token-lists/swap-dex-buy-tokenlist.json',
+      url: `${GITHUB_RAW_MAIN_PATH}/public/token-lists/swap-dex-buy-tokenlist.json`,
       fallback: 'token-lists/swap-dex-buy-tokenlist.json',
     },
   },
