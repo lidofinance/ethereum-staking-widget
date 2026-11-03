@@ -76,6 +76,8 @@ const withBundleAnalyzer = process.env.ANALYZE_BUNDLE
 export default withBundleAnalyzer({
   basePath,
   generateBuildId,
+  // separate build dir for a second dev server (e.g. fork e2e)
+  distDir: process.env.NEXT_DIST_DIR || '.next',
 
   // Disable the built-in Next.js Image Optimization endpoint to prevent
   // requests from reaching the image optimizer. This app does not use `next/image`.
