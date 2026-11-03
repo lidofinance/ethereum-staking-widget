@@ -9,6 +9,7 @@ vi.mock('modules/web3', () => ({
 vi.mock('@lidofinance/lido-ui', () => ({ ToastError: vi.fn() }));
 
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
+import { L2StakeModule } from 'modules/l2-staking';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import { DefaultValidationErrorTypes } from 'shared/hook-form/validation/validation-error';
 
@@ -26,6 +27,8 @@ const P = 10n ** 18n;
 const LIQUIDITY = 7n * P + 123_456_789n;
 const GAS_ETH = 10n ** 15n;
 const GAS_WETH = 2n * 10n ** 15n;
+const GAS_ETH_SLOW = 4n * 10n ** 15n;
+const GAS_WETH_SLOW = 5n * 10n ** 15n;
 const CHAIN_ID = 8453;
 
 const context = (
@@ -33,8 +36,12 @@ const context = (
 ): L2StakeFormValidationContext => ({
   isWalletActive: true,
   isSmartAccount: false,
+  isFastLaneAvailable: true,
+  isSlowLaneAvailable: false,
   gasCostEth: GAS_ETH,
   gasCostWeth: GAS_WETH,
+  gasCostEthSlow: GAS_ETH_SLOW,
+  gasCostWethSlow: GAS_WETH_SLOW,
   etherBalance: 100n * P,
   wethBalance: 100n * P,
   etherLiquidity: LIQUIDITY,
@@ -305,6 +312,87 @@ describe('L2StakeFormValidationResolver', () => {
   });
 });
 
+describe('L2StakeFormValidationResolver lane routing', () => {
+  const limits = L2StakeModule.calcSlowStakeLimits(
+    {
+      tokens: 60n * P,
+      lastUpdated: 0,
+      isEnabled: true,
+      capacity: 90n * P,
+      rate: P,
+    },
+    0n,
+  );
+  const FRONTED = 25n * 10n ** 15n; // the CCIP cap plus the return budget
+  const fetchFee = vi.fn(async () => FRONTED);
+  const bothLanes = (overrides: Partial<L2StakeFormValidationContext> = {}) =>
+    context({
+      isSlowLaneAvailable: true,
+      slowStakeLimits: limits,
+      fetchSlowStakeFrontedFee: fetchFee,
+      ...overrides,
+    });
+
+  beforeEach(() => {
+    fetchFee.mockClear();
+  });
+
+  it('keeps an amount within the pool liquidity on the fast lane, unquoted', async () => {
+    const result = await resolve(LIQUIDITY, bothLanes());
+    expect(result.errors).toEqual({});
+    expect(fetchFee).not.toHaveBeenCalled();
+  });
+
+  it('routes an amount above the pool liquidity to the slow lane and quotes it', async () => {
+    const result = await resolve(LIQUIDITY + 1n, bothLanes());
+    expect(result.errors).toEqual({});
+    expect(fetchFee).toHaveBeenCalledWith(LIQUIDITY + 1n);
+  });
+
+  it('applies the slow lane cap above the pool liquidity', async () => {
+    await expect(amountError(90n * P + 1n, bothLanes())).resolves.toMatch(
+      /per-transaction limit/,
+    );
+  });
+
+  it('keeps the fronted fee in reserve on the slow lane', async () => {
+    const balance = 20n * P;
+    // fits the balance and the L2 gas, not the fee on top
+    const amount = balance - GAS_ETH_SLOW;
+    await expect(
+      amountError(amount, bothLanes({ etherBalance: balance })),
+    ).resolves.toMatch(/leave enough ETH for gas fees/);
+    await expect(
+      amountError(amount - FRONTED, bothLanes({ etherBalance: balance })),
+    ).resolves.toBeUndefined();
+  });
+
+  it('does not block the field on a failed quote', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    fetchFee.mockRejectedValueOnce(new Error('rpc down'));
+    const result = await resolve(LIQUIDITY + 1n, bothLanes());
+    expect(result.errors).toEqual({});
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('keeps everything on the fast lane while the slow lane is closed', async () => {
+    await expect(
+      amountError(
+        LIQUIDITY + 1n,
+        context({ fetchSlowStakeFrontedFee: fetchFee }),
+      ),
+    ).resolves.toMatch(/staking limit/);
+    expect(fetchFee).not.toHaveBeenCalled();
+  });
+
+  it('sends everything on the slow lane while the fast lane is closed', async () => {
+    const result = await resolve(1n, bothLanes({ isFastLaneAvailable: false }));
+    expect(result.errors).toEqual({});
+    expect(fetchFee).toHaveBeenCalledWith(1n);
+  });
+});
+
 describe('getL2StakeFormValidationContext', () => {
   const LIQUIDITY_TARGET = 25n * P;
   const deps = {
@@ -313,14 +401,20 @@ describe('getL2StakeFormValidationContext', () => {
     areAuxiliaryFundsSupported: false,
     chainId: CHAIN_ID,
     liquidityTargetEth: LIQUIDITY_TARGET,
+    isFastLaneAvailable: true,
+    isSlowLaneAvailable: false,
+    fetchSlowStakeFrontedFee: undefined,
   };
   const loaded = {
     etherBalance: 5n * P,
     wethBalance: 3n * P,
     fastStakeLiquidityEth: LIQUIDITY,
+    slowStakeLimits: undefined,
     isSmartAccount: false,
     gasCostEth: GAS_ETH,
     gasCostWeth: GAS_WETH,
+    gasCostEthSlow: GAS_ETH_SLOW,
+    gasCostWethSlow: GAS_WETH_SLOW,
   };
 
   it('resolves without the WETH balance', () => {

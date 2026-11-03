@@ -12,13 +12,20 @@ import {
 } from 'utils/track-matomo-event';
 
 type EventType =
-  'fast_stake_start' | 'fast_stake_end' | 'fast_stake_more_liquidity';
+  | 'fast_stake_start'
+  | 'fast_stake_end'
+  | 'fast_stake_more_liquidity'
+  | 'slow_stake_start'
+  | 'slow_stake_end';
 
-// chain and token are reported as custom dimensions on the shared staking events
+// chain and token are reported as custom dimensions on the shared staking
+// events; both lanes report as a stake
 const eventMap: Record<EventType, MATOMO_EVENT_TYPE> = {
   ['fast_stake_start']: MATOMO_TX_EVENTS_TYPES.stakingStart,
   ['fast_stake_end']: MATOMO_TX_EVENTS_TYPES.stakingFinish,
   ['fast_stake_more_liquidity']: MATOMO_INPUT_EVENTS_TYPES.stakingMoreLiquidity,
+  ['slow_stake_start']: MATOMO_TX_EVENTS_TYPES.stakingStart,
+  ['slow_stake_end']: MATOMO_TX_EVENTS_TYPES.stakingFinish,
 };
 
 type TrackStakeEventParams = Pick<MatomoEventParams, 'token'>;

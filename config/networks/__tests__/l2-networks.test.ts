@@ -2,7 +2,7 @@ import { getAddress } from 'viem';
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { CHAINS } from 'config/chains';
-import { LIDO_L2_STAKING_CHAIN_IDS } from 'modules/l2-staking/const';
+import { LIDO_L2_STAKING_CHAIN_IDS } from 'modules/l2-staking';
 
 import optimismSet from 'networks/l2/optimism.json';
 import optimismSepoliaSet from 'networks/l2/optimism-sepolia.json';
@@ -28,6 +28,10 @@ const L2_STAKING_CONTRACTS = [
   'L2FastStakeOraclePool',
   'L2FastStakeOracleFeed',
   'weth',
+  // the slow stake reads go through the RPC proxy allowlist built from here
+  'L2CcipRouter',
+  'L2CcipOnRamp',
+  'L2CcipWethPool',
 ];
 
 describe('networks/l2', () => {

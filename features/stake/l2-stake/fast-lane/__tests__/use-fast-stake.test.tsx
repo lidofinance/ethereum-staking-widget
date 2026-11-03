@@ -1,5 +1,6 @@
 import {
   decodeFunctionData,
+  erc20Abi,
   getAddress,
   zeroAddress,
   type Address,
@@ -12,12 +13,7 @@ import {
 import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import {
-  L2StakeModule,
-  calcFastStakeWstethByEth,
-} from 'modules/l2-staking/l2-staking-module';
-import { L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking/l2-staking-abi';
-import { wethABI } from 'abi/weth-abi';
+import { L2StakeModule, L2_STAKING_RECEIVER_ABI } from 'modules/l2-staking';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 import { QuoteMismatchError, TxSettledError } from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
@@ -47,7 +43,7 @@ const P = 10n ** 18n;
 const FEE = 10n ** 15n;
 const PRICE = 12n * 10n ** 17n;
 const AMOUNT = 2n * P;
-const MIN_RECEIVE = calcFastStakeWstethByEth(AMOUNT, FEE, PRICE);
+const MIN_RECEIVE = L2StakeModule.calcFastStakeWstethByEth(AMOUNT, FEE, PRICE);
 const BALANCE_BEFORE = 5n * P;
 const BALANCE_AFTER = BALANCE_BEFORE + MIN_RECEIVE;
 
@@ -73,13 +69,13 @@ const state = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../hooks/use-conversion', () => ({
+vi.mock('../use-conversion', () => ({
   useFastStakeConversion: () => ({
     data: state.shownRate,
     refetch: state.refetchRate,
   }),
 }));
-vi.mock('../hooks/use-fast-liquidity', () => ({
+vi.mock('../use-fast-liquidity', () => ({
   useFastStakeLiquidity: () => ({ refetch: state.refetchLiquidity }),
 }));
 vi.mock('modules/web3', async () => {
@@ -121,14 +117,14 @@ vi.mock('config', () => ({
 vi.mock('features/stake/stake-form/hooks/use-bells', () => ({
   useBells: () => ({ bells: vi.fn() }),
 }));
-vi.mock('../hooks/use-tx-modal-stages-fast-stake', () => ({
+vi.mock('../use-tx-modal-stages-fast-stake', () => ({
   useTxModalStagesL2FastStake: () => ({ txModalStages: state.txModalStages }),
 }));
-vi.mock('../hooks/use-track-event', () => ({
+vi.mock('../../hooks/use-track-event', () => ({
   useTrackStakeEvent: () => vi.fn(),
 }));
 
-import { useL2FastStake } from '../hooks/use-fast-stake';
+import { useL2FastStake } from '../use-fast-stake';
 
 const createModule = (
   performTransaction: ReturnType<typeof legacyPerformTransaction>,
@@ -183,7 +179,7 @@ const decodeFastStake = (data: Hash) => {
 };
 
 const decodeApprove = (data: Hash) => {
-  const decoded = decodeFunctionData({ abi: wethABI, data });
+  const decoded = decodeFunctionData({ abi: erc20Abi, data });
   expect(decoded.functionName).toBe('approve');
   return decoded.args as readonly [Address, bigint];
 };

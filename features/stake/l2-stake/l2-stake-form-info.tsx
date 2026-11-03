@@ -5,17 +5,17 @@ import { DATA_UNAVAILABLE } from 'consts/text';
 import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { ONE_stETH } from 'modules/web3';
-import { useFastStakeConversion } from './hooks/use-conversion';
+import { useFastStakeConversion } from './fast-lane/use-conversion';
 
 import { useL2StakeFormData } from './l2-stake-form-context';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 
-import { useFastStakeLiquidity } from './hooks/use-fast-liquidity';
+import { useFastStakeLiquidity } from './fast-lane/use-fast-liquidity';
 
 import type { L2StakeFormInputType } from './types';
 
 export const L2StakeFormInfo = () => {
-  const { gasCost, token, loading } = useL2StakeFormData();
+  const { gasCost, token, loading, isFastLane } = useL2StakeFormData();
   const amount = useWatch<L2StakeFormInputType, 'amount'>({ name: 'amount' });
   const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(gasCost);
   // This will use Lido SDK default chain for fetching the protocol fee
@@ -38,6 +38,13 @@ export const L2StakeFormInfo = () => {
           symbol="wstETH"
           trimEllipsis
         />
+      </DataTableRow>
+      <DataTableRow title="Execution time" data-testid="executionTime">
+        {isFastLane ? (
+          <>~&nbsp;1&nbsp;min</>
+        ) : (
+          <>~&nbsp;1&nbsp;hour&nbsp;30&nbsp;min</>
+        )}
       </DataTableRow>
       <DataTableRow
         data-testid="exchangeRate"

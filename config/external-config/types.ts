@@ -5,6 +5,7 @@ import type {
   ManifestSchema,
   ManifestConfigPages,
   ManifestConfigWithdrawalDexIntegrations,
+  ManifestConfigL2StakeModes,
 } from './validate';
 
 export type Manifest = z.infer<typeof ManifestSchema>;
@@ -26,6 +27,9 @@ export type ManifestConfigPage =
 
 export type ManifestConfigDexIntegration =
   (typeof ManifestConfigWithdrawalDexIntegrations)[keyof typeof ManifestConfigWithdrawalDexIntegrations];
+
+export type ManifestConfigL2StakeMode =
+  (typeof ManifestConfigL2StakeModes)[keyof typeof ManifestConfigL2StakeModes];
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {

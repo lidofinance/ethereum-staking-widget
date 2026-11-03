@@ -1,9 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  calcFastStakeWstethByEth,
-  calcFastStakeEthByWsteth,
-  LIDO_L2_STAKING_QUERY_SCOPE,
-} from 'modules/l2-staking';
+import { L2StakeModule, LIDO_L2_STAKING_QUERY_SCOPE } from 'modules/l2-staking';
 import { useLidoSDKL2 } from 'modules/web3';
 
 type ConversionOptions = {
@@ -25,9 +21,17 @@ export const useFastStakeConversion = () => {
         feeRate,
         price,
         ethToWsteth: (ethAmount: bigint, options?: ConversionOptions) =>
-          calcFastStakeWstethByEth(ethAmount, rate(options), price),
+          L2StakeModule.calcFastStakeWstethByEth(
+            ethAmount,
+            rate(options),
+            price,
+          ),
         wstethToEth: (wstethAmount: bigint, options?: ConversionOptions) =>
-          calcFastStakeEthByWsteth(wstethAmount, rate(options), price),
+          L2StakeModule.calcFastStakeEthByWsteth(
+            wstethAmount,
+            rate(options),
+            price,
+          ),
       };
     },
   });

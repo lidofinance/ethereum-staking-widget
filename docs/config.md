@@ -63,6 +63,10 @@ With `ENABLE_QA_HELPERS=true` the browser console also gets
 `setMockGeoCountry('US')` — it pins the geo country per browser and outranks
 both `QA_GEO_COUNTRY` and the real Cloudflare header. No argument clears it.
 
+It also gets `setMockL2StakeMode('slowLaneOnly')` — it pins the L2 staking
+lane mode (`all`, `fastLaneOnly`, `slowLaneOnly`) per browser and outranks the
+remote config's `l2Stake.mode`. No argument clears it.
+
 ### Rate limiting
 
 ```
