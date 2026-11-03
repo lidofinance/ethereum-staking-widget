@@ -1,6 +1,10 @@
 import { isAddress } from 'viem';
 
-import { MAX_SLIPPAGE, SLIPPAGE_TOTAL_BPS } from '../../../consts';
+import {
+  MAX_SLIPPAGE,
+  PARTNER_FEE_BPS,
+  SLIPPAGE_TOTAL_BPS,
+} from '../../../consts';
 
 import { safeParseDecimal } from '../../utils';
 
@@ -47,7 +51,9 @@ export const analyzeParams = (params: OnTradeParamsPayload): AnalysisResult => {
     };
   }
 
-  const ADJUSTED_MAX_SLIPPAGE = MAX_SLIPPAGE + SLIPPAGE_TRUNCATION_BPS;
+  // min receive is net of the partner fee, the quote is not; network costs are not covered yet
+  const ADJUSTED_MAX_SLIPPAGE =
+    MAX_SLIPPAGE + PARTNER_FEE_BPS + SLIPPAGE_TRUNCATION_BPS;
   if (
     params.minimumReceiveBuyAmount !== undefined &&
     (buyUnits === null ||

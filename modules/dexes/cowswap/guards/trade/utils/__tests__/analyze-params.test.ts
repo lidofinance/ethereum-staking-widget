@@ -57,11 +57,18 @@ describe('analyzeParams', () => {
       expect(result.isStructural).toBe(true);
     });
 
-    it('blocks when min receive implies more than max slippage', () => {
+    it('blocks when min receive is below max slippage and the partner fee', () => {
       const payload = makePayload({
-        minimumReceiveBuyAmount: { units: '9.69' }, // 3.1% below quote
+        minimumReceiveBuyAmount: { units: '9.66' }, // 3.4% below quote
       } as Partial<OnTradeParamsPayload>);
       expect(analyzeParams(payload).level).toBe('blocked');
+    });
+
+    it('allows min receive at max slippage plus the partner fee', () => {
+      const payload = makePayload({
+        minimumReceiveBuyAmount: { units: '9.67' }, // 3.0% + 0.3% below quote
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('safe');
     });
 
     it.each(['.5', '1.', '1.0000000000000000001', 'abc'])(
@@ -99,11 +106,11 @@ describe('analyzeParams', () => {
       expect(analyzeParams(payload).level).toBe('safe');
     });
 
-    it('allows truncated atoms at max slippage (6-decimal token)', () => {
+    it('allows truncated atoms at max slippage plus the fee (6-decimal token)', () => {
       const payload = makePayload({
         buyToken: { address: USDC, symbol: 'USDC' },
         buyTokenAmount: { units: '29910.123457' },
-        minimumReceiveBuyAmount: { units: '29012.819753' }, // floor(x * 0.97)
+        minimumReceiveBuyAmount: { units: '28923.089382' }, // floor(x * 0.967)
       } as Partial<OnTradeParamsPayload>);
       expect(analyzeParams(payload).level).toBe('safe');
     });
