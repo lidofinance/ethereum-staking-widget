@@ -1,6 +1,7 @@
 import {
   decodeFunctionData,
   erc20Abi,
+  getAddress,
   isAddressEqual,
   Address,
   Hex,
@@ -68,8 +69,15 @@ export const sanitizeTransactionParams = (
   }
   if (method === 'wallet_sendCalls') {
     const [batch] = sendCallsParamsSchema.parse(params);
-    // all or nothing: a wrap or approve must not land without its order
-    return [{ ...batch, atomicRequired: true }];
+    // all or nothing: a wrap or approve must not land without its order.
+    // Checksummed from: the Safe provider compares it with the Safe address as is
+    return [
+      {
+        ...batch,
+        ...(batch.from && { from: getAddress(batch.from) }),
+        atomicRequired: true,
+      },
+    ];
   }
 
   return params;

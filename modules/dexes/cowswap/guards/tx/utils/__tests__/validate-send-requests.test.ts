@@ -19,6 +19,7 @@ import {
   maxUint32,
   parseEther,
   toHex,
+  getAddress,
 } from 'viem';
 import { CowEthFlowAbi, CowSettlementAbi } from '../../../../abi';
 import { TRANSACTION_ERROR } from '../../consts';
@@ -1256,6 +1257,7 @@ describe('sanitizeTransactionParams', () => {
         {
           version: '2.0.0',
           chainId: '0x1',
+          from: SIGNER.toLowerCase(),
           capabilities: { paymasterService: { url: 'https://evil.example' } },
           calls: [{ to: STETH, data: approveData, input: '0xdeadbeef' }],
         },
@@ -1264,6 +1266,8 @@ describe('sanitizeTransactionParams', () => {
       {
         version: '2.0.0',
         chainId: '0x1',
+        // the Safe provider rejects a lowercased from
+        from: getAddress(SIGNER),
         atomicRequired: true,
         calls: [{ to: STETH, data: approveData }],
       },
