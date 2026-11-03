@@ -743,6 +743,32 @@ describe('validateSendCalls', () => {
       expect(result.allowed).toBe(true);
     });
 
+    it('allows approve + setPreSignature of a fresh order without fill data', async () => {
+      // the API fills quote and executed fee data only after a fill
+      const {
+        quote: _quote,
+        executedFee: _executedFee,
+        executedFeeToken: _executedFeeToken,
+        isLiquidityOrder: _isLiquidityOrder,
+        availableBalance: _availableBalance,
+        ...freshOrder
+      } = buildOrderApiResponse();
+      vi.mocked(standardFetcher).mockResolvedValue(freshOrder);
+
+      const result = await validateSendCalls(
+        [
+          {
+            calls: [
+              { to: STETH, data: buildApprove(COW_VAULT_RELAYER) },
+              { to: COW_SETTLEMENT, data: buildSetPreSignature() },
+            ],
+          },
+        ],
+        MAINNET_CTX,
+      );
+      expect(result.allowed).toBe(true);
+    });
+
     it('rejects batch with only approve (no order — batch must include settlement)', async () => {
       const result = await validateSendCalls(
         [
