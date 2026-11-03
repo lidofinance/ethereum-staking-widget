@@ -1,5 +1,6 @@
 import { type Address, ethAddress, isAddressEqual } from 'viem';
 import { useCallback, useRef, useState } from 'react';
+import { mainnet } from 'viem/chains';
 
 import type { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo/matomo-tx-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -35,6 +36,8 @@ import { WRAP_UNAVAILABLE_ERROR, WRAP_UNAVAILABLE_TITLE } from '../consts';
 // ---------------------------------------------------------------------------
 
 type UseTradeGuardOptions = {
+  // dapp chain the widget runs on, not the one the frame reports
+  chainId: number;
   isTestnet?: boolean;
   tokenDecimals: TokenDecimalsMap;
   oracleFeeds: OracleFeedMaps;
@@ -43,6 +46,7 @@ type UseTradeGuardOptions = {
 };
 
 export const useTradeGuard = ({
+  chainId,
   isTestnet = false,
   tokenDecimals,
   oracleFeeds,
@@ -58,7 +62,11 @@ export const useTradeGuard = ({
   );
   const approvalCallIdRef = useRef(0);
   const lastTradeParamsRef = useRef<OnTradeParamsPayload | null>(null);
-  const { verifyWithOracle, readSellTokenUsd } = useOracleRates(oracleFeeds);
+  const { verifyWithOracle, readSellTokenUsd, readNetworkCostAllowance } =
+    useOracleRates(oracleFeeds, {
+      isMainnet: chainId === mainnet.id,
+      isTestnet,
+    });
 
   const handleModalClose = useCallback((result: boolean) => {
     resolveRef.current?.(result);
@@ -102,6 +110,7 @@ export const useTradeGuard = ({
       const decision = await evaluateTrade(payload, {
         isTestnet,
         verifyWithOracle,
+        readNetworkCostAllowance,
         // Invalidate previous snapshot — prevents stale data if this call fails
         onSnapshotInvalidated: () => {
           lastValidatedTradeRef.current = null;
@@ -126,7 +135,7 @@ export const useTradeGuard = ({
 
       return true;
     },
-    [isTestnet, verifyWithOracle, showModal, weth],
+    [isTestnet, verifyWithOracle, readNetworkCostAllowance, showModal, weth],
   );
 
   // ---------------------------------------------------------------------------
@@ -156,6 +165,7 @@ export const useTradeGuard = ({
     const decision = await evaluateApproval(lastTradeParamsRef.current, {
       isTestnet,
       readSellTokenUsd,
+      readNetworkCostAllowance,
       tokenDecimals,
     });
 
@@ -171,7 +181,13 @@ export const useTradeGuard = ({
     lastValidatedApprovalRef.current = decision.snapshot;
 
     return true;
-  }, [isTestnet, readSellTokenUsd, tokenDecimals, showModal]);
+  }, [
+    isTestnet,
+    readSellTokenUsd,
+    readNetworkCostAllowance,
+    tokenDecimals,
+    showModal,
+  ]);
 
   /** Verify approve calldata against the last validated approval or trade. */
   const verifyApproval = useCallback(

@@ -101,6 +101,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     verifyApproval,
     rejectWrapOrUnwrap,
   } = useTradeGuard({
+    chainId: widgetChainId,
     isTestnet,
     tokenDecimals,
     oracleFeeds,

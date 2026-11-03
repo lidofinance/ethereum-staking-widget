@@ -67,7 +67,7 @@ const readUsdPrice = async (
 };
 
 // USD price of one token unit with 8 decimals; wstETH via stEthPerToken
-const readTokenUsdPrice = async (
+export const readTokenUsdPrice = async (
   client: OracleClient,
   priceKey: OraclePriceKey,
   nowSec: bigint,
@@ -95,7 +95,8 @@ const readTokenUsdPrice = async (
   return (usdPrice * wstethRate) / WSTETH_SCALE;
 };
 
-const toUsdNumber = (price: bigint) => Number(price) / Number(CHAINLINK_SCALE);
+export const toUsdNumber = (price: bigint) =>
+  Number(price) / Number(CHAINLINK_SCALE);
 
 // USD price of one sell token unit, null if unsupported or unavailable
 export const readSellTokenUsd = async (

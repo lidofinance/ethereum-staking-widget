@@ -15,3 +15,16 @@ export const FAIL_UNAVAILABLE: OracleResult = {
   ok: false,
   reason: 'unavailable',
 };
+
+// CoW network cost allowed on top of slippage and the partner fee in the min receive check (analyze-params)
+export const NETWORK_COST_ALLOWANCE = {
+  // gas units × multiplier × our eth_gasPrice; /quote gasAmount p95 ≈ 1.3M, CoW quotes gas a few times above the base fee
+  mainnet: {
+    maxGasUnits: 1_500_000,
+    gasPriceMultiplier: 3,
+    maxShareBps: 500,
+    maxUsd: 100,
+  },
+  // L2 network costs stay below 0.3% even on $5 trades
+  l2: { maxShareBps: 50, maxUsd: 1 },
+} as const;

@@ -48,6 +48,7 @@ export type ApprovalDecision =
 type EvaluateTradeOptions = {
   isTestnet: boolean;
   verifyWithOracle: (payload: OnTradeParamsPayload) => Promise<OracleResult>;
+  readNetworkCostAllowance: (payload: OnTradeParamsPayload) => Promise<number>;
   // Called once the payload is structurally complete, before any async work
   onSnapshotInvalidated?: () => void;
 };
@@ -84,7 +85,12 @@ const reject = (
 // Swap gate: structural checks → oracle check → QA override
 export const evaluateTrade = async (
   payload: OnTradeParamsPayload,
-  { isTestnet, verifyWithOracle, onSnapshotInvalidated }: EvaluateTradeOptions,
+  {
+    isTestnet,
+    verifyWithOracle,
+    readNetworkCostAllowance,
+    onSnapshotInvalidated,
+  }: EvaluateTradeOptions,
 ): Promise<TradeGuardDecision> => {
   if (
     payload.sellTokenAmount?.units === undefined ||
@@ -101,7 +107,10 @@ export const evaluateTrade = async (
   onSnapshotInvalidated?.();
 
   const tradeThresholds = readThresholds();
-  const { level, messages, isStructural } = analyzeParams(payload);
+  const { level, messages, isStructural } = analyzeParams(
+    payload,
+    await readNetworkCostAllowance(payload).catch(() => 0),
+  );
 
   const sellUnits = safeParseDecimal(payload.sellTokenAmount.units?.toString());
 
@@ -149,17 +158,26 @@ export const toNativeSaleSnapshot = (
 type EvaluateApprovalOptions = {
   isTestnet: boolean;
   readSellTokenUsd: (payload: OnTradeParamsPayload) => Promise<number | null>;
+  readNetworkCostAllowance: (payload: OnTradeParamsPayload) => Promise<number>;
   tokenDecimals: TokenDecimalsMap;
 };
 
-// Approval gate on the last ON_CHANGE_TRADE_PARAMS data: structure → USD max sell → snapshot
+// Approval gate on the last ON_CHANGE_TRADE_PARAMS data (the gross quote, unlike the trade hook): structure → USD max sell → snapshot
 export const evaluateApproval = async (
   payload: OnTradeParamsPayload | null,
-  { isTestnet, readSellTokenUsd, tokenDecimals }: EvaluateApprovalOptions,
+  {
+    isTestnet,
+    readSellTokenUsd,
+    readNetworkCostAllowance,
+    tokenDecimals,
+  }: EvaluateApprovalOptions,
 ): Promise<ApprovalDecision> => {
   if (!payload) return reject('blocked', [TRADE_BUILD_ERROR(1003)]);
 
-  const { level, messages } = analyzeParams(payload);
+  const { level, messages } = analyzeParams(
+    payload,
+    await readNetworkCostAllowance(payload).catch(() => 0),
+  );
   if (level !== 'safe') return reject(level, messages);
 
   const sellAddr = payload.sellToken?.address.toLowerCase() as Address;

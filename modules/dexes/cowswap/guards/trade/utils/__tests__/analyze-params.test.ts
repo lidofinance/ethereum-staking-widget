@@ -106,6 +106,30 @@ describe('analyzeParams', () => {
       expect(analyzeParams(payload).level).toBe('safe');
     });
 
+    // $4.5 WETH → stETH on mainnet: 3.54% network cost, 2.1% smart slippage (captured payload)
+    const smallTrade = {
+      buyTokenAmount: { units: '0.0019999978756191' },
+      minimumReceiveBuyAmount: { units: '0.001882743716012661' },
+    } as Partial<OnTradeParamsPayload>;
+
+    it('blocks a small trade whose network cost eats the slippage cap', () => {
+      expect(analyzeParams(makePayload(smallTrade)).level).toBe('blocked');
+    });
+
+    it('allows it with a network cost allowance', () => {
+      // 5% of the quote, above the 3.54% network cost
+      expect(analyzeParams(makePayload(smallTrade), 0.0001).level).toBe('safe');
+    });
+
+    it('still blocks slippage above the cap with an allowance', () => {
+      const payload = makePayload({
+        ...smallTrade,
+        // net of 3.54% cost and the fee, then 3.5% slippage
+        minimumReceiveBuyAmount: { units: '0.00185571' },
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload, 0.0000708).level).toBe('blocked');
+    });
+
     it('allows truncated atoms at max slippage plus the fee (6-decimal token)', () => {
       const payload = makePayload({
         buyToken: { address: USDC, symbol: 'USDC' },

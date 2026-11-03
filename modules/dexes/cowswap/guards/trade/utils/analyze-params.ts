@@ -20,7 +20,11 @@ type AnalysisResult = {
 
 // Structural validation: tokens, amounts, slippage. Signing validation is handled by tx validation
 // USD limits and price verification need the Chainlink oracle, see evaluateTrade
-export const analyzeParams = (params: OnTradeParamsPayload): AnalysisResult => {
+export const analyzeParams = (
+  params: OnTradeParamsPayload,
+  // CoW network cost in buy token units, see readNetworkCostAllowance
+  networkCostAllowanceUnits = 0,
+): AnalysisResult => {
   const sellAddr = params.sellToken?.address.toLowerCase();
   const buyAddr = params.buyToken?.address.toLowerCase();
   const sellUnits = safeParseDecimal(params.sellTokenAmount?.units?.toString());
@@ -51,21 +55,29 @@ export const analyzeParams = (params: OnTradeParamsPayload): AnalysisResult => {
     };
   }
 
-  // min receive is net of the partner fee, the quote is not; network costs are not covered yet
-  const ADJUSTED_MAX_SLIPPAGE =
-    MAX_SLIPPAGE + PARTNER_FEE_BPS + SLIPPAGE_TRUNCATION_BPS;
-  if (
-    params.minimumReceiveBuyAmount !== undefined &&
-    (buyUnits === null ||
+  // CoW takes the partner fee from the gross quote, then slippage from the amount net of fees and network cost
+  if (params.minimumReceiveBuyAmount !== undefined) {
+    const netUnits =
+      buyUnits === null
+        ? null
+        : buyUnits * (1 - PARTNER_FEE_BPS / SLIPPAGE_TOTAL_BPS) -
+          networkCostAllowanceUnits;
+    const floorUnits =
+      netUnits === null || buyUnits === null
+        ? null
+        : netUnits * (1 - MAX_SLIPPAGE / SLIPPAGE_TOTAL_BPS) -
+          (buyUnits * SLIPPAGE_TRUNCATION_BPS) / SLIPPAGE_TOTAL_BPS;
+    if (
+      floorUnits === null ||
       minReceiveUnits === null ||
-      minReceiveUnits <
-        buyUnits * (1 - ADJUSTED_MAX_SLIPPAGE / SLIPPAGE_TOTAL_BPS))
-  ) {
-    return {
-      level: 'blocked',
-      messages: [TRADE_BUILD_ERROR(1008)],
-      isStructural: true,
-    };
+      minReceiveUnits < floorUnits
+    ) {
+      return {
+        level: 'blocked',
+        messages: [TRADE_BUILD_ERROR(1008)],
+        isStructural: true,
+      };
+    }
   }
 
   return { level: 'safe', messages: [], isStructural: false };

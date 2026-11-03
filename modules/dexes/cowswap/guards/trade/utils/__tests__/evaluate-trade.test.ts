@@ -58,10 +58,17 @@ const ORACLE_OK: OracleResult = {
 const setup = (oracle: OracleResult = ORACLE_OK, isTestnet = false) => {
   const verifyWithOracle = vi.fn().mockResolvedValue(oracle);
   const onSnapshotInvalidated = vi.fn();
+  const readNetworkCostAllowance = vi.fn().mockResolvedValue(0);
   return {
     verifyWithOracle,
     onSnapshotInvalidated,
-    options: { isTestnet, verifyWithOracle, onSnapshotInvalidated },
+    readNetworkCostAllowance,
+    options: {
+      isTestnet,
+      verifyWithOracle,
+      readNetworkCostAllowance,
+      onSnapshotInvalidated,
+    },
   };
 };
 
@@ -303,14 +310,79 @@ describe('evaluateTrade', () => {
 });
 
 // ---------------------------------------------------------------------------
+// evaluateTrade — network cost allowance
+// ---------------------------------------------------------------------------
+describe('evaluateTrade — network cost allowance', () => {
+  // $4.5 WETH → stETH on mainnet: 3.54% network cost, 2.1% smart slippage
+  const smallTrade = makePayload({
+    sellTokenAmount: { units: '0.002' },
+    buyTokenAmount: { units: '0.0019999978756191' },
+    minimumReceiveBuyAmount: { units: '0.001882743716012661' },
+  });
+
+  it('blocks a small trade with 1008 when the allowance is zero', async () => {
+    const { options } = setup();
+    expect(await evaluateTrade(smallTrade, options)).toMatchObject({
+      ok: false,
+      messages: [TRADE_BUILD_ERROR(1008)],
+    });
+  });
+
+  it('passes the allowance into the min receive check', async () => {
+    const { options, readNetworkCostAllowance } = setup();
+    // 5% of the quote, the mainnet share cap
+    readNetworkCostAllowance.mockResolvedValue(0.0001);
+    expect(await evaluateTrade(smallTrade, options)).toMatchObject({
+      ok: true,
+    });
+    expect(readNetworkCostAllowance).toHaveBeenCalledWith(smallTrade);
+  });
+
+  it('keeps the strict check when the allowance read throws', async () => {
+    const { options, readNetworkCostAllowance } = setup();
+    readNetworkCostAllowance.mockRejectedValue(new Error('rpc'));
+    expect(await evaluateTrade(smallTrade, options)).toMatchObject({
+      ok: false,
+      messages: [TRADE_BUILD_ERROR(1008)],
+    });
+  });
+
+  it('applies the allowance to the approval gate too', async () => {
+    const readSellTokenUsd = vi.fn().mockResolvedValue(2000);
+    const readNetworkCostAllowance = vi.fn().mockResolvedValue(0.0001);
+    const options = {
+      isTestnet: false,
+      readSellTokenUsd,
+      readNetworkCostAllowance,
+      tokenDecimals: TOKEN_DECIMALS,
+    };
+    expect(await evaluateApproval(smallTrade, options)).toMatchObject({
+      ok: true,
+    });
+    readNetworkCostAllowance.mockResolvedValue(0);
+    expect(await evaluateApproval(smallTrade, options)).toMatchObject({
+      ok: false,
+      messages: [TRADE_BUILD_ERROR(1008)],
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
 // evaluateApproval
 // ---------------------------------------------------------------------------
 describe('evaluateApproval', () => {
   const setupApproval = (price: number | null = 2000, isTestnet = false) => {
     const readSellTokenUsd = vi.fn().mockResolvedValue(price);
+    const readNetworkCostAllowance = vi.fn().mockResolvedValue(0);
     return {
       readSellTokenUsd,
-      options: { isTestnet, readSellTokenUsd, tokenDecimals: TOKEN_DECIMALS },
+      readNetworkCostAllowance,
+      options: {
+        isTestnet,
+        readSellTokenUsd,
+        readNetworkCostAllowance,
+        tokenDecimals: TOKEN_DECIMALS,
+      },
     };
   };
 

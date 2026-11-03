@@ -10,6 +10,7 @@ vi.mock('../../../oracles', () => ({
   useOracleRates: () => ({
     verifyWithOracle: vi.fn(),
     readSellTokenUsd: vi.fn(),
+    readNetworkCostAllowance: vi.fn().mockResolvedValue(0),
   }),
 }));
 
@@ -60,6 +61,7 @@ const TRADE = {
 const setup = () => {
   const guard = renderHook(() =>
     useTradeGuard({
+      chainId: 1,
       tokenDecimals: TOKEN_DECIMALS,
       oracleFeeds: { sell: {}, buy: {} },
       quoteErrorEvent: 'swapQuoteError' as never,
