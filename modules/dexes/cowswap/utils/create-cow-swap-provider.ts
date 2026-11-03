@@ -35,6 +35,25 @@ const WALLET_SIGNING_METHODS = new Set([
   'wallet_sendCalls',
 ]);
 
+// EIP-5792 `ready` (upgrade on demand) is reported as unsupported: CoW signs regularly instead of asking MetaMask for a smart account upgrade
+export const hideAtomicUpgrade = (capabilities: unknown): unknown => {
+  if (
+    !capabilities ||
+    typeof capabilities !== 'object' ||
+    Array.isArray(capabilities)
+  )
+    return capabilities;
+
+  return Object.fromEntries(
+    Object.entries(capabilities).map(([chain, value]) => [
+      chain,
+      value?.atomic?.status === 'ready'
+        ? { ...value, atomic: { ...value.atomic, status: 'unsupported' } }
+        : value,
+    ]),
+  );
+};
+
 export type CreateCowSwapProviderParams = {
   walletClient: WalletClient<Transport, Chain, Account>;
   connector: Connector;
@@ -135,10 +154,15 @@ export const createCowSwapProvider = ({
       // NB!: client.request can throw on timeout for actions like signing
       // this is not a behavior wallet specific methods client.sign<...> have
       // but it's hard to match raw RPC body to viem dev-friendly args and methods
-      return await walletClient.request(
+      const result = await walletClient.request(
         payload as Parameters<typeof walletClient.request>[0],
         { dedupe: true, retryCount: 0 },
       );
+      return (
+        payload.method === 'wallet_getCapabilities'
+          ? hideAtomicUpgrade(result)
+          : result
+      ) as T;
     } catch (error) {
       // The CoW iframe ignores thrown error messages and renders its own
       // text per error code — custom explanations go through our modal

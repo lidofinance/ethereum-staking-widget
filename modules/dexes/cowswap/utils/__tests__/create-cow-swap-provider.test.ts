@@ -33,6 +33,7 @@ import {
 import { MAINNET_TX_CONFIG } from '../../guards/tx/__tests__/fixtures';
 import {
   createCowSwapProvider,
+  hideAtomicUpgrade,
   type CreateCowSwapProviderParams,
 } from '../create-cow-swap-provider';
 
@@ -323,6 +324,61 @@ describe('request — validation', () => {
     await provider.request(SIGN_REQUEST);
     expect(walletClient.request).toHaveBeenCalledTimes(1);
   });
+});
+
+// ---------------------------------------------------------------------------
+// request — wallet capabilities
+// ---------------------------------------------------------------------------
+describe('request — wallet capabilities', () => {
+  it('reports an upgradable account as without atomic batches', async () => {
+    const { provider, walletClient } = setup();
+    walletClient.request.mockResolvedValue({
+      '0x1': {
+        atomic: { status: 'ready' },
+        paymasterService: { supported: false },
+      },
+    });
+
+    expect(
+      await provider.request(rpc('wallet_getCapabilities', [SIGNER])),
+    ).toEqual({
+      '0x1': {
+        atomic: { status: 'unsupported' },
+        paymasterService: { supported: false },
+      },
+    });
+  });
+
+  it('keeps atomic batches of an upgraded account', async () => {
+    const { provider, walletClient } = setup();
+    const capabilities = {
+      '0x1': { atomic: { status: 'supported' } },
+      '0x2105': { atomic: { status: 'ready' } },
+    };
+    walletClient.request.mockResolvedValue(capabilities);
+
+    expect(
+      await provider.request(rpc('wallet_getCapabilities', [SIGNER])),
+    ).toEqual({
+      '0x1': { atomic: { status: 'supported' } },
+      '0x2105': { atomic: { status: 'unsupported' } },
+    });
+  });
+
+  it('does not touch results of other methods', async () => {
+    const { provider, walletClient } = setup();
+    const result = { '0x1': { atomic: { status: 'ready' } } };
+    walletClient.request.mockResolvedValue(result);
+
+    expect(await provider.request(rpc('eth_chainId'))).toBe(result);
+  });
+
+  it.each([null, undefined, '0x1', []])(
+    'passes a non-object result through: %j',
+    (value) => {
+      expect(hideAtomicUpgrade(value)).toEqual(value);
+    },
+  );
 });
 
 // ---------------------------------------------------------------------------
