@@ -30,7 +30,8 @@
       "rewardsMaintenance": false,
       "holidayDecorEnabled": false,
       "forceAllowance": false,
-      "amountBannerEnabled": true
+      "amountBannerEnabled": true,
+      "earnSmartSuggestEnabled": true
     },
     "earnInfoBanner": {
       "title": "",
@@ -86,6 +87,7 @@
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true,
+        "earnSmartSuggestEnabled": true,
         "earnInfoBannerEnabled": false
       },
       "earnAllocation": {
@@ -136,6 +138,7 @@
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true,
+        "earnSmartSuggestEnabled": true,
         "earnInfoBannerEnabled": false
       },
       "earnAllocation": {
@@ -172,7 +175,8 @@
       "featureFlags": {
         "ledgerLiveL2": true,
         "dgBannerEnabled": false,
-        "amountBannerEnabled": false
+        "amountBannerEnabled": false,
+        "earnSmartSuggestEnabled": false
       },
       "pages": {
         "/withdrawals": {

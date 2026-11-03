@@ -12,6 +12,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { useEarnState } from '../shared/hooks/use-earn-state';
 import { DrawerRight } from '../shared/drawer-right';
 import { UpgradeCardVaultsList } from '../shared/upgrade-card-vaults-list';
+import { SmartSuggest } from '../smart-suggest';
 import { EarnInfoBanner } from '../shared/v2/earn-info-banner';
 
 import { VaultCardGGV } from '../vault-ggv/vault-card-ggv-v2';
@@ -73,6 +74,7 @@ export const EarnVaultsList: FC = () => {
       </ListSubtitle>
       <ListWrapper>
         <EarnInfoBanner />
+        <SmartSuggest />
         <UpgradeCardVaultsList setIsDrawerRightOpen={setIsDrawerRightOpen} />
         <CardsStack>
           {actualVaults.map((vault) => {
