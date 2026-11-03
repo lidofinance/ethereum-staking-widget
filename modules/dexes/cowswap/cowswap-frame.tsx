@@ -49,6 +49,8 @@ export type CowswapFrameProps = {
   consumeBottomSpace?: boolean;
   // px, when the widget card is narrower than its iframe
   loaderMaxWidth?: number;
+  // CSS box-shadow of the widget card, when the host block does not draw its own
+  cardShadow?: string;
 };
 
 export const CowswapFrame: React.FC<CowswapFrameProps> = ({
@@ -57,6 +59,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   chainIds = profile.chainIds,
   consumeBottomSpace = true,
   loaderMaxWidth,
+  cardShadow,
 }) => {
   const {
     appCode,
@@ -208,7 +211,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
         chainStyle?.palette ??
         (isDarkTheme ? cowSwapThemeDark : cowSwapThemeLight),
       cardStyle: {
-        boxShadow: 'none',
+        boxShadow: cardShadow ?? 'none',
         ...(chainStyle && { background: chainStyle.card }),
       },
       // enables opening explorer and `powered by cowswap` links
@@ -273,6 +276,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       feeRecipient,
       isDarkTheme,
       chainStyle,
+      cardShadow,
       refreshId,
       validateApproval,
       validate,

@@ -5,7 +5,12 @@ import { useRefetchBalances } from 'features/dex-withdrawals/cowswap';
 
 import { SWAP_COWSWAP_PROFILE } from './cowswap';
 import { useSwapChainIds } from './hooks';
-import { SWAP_CARD_MAX_WIDTH, SwapBlock, SwapFallback } from './styles';
+import {
+  SWAP_CARD_MAX_WIDTH,
+  SWAP_CARD_SHADOW,
+  SwapBlock,
+  SwapFallback,
+} from './styles';
 
 export const SwapDex = () => {
   const refetchBalances = useRefetchBalances();
@@ -31,6 +36,7 @@ export const SwapDex = () => {
         chainIds={chainIds}
         consumeBottomSpace={false}
         loaderMaxWidth={SWAP_CARD_MAX_WIDTH}
+        cardShadow={SWAP_CARD_SHADOW}
       />
     </SwapBlock>
   );
