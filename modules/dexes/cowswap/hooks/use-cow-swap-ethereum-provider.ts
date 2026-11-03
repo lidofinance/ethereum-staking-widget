@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { EthereumProvider } from '@cowprotocol/widget-react';
 import { useConnection, useWalletClient } from 'wagmi';
 
@@ -51,7 +51,7 @@ export const useCowSwapEthereumProvider = ({
 } => {
   const { chainId, walletChainId } = useDappStatus();
   const { data: walletClient } = useWalletClient();
-  const { connector } = useConnection();
+  const { connector, address } = useConnection();
   const isLedgerLive = useIsLedgerLive();
 
   // clean up on unmount
@@ -61,7 +61,7 @@ export const useCowSwapEthereumProvider = ({
     };
   }, []);
 
-  return useMemo(() => {
+  const result = useMemo(() => {
     // resolved from the same chainId the validators receive
     const networkTxConfig = getNetworkTxConfig(chainId);
     if (walletChainId !== chainId || !networkTxConfig) {
@@ -100,4 +100,40 @@ export const useCowSwapEthereumProvider = ({
     isLedgerLive,
     openSigningErrorModal,
   ]);
+
+  // TODO: temp debug of widget reloads: what changed before the provider was recreated or dropped
+  const debugRef = useRef<Record<string, unknown> | null>(null);
+  useEffect(() => {
+    const snapshot: Record<string, unknown> = {
+      walletClient,
+      connector,
+      address,
+      chainId,
+      walletChainId,
+      isLedgerLive,
+      provider: result.provider,
+      isProviderPending: result.isProviderPending,
+    };
+    const prev = debugRef.current;
+    debugRef.current = snapshot;
+    if (!prev || prev.provider === result.provider) return;
+    const changed = Object.keys(snapshot).filter(
+      (key) => key !== 'provider' && prev[key] !== snapshot[key],
+    );
+    console.warn('[CowSwap provider debug] provider changed', {
+      changed,
+      state: result.provider
+        ? 'ready'
+        : result.isProviderPending
+          ? 'pending'
+          : 'none',
+      address,
+      chainId,
+      walletChainId,
+      walletClientChainId: walletClient?.chain.id,
+      connector: connector?.id,
+    });
+  });
+
+  return result;
 };
