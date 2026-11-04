@@ -1,0 +1,196 @@
+import { resolveLevel } from '../resolve-level';
+import { analyzeParams } from '../analyze-params';
+import { TRADE_BUILD_ERROR } from '../../consts';
+import type { OnTradeParamsPayload } from '../../types';
+
+// stETH and ETH addresses for test fixtures
+const STETH = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
+const WSTETH = '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0';
+const ETH = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+
+const makePayload = (
+  overrides: Partial<OnTradeParamsPayload> = {},
+): OnTradeParamsPayload =>
+  ({
+    sellToken: { address: STETH, symbol: 'stETH' },
+    buyToken: { address: ETH, symbol: 'ETH' },
+    sellTokenAmount: { units: '10' },
+    buyTokenAmount: { units: '10' },
+    minimumReceiveBuyAmount: { units: '9.8' },
+    recipient: undefined,
+    ...overrides,
+  }) as unknown as OnTradeParamsPayload;
+
+// ---------------------------------------------------------------------------
+// resolveLevel
+// ---------------------------------------------------------------------------
+describe('resolveLevel', () => {
+  it('returns safe when null', () => {
+    expect(resolveLevel(null)).toBe('safe');
+  });
+
+  it('returns blocked for oracle deviation >= 4%', () => {
+    expect(resolveLevel(4)).toBe('blocked');
+    expect(resolveLevel(4.9)).toBe('blocked');
+    expect(resolveLevel(50)).toBe('blocked');
+  });
+
+  it('returns safe for oracle deviation below 4%', () => {
+    expect(resolveLevel(3.9)).toBe('safe');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// analyzeParams
+// ---------------------------------------------------------------------------
+describe('analyzeParams', () => {
+  describe('minimum receive vs quote (STW-COW-QUOTE-01)', () => {
+    it('blocks when min receive is far below the quoted buy amount', () => {
+      const payload = makePayload({
+        buyToken: { address: USDC, symbol: 'USDC' },
+        buyTokenAmount: { units: '29910' },
+        minimumReceiveBuyAmount: { units: '1' },
+      } as Partial<OnTradeParamsPayload>);
+      const result = analyzeParams(payload);
+      expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
+    });
+
+    it('blocks when min receive is below max slippage and the partner fee', () => {
+      const payload = makePayload({
+        minimumReceiveBuyAmount: { units: '9.66' }, // 3.4% below quote
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('blocked');
+    });
+
+    it('allows min receive at max slippage plus the partner fee', () => {
+      const payload = makePayload({
+        minimumReceiveBuyAmount: { units: '9.67' }, // 3.0% + 0.3% below quote
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('safe');
+    });
+
+    it.each(['.5', '1.', '1.0000000000000000001', 'abc'])(
+      'fails closed on an unparseable min receive %p',
+      (units) => {
+        const payload = makePayload({
+          buyToken: { address: USDC, symbol: 'USDC' },
+          buyTokenAmount: { units: '29910' },
+          minimumReceiveBuyAmount: { units },
+        } as Partial<OnTradeParamsPayload>);
+        expect(analyzeParams(payload).level).toBe('blocked');
+      },
+    );
+
+    it('fails closed when the quote itself is unparseable', () => {
+      const payload = makePayload({
+        buyTokenAmount: { units: 'abc' },
+        minimumReceiveBuyAmount: { units: '1' },
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('blocked');
+    });
+
+    it('skips the check when no quote is present (approval pre-check)', () => {
+      const payload = makePayload({
+        buyTokenAmount: undefined,
+        minimumReceiveBuyAmount: undefined,
+      });
+      expect(analyzeParams(payload).level).toBe('safe');
+    });
+
+    it('allows min receive at exactly max slippage', () => {
+      const payload = makePayload({
+        minimumReceiveBuyAmount: { units: '9.7' }, // 3.0% below quote
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('safe');
+    });
+
+    // $4.5 WETH → stETH on mainnet: 3.54% network cost, 2.1% smart slippage (captured payload)
+    const smallTrade = {
+      buyTokenAmount: { units: '0.0019999978756191' },
+      minimumReceiveBuyAmount: { units: '0.001882743716012661' },
+    } as Partial<OnTradeParamsPayload>;
+
+    it('blocks a small trade whose network cost eats the slippage cap', () => {
+      expect(analyzeParams(makePayload(smallTrade)).level).toBe('blocked');
+    });
+
+    it('allows it with a network cost allowance', () => {
+      // 5% of the quote, above the 3.54% network cost
+      expect(analyzeParams(makePayload(smallTrade), 0.0001).level).toBe('safe');
+    });
+
+    it('still blocks slippage above the cap with an allowance', () => {
+      const payload = makePayload({
+        ...smallTrade,
+        // net of 3.54% cost and the fee, then 3.5% slippage
+        minimumReceiveBuyAmount: { units: '0.00185571' },
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload, 0.0000708).level).toBe('blocked');
+    });
+
+    it('allows truncated atoms at max slippage plus the fee (6-decimal token)', () => {
+      const payload = makePayload({
+        buyToken: { address: USDC, symbol: 'USDC' },
+        buyTokenAmount: { units: '29910.123457' },
+        minimumReceiveBuyAmount: { units: '28923.089382' }, // floor(x * 0.967)
+      } as Partial<OnTradeParamsPayload>);
+      expect(analyzeParams(payload).level).toBe('safe');
+    });
+  });
+
+  describe('token presence', () => {
+    it('returns blocked when sell token is missing', () => {
+      const payload = makePayload({ sellToken: undefined });
+      const result = analyzeParams(payload);
+      expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
+    });
+
+    it('returns blocked when sell and buy token match', () => {
+      const payload = makePayload({
+        buyToken: { address: STETH, symbol: 'stETH' },
+      } as Partial<OnTradeParamsPayload>);
+      const result = analyzeParams(payload);
+      expect(result).toEqual({
+        level: 'blocked',
+        messages: [TRADE_BUILD_ERROR(1009)],
+        isStructural: true,
+      });
+    });
+
+    it('returns blocked when buy token is missing', () => {
+      const payload = makePayload({ buyToken: undefined });
+      const result = analyzeParams(payload);
+      expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
+    });
+
+    it('accepts valid stETH → ETH pair', () => {
+      const result = analyzeParams(makePayload());
+      expect(result.level).toBe('safe');
+      expect(result.isStructural).toBe(false);
+    });
+
+    it('accepts wstETH → USDC pair', () => {
+      const payload = makePayload({
+        sellToken: { address: WSTETH, symbol: 'wstETH' } as never,
+        buyToken: { address: USDC, symbol: 'USDC' } as never,
+      });
+      const result = analyzeParams(payload);
+      expect(result.level).toBe('safe');
+    });
+  });
+
+  describe('max sell amount', () => {
+    it('leaves the USD limit to evaluateTrade', () => {
+      const payload = makePayload({
+        sellTokenAmount: { units: '1000000' } as never,
+        buyTokenAmount: { units: '1000000' } as never,
+        minimumReceiveBuyAmount: { units: '990000' } as never,
+      });
+      expect(analyzeParams(payload).level).toBe('safe');
+    });
+  });
+});

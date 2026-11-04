@@ -20,12 +20,14 @@ export const LinkIpfs = ({
   // Actual for click (opening in same tab)
   const handleClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
     (event) => {
+      // same contract as next/link: onClick may cancel navigation
+      onClick?.(event);
+      if (event.defaultPrevented) return;
+
       event.preventDefault();
       void push(href, query);
 
       window.scrollTo({ top: 0 });
-
-      onClick?.(event);
     },
     [onClick, push, href, query],
   );

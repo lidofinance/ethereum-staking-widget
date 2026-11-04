@@ -4,6 +4,7 @@ import { Accordion, Link, Link as OuterLink } from '@lidofinance/lido-ui';
 import { lidoEcosystemPath } from 'utils/lido-ecosystem-path';
 import { WRAP_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { superbridgeWstethLink } from 'consts/external-links';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { LocalLink } from 'shared/components/local-link';
 
@@ -25,7 +26,7 @@ export const HowCanIGetWstethOnUnichain: FC = () => {
         </LocalLink>{' '}
         on Unichain,{' '}
         <Link
-          href={`https://superbridge.app/unichain/wstETH`}
+          href={superbridgeWstethLink('unichain', 'to-l2')}
           data-matomo={
             MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnUnichainBridgeYourWstETHFromEthereumToUnichain
           }
