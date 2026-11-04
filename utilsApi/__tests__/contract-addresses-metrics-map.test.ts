@@ -1,11 +1,20 @@
 import { describe, expect, it } from 'vitest';
+import { ethAddress } from 'viem';
+import { mainnet } from 'viem/chains';
 
 import { CHAINS } from 'consts/chains';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
+import { WITHDRAWALS_COWSWAP_PROFILE } from 'features/dex-withdrawals/cowswap';
+import { SWAP_COWSWAP_PROFILE } from 'features/swap/cowswap';
 import {
-  METRIC_CONTRACT_ADDRESSES,
+  CHAINLINK_FEEDS,
+  WSTETH_ADDRESS,
+} from 'modules/dexes/cowswap/guards/oracles/feeds';
+
+import {
   getMetricContractAbi,
+  METRIC_CONTRACT_ADDRESSES,
 } from '../contractAddressesMetricsMap';
 
 describe('METRIC_CONTRACT_ABIS', () => {
@@ -16,6 +25,56 @@ describe('METRIC_CONTRACT_ABIS', () => {
 
     expect(missing).toEqual([]);
   });
+});
+
+describe('METRIC_CONTRACT_ADDRESSES', () => {
+  // /api/rpc allows eth_call only to these addresses
+  const allowed = new Set(
+    Object.keys(METRIC_CONTRACT_ADDRESSES[mainnet.id]).map((address) =>
+      address.toLowerCase(),
+    ),
+  );
+
+  it('allows eth_call to every CoW Swap oracle feed', () => {
+    const missing = [
+      ...Object.values(CHAINLINK_FEEDS).map(({ address }) => address),
+      WSTETH_ADDRESS,
+    ].filter((address) => !allowed.has(address.toLowerCase()));
+
+    expect(missing).toEqual([]);
+  });
+
+  it.each([
+    ['withdrawals', WITHDRAWALS_COWSWAP_PROFILE],
+    ['swap', SWAP_COWSWAP_PROFILE],
+  ])(
+    'allows eth_call to every %s CoW Swap token and contract on its networks',
+    (_, profile) => {
+      // same mapping the proxy builds per chain, without the supportedChains filter
+      for (const chainId of profile.chainIds) {
+        const chainAllowed = new Set(
+          Object.values(CONTRACT_NAMES).flatMap((name) => {
+            const address = getContractAddress(chainId, name);
+            return address ? [address.toLowerCase()] : [];
+          }),
+        );
+        const config = profile.getNetworkTxConfig(chainId);
+        const addresses = config
+          ? [
+              ...config.tokens,
+              config.cowSettlement,
+              config.cowVaultRelayer,
+              ...(config.cowEthFlow ? [config.cowEthFlow] : []),
+            ]
+          : [];
+        const missing = addresses.filter(
+          (address) => address !== ethAddress && !chainAllowed.has(address),
+        );
+
+        expect({ chainId, missing }).toEqual({ chainId, missing: [] });
+      }
+    },
+  );
 });
 
 describe('GasPriceOracle predeploy', () => {

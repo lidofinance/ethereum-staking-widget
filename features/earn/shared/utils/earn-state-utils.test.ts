@@ -145,5 +145,26 @@ describe('computeEarnRuntimeState (opt-out semantics)', () => {
       expect(result.someVaultsEnabledByURL).toBe(false);
       expect(result.vaultsEnabledByUrl).toEqual([]);
     });
+    it('?earn=foo ignores the unknown vault and shows every vault', () => {
+      const result = computeEarnRuntimeState({
+        isLedgerLive: false,
+        earnParam: 'foo',
+        isReady: true,
+      });
+      expect(result.someVaultsEnabledByURL).toBe(false);
+      expect(result.vaultsEnabledByUrl).toEqual([]);
+      expect(result.isEarnDisabledByRuntimeContext).toBe(false);
+    });
+
+    it('?earn=foo,eth keeps only the known vault', () => {
+      const result = computeEarnRuntimeState({
+        isLedgerLive: false,
+        earnParam: 'foo,eth',
+        isReady: true,
+      });
+      expect(result.vaultsEnabledByUrl).toEqual(['eth']);
+      expect(result.isVaultEnabledByUrl('eth')).toBe(true);
+      expect(result.isVaultEnabledByUrl('usd')).toBe(false);
+    });
   });
 });

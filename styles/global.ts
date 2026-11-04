@@ -9,10 +9,11 @@ export const devicesHeaderMedia = {
 const GlobalStyle = createGlobalStyle`
   :root {
     --nav-mobile-height: ${NAV_MOBILE_HEIGHT}px;
+    // only the device safe area, the bar itself has no extra bottom gap
+    --nav-mobile-bottom-inset: env(safe-area-inset-bottom, 0px);
     --nav-mobile-max-width: ${NAV_MOBILE_MAX_WIDTH}px;
     --nav-desktop-gutter-x: 46px;
 
-    --header-padding-y: 18px;
     --dot-size: 6px;
 
     --footer-max-width: 1424px;
@@ -21,7 +22,7 @@ const GlobalStyle = createGlobalStyle`
 
     --footer-mobile-padding-x: 20px;
     --footer-mobile-padding-y: 18px;
-    --footer-mobile-margin-bottom: 60px;
+    --footer-mobile-margin-bottom: calc(var(--nav-mobile-height) + var(--nav-mobile-bottom-inset));
     
     --custom-background-dark: #28282f;
     --custom-fill-dark: #273852;

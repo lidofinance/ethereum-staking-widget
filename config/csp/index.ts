@@ -8,8 +8,9 @@ import { createContentSecurityPolicy } from 'scripts/csp/content-security-policy
 // otherwise you will get something like a cyclic error!
 import { config } from '../get-config';
 import { secretConfig } from '../get-secret-config';
-import { IPFS_BASE_SCRIPT_HASH } from 'features/ipfs';
-import { COWSWAP_BASE_URL } from 'features/dex-withdrawals/cowswap/consts';
+// deep import: the `features/ipfs` barrel breaks HMR
+import { IPFS_BASE_SCRIPT_HASH } from 'features/ipfs/ipfs-base-script';
+import { COWSWAP_BASE_URL } from 'modules/dexes/cowswap/consts';
 
 // The policy itself is plain JS under scripts/csp: the header is set by
 // server.mjs on every HTML response (the pages are static, so nothing in the
