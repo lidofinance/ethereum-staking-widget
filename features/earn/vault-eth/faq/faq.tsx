@@ -19,7 +19,7 @@ import {
   HowManyWithdrawalRequests,
   CanICancelMyWithdrawalRequest,
   HowDoIClaimMyRewards,
-  HowDoesLossProtectionWork,
+  HowAreDepositsProtected,
 } from './list';
 
 export const FAQ_IDS = {
@@ -68,7 +68,7 @@ export const EarnEthFaq: FC = () => {
         <HowManyWithdrawalRequests id={FAQ_IDS.withdrawalRequests} />
         <CanICancelMyWithdrawalRequest id={FAQ_IDS.cancelWithdrawal} />
         <HowDoIClaimMyRewards id={FAQ_IDS.claimRewards} />
-        <HowDoesLossProtectionWork id={FAQ_IDS.lossProtection} />
+        <HowAreDepositsProtected id={FAQ_IDS.lossProtection} />
       </Section>
     </FaqGroup>
   );
