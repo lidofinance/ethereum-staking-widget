@@ -15,7 +15,6 @@ import {
   LegalDisclaimer,
 } from 'shared/components';
 
-import { Allocation } from './allocation';
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
 import { VaultSwitch } from '../shared/vault-switch';
@@ -149,7 +148,6 @@ export const VaultPageGGV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <GGVVaultDetails />
-      <Allocation />
       <GGVFaq />
       <DisclaimerSection>
         <AprDisclaimer />

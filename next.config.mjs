@@ -64,7 +64,6 @@ export const CACHE_CONTROL_PAGES = [
   '/apple-touch-icon.png',
   '/lido-preview.png',
   '/bells.mp3',
-  '/honk.mp3',
 ];
 
 // Required lazily: @next/bundle-analyzer is a devDependency and the production
