@@ -469,6 +469,49 @@ describe('ManifestSchema', () => {
     });
   });
 
+  describe('config.earnInfoBanner', () => {
+    it('defaults to empty object when omitted', () => {
+      const result = parseManifest({ '1': validEntry });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+
+    it('accepts title and text at max length boundary', () => {
+      const maxText = 'a'.repeat(250);
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: { earnInfoBanner: { title: maxText, text: maxText } },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({
+        title: maxText,
+        text: maxText,
+      });
+    });
+
+    it('drops the section when text exceeds max length', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: {
+            earnInfoBanner: { title: 'Title', text: 'a'.repeat(251) },
+          },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+
+    it('drops the section when a field has a non-string value', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: { earnInfoBanner: { title: 42, text: 'Text' } },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+  });
+
   describe('config.featureFlags', () => {
     it('accepts known feature flags', () => {
       const result = parseManifest({
@@ -840,5 +883,49 @@ describe('baseConfig.l2Stake', () => {
       '1': { leastSafeVersion: '1.0.0' },
     });
     expect(manifest['1']?.config.l2Stake.perChain[BASE].enabled).toBe(false);
+  });
+});
+
+describe('baseConfig.swap', () => {
+  const BASE = 8453;
+  const ARBITRUM = 42161;
+
+  const parseSwap = (swap?: unknown) =>
+    ManifestSchema.parse({ baseConfig: { swap } }).baseConfig.swap;
+
+  it('has no per-chain switches when omitted', () => {
+    expect(parseSwap(undefined)).toEqual({ perChain: {} });
+  });
+
+  it('keeps boolean `enabled` per chain', () => {
+    const result = parseSwap({
+      perChain: { [BASE]: { enabled: false }, [ARBITRUM]: { enabled: true } },
+    });
+    expect(result.perChain[BASE]).toEqual({ enabled: false });
+    expect(result.perChain[ARBITRUM]).toEqual({ enabled: true });
+  });
+
+  it('drops invalid keys and entries instead of failing', () => {
+    const result = parseSwap({
+      perChain: {
+        base: { enabled: false },
+        '0': { enabled: false },
+        [BASE]: { enabled: 'no' },
+        [ARBITRUM]: null,
+      },
+    });
+    expect(result).toEqual({ perChain: {} });
+    expect(parseSwap('broken')).toEqual({ perChain: {} });
+  });
+
+  it('lets a network entry override baseConfig', () => {
+    const manifest = ManifestSchema.parse({
+      baseConfig: { swap: { perChain: { [BASE]: { enabled: true } } } },
+      '1': {
+        leastSafeVersion: '1.0.0',
+        config: { swap: { perChain: { [BASE]: { enabled: false } } } },
+      },
+    });
+    expect(manifest['1']?.config.swap.perChain[BASE]?.enabled).toBe(false);
   });
 });

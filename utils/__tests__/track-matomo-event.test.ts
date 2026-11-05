@@ -41,14 +41,14 @@ describe('trackMatomoEvent', () => {
   it('always attaches the wallet chain, even without params', () => {
     trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart);
     expect(callMatomo).toHaveBeenCalledWith('trackEvent', ...EVENT, undefined, {
-      dimension2: 'optimism-10',
+      dimension4: 'optimism-10',
     });
   });
 
   it('adds the lowercased token when given', () => {
     trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart, { token: 'WETH' });
     expect(callMatomo).toHaveBeenCalledWith('trackEvent', ...EVENT, undefined, {
-      dimension2: 'optimism-10',
+      dimension4: 'optimism-10',
       dimension3: 'weth',
     });
   });
@@ -59,7 +59,7 @@ describe('trackMatomoEvent', () => {
       token: 'ETH',
     });
     expect(callMatomo).toHaveBeenCalledWith('trackEvent', ...EVENT, undefined, {
-      dimension2: 'mainnet-1',
+      dimension4: 'mainnet-1',
       dimension3: 'eth',
     });
   });
@@ -67,7 +67,7 @@ describe('trackMatomoEvent', () => {
   it('passes a numeric value through to Matomo', () => {
     trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart, { value: 1.5 });
     expect(callMatomo).toHaveBeenCalledWith('trackEvent', ...EVENT, 1.5, {
-      dimension2: 'optimism-10',
+      dimension4: 'optimism-10',
     });
   });
 
@@ -75,7 +75,7 @@ describe('trackMatomoEvent', () => {
     vi.mocked(getTrackedChain).mockReturnValue(DISCONNECTED_CHAIN_ID);
     trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart);
     expect(callMatomo).toHaveBeenCalledWith('trackEvent', ...EVENT, undefined, {
-      dimension2: 'disconnected-0',
+      dimension4: 'disconnected-0',
     });
   });
 });
