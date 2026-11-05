@@ -15,7 +15,6 @@ type VaultHeaderProps = {
   vaultName?: EarnVaultKey;
   partners?: VaultPartnerType[];
   logo: React.ReactNode;
-  compact?: boolean;
 };
 
 export const VaultHeader: FC<VaultHeaderProps> = ({
@@ -23,7 +22,6 @@ export const VaultHeader: FC<VaultHeaderProps> = ({
   vaultName = '',
   partners,
   logo,
-  compact,
 }) => {
   const showNew = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === vaultName,
@@ -33,7 +31,7 @@ export const VaultHeader: FC<VaultHeaderProps> = ({
     <VaultCardWrapper>
       {logo}
       <VaultHeaderColumn>
-        <VaultHeaderTitle compact={compact} data-testid="vault-title">
+        <VaultHeaderTitle data-testid="vault-title">
           {title} {showNew && <VaultHeaderNewTag>New</VaultHeaderNewTag>}
         </VaultHeaderTitle>
         <VaultPartners partners={partners} />
