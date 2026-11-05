@@ -72,6 +72,9 @@ const routes: PageRoute[] = [
   },
 ];
 
+// Layout remounts per page; after the first ready router a remount must not hide the navigation again
+let wasRouterReady = false;
+
 const useNavigation = () => {
   const pathname = useRouterPath();
   const {
@@ -86,8 +89,11 @@ const useNavigation = () => {
   // URL product params are read only once the router is ready;
   // set in an effect, so the first client render matches the server one
   const { isReady } = useRouter();
-  const [isPending, setIsPending] = useState(true);
-  useEffect(() => setIsPending(!isReady), [isReady]);
+  const [isPending, setIsPending] = useState(() => !wasRouterReady);
+  useEffect(() => {
+    if (isReady) wasRouterReady = true;
+    setIsPending(!isReady);
+  }, [isReady]);
 
   return {
     availableRoutes,

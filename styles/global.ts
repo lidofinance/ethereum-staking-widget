@@ -76,6 +76,10 @@ const GlobalStyle = createGlobalStyle`
   body {
     width: 100%;
   }
+  html {
+    // keeps the layout width when a page switches between fitting the window and scrolling
+    scrollbar-gutter: stable;
+  }
   body {
     background: var(--lido-color-background);
     color: var(--lido-color-text);
