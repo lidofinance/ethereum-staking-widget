@@ -1,17 +1,26 @@
 import { Link } from '@lidofinance/lido-ui';
-import { config } from 'config';
 
 export const ProtectedTooltip = () => {
   return (
     <>
-      In the event of a ≥1% mark-to-market loss, dedicated protocol reserves
-      absorb losses first, before user deposits.{' '}
+      Vault deposits are protected by two layers: Firelight absorbs eligible and
+      approved losses first, up to 5.7% of TVL for each 30-day period, subject{' '}
       <Link
-        href={`${config.researchOrigin}/t/lido-earn-competing-on-trust-5m-treasury-allocation/11228`}
+        href="https://docs.firelight.finance/resources/cover-scope"
         target="_blank"
       >
-        Learn more
+        to the applicable terms and conditions
       </Link>
+      . Any remaining loss can then be absorbed by the Lido DAO&apos;s loss
+      protection mechanism, applicable to this vault, and subject{' '}
+      <Link
+        href="https://snapshot.box/#/s:lido-snapshot.eth/proposal/0xd32eab4ce41e2754d8a51fdf89bd9f4eb43ecbeb7b60d0e93ce84bc3e4d4c8a3"
+        target="_blank"
+      >
+        to the applicable terms and conditions
+      </Link>{' '}
+      (initial deposit of $3M in wstETH, currently ~1,388 ETH). Deposits are not
+      protected from any and all loss.
     </>
   );
 };
