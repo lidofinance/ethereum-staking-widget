@@ -10,6 +10,7 @@ import {
   ASYNC_REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
   SYNC_REDEEM_QUEUE_ABI,
+  ORACLE_ABI,
 } from 'modules/mellow-meta-vaults/abi';
 import { TOKENS } from 'consts/tokens';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -60,6 +61,29 @@ export const getVaultWritableContract = <
     client: {
       public: publicClient,
       wallet: walletClient,
+    },
+  });
+};
+
+// The vault's oracle. Use the configured address, not `vault.oracle()`:
+// the RPC proxy serves eth_call only to configured contracts
+export const getOracleContract = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'usdOracle',
+  );
+  invariant(
+    address,
+    `no USD Vault Oracle contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: ORACLE_ABI,
+    address,
+    client: {
+      public: publicClient,
     },
   });
 };
