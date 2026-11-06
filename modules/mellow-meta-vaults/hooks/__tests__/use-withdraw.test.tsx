@@ -15,6 +15,7 @@ import {
 import type {
   AsyncRedeemQueueWritableContract,
   CollectorContract,
+  OracleContract,
   SyncRedeemQueueWritableContract,
 } from 'modules/mellow-meta-vaults/types/contracts';
 
@@ -30,8 +31,6 @@ const CALL_ID = '0xcall';
 
 const AMOUNT = 60n;
 
-const VAULT: Address = '0x00000000000000000000000000000000000000c3';
-const ORACLE: Address = '0x00000000000000000000000000000000000000c4';
 const ASSET: Address = '0x00000000000000000000000000000000000000c5';
 const NOW = 1_700_000_000n;
 const MAX_AGE = 3600;
@@ -48,23 +47,32 @@ const state = vi.hoisted(() => ({
     failed: vi.fn(),
     instantWithdrawalUnavailable: vi.fn(),
   },
-  // the oracle report the sync queue prices with; fresh unless a test ages it
-  reportTimestamp: 0,
+  // the oracle report the sync queue prices with, one per read; the last
+  // one repeats. Usable unless a test changes it
+  reports: [] as Report[],
 }));
 
-// viem's getContract routes reads through the client's own readContract
+type Report = { priceD18: bigint; timestamp: number; isSuspicious: boolean };
+
+const usableReport = (): Report => ({
+  priceD18: 10n ** 18n,
+  timestamp: Number(NOW) - 600,
+  isSuspicious: false,
+});
+
 const publicClientMainnet = {
   getBlock: vi.fn(async () => ({ timestamp: NOW })),
-  readContract: vi.fn(async ({ functionName }: { functionName: string }) => {
-    if (functionName === 'oracle') return ORACLE;
-    if (functionName === 'getReport')
-      return {
-        priceD18: 10n ** 18n,
-        timestamp: state.reportTimestamp,
-        isSuspicious: false,
-      };
-    throw new Error(`unexpected read: ${functionName}`);
-  }),
+};
+
+const oracle = {
+  read: {
+    getReport: vi.fn(async ([asset]: [Address]) => {
+      if (asset !== ASSET) throw new Error(`unexpected asset ${asset}`);
+      return state.reports.length > 1
+        ? (state.reports.shift() as Report)
+        : state.reports[0];
+    }),
+  },
 };
 
 vi.mock('modules/web3', async () => {
@@ -122,7 +130,6 @@ const createQueues = ({
     read: {
       remainingDailyLimit: vi.fn(async () => [0n, nextLimit()] as const),
       getLiquidAssets: vi.fn(async () => liquidAssets),
-      vault: vi.fn(async () => VAULT),
       asset: vi.fn(async () => ASSET),
       syncRedeemParams: vi.fn(async () => [0n, MAX_AGE] as const),
     },
@@ -158,6 +165,7 @@ const withdraw = (queues: Queues, { sync = true } = {}) =>
         ? (queues.syncRedeemQueue as unknown as SyncRedeemQueueWritableContract)
         : undefined,
       collector: queues.collector as unknown as CollectorContract,
+      oracle: oracle as unknown as OracleContract,
       txModalStages: state.txModalStages,
       onRetry,
     }),
@@ -178,7 +186,7 @@ const consoleErrorSpy = vi
 beforeEach(() => {
   vi.clearAllMocks();
   state.isAA = false;
-  state.reportTimestamp = Number(NOW) - 600;
+  state.reports = [usableReport()];
   state.performTransaction.mockImplementation(legacyPerformTransaction());
 });
 afterAll(() => {
@@ -243,24 +251,33 @@ describe('useWithdraw', () => {
       expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
     });
 
-    // The sync queue reverts with StaleReport. The Collector quote does not show it
-    it('requests through the async queue when the oracle report is stale', async () => {
-      state.reportTimestamp = Number(NOW) - MAX_AGE - 1;
-      const queues = createQueues(ample);
+    // ETHV-WD-ROUTE-05: the sync queue reverts on a stale, suspicious or zero
+    // report (StaleReport, InvalidReport). The Collector quote does not show it
+    it.each([
+      ['older than maxAge', { timestamp: Number(NOW) - MAX_AGE - 1 }],
+      ['suspicious', { isSuspicious: true }],
+      ['zero-priced', { priceD18: 0n }],
+    ])(
+      'requests through the async queue when the oracle report is %s',
+      async (_, change) => {
+        state.reports = [{ ...usableReport(), ...change }];
+        const queues = createQueues(ample);
 
-      await expect(withdraw(queues)).resolves.toBe(true);
+        await expect(withdraw(queues)).resolves.toBe(true);
 
-      expect(queues.asyncRedeemQueue.write.redeem).toHaveBeenCalledTimes(1);
-      expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
-    });
+        expect(queues.asyncRedeemQueue.write.redeem).toHaveBeenCalledTimes(1);
+        expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
+      },
+    );
 
-    it('redeems instantly with a report exactly at its maximum age', async () => {
-      state.reportTimestamp = Number(NOW) - MAX_AGE;
+    it('redeems instantly with a report exactly at its maximum age, like the contract', async () => {
+      state.reports = [{ ...usableReport(), timestamp: Number(NOW) - MAX_AGE }];
       const queues = createQueues(ample);
 
       await expect(withdraw(queues)).resolves.toBe(true);
 
       expect(queues.syncRedeemQueue.write.redeem).toHaveBeenCalledTimes(1);
+      expect(oracle.read.getReport).toHaveBeenCalledWith([ASSET]);
     });
 
     it('falls back to the async queue when the availability read fails', async () => {
@@ -365,6 +382,25 @@ describe('useWithdraw', () => {
       expect(
         queues.syncRedeemQueue.read.remainingDailyLimit,
       ).toHaveBeenCalledTimes(2);
+    });
+
+    it('sends the user to the standard route when the report went stale before the redemption landed', async () => {
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('reverted'),
+      );
+      state.reports = [
+        usableReport(),
+        { ...usableReport(), timestamp: Number(NOW) - MAX_AGE - 1 },
+      ];
+      const queues = createQueues(ample);
+
+      await expect(withdraw(queues)).resolves.toBe(false);
+
+      expect(
+        state.txModalStages.instantWithdrawalUnavailable,
+      ).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
+      expect(oracle.read.getReport).toHaveBeenCalledTimes(2);
     });
 
     it('offers a retry when a reverted redemption still fits the buffer', async () => {

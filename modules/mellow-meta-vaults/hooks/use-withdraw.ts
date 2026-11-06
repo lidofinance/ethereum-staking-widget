@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { encodeFunctionData, getContract } from 'viem';
+import { encodeFunctionData } from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
@@ -18,14 +18,16 @@ import { ErrorMessage, getError } from 'utils';
 import { overrideWithQAMockBigInt } from 'utils/qa';
 import {
   CollectorContract,
+  OracleContract,
   AsyncRedeemQueueWritableContract,
   SyncRedeemQueueWritableContract,
 } from '../types/contracts';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { ORACLE_ABI, VAULT_ABI } from '../abi';
 import { COLLECTOR_CONFIG } from '../consts';
-import { meetsSyncRedeemRequirements } from '../utils/sync-redeem-requirements';
-import { isReportFresh } from '../utils/report-freshness';
+import {
+  isSyncRedeemReportUsable,
+  meetsSyncRedeemRequirements,
+} from '../utils/sync-redeem-requirements';
 
 const QA_REMAINING_DAILY_LIMIT_KEY =
   'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit';
@@ -59,6 +61,8 @@ const USER_ACTION_ERRORS: readonly string[] = [
 type UseWithdrawArgs = {
   asyncRedeemQueue: AsyncRedeemQueueWritableContract;
   syncRedeemQueue?: SyncRedeemQueueWritableContract; // Omit for async-only queues
+  // the vault's oracle; the sync queue prices a redemption with its report
+  oracle: OracleContract;
   collector: CollectorContract;
   txModalStages: TxModalStages;
   onRetry?: () => void;
@@ -76,6 +80,7 @@ type WithdrawArgs = {
 export const useWithdraw = ({
   asyncRedeemQueue,
   syncRedeemQueue,
+  oracle,
   collector,
   txModalStages,
   onRetry,
@@ -93,39 +98,33 @@ export const useWithdraw = ({
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
 
-      // The sync queue reverts with StaleReport for an old report. The Collector does not check it.
-      const checkReportFreshness = async (
+      // The sync queue reverts on a stale, suspicious or zero report
+      // (StaleReport, InvalidReport). The Collector does not check it.
+      const checkReport = async (
         syncQueue: SyncRedeemQueueWritableContract,
       ) => {
         invariant(publicClientMainnet, 'Public client is not available');
 
-        const [vaultAddress, asset, [, maxAge], block] = await Promise.all([
-          syncQueue.read.vault(),
+        const [asset, [, maxAge], block] = await Promise.all([
           syncQueue.read.asset(),
           syncQueue.read.syncRedeemParams(),
           publicClientMainnet.getBlock(),
         ]);
+        const report = await oracle.read.getReport([asset]);
 
-        // Resolved on-chain rather than from config
-        const oracleAddress = await getContract({
-          abi: VAULT_ABI,
-          address: vaultAddress,
-          client: { public: publicClientMainnet },
-        }).read.oracle();
-
-        const report = await getContract({
-          abi: ORACLE_ABI,
-          address: oracleAddress,
-          client: { public: publicClientMainnet },
-        }).read.getReport([asset]);
-
-        return isReportFresh({
-          reportTimestamp: overrideWithQAMockBigInt(
-            BigInt(report.timestamp),
-            QA_REPORT_TIMESTAMP_KEY,
-          ),
-          maxAge: BigInt(maxAge),
-          blockTimestamp: block.timestamp,
+        return isSyncRedeemReportUsable({
+          report: {
+            ...report,
+            timestamp: Number(
+              overrideWithQAMockBigInt(
+                BigInt(report.timestamp),
+                QA_REPORT_TIMESTAMP_KEY,
+              ),
+            ),
+          },
+          maxAge,
+          // The contract compares with the block time, not the user's clock
+          nowSeconds: Number(block.timestamp),
         });
       };
 
@@ -142,12 +141,10 @@ export const useWithdraw = ({
         // Eager return to save rpc calls, duplicates predicate from meetsSyncRedeemRequirements
         if (amount > remainingDailyLimit) return false;
 
-        // A call site can also withhold `syncRedeemQueue` for a bad report,
-        // see features/earn/vault-eth/hooks/use-sync-redeem-report
         const [
           { assets, isWithdrawalPossible },
           actualLiquidAssets,
-          isFreshReport,
+          isReportUsable,
         ] = await Promise.all([
           collector.read.getWithdrawalParams([
             amount,
@@ -155,14 +152,14 @@ export const useWithdraw = ({
             COLLECTOR_CONFIG,
           ]) as Promise<{ assets: bigint; isWithdrawalPossible: boolean }>,
           syncQueue.read.getLiquidAssets(),
-          checkReportFreshness(syncQueue),
+          checkReport(syncQueue),
         ]);
         const liquidAssets = overrideWithQAMockBigInt(
           actualLiquidAssets,
           QA_LIQUID_ASSETS_KEY,
         );
 
-        if (!isFreshReport) return false;
+        if (!isReportUsable) return false;
 
         return meetsSyncRedeemRequirements({
           isWithdrawalPossible,
@@ -318,6 +315,7 @@ export const useWithdraw = ({
       matomoEventStart,
       matomoEventSuccess,
       onRetry,
+      oracle,
       publicClientMainnet,
       syncRedeemQueue,
       txFlow,
