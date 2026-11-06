@@ -168,6 +168,11 @@ const useSupportedChainLogic = (
     }
   }
 
+  // manifest refetch can drop the current chain at runtime
+  if (!isChainSupported(chainId) && isChainSupported(config.defaultChain)) {
+    setChainId(config.defaultChain);
+  }
+
   return useMemo(
     () => ({
       chainId,
@@ -232,6 +237,31 @@ export const SupportL1andL2StakingChains: React.FC<React.PropsWithChildren> = ({
     (chainId: number) =>
       isSupportedL1Chain(chainId) || isSupportedL2StakingChain(chainId),
     [],
+  );
+  const contextValue = useSupportedChainLogic(isChainSupported);
+
+  return (
+    <DappChainContext.Provider value={contextValue}>
+      <LidoSDKL2Provider>
+        {/* Some modals depend on the LidoSDKL2Provider */}
+        <ModalProvider>{children}</ModalProvider>
+      </LidoSDKL2Provider>
+    </DappChainContext.Provider>
+  );
+};
+
+/**
+ * Enables L1 chains and the given L2 chains, for pages with their own L2 set
+ * @param l2ChainIds must be a stable reference
+ */
+export const SupportL1AndCustomL2Chains: React.FC<
+  React.PropsWithChildren<{ l2ChainIds: readonly number[] }>
+> = ({ l2ChainIds, children }) => {
+  const isChainSupported = useCallback(
+    (chainId: number) =>
+      isSupportedL1Chain(chainId) ||
+      (isSupportedL2StakingChain(chainId) && l2ChainIds.includes(chainId)),
+    [l2ChainIds],
   );
   const contextValue = useSupportedChainLogic(isChainSupported);
 

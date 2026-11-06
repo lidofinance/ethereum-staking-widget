@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { meetsSyncRedeemRequirements } from './sync-redeem-requirements';
+import {
+  isSyncRedeemReportUsable,
+  meetsSyncRedeemRequirements,
+} from './sync-redeem-requirements';
 
 describe('meetsSyncRedeemRequirements', () => {
   it('uses the sync queue when both limits cover the request', () => {
@@ -87,5 +90,63 @@ describe('meetsSyncRedeemRequirements', () => {
         liquidAssets: 68_966_160_533n,
       }),
     ).toBe(true);
+  });
+});
+
+// ETHV-WD-ROUTE-05: the queue reverts with StaleReport on an expired report,
+// which the Collector quote does not reflect
+describe('isSyncRedeemReportUsable', () => {
+  const now = 1_700_000_000;
+  const fresh = {
+    priceD18: 10n ** 18n,
+    timestamp: now - 600,
+    isSuspicious: false,
+  };
+
+  it('accepts a fresh, non-suspicious, priced report', () => {
+    expect(
+      isSyncRedeemReportUsable({
+        report: fresh,
+        maxAge: 3600,
+        nowSeconds: now,
+      }),
+    ).toBe(true);
+  });
+
+  it('accepts a report exactly at its maximum age, like the contract', () => {
+    expect(
+      isSyncRedeemReportUsable({
+        report: { ...fresh, timestamp: now - 3600 },
+        maxAge: 3600,
+        nowSeconds: now,
+      }),
+    ).toBe(true);
+  });
+
+  it('rejects a report older than maxAge', () => {
+    expect(
+      isSyncRedeemReportUsable({
+        report: { ...fresh, timestamp: now - 3601 },
+        maxAge: 3600,
+        nowSeconds: now,
+      }),
+    ).toBe(false);
+  });
+
+  it('rejects a suspicious report and a zero price', () => {
+    expect(
+      isSyncRedeemReportUsable({
+        report: { ...fresh, isSuspicious: true },
+        maxAge: 3600,
+        nowSeconds: now,
+      }),
+    ).toBe(false);
+    expect(
+      isSyncRedeemReportUsable({
+        report: { ...fresh, priceD18: 0n },
+        maxAge: 3600,
+        nowSeconds: now,
+      }),
+    ).toBe(false);
   });
 });

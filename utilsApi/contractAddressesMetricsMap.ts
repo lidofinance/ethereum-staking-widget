@@ -1,4 +1,4 @@
-import type { Address, Abi } from 'viem';
+import { erc20Abi, type Address, type Abi } from 'viem';
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
@@ -30,9 +30,10 @@ import { ENSUniversalResolverAbi } from 'abi/ens-universal-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import {
+  CowEthFlowAbi,
   CowSettlementAbi,
   CowVaultRelayerAbi,
-} from 'features/dex-withdrawals/cowswap';
+} from 'modules/dexes/cowswap';
 import { opGasPriceOracleAbi } from 'abi/op-gas-price-oracle-abi';
 // Tokens ABIs
 import { wethABI } from 'abi/weth-abi';
@@ -66,13 +67,14 @@ import {
   STG_VAULT_ABI,
 } from 'features/earn/vault-stg/contracts/abi';
 import {
+  ASYNC_REDEEM_QUEUE_ABI,
   COLLECTOR_ABI,
   DEPOSIT_QUEUE_ABI,
-  SYNC_DEPOSIT_QUEUE_ABI,
-  ASYNC_REDEEM_QUEUE_ABI,
-  SYNC_REDEEM_QUEUE_ABI,
-  SHARE_MANAGER_ABI,
   FEE_MANAGER_ABI,
+  ORACLE_ABI,
+  SHARE_MANAGER_ABI,
+  SYNC_DEPOSIT_QUEUE_ABI,
+  SYNC_REDEEM_QUEUE_ABI,
   VAULT_ABI,
 } from 'modules/mellow-meta-vaults/abi';
 
@@ -113,6 +115,27 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.aggregatorUsdtUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorDaiUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorBtcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdeUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdsUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorPyusdUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorCbbtcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorLdoEthPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorWbtcBtcPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorLinkUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUniUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorAaveUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorRlusdUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdgUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorEurcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorGhoUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorPaxgUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorTbtcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorLbtcBtcPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorCbethEthPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorSusdeUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorRethEthPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorWeethEthPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorMethEthPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSPublicResolverAbi,
@@ -120,6 +143,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
   [CONTRACT_NAMES.cowVaultRelayer]: CowVaultRelayerAbi,
   [CONTRACT_NAMES.cowSettlement]: CowSettlementAbi,
+  [CONTRACT_NAMES.cowEthFlow]: CowEthFlowAbi,
   // 3rd party tokens
   [CONTRACT_NAMES.weth]: wethABI,
   [CONTRACT_NAMES.usdc]: usdcABI,
@@ -127,6 +151,25 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.usds]: usdsABI,
   [CONTRACT_NAMES.wbtc]: wbtcABI,
   [CONTRACT_NAMES.usde]: usdeABI,
+  [CONTRACT_NAMES.ldo]: erc20Abi,
+  [CONTRACT_NAMES.dai]: erc20Abi,
+  [CONTRACT_NAMES.pyusd]: erc20Abi,
+  [CONTRACT_NAMES.cbbtc]: erc20Abi,
+  [CONTRACT_NAMES.link]: erc20Abi,
+  [CONTRACT_NAMES.uni]: erc20Abi,
+  [CONTRACT_NAMES.aave]: erc20Abi,
+  [CONTRACT_NAMES.rlusd]: erc20Abi,
+  [CONTRACT_NAMES.usdg]: erc20Abi,
+  [CONTRACT_NAMES.eurc]: erc20Abi,
+  [CONTRACT_NAMES.gho]: erc20Abi,
+  [CONTRACT_NAMES.paxg]: erc20Abi,
+  [CONTRACT_NAMES.tbtc]: erc20Abi,
+  [CONTRACT_NAMES.lbtc]: erc20Abi,
+  [CONTRACT_NAMES.cbeth]: erc20Abi,
+  [CONTRACT_NAMES.susde]: erc20Abi,
+  [CONTRACT_NAMES.reth]: erc20Abi,
+  [CONTRACT_NAMES.weeth]: erc20Abi,
+  [CONTRACT_NAMES.meth]: erc20Abi,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,
@@ -163,6 +206,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ethSyncDepositQueueSTRETH]: SYNC_DEPOSIT_QUEUE_ABI,
   [CONTRACT_NAMES.ethSyncDepositQueueDVSTETH]: SYNC_DEPOSIT_QUEUE_ABI,
   [CONTRACT_NAMES.ethCollector]: COLLECTOR_ABI,
+  [CONTRACT_NAMES.ethOracle]: ORACLE_ABI,
   // Lido USD
   [CONTRACT_NAMES.usdVault]: VAULT_ABI,
   [CONTRACT_NAMES.usdDepositQueueUSDC]: DEPOSIT_QUEUE_ABI,

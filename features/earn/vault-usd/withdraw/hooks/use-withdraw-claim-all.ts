@@ -1,90 +1,235 @@
-import { useCallback, useMemo } from 'react';
-import { WalletClient } from 'viem';
+import { useCallback, useMemo, useState } from 'react';
 import invariant from 'tiny-invariant';
-import { useLidoSDK, useMainnetOnlyWagmi } from 'modules/web3';
-import { useWithdrawClaimAll } from 'modules/mellow-meta-vaults/hooks/use-withdraw-claim-all';
-import { useTxModalStagesWithdrawClaim } from 'modules/mellow-meta-vaults/hooks/use-withdraw-claim-tx-modal';
+import {
+  TransactionCallbackStage,
+  type TransactionCallback,
+} from '@lidofinance/lido-ethereum-sdk/core';
+import { WalletClient } from 'viem';
+
+import {
+  applyRoundUpTxParameter,
+  useAA,
+  useDappStatus,
+  useLidoSDK,
+  useMainnetOnlyWagmi,
+  useTxFlow,
+} from 'modules/web3';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
+import { getErrorMessage, ErrorMessage } from 'utils';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import type { AsyncRedeemQueueWritableContract } from 'modules/mellow-meta-vaults/types/contracts';
 import { getRedeemQueueWritableContract } from '../../contracts';
-import type { UsdWithdrawToken } from '../../types';
-import type { UsdVaultWithdrawRequest } from '../types';
+import {
+  getUsdVaultWithdrawClaimCalls,
+  type TokenClaim,
+  type UsdVaultWithdrawClaimAmount,
+} from '../claim-all-utils';
 import { groupUsdWithdrawRequestsByToken } from '../utils';
+import { useUsdVaultWithdrawClaimAllTxModal } from './use-withdraw-claim-all-tx-modal';
 import { useUsdVaultWithdrawFormData } from './use-withdraw-form-data';
 import { useUsdVaultWithdrawRequests } from './use-withdraw-requests';
 
-const useUsdVaultWithdrawClaimAllForToken = (
-  token: UsdWithdrawToken,
-  claimableRequests: UsdVaultWithdrawRequest[],
-  onRetry?: () => void,
-) => {
+// One payout token's claim: what to show, which queue to call, which requests
+// to settle. Needs the whole contract, not ClaimCallOperation's `Pick`, since
+// sending a claim uses `estimateGas` and `write` too.
+type ClaimOperation = UsdVaultWithdrawClaimAmount & {
+  redeemQueue: AsyncRedeemQueueWritableContract;
+  timestamps: number[];
+};
+
+export const useUsdVaultWithdrawClaimAll = () => {
   const { core } = useLidoSDK();
+  const { address } = useDappStatus();
+  // A wallet that supports EIP-5792 claims every token with one signature,
+  // anything else sends one transaction per token. txFlow picks the same way,
+  // see `isAA && callsFn` in use-tx-flow.ts.
+  const { isAA: isBatch } = useAA();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');
 
+  const txFlow = useTxFlow();
   const { refetchData } = useUsdVaultWithdrawFormData();
-
-  const tokenSymbol = TOKEN_SYMBOLS[token];
-
-  const { txModalStages } = useTxModalStagesWithdrawClaim({
-    willReceiveToken: tokenSymbol,
-    token: tokenSymbol,
-    operationText: 'Claiming',
-  });
-
-  const redeemQueue = useMemo(
-    () =>
-      getRedeemQueueWritableContract({
-        publicClient: publicClientMainnet,
-        walletClient: core.walletClient as WalletClient,
-        token,
-      }),
-    [publicClientMainnet, core.walletClient, token],
-  );
-
-  return useWithdrawClaimAll({
-    redeemQueue,
-    token: tokenSymbol,
-    txModalStages,
-    claimableRequests,
-    onRetry,
-    refetchTokenBalance: refetchData,
-    matomoEventSuccess: MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalClaimAll,
-  });
-};
-
-export const useUsdVaultWithdrawClaimAll = (onRetry?: () => void) => {
   const { data } = useUsdVaultWithdrawRequests();
+  const [isClaiming, setIsClaiming] = useState(false);
 
-  const groups = useMemo(
+  const { txModalStages } = useUsdVaultWithdrawClaimAllTxModal();
+
+  const requestsGroups = useMemo(
     () => groupUsdWithdrawRequestsByToken(data.claimableRequests),
     [data.claimableRequests],
   );
 
-  const usdc = useUsdVaultWithdrawClaimAllForToken(
-    TOKENS.usdc,
-    groups[TOKENS.usdc],
-    onRetry,
-  );
-  const usdt = useUsdVaultWithdrawClaimAllForToken(
-    TOKENS.usdt,
-    groups[TOKENS.usdt],
-    onRetry,
+  const redeemQueues = useMemo(
+    () => ({
+      [TOKENS.usdc]: getRedeemQueueWritableContract({
+        publicClient: publicClientMainnet,
+        walletClient: core.walletClient as WalletClient,
+        token: TOKENS.usdc,
+      }),
+      [TOKENS.usdt]: getRedeemQueueWritableContract({
+        publicClient: publicClientMainnet,
+        walletClient: core.walletClient as WalletClient,
+        token: TOKENS.usdt,
+      }),
+    }),
+    [core.walletClient, publicClientMainnet],
   );
 
-  // `claim(receiver, timestamps[])` is per queue, so claiming across both payout
-  // tokens is inherently one tx per queue. They run sequentially and bail on the
-  // first failure — an earlier successful claim stays valid.
+  // One claim per token: each has its own queue contract, so a wallet that
+  // cannot batch sends one transaction per token.
+  const claimOperations: ClaimOperation[] = useMemo(
+    () =>
+      [TOKENS.usdc, TOKENS.usdt]
+        .map((token) => ({
+          token: TOKEN_SYMBOLS[token],
+          amount: requestsGroups[token].reduce(
+            (sum, request) => sum + request.assets,
+            0n,
+          ),
+          redeemQueue: redeemQueues[token],
+          timestamps: requestsGroups[token].map(({ timestamp }) =>
+            Number(timestamp),
+          ),
+        }))
+        .filter(({ timestamps }) => timestamps.length > 0),
+    [requestsGroups, redeemQueues],
+  );
+
   const withdrawClaimAll = useCallback(async () => {
-    if (groups[TOKENS.usdc].length > 0 && !(await usdc.withdrawClaimAll()))
-      return false;
-    if (groups[TOKENS.usdt].length > 0 && !(await usdt.withdrawClaimAll()))
-      return false;
-    return true;
-  }, [groups, usdc, usdt]);
+    invariant(address, 'No address provided');
+    invariant(claimOperations.length > 0, 'No requests to claim');
 
-  return {
-    withdrawClaimAll,
-    isClaiming: usdc.isClaiming || usdt.isClaiming,
-  };
+    setIsClaiming(true);
+
+    const claims: TokenClaim[] = claimOperations.map(({ token, amount }) => ({
+      token,
+      amount,
+      status: 'not-started',
+    }));
+
+    // Which token the loop is on. A batch has no loop and leaves it at zero.
+    let currentIndex = 0;
+
+    // What the wallet is working on right now: every token in a batch, one of
+    // them otherwise.
+    const activeClaims = () => (isBatch ? claims : [claims[currentIndex]]);
+
+    let callId: string | undefined;
+    let errorText: string | undefined;
+
+    // The step that ends the run, and so the one that reports it: a batch is
+    // always it, a loop only on its last transaction.
+    const isFinalStep = () => isBatch || currentIndex === claims.length - 1;
+
+    // Only sequential claims have a "transaction N of M" to report.
+    const stepLabel = () =>
+      !isBatch && claims.length > 1
+        ? `Transaction ${currentIndex + 1} of ${claims.length}`
+        : undefined;
+
+    // The final word on the run: everything learned along the way, shown at
+    // once.
+    const reportResult = () => {
+      const isAllClaimed = claims.every(({ status }) => status === 'claimed');
+      txModalStages.result(claims, {
+        callId,
+        error: isAllClaimed ? undefined : errorText,
+      });
+      if (isAllClaimed) {
+        trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalClaimAll);
+      }
+    };
+
+    // Sends one queue's claim. Throws on a rejected signature or a revert —
+    // that is how the caller learns this token did not settle.
+    const claimOneToken = async (
+      operation: ClaimOperation,
+      txStagesCallback: TransactionCallback,
+    ) => {
+      const { redeemQueue, timestamps } = operation;
+      const claimArgs = [address, timestamps] as const;
+
+      await core.performTransaction({
+        getGasLimit: async (opts) =>
+          applyRoundUpTxParameter(
+            await redeemQueue.estimateGas.claim(claimArgs, opts),
+          ),
+        sendTransaction: (opts) => redeemQueue.write.claim(claimArgs, opts),
+        callback: async (tx) => {
+          // Use the mined hash: "speed up" or "cancel" in the wallet replaces
+          // the transaction, so the one from RECEIPT can be stale. Record it
+          // before the callback — a revert makes that throw, and the failed
+          // transaction still needs its link.
+          if (tx.stage === TransactionCallbackStage.CONFIRMATION && tx.payload)
+            claims[currentIndex].txHash = tx.payload.transactionHash;
+          await txStagesCallback(tx);
+        },
+      });
+    };
+
+    try {
+      await txFlow({
+        // Only when the wallet supports EIP-5792: one signature, every token.
+        callsFn: async () =>
+          getUsdVaultWithdrawClaimCalls(address, claimOperations),
+        sendTransaction: async (txStagesCallback) => {
+          for (const [index, operation] of claimOperations.entries()) {
+            currentIndex = index;
+            await claimOneToken(operation, txStagesCallback);
+          }
+        },
+        onSign: () => {
+          txModalStages.sign(activeClaims(), stepLabel());
+        },
+        onReceipt: ({ txHashOrCallId, isAA }) => {
+          if (isAA) callId = txHashOrCallId;
+          else claims[currentIndex].txHash = txHashOrCallId;
+          txModalStages.pending(
+            activeClaims(),
+            txHashOrCallId,
+            isAA,
+            stepLabel(),
+          );
+        },
+        onMultisigDone: () => {
+          for (const claim of activeClaims()) claim.status = 'submitted';
+          txModalStages.successMultisig();
+        },
+        onSuccess: async ({ txHash }) => {
+          for (const claim of activeClaims()) {
+            claim.status = 'claimed';
+            // Sequential claims already have their mined hash from above;
+            // a batch learns its only hash here.
+            claim.txHash = claim.txHash ?? txHash;
+          }
+          if (isFinalStep()) reportResult();
+          // A settled claim makes the page behind the modal stale, so refresh
+          // it here, where the settling happens.
+          await refetchData();
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      errorText = getErrorMessage(error);
+      // A rejected signature is the user's choice, not a fault. Anything else
+      // that got here failed — the flow throws on a revert.
+      const status =
+        errorText === ErrorMessage.DENIED_SIG ? 'rejected' : 'failed';
+      for (const claim of activeClaims()) claim.status = status;
+      reportResult();
+    } finally {
+      setIsClaiming(false);
+    }
+  }, [
+    address,
+    claimOperations,
+    core,
+    isBatch,
+    refetchData,
+    txFlow,
+    txModalStages,
+  ]);
+
+  return { withdrawClaimAll, isClaiming };
 };

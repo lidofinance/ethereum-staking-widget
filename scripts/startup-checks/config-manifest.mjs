@@ -1,11 +1,10 @@
 import { promises as fs } from 'fs';
 
-export const CONFIG_MANIFEST_PATH = process.env.CONFIG_MANIFEST_PATH;
-
 // Safely initialize a global variable
-const globalStartupManifestFileChecks = globalThis.__startupManifestFileChecks || {
-  promise: null,
-};
+const globalStartupManifestFileChecks =
+  globalThis.__startupManifestFileChecks || {
+    promise: null,
+  };
 globalThis.__startupManifestFileChecks = globalStartupManifestFileChecks;
 
 // core invariants of ManifestSchema (config/external-config/validate.ts);
@@ -70,12 +69,15 @@ const checkManifestFile = async (filePath) => {
     );
     return { success: true };
   } catch (error) {
-    console.error(`[checkManifestFile] Manifest file check failed: ${error.message}`);
+    console.error(
+      `[checkManifestFile] Manifest file check failed: ${error.message}`,
+    );
     return { success: false, error: error.message };
   }
 };
 
-export const getManifestFileChecks = () => globalStartupManifestFileChecks.promise;
+export const getManifestFileChecks = () =>
+  globalStartupManifestFileChecks.promise;
 
 export const startupCheckManifestFile = async () => {
   console.info('[startupCheckManifestFile] Starting manifest file checks...');
@@ -87,6 +89,9 @@ export const startupCheckManifestFile = async () => {
   globalStartupManifestFileChecks.promise = (async () => {
     try {
       // If no manifest file path is specified, skip check
+      // read when the check runs: without the next-logger preload the env
+      // files are only loaded by app.prepare(), after this module is imported
+      const CONFIG_MANIFEST_PATH = process.env.CONFIG_MANIFEST_PATH;
       if (!CONFIG_MANIFEST_PATH || CONFIG_MANIFEST_PATH.trim() === '') {
         console.info(
           '[startupCheckManifestFile] No CONFIG_MANIFEST_PATH specified - skipping manifest file check',

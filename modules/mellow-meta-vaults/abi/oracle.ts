@@ -1,5 +1,6 @@
-// Read-only surface of Mellow's Oracle (resolved per vault via `vault.oracle()`).
-// Only the function used for the sync redeem staleness check is kept.
+// The slice of the Mellow Oracle the widget reads: the report the sync redeem
+// queue prices a redemption with. The queue rejects a suspicious or zero
+// report (InvalidReport) and one older than its maxAge (StaleReport)
 export const ORACLE_ABI = [
   {
     inputs: [{ internalType: 'address', name: 'asset', type: 'address' }],

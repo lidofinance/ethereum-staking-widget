@@ -28,7 +28,8 @@ const toBoolean = (value) =>
  */
 export const cspInputsFromEnv = (env = process.env) => ({
   trustedHosts: env.CSP_TRUSTED_HOSTS ? env.CSP_TRUSTED_HOSTS.split(',') : [],
-  reportUri: env.CSP_REPORT_URI,
+  // empty means "no reporting": next-secure-headers rejects '' as an invalid URL
+  reportUri: env.CSP_REPORT_URI || undefined,
   reportOnly: toBoolean(env.CSP_REPORT_ONLY),
   cowswapBaseUrl:
     env.COWSWAP_WIDGET_BASE_URL || DEFAULT_COWSWAP_WIDGET_BASE_URL,

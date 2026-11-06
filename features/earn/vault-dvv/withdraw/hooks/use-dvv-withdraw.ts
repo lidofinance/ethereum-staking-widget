@@ -22,8 +22,8 @@ export const useDVVWithdraw = (onRetry?: () => void) => {
 
       try {
         const vault = getDVVaultWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         // used to display in modal

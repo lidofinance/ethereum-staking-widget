@@ -30,8 +30,8 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
       try {
         setIsClaiming(true);
         const redeemQueueContract = getSTGRedeemQueueWritableContractWSTETH(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         const claimArgs = [address, [timestamp]] as const;

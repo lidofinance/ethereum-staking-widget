@@ -23,10 +23,8 @@ import {
   getGGVVaultContract,
 } from '../../contracts';
 import { useTxModalStagesGGVDeposit } from './use-ggv-deposit-tx-modal';
-import { useHonk } from './use-honk';
 
 export const useGGVDeposit = (onRetry?: () => void) => {
-  const { honk } = useHonk();
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesGGVDeposit();
@@ -43,26 +41,26 @@ export const useGGVDeposit = (onRetry?: () => void) => {
       invariant(wethAddress, 'WETH address is not defined');
 
       try {
-        const vault = getGGVVaultContract(core.rpcProvider);
-        const lens = getGGVLensContract(core.rpcProvider);
-        const accountant = getGGVAccountantContract(core.rpcProvider);
+        const vault = getGGVVaultContract(core.publicClient);
+        const lens = getGGVLensContract(core.publicClient);
+        const accountant = getGGVAccountantContract(core.publicClient);
         const teller = getGGVTellerWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         const tokenContract = getContract({
           address: tokenAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
         const referralAddress = await getReferralAddress(
           referral,
-          core.rpcProvider,
+          core.publicClient,
         );
 
         // used to display in modal
@@ -180,7 +178,6 @@ export const useGGVDeposit = (onRetry?: () => void) => {
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
             const balance = await vault.read.balanceOf([address]);
-            honk();
             txModalStages.success(balance, txHash);
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvDepositFinish);
           },
@@ -196,7 +193,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
         return false;
       }
     },
-    [address, core, honk, onRetry, txFlow, txModalStages],
+    [address, core, onRetry, txFlow, txModalStages],
   );
 
   return { depositGGV };

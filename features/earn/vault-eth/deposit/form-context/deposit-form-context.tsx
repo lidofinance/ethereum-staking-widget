@@ -94,7 +94,11 @@ export const EthVaultDepositFormProvider: React.FC<{
         return result;
       },
       onReset: (values: ETHDepositFormValidatedValues) => {
-        formObject.reset({ amount: null, token: values.token });
+        formObject.reset({
+          amount: null,
+          token: values.token,
+          referral: values.referral,
+        });
       },
       retryEvent,
     }),

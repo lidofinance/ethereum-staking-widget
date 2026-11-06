@@ -23,8 +23,8 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
       invariant(address, 'Address is not available');
 
       const depositQueue = getSTGDepositQueueWritableContract({
-        publicClient: core.rpcProvider,
-        walletClient: core.web3Provider as WalletClient,
+        publicClient: core.publicClient,
+        walletClient: core.walletClient as WalletClient,
         token,
       });
 

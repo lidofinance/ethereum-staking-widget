@@ -23,7 +23,10 @@ const messageMaxAmount = (max: bigint, token: TOKENS_TO_WRAP) =>
 export const WrapFormValidationResolver: Resolver<
   WrapFormInputType,
   WrapFormValidationContext
-> = async (values, validationContext) => {
+> = async (liveValues, validationContext) => {
+  // hook-form passes its live values object: a snapshot keeps what is
+  // validated and what is submitted the same if a field changes mid-await
+  const values = { ...liveValues };
   const { amount, token } = values;
   try {
     invariant(validationContext, 'validation context must be present');

@@ -90,7 +90,11 @@ export const UsdVaultDepositFormProvider: React.FC<{
         return result;
       },
       onReset: (values: USDDepositFormValidatedValues) => {
-        formObject.reset({ amount: null, token: values.token });
+        formObject.reset({
+          amount: null,
+          token: values.token,
+          referral: values.referral,
+        });
       },
       retryEvent,
     }),

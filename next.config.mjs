@@ -6,6 +6,10 @@ import generateBuildId from './scripts/generate-build-id.mjs';
 import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 import { startupCheckValidationFile } from './scripts/startup-checks/validation-file.mjs';
 import { startupCheckManifestFile } from './scripts/startup-checks/config-manifest.mjs';
+import {
+  CACHE_CONTROL_HEADER,
+  CACHE_CONTROL_VALUE,
+} from './scripts/cache-control.mjs';
 
 const require = createRequire(import.meta.url);
 
@@ -47,10 +51,10 @@ export const WIDGET_PAGES = [
   '/earn/usd/withdraw',
   '/earn/eth/deposit',
   '/earn/eth/withdraw',
+  '/swap',
 ];
 
-// cache control
-export const CACHE_CONTROL_HEADER = 'x-cache-control';
+// cache control: the header name and value live in scripts/cache-control.mjs
 export const CACHE_CONTROL_PAGES = [
   ...WIDGET_PAGES,
   '/manifest.json',
@@ -60,10 +64,7 @@ export const CACHE_CONTROL_PAGES = [
   '/apple-touch-icon.png',
   '/lido-preview.png',
   '/bells.mp3',
-  '/honk.mp3',
 ];
-export const CACHE_CONTROL_VALUE =
-  'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
 // Required lazily: @next/bundle-analyzer is a devDependency and the production
 // image ships prod deps only, but next.config.mjs is also loaded at runtime.
@@ -74,6 +75,8 @@ const withBundleAnalyzer = process.env.ANALYZE_BUNDLE
 export default withBundleAnalyzer({
   basePath,
   generateBuildId,
+  // separate build dir for a second dev server (e.g. fork e2e)
+  distDir: process.env.NEXT_DIST_DIR || '.next',
 
   // Disable the built-in Next.js Image Optimization endpoint to prevent
   // requests from reaching the image optimizer. This app does not use `next/image`.

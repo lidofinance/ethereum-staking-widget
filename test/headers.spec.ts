@@ -1,11 +1,10 @@
 import { expect, test } from '@playwright/test';
 
+import { WIDGET_PAGES, CACHE_CONTROL_PAGES } from 'next.config.mjs';
 import {
-  WIDGET_PAGES,
   CACHE_CONTROL_HEADER,
   CACHE_CONTROL_VALUE,
-  CACHE_CONTROL_PAGES,
-} from 'next.config.mjs';
+} from 'scripts/cache-control.mjs';
 import { CONFIG } from './config.js';
 
 test.describe('Page Headers', () => {

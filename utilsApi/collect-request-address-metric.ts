@@ -8,6 +8,7 @@ import {
   getMetricContractAbi,
 } from './contractAddressesMetricsMap';
 import { getFunctionNameFromAbi } from './get-function-name-from-abi';
+import { PROVIDER_MAX_BATCH } from 'config/groups/web3';
 
 const UNKNOWN_LABEL = 'unknown';
 const ADDRESS_LENGTH = 42; // '0x' + 40 hex chars
@@ -43,7 +44,11 @@ export const collectRequestAddressMetric = async ({
   chainId: CHAINS;
   metrics: Counter<string>;
 }) => {
-  calls.forEach((call: any) => {
+  // The route rejects a batch above PROVIDER_MAX_BATCH, but this runs before
+  // that check: never do per-entry work for more entries than can be admitted
+  const count = Math.min(calls.length, PROVIDER_MAX_BATCH);
+  for (let i = 0; i < count; i++) {
+    const call: any = calls[i];
     try {
       if (
         !call ||
@@ -51,13 +56,13 @@ export const collectRequestAddressMetric = async ({
         call.method !== 'eth_call' ||
         !call.params?.[0]?.to
       ) {
-        return;
+        continue;
       }
 
       const { to, data } = call.params[0];
       // Metrics collection is independent of the route's own checks, so verify
       // the shape here rather than assuming a well-formed address.
-      if (typeof to !== 'string' || to.length !== ADDRESS_LENGTH) return;
+      if (typeof to !== 'string' || to.length !== ADDRESS_LENGTH) continue;
       const address = getAddress(to);
       const contractName = METRIC_CONTRACT_ADDRESSES?.[chainId]?.[address];
       const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
@@ -95,5 +100,5 @@ export const collectRequestAddressMetric = async ({
         )}`,
       );
     }
-  });
+  }
 };

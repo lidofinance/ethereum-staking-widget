@@ -2,7 +2,11 @@ import { z } from 'zod';
 
 import { CHAINS } from 'consts/chains';
 import { standardFetcher } from 'utils/standardFetcher';
-import { UNIX_TIMESTAMP_SCHEMA } from 'utils/zod';
+import {
+  BIGINT_STRING_SCHEMA,
+  TOKEN_DECIMALS_SCHEMA,
+  UNIX_TIMESTAMP_SCHEMA,
+} from 'utils/zod';
 
 import { METAVAULT_CHART_ORIGIN } from '../consts';
 
@@ -12,8 +16,9 @@ export const METAVAULT_CHART_DATA_SCHEMA = z.array(
   z.object({
     tvl: z.object({
       asset: z.string(),
-      amount: z.string(),
-      decimals: z.number(),
+      // `BigInt(amount)` runs in render: a non-integer must fail the query here
+      amount: BIGINT_STRING_SCHEMA,
+      decimals: TOKEN_DECIMALS_SCHEMA,
     }),
     total_shares: z.object({
       amount: z.string(),

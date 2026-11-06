@@ -30,6 +30,7 @@ test/playwright-report
 
 # next.js
 /.next/
+/.next-fork/
 /out/
 
 # production

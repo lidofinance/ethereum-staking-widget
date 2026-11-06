@@ -11,4 +11,5 @@ export {
   useLidoSDKL2,
   SupportL1AndL2WrapChains,
   SupportL1andL2StakingChains,
+  SupportL1AndCustomL2Chains,
 } from './web3-provider';

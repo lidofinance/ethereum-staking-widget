@@ -59,8 +59,8 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
 
       try {
         const depositQueue = getSyncDepositQueueWritableContract({
-          publicClient: core.rpcProvider,
-          walletClient: core.web3Provider as WalletClient,
+          publicClient: core.publicClient,
+          walletClient: core.walletClient as WalletClient,
           token: TOKENS.wsteth,
         });
 
@@ -68,8 +68,8 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
           address: stethAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
@@ -77,14 +77,14 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
           address: wstethAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
         const referralAddress = await getReferralAddress(
           referral,
-          core.rpcProvider,
+          core.publicClient,
         );
 
         // Pre-calculate expected wstETH amount for allowance check and deposit call
@@ -237,7 +237,7 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
             let receivedShares: bigint | undefined;
             if (txHash) {
               try {
-                const receipt = await core.rpcProvider.getTransactionReceipt({
+                const receipt = await core.publicClient.getTransactionReceipt({
                   hash: txHash,
                 });
                 const claimedLog = parseEventLogs({

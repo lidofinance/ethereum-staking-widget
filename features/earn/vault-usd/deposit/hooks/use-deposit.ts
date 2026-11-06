@@ -1,9 +1,10 @@
 import { useDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit';
 import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
+import { getVaultRefetchScope } from 'modules/mellow-meta-vaults/consts';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { TOKENS } from 'consts/tokens';
 import { getDepositQueueWritableContract } from '../../contracts';
-import { USD_VAULT_TOKEN_SYMBOL } from '../../consts';
+import { USD_VAULT_QUERY_SCOPE, USD_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { UsdDepositToken } from '../../types';
 
 export const useUsdVaultDeposit = (onRetry?: () => void) => {
@@ -25,5 +26,6 @@ export const useUsdVaultDeposit = (onRetry?: () => void) => {
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnUsdDepositingStart,
     matomoEventSuccess: MATOMO_EARN_EVENTS_TYPES.earnUsdDepositingFinish,
+    refetchScope: getVaultRefetchScope(USD_VAULT_QUERY_SCOPE),
   });
 };

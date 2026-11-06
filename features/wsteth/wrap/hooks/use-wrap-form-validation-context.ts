@@ -35,7 +35,7 @@ export const useWrapFormValidationContext = ({
 
   const isDataReady = !!(
     waitForAccountData &&
-    wrapEthGasCost &&
+    wrapEthGasCost !== undefined &&
     // L2 dont't have stakeLimitInfo
     (isL2Wrap || stakeLimitInfo)
   );

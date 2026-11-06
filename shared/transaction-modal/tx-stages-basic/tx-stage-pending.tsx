@@ -15,7 +15,7 @@ type TxStagePendingProps = {
 type AAFooterLinkProps = { callId: string };
 
 const AAFooterLink = ({ callId }: AAFooterLinkProps) => {
-  const { showCallsStatus, isPending } = useShowCallsStatus();
+  const { mutate: showCallsStatus, isPending } = useShowCallsStatus();
   return (
     <Link
       onClick={(event) => {

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { Hash } from 'viem';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAddressValidation } from 'providers/address-validation-provider';
 import { useDappStatus } from 'modules/web3';
 
 import { useAA } from '../use-aa';
 import { useSendAACalls } from './use-send-aa-calls';
+import { TxSentDataUnavailableError } from '../../utils/errors';
 import { runTxFlow } from './run-tx-flow';
 import { TxCallbackProps, TxFlowArgs } from './types';
 
@@ -23,9 +24,7 @@ export const useTxFlow = () => {
   const sendAACalls = useSendAACalls();
   const { validateAddress } = useAddressValidation();
   const { address } = useDappStatus();
-
-  // Is used to memoize txHash to keep track of it across stages.
-  const txHash = useRef<Hash | undefined>(undefined);
+  const queryClient = useQueryClient();
 
   // Increase counter when operation ended by UI unmount
   // this invalidates any ongoing operation
@@ -38,17 +37,38 @@ export const useTxFlow = () => {
   }, []);
 
   return useCallback(
-    <TData = undefined>(args: TxFlowArgs<TData>) => {
+    async <TData = undefined>(args: TxFlowArgs<TData>) => {
       const operation = ++operationRef.current;
-      return runTxFlow<TData>(args, {
-        isAA,
-        address,
-        validateAddress,
-        sendAACalls,
-        txHash,
-        isCurrent: () => operationRef.current === operation,
-      });
+      // A transaction that was sent but never read back may have changed
+      // balances, allowances and requests under the forms: refetch what the
+      // caller scoped, or everything the UI holds, so the state is current
+      // even before the reload it asks for
+      const refetchOnUnknownOutcome = (error: unknown) => {
+        if (!(error instanceof TxSentDataUnavailableError)) return;
+        const { refetchScope } = args;
+        if (!refetchScope) {
+          void queryClient.invalidateQueries();
+          return;
+        }
+        for (const queryKey of refetchScope) {
+          void queryClient.invalidateQueries({ queryKey });
+        }
+      };
+      try {
+        const result = await runTxFlow<TData>(args, {
+          isAA,
+          address,
+          validateAddress,
+          sendAACalls,
+          isCurrent: () => operationRef.current === operation,
+        });
+        refetchOnUnknownOutcome(result.error);
+        return result;
+      } catch (error) {
+        refetchOnUnknownOutcome(error);
+        throw error;
+      }
     },
-    [isAA, sendAACalls, validateAddress, address],
+    [isAA, sendAACalls, validateAddress, address, queryClient],
   );
 };

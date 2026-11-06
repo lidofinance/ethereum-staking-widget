@@ -28,6 +28,8 @@ export type PerformTransactionProps = {
 
 // 'unconfirmed': the receipt is in, but the confirmations read the SDK does
 // between CONFIRMATION and DONE rejects, so the call fails after settling
+// 'unlocated': the hash is in, but the receipt wait times out, so the call
+// fails with the outcome never read
 // 'unestimated': the SDK's gas estimate failed, so the wallet is never reached
 export type LegacyOutcome =
   | 'success'
@@ -35,6 +37,7 @@ export type LegacyOutcome =
   | 'rejected'
   | 'multisig'
   | 'unconfirmed'
+  | 'unlocated'
   | 'unestimated';
 
 // Mirrors the SDK's performTransaction stage sequence. Each call takes the
@@ -54,6 +57,9 @@ export const legacyPerformTransaction = (...outcomes: LegacyOutcome[]) =>
       return { hash };
     }
     await callback({ stage: TransactionCallbackStage.RECEIPT, payload: hash });
+    if (outcome === 'unlocated') {
+      throw new Error('Timed out while waiting for transaction');
+    }
     const receipt = {
       status: outcome === 'reverted' ? 'reverted' : 'success',
       transactionHash: hash,
@@ -70,20 +76,29 @@ export const legacyPerformTransaction = (...outcomes: LegacyOutcome[]) =>
 type AAOutcome = {
   callId: string;
   txHash: Hash;
-  // reported as an ERROR stage and rethrown, like useSendAACalls does
+  // thrown before a call id is in (a rejected or refused batch); reported as
+  // an ERROR stage and rethrown, like useSendAACalls does
   failWith?: unknown;
+  // thrown after the call id is in (the status poll failed or timed out)
+  lostAfterReceipt?: unknown;
 };
 
 type AACallback = (props: TxCallbackProps) => Promise<void>;
 
 // Mirrors useSendAACalls: SIGN, RECEIPT (callId), DONE (txHash); the sender
 // requires atomic execution of a batch, so there is no per-call outcome
-export const aaSendCalls = ({ callId, txHash, failWith }: AAOutcome) =>
+export const aaSendCalls = ({
+  callId,
+  txHash,
+  failWith,
+  lostAfterReceipt,
+}: AAOutcome) =>
   vi.fn(async (_calls: AACall[], callback: AACallback) => {
     try {
       await callback({ stage: TransactionCallbackStage.SIGN });
-      await callback({ stage: TransactionCallbackStage.RECEIPT, callId });
       if (failWith) throw failWith;
+      await callback({ stage: TransactionCallbackStage.RECEIPT, callId });
+      if (lostAfterReceipt) throw lostAfterReceipt;
       await callback({ stage: TransactionCallbackStage.DONE, txHash });
     } catch (error) {
       await callback({ stage: TransactionCallbackStage.ERROR, error });

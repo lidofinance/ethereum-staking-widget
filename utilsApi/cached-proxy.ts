@@ -12,6 +12,9 @@ import { buildParams } from './cached-proxy-build-params';
 export { buildParams } from './cached-proxy-build-params';
 
 const DEFAULT_CACHE_MAX_ENTRIES = 200;
+// Full rewards histories reach several MB each: a count cap alone let 200 of
+// them pin the heap of the one server process
+const DEFAULT_CACHE_MAX_BYTES = 32 * 1024 * 1024;
 
 type ProxyOptions = {
   proxyUrl: string | ((req: NextApiRequest) => Promise<string>);
@@ -24,6 +27,8 @@ type ProxyOptions = {
   metricsHost?: string;
   /** Hard cap on cache entries. Default 200. */
   cacheMaxEntries?: number;
+  /** Hard cap on cached bytes (serialized). Larger bodies are served uncached. Default 32MB. */
+  cacheMaxBytes?: number;
   /** Extra upstream headers from the request; cache hits don't reach upstream. */
   forwardHeaders?: (req: NextApiRequest) => Record<string, string>;
 };
@@ -37,11 +42,17 @@ export const createCachedProxy = ({
   transformData = (data) => data,
   metricsHost,
   cacheMaxEntries = DEFAULT_CACHE_MAX_ENTRIES,
+  cacheMaxBytes = DEFAULT_CACHE_MAX_BYTES,
   forwardHeaders,
 }: ProxyOptions): API => {
-  const cache = new LRUCache<string, any>({
+  const cache = new LRUCache<string, string>({
     max: cacheMaxEntries,
+    maxSize: cacheMaxBytes,
+    sizeCalculation: (value) => Buffer.byteLength(value),
     ttl: cacheTTL,
+    // Without this an expired entry stays in memory until its key is read
+    // again or the cache is full
+    ttlAutopurge: true,
   });
   return async (req, res) => {
     const params = buildParams(req.query, ignoreParams, allowedQueryParams);
@@ -52,9 +63,14 @@ export const createCachedProxy = ({
 
     const cacheKey = `${proxyUrlString}-${params?.toString() ?? ''}`;
 
+    const sendJson = (body: string) => {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.send(body);
+    };
+
     const cachedValue = cache.get(cacheKey);
     if (cachedValue) {
-      res.json(cachedValue);
+      sendJson(cachedValue);
       return;
     }
     const url = proxyUrlString + (params ? `?${params.toString()}` : '');
@@ -74,10 +90,10 @@ export const createCachedProxy = ({
           }),
       });
 
-      const transformedData = transformData(data) ?? data;
+      const body = JSON.stringify(transformData(data) ?? data);
 
-      cache.set(cacheKey, transformedData);
-      res.json(transformedData);
+      cache.set(cacheKey, body);
+      sendJson(body);
     } catch (e) {
       // route-level cacheControl set public caching before the handler ran
       res.setHeader('Cache-Control', CACHE_DEFAULT_ERROR_HEADERS);

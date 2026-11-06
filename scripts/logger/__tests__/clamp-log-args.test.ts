@@ -5,13 +5,13 @@ import { commonPatterns, satanizer } from '@lidofinance/satanizer';
 // `createRequire` because the module is `.cjs` (next-logger preloads the logger
 // config without a build step) and the project is `"type": "module"`.
 const requireCjs = createRequire(import.meta.url);
-const { clampArgs, MAX_TOTAL_CHARS, MAX_STRING_LENGTH } = requireCjs(
-  '../clamp-log-args.cjs',
-) as {
-  clampArgs: (args: unknown[]) => unknown[];
-  MAX_TOTAL_CHARS: number;
-  MAX_STRING_LENGTH: number;
-};
+const { clampArgs, MAX_TOTAL_CHARS, MAX_STRING_LENGTH, MAX_TOTAL_NODES } =
+  requireCjs('../clamp-log-args.cjs') as {
+    clampArgs: (args: unknown[]) => unknown[];
+    MAX_TOTAL_CHARS: number;
+    MAX_STRING_LENGTH: number;
+    MAX_TOTAL_NODES: number;
+  };
 
 const countChars = (value: unknown): number => {
   if (typeof value === 'string') return value.length;
@@ -38,6 +38,22 @@ const longestString = (value: unknown): number => {
   }
   return 0;
 };
+
+const countNodes = (value: unknown): number => {
+  if (Array.isArray(value))
+    return 1 + value.reduce<number>((n, v) => n + countNodes(v), 0);
+  if (value && typeof value === 'object') {
+    return (
+      1 + Object.values(value).reduce<number>((n, v) => n + countNodes(v), 0)
+    );
+  }
+  return 1;
+};
+
+// A tree that fits every per-container limit but costs no characters: 63 x 64
+// pairs of empty strings, ~12k nodes in ~32 KB of JSON (an accepted CSP body).
+const makeEmptyTree = () =>
+  Array.from({ length: 63 }, () => Array.from({ length: 64 }, () => ['', '']));
 
 // Slack over the budget: each clamped string may add a "[truncated N chars]"
 // suffix, and keys are counted too.
@@ -108,6 +124,32 @@ describe('clampArgs', () => {
     expect(clampArgs([{ x: shared, y: shared }])).toEqual([
       { x: { a: 1 }, y: { a: 1 } },
     ]);
+  });
+
+  it('bounds a tree of empty strings by node count', () => {
+    const [clamped] = clampArgs([
+      { type: 'CSP Violation', violation: makeEmptyTree() },
+    ]);
+
+    // One cut marker per container may follow the budget, hence the slack.
+    expect(countNodes(clamped)).toBeLessThan(MAX_TOTAL_NODES * 2);
+    expect(JSON.stringify(clamped)).toContain('[log budget exceeded]');
+  });
+
+  it('does not grow output once the character budget is exhausted', () => {
+    // Nine 2 KB strings exhaust the 16 KB character budget; the empty-string
+    // tree behind them used to receive one uncharged marker per string.
+    const violation = [
+      ...Array.from({ length: 9 }, () => 'a'.repeat(2000)),
+      ...makeEmptyTree(),
+    ];
+    const input = JSON.stringify(violation);
+
+    const clamped = clampArgs([{ type: 'CSP Violation', violation }]);
+    const output = JSON.stringify(clamped);
+
+    expect(output.length).toBeLessThan(input.length);
+    expect(output.length).toBeLessThan(BUDGET_CEILING);
   });
 
   it('keeps masking cost bounded for an oversized payload', () => {

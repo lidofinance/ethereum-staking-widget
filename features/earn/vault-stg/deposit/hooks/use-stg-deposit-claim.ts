@@ -23,8 +23,8 @@ export const useSTGDepositClaim = (onRetry?: () => void) => {
       invariant(address, 'Address is not available');
 
       const vault = getSTGVaultWritableContract(
-        core.rpcProvider,
-        core.web3Provider as WalletClient,
+        core.publicClient,
+        core.walletClient as WalletClient,
       );
 
       const claimArgs = [address] as const;

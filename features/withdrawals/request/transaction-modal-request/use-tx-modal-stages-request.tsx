@@ -16,7 +16,7 @@ import { TxRequestStageSuccess } from './tx-stage-request-success';
 
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import type { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
-import { getErrorMessage } from 'utils';
+import { getErrorMessage, isRetryableTxError, isSettledTxError } from 'utils';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
@@ -124,7 +124,8 @@ const getTxModalStagesRequest = (
           )
         }
         failedText={getErrorMessage(error)}
-        onRetry={onRetry}
+        isSettled={isSettledTxError(error)}
+        onRetry={isRetryableTxError(error) ? onRetry : undefined}
       />,
       {
         isClosableOnLedger: true,

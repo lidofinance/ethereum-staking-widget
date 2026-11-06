@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-import { ErrorMessage } from 'utils';
 
 import { Loader } from '@lidofinance/lido-ui';
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
@@ -8,13 +7,18 @@ import { ModalFooterButton, LoaderWrapper } from './styles';
 
 type TxStageFailProps = {
   failedText?: React.ReactNode;
+  // Present only when the transaction may be submitted again: the stage
+  // builders decide that from the error, see `isRetryableTxError`
   onRetry?: React.MouseEventHandler<HTMLSpanElement>;
+  // The transaction itself went through, only a follow-up read failed
+  isSettled?: boolean;
   footer?: React.ReactNode;
 };
 
 export const TxStageFail = ({
   failedText,
   onRetry,
+  isSettled = false,
   footer,
 }: TxStageFailProps) => {
   const [isLoading, setLoading] = useState(false);
@@ -25,9 +29,6 @@ export const TxStageFail = ({
     },
     [onRetry],
   );
-  // The transaction itself went through, only a follow-up read failed:
-  // retrying would submit it again
-  const isSettled = failedText === ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE;
 
   return (
     <TransactionModalContent
@@ -38,8 +39,6 @@ export const TxStageFail = ({
       description={failedText ?? 'Something went wrong'}
       footer={footer}
       footerHint={
-        !isSettled &&
-        failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
         onRetry &&
         (!isLoading ? (
           <ModalFooterButton onClick={handleRetry}>Retry</ModalFooterButton>

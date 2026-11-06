@@ -26,9 +26,9 @@ export const useEthVaultWithdrawClaim = (onRetry?: () => void) => {
     () =>
       getRedeemQueueWritableContractWSTETH(
         publicClientMainnet,
-        core.web3Provider as WalletClient,
+        core.walletClient as WalletClient,
       ),
-    [publicClientMainnet, core.web3Provider],
+    [publicClientMainnet, core.walletClient],
   );
 
   return useWithdrawClaim({

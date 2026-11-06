@@ -5,17 +5,29 @@ import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdraw
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
-import { useAA, useIsSmartAccount, useLidoSDK, useTxFlow } from 'modules/web3';
+import {
+  useAA,
+  useDappStatus,
+  useIsSmartAccount,
+  useLidoSDK,
+  useTxFlow,
+} from 'modules/web3';
 import { config } from 'config';
 import { applyRoundUpTxParameter } from 'modules/web3';
 
 import { useWithdrawalRequestTxApprove } from './use-withdrawal-request-tx-approve';
 
-type useWithdrawalRequestParams = {
+type UseWithdrawalRequestArgs = {
   amount: bigint | null;
   token: TOKENS_TO_WITHDRAWLS;
   onConfirm?: () => Promise<void>;
   onRetry?: () => void;
+};
+
+type RequestArgs = {
+  requests: bigint[] | null;
+  amount: bigint | null;
+  token: TOKENS_TO_WITHDRAWLS;
 };
 
 export const useWithdrawalRequest = ({
@@ -23,7 +35,8 @@ export const useWithdrawalRequest = ({
   token,
   onConfirm,
   onRetry,
-}: useWithdrawalRequestParams) => {
+}: UseWithdrawalRequestArgs) => {
+  const { address } = useDappStatus();
   const { isAA } = useAA();
   const { isBunker } = useWithdrawals();
   const { withdraw } = useLidoSDK();
@@ -46,20 +59,18 @@ export const useWithdrawalRequest = ({
   const { closeModal } = useTransactionModal();
 
   const request = useCallback(
-    async ({
-      requests,
-      amount,
-      token,
-    }: {
-      requests: bigint[] | null;
-      amount: bigint | null;
-      token: TOKENS_TO_WITHDRAWLS;
-    }) => {
+    async ({ requests, amount, token }: RequestArgs) => {
       invariant(
         requests && requests.length > 0,
         'cannot submit empty requests',
       );
       invariant(amount, 'cannot submit empty amount');
+      // The modal shows `amount`, the direct and permit paths send `requests`
+      // and the AA path splits `amount` again: one total for all three
+      invariant(
+        requests.reduce((total, value) => total + value, 0n) === amount,
+        'requests do not add up to the amount',
+      );
 
       const onTryAllowance = () => {
         closeModal();
@@ -127,7 +138,7 @@ export const useWithdrawalRequest = ({
           await txFlow({
             callsFn: async () => {
               // Approve + Withdraw batch tx
-              const args = { amount, token };
+              const args = { amount, token, receiver: address };
               return await Promise.all([
                 needsApprove && withdraw.approval.approvePopulateTx(args),
                 withdraw.request.requestWithdrawalPopulateTx(args),
@@ -207,6 +218,7 @@ export const useWithdrawalRequest = ({
       isApprovalFlow,
       isBunker,
       isForceAllowance,
+      address,
       needsApprove,
       onConfirm,
       onRetry,

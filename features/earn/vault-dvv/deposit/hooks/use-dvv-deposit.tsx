@@ -40,26 +40,26 @@ export const useDVVDeposit = (onRetry?: () => void) => {
 
       try {
         const vault = getDVVaultWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
         const wrapper = getDVVDepositWrapperWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         const tokenContract = getContract({
           address: tokenAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
         const referralAddress = await getReferralAddress(
           referral,
-          core.rpcProvider,
+          core.publicClient,
         );
 
         // used to display in modal
