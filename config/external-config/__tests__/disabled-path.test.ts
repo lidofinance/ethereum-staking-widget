@@ -1,4 +1,4 @@
-import { isDisabledPath } from '../utils';
+import { isDisabledPath } from '../disabled-path';
 
 const disabled = { shouldDisable: true, showNew: false, sections: [] };
 const enabled = { shouldDisable: false, showNew: false, sections: [] };

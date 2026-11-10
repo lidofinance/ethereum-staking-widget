@@ -34,8 +34,8 @@
       "earnSmartSuggestEnabled": true
     },
     "earnInfoBanner": {
-      "title": "",
-      "text": ""
+      "title": "EarnETH and EarnUSD now have two layers of loss protection:",
+      "text": "Firelight absorbs eligible and approved losses first, followed by the Lido DAO’s loss protection."
     },
     "earnAllocation": {
       "labelAllowList": [],
@@ -46,7 +46,10 @@
     },
     "pages": {
       "/earn": {
-        "showNew": true,
+        "showNew": false,
+        "shouldDisable": false
+      },
+      "/swap": {
         "shouldDisable": false
       }
     },
@@ -88,7 +91,7 @@
         "forceAllowance": false,
         "amountBannerEnabled": true,
         "earnSmartSuggestEnabled": true,
-        "earnInfoBannerEnabled": false
+        "earnInfoBannerEnabled": true
       },
       "earnAllocation": {
         "labelAllowList": [],
@@ -96,7 +99,6 @@
       },
       "pages": {
         "/earn": {
-          "showNew": true,
           "shouldDisable": false
         }
       },
@@ -139,7 +141,7 @@
         "forceAllowance": false,
         "amountBannerEnabled": true,
         "earnSmartSuggestEnabled": true,
-        "earnInfoBannerEnabled": false
+        "earnInfoBannerEnabled": true
       },
       "earnAllocation": {
         "labelAllowList": [],
@@ -147,7 +149,6 @@
       },
       "pages": {
         "/earn": {
-          "showNew": true,
           "shouldDisable": false
         }
       },
@@ -186,7 +187,9 @@
           "shouldDisable": true
         },
         "/earn": {
-          "showNew": false,
+          "shouldDisable": true
+        },
+        "/swap": {
           "shouldDisable": true
         }
       }
@@ -199,6 +202,11 @@
     "config": {
       "withdrawalDex": {
         "enabled": false
+      },
+      "pages": {
+        "/swap": {
+          "shouldDisable": true
+        }
       },
       "multiChainBanner": [],
       "featureFlags": {

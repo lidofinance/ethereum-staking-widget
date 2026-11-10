@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 import { BlockProps, Link } from '@lidofinance/lido-ui';
 
@@ -22,7 +22,11 @@ import { joinWithOr } from 'utils/join-with-or';
 import { MultiChainWalletBackdrop } from 'shared/wallet/components/multichain-wallet-backdrop';
 
 export type LidoMultichainFallbackComponent = FC<
-  { textEnding: string } & BlockProps
+  {
+    textEnding: string;
+    // replaces the default text, the Lido Multichain link is not shown then
+    message?: ReactNode;
+  } & BlockProps
 >;
 
 const multichainLogos = {
@@ -40,9 +44,10 @@ const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
   return SVGLogo ? <SVGLogo style={{ marginBottom: '13px' }} /> : null;
 };
 
-export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
-  props,
-) => {
+export const LidoMultichainFallback: LidoMultichainFallbackComponent = ({
+  message,
+  ...props
+}) => {
   const { walletChainId, supportedChainLabels } = useDappStatus();
 
   // Trick. Anyway, this condition is working only SPA starting.
@@ -52,26 +57,30 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   return (
     <MultiChainWalletBackdrop {...props} multiChainId={walletChainId}>
       {getChainLogo(walletChainId as LIDO_MULTICHAIN_CHAINS)}
-      <TextStyle>
-        You are currently on {lidoMultichainChainName}.
-        <br />
-        Explore Lido Multichain or switch to {joinWithOr(
-          supportedChainLabels,
-        )}{' '}
-        {props.textEnding}.
-      </TextStyle>
-      <Link href={`${config.rootOrigin}/lido-multichain`}>
-        <ButtonStyle
-          size={'xs'}
-          onClick={() =>
-            trackMatomoEvent(
-              MATOMO_CLICK_EVENTS_TYPES.lidoOnLidoMultichainOpportunities,
-            )
-          }
-        >
-          Lido Multichain
-        </ButtonStyle>
-      </Link>
+      {message ? (
+        <TextStyle>{message}</TextStyle>
+      ) : (
+        <>
+          <TextStyle>
+            You are currently on {lidoMultichainChainName}.
+            <br />
+            Explore Lido Multichain or switch to{' '}
+            {joinWithOr(supportedChainLabels)} {props.textEnding}.
+          </TextStyle>
+          <Link href={`${config.rootOrigin}/lido-multichain`}>
+            <ButtonStyle
+              size={'xs'}
+              onClick={() =>
+                trackMatomoEvent(
+                  MATOMO_CLICK_EVENTS_TYPES.lidoOnLidoMultichainOpportunities,
+                )
+              }
+            >
+              Lido Multichain
+            </ButtonStyle>
+          </Link>
+        </>
+      )}
     </MultiChainWalletBackdrop>
   );
 };

@@ -16,8 +16,8 @@ export {
   getConfiguredManifestKey,
   getLocalFallbackManifest,
   shouldRedirectToRoot,
-  isDisabledPath,
 } from './utils';
+export { isDisabledPath } from './disabled-path';
 export {
   ManifestSchema,
   ManifestConfigPages,

@@ -51,6 +51,7 @@ export const WIDGET_PAGES = [
   '/earn/usd/withdraw',
   '/earn/eth/deposit',
   '/earn/eth/withdraw',
+  '/swap',
 ];
 
 // cache control: the header name and value live in scripts/cache-control.mjs
@@ -63,7 +64,6 @@ export const CACHE_CONTROL_PAGES = [
   '/apple-touch-icon.png',
   '/lido-preview.png',
   '/bells.mp3',
-  '/honk.mp3',
 ];
 
 // Required lazily: @next/bundle-analyzer is a devDependency and the production
@@ -75,6 +75,8 @@ const withBundleAnalyzer = process.env.ANALYZE_BUNDLE
 export default withBundleAnalyzer({
   basePath,
   generateBuildId,
+  // separate build dir for a second dev server (e.g. fork e2e)
+  distDir: process.env.NEXT_DIST_DIR || '.next',
 
   // Disable the built-in Next.js Image Optimization endpoint to prevent
   // requests from reaching the image optimizer. This app does not use `next/image`.

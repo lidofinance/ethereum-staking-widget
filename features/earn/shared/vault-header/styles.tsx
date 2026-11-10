@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 export const VaultCardWrapper = styled.div`
   display: flex;
@@ -17,7 +17,7 @@ export const VaultHeaderColumn = styled.div`
   gap: ${({ theme }) => theme.spaceMap.xs}px;
 `;
 
-export const VaultHeaderTitle = styled.div<{ compact?: boolean }>`
+export const VaultHeaderTitle = styled.div`
   display: flex;
   align-items: center;
   color: var(--lido-color-text);
@@ -29,15 +29,6 @@ export const VaultHeaderTitle = styled.div<{ compact?: boolean }>`
   ${({ theme }) => theme.mediaQueries.md} {
     font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
   }
-
-  ${({ compact }) =>
-    compact &&
-    css`
-      font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
-      ${({ theme }) => theme.mediaQueries.md} {
-        font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
-      }
-    `}
 `;
 
 export const VaultHeaderNewTag = styled.div`
