@@ -1,5 +1,5 @@
 import { FC, useCallback } from 'react';
-import { useConnect } from 'reef-knot/core-react';
+import { useConnectionFlow } from 'reef-knot';
 import { wrapWithEventTrack } from '@lidofinance/analytics-matomo';
 import { Button, Divider } from '@lidofinance/lido-ui';
 
@@ -16,14 +16,14 @@ export const RewardsListsEmpty: FC = () => {
   const { isWalletConnectionAllowed } = useUserConfig();
   const { isWalletConnected } = useDappStatus();
 
-  const { connect } = useConnect();
+  const { startConnection } = useConnectionFlow();
 
   const handleClick = wrapWithEventTrack(
     MATOMO_CLICK_EVENTS.connectWallet,
     useCallback(() => {
       if (!isWalletConnectionAllowed) return;
-      void connect();
-    }, [isWalletConnectionAllowed, connect]),
+      void startConnection();
+    }, [isWalletConnectionAllowed, startConnection]),
   );
 
   return (

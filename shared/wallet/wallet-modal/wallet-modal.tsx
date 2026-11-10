@@ -7,7 +7,7 @@ import {
   Copy,
   Address,
 } from '@lidofinance/lido-ui';
-import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
+import { useConnectorInfo, useDisconnect } from 'reef-knot';
 
 import { config } from 'config';
 import type { ModalComponentType } from 'providers/modal-provider';
