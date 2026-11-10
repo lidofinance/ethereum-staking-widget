@@ -10,6 +10,7 @@ import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import {
   getCollectorContract,
+  getOracleContract,
   getRedeemQueueWritableContract,
   getSyncRedeemQueueWritableContract,
 } from '../../contracts';
@@ -36,6 +37,11 @@ export const useUsdVaultWithdraw = (
     [publicClientMainnet],
   );
 
+  const oracle = useMemo(
+    () => getOracleContract(publicClientMainnet),
+    [publicClientMainnet],
+  );
+
   const asyncRedeemQueue = useMemo(() => {
     return getRedeemQueueWritableContract({
       publicClient: publicClientMainnet,
@@ -56,6 +62,7 @@ export const useUsdVaultWithdraw = (
     collector,
     asyncRedeemQueue,
     syncRedeemQueue,
+    oracle,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalStart,
