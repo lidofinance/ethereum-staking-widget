@@ -31,6 +31,7 @@
       "holidayDecorEnabled": false,
       "forceAllowance": false,
       "amountBannerEnabled": true,
+      "earnInfoBannerEnabled": true,
       "earnSmartSuggestEnabled": true
     },
     "earnInfoBanner": {
@@ -83,16 +84,7 @@
         },
         { "name": "dvv", "deprecated": true }
       ],
-      "featureFlags": {
-        "disableSendCalls": false,
-        "dgBannerEnabled": true,
-        "rewardsMaintenance": false,
-        "holidayDecorEnabled": false,
-        "forceAllowance": false,
-        "amountBannerEnabled": true,
-        "earnSmartSuggestEnabled": true,
-        "earnInfoBannerEnabled": true
-      },
+      "featureFlags": {},
       "earnAllocation": {
         "labelAllowList": [],
         "hiddenIds": []
@@ -133,16 +125,7 @@
         },
         { "name": "dvv", "deprecated": true }
       ],
-      "featureFlags": {
-        "disableSendCalls": false,
-        "dgBannerEnabled": true,
-        "rewardsMaintenance": false,
-        "holidayDecorEnabled": false,
-        "forceAllowance": false,
-        "amountBannerEnabled": true,
-        "earnSmartSuggestEnabled": true,
-        "earnInfoBannerEnabled": true
-      },
+      "featureFlags": {},
       "earnAllocation": {
         "labelAllowList": [],
         "hiddenIds": []
