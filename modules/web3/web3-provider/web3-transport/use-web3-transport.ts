@@ -1,11 +1,10 @@
-import { config } from 'config';
 import { useMemo } from 'react';
-import { type Transport, http, custom, Chain } from 'viem';
-
+import { type Transport, custom, Chain } from 'viem';
 import type { Connection } from 'wagmi';
 
 import { runtimeMutableTransport } from './runtime-mutable-transport';
 import { getConnectionProvider } from './get-connection-provider';
+import { createHttpTransports } from './http-transports';
 
 // Applies the active connection's wallet provider to the transport map.
 // Fail-safe ordering: the previous wallet transport is dropped synchronously
@@ -41,27 +40,13 @@ export const useWeb3Transport = (
   backendRpcMap: Record<number, string>,
 ) => {
   const { transportMap, setTransportMap } = useMemo(() => {
-    const batchConfig = {
-      wait: config.PROVIDER_BATCH_TIME,
-      batchSize: config.PROVIDER_MAX_BATCH,
-    };
-
     const transportMap: Record<number, Transport> = {};
     const setTransportMap: Record<number, (t: Transport | null) => void> = {};
 
     for (const chain of supportedChains) {
-      const [transport, setTransport] = runtimeMutableTransport([
-        // api/rpc
-        http(backendRpcMap[chain.id], {
-          batch: batchConfig,
-          name: backendRpcMap[chain.id],
-        }),
-        // fallback rpc from wagmi.chains like cloudfare-eth
-        http(undefined, {
-          batch: batchConfig,
-          name: 'default HTTP RPC',
-        }),
-      ]);
+      const [transport, setTransport] = runtimeMutableTransport(
+        createHttpTransports(backendRpcMap[chain.id]),
+      );
       transportMap[chain.id] = transport;
       setTransportMap[chain.id] = setTransport;
     }

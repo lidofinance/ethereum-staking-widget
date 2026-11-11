@@ -121,7 +121,7 @@ describe('runtimeMutableTransport', () => {
     expect(walletMock).toHaveBeenCalledTimes(3);
   });
 
-  it('retries failing requests on the inner fallback layer only', async () => {
+  it('passes the stack once per request, without transport retries', async () => {
     const { backendMock, publicMock, instance } = setup();
     backendMock.mockRejectedValue(new Error('backend down'));
     publicMock.mockRejectedValue(new Error('public down'));
@@ -130,10 +130,10 @@ describe('runtimeMutableTransport', () => {
       instance.request({ method: 'eth_blockNumber' }),
     ).rejects.toThrow();
 
-    // 1 initial try + 3 inner fallback retries; the outer wrapper must not
-    // multiply them (a second retry layer would make it 16)
-    expect(backendMock).toHaveBeenCalledTimes(4);
-    expect(publicMock).toHaveBeenCalledTimes(4);
+    // retries are left to the caller (React Query): a retry on any layer
+    // here would rerun every tier of the stack
+    expect(backendMock).toHaveBeenCalledTimes(1);
+    expect(publicMock).toHaveBeenCalledTimes(1);
   });
 
   it.each([

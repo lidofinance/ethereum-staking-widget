@@ -48,8 +48,7 @@ const FEE = 10n ** 15n;
 const PRICE = 12n * 10n ** 17n;
 const AMOUNT = 2n * P;
 const MIN_RECEIVE = calcFastStakeWstethByEth(AMOUNT, FEE, PRICE);
-const BALANCE_BEFORE = 5n * P;
-const BALANCE_AFTER = BALANCE_BEFORE + MIN_RECEIVE;
+const BALANCE_AFTER = 5n * P + MIN_RECEIVE;
 
 const { ETH, WETH: WETH_TOKEN } = TOKENS_TO_STAKE;
 
@@ -219,10 +218,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   state.isAA = false;
   state.shownRate = { feeRate: FEE, price: PRICE };
-  state.wstethBalance
-    .mockReset()
-    .mockResolvedValueOnce(BALANCE_BEFORE)
-    .mockResolvedValueOnce(BALANCE_AFTER);
+  state.wstethBalance.mockReset().mockResolvedValue(BALANCE_AFTER);
 });
 afterAll(() => {
   consoleWarnSpy.mockRestore();
@@ -258,7 +254,6 @@ describe('useL2FastStake', () => {
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
-        BALANCE_BEFORE,
         TX_HASH,
       );
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
@@ -391,7 +386,6 @@ describe('useL2FastStake', () => {
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
-        BALANCE_BEFORE,
         TX_HASH,
       );
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
@@ -448,10 +442,7 @@ describe('useL2FastStake', () => {
       setAllowance(AMOUNT);
       walletClient.writeContract.mockClear();
       state.txModalStages.signApproval.mockClear();
-      state.wstethBalance
-        .mockReset()
-        .mockResolvedValueOnce(BALANCE_BEFORE)
-        .mockResolvedValueOnce(BALANCE_AFTER);
+      state.wstethBalance.mockReset().mockResolvedValue(BALANCE_AFTER);
 
       await expect(stake(WETH_TOKEN)).resolves.toBe(true);
 
@@ -493,10 +484,7 @@ describe('useL2FastStake', () => {
       setAllowance(AMOUNT);
       walletClient.writeContract.mockClear();
       state.txModalStages.signApproval.mockClear();
-      state.wstethBalance
-        .mockReset()
-        .mockResolvedValueOnce(BALANCE_BEFORE)
-        .mockResolvedValueOnce(BALANCE_AFTER);
+      state.wstethBalance.mockReset().mockResolvedValue(BALANCE_AFTER);
 
       await expect(stake(WETH_TOKEN)).resolves.toBe(true);
 
@@ -571,7 +559,6 @@ describe('useL2FastStake', () => {
       );
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
-        BALANCE_BEFORE,
         TX_HASH,
       );
     });
@@ -615,7 +602,6 @@ describe('useL2FastStake', () => {
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
-        BALANCE_BEFORE,
         TX_HASH,
       );
     });

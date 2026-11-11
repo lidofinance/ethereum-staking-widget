@@ -78,7 +78,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (newBalance: bigint, txHash?: Hash) =>
+  success: (newBalance: bigint | undefined, txHash?: Hash) =>
     transitStage(
       <VaultDepositTxStageSuccess
         txHash={txHash}
