@@ -260,6 +260,22 @@ describe('useL2FastStake', () => {
       expect(state.refetchLiquidity).not.toHaveBeenCalled();
     });
 
+    it('reports success without a balance when the post-stake read fails', async () => {
+      createModule(legacyPerformTransaction('success'));
+      state.wstethBalance.mockReset().mockRejectedValue(new Error('rpc down'));
+
+      await expect(stake(ETH)).resolves.toBe(true);
+
+      // the stake settled: a failed balance read must not turn it into a failure
+      expect(state.wstethBalance).toHaveBeenCalledTimes(1);
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.success).toHaveBeenCalledExactlyOnceWith(
+        undefined,
+        TX_HASH,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
+    });
+
     it('falls back to the configured referral when none is given', async () => {
       const { walletClient } = createModule(
         legacyPerformTransaction('success'),
@@ -561,6 +577,23 @@ describe('useL2FastStake', () => {
         BALANCE_AFTER,
         TX_HASH,
       );
+    });
+
+    it('reports success without a balance when the post-stake read fails', async () => {
+      createModule(legacyPerformTransaction('success'));
+      state.sendAACalls.mockImplementation(
+        aaSendCalls({ callId: CALL_ID, txHash: TX_HASH }),
+      );
+      state.wstethBalance.mockReset().mockRejectedValue(new Error('rpc down'));
+
+      await expect(stake(ETH)).resolves.toBe(true);
+
+      expect(state.wstethBalance).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.success).toHaveBeenCalledExactlyOnceWith(
+        undefined,
+        TX_HASH,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
     });
 
     it('batches the approval with the WETH stake', async () => {
