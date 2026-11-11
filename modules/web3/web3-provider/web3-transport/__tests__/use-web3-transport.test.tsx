@@ -21,9 +21,13 @@ vi.mock('../get-connection-provider', () => ({
   getConnectionProvider: vi.fn(),
 }));
 
-// a short batch window keeps the suite fast, the batching itself stays on
+// a short batch window and wallet timeout keep the suite fast, both stay on
 vi.mock('config', () => ({
-  config: { PROVIDER_BATCH_TIME: 5, PROVIDER_MAX_BATCH: 20 },
+  config: {
+    PROVIDER_BATCH_TIME: 5,
+    PROVIDER_MAX_BATCH: 20,
+    WALLET_READ_TIMEOUT: 50,
+  },
 }));
 
 const getConnectionProviderMock = vi.mocked(getConnectionProvider);
@@ -313,6 +317,16 @@ describe('useWeb3Transport', () => {
 
       await expect(t.request()).resolves.toBe('backend');
       expect(t.walletRequest).not.toHaveBeenCalled();
+    });
+
+    it('gives up on a wallet that never answers and asks the backend', async () => {
+      const t = setup();
+      await t.connect();
+      t.walletRequest.mockReturnValue(new Promise(() => undefined));
+      t.backend(serves('backend'));
+
+      await expect(t.request()).resolves.toBe('backend');
+      expect(t.order).toEqual(['wallet', 'backend']);
     });
 
     it('keeps the HTTP tiers when the connection has no usable provider', async () => {

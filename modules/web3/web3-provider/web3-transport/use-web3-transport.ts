@@ -2,9 +2,12 @@ import { useMemo } from 'react';
 import { type Transport, custom, Chain } from 'viem';
 import type { Connection } from 'wagmi';
 
+import { config } from 'config';
+
 import { runtimeMutableTransport } from './runtime-mutable-transport';
 import { getConnectionProvider } from './get-connection-provider';
 import { createHttpTransports } from './http-transports';
+import { timeoutTransport } from './timeout-transport';
 
 // Applies the active connection's wallet provider to the transport map.
 // Fail-safe ordering: the previous wallet transport is dropped synchronously
@@ -30,7 +33,12 @@ export const createActiveConnectionListener = (
 
     if (!provider || seq !== connectionSeq) return;
 
-    setTransportMap[activeConnection.chainId]?.(custom(provider));
+    // Reads only: this transport rejects signing and wallet methods, those go
+    // through the connector and may wait for the user as long as it takes.
+    // A wallet that hangs on a read is given up on and the next RPC serves
+    setTransportMap[activeConnection.chainId]?.(
+      timeoutTransport(custom(provider), config.WALLET_READ_TIMEOUT),
+    );
   };
 };
 
