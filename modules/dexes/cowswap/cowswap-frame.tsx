@@ -221,6 +221,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       disableSwitchingTokens: true,
       // wrapping ETH is blocked by the trade guard, so the banner offering it is hidden
       hideWrapBanner: true,
+      hideWaitAndSave: true,
       disablePostedOrderConfirmationModal: true,
       disableTokenImport: true,
       disablePostTradeTips: true,
