@@ -65,11 +65,11 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (balance: bigint, preStakeBalance: bigint, txHash?: Hash) =>
+  success: (newBalance: bigint | undefined, txHash?: Hash) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}
-        balance={balance}
+        balance={newBalance}
         balanceToken={'wstETH'}
         operationText={'Staking'}
       />,

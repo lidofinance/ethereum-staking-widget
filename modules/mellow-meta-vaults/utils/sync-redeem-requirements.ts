@@ -7,8 +7,7 @@ export type SyncRedeemReport = {
 /**
  * Whether the sync redeem queue would accept the report it prices with: the
  * contract reverts with InvalidReport on a suspicious or zero-price report and
- * with StaleReport once `report.timestamp + maxAge < block.timestamp`. Read
- * by the EarnETH withdraw hook, which withholds the instant route meanwhile.
+ * with StaleReport once `report.timestamp + maxAge < block.timestamp`.
  */
 export const isSyncRedeemReportUsable = ({
   report,

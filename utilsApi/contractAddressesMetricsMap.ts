@@ -220,6 +220,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.usdSyncDepositQueueUSDC]: SYNC_DEPOSIT_QUEUE_ABI,
   [CONTRACT_NAMES.usdSyncDepositQueueUSDT]: SYNC_DEPOSIT_QUEUE_ABI,
   [CONTRACT_NAMES.usdCollector]: COLLECTOR_ABI,
+  [CONTRACT_NAMES.usdOracle]: ORACLE_ABI,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;

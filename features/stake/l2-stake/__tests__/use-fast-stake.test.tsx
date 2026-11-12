@@ -48,8 +48,7 @@ const FEE = 10n ** 15n;
 const PRICE = 12n * 10n ** 17n;
 const AMOUNT = 2n * P;
 const MIN_RECEIVE = calcFastStakeWstethByEth(AMOUNT, FEE, PRICE);
-const BALANCE_BEFORE = 5n * P;
-const BALANCE_AFTER = BALANCE_BEFORE + MIN_RECEIVE;
+const BALANCE_AFTER = 5n * P + MIN_RECEIVE;
 
 const { ETH, WETH: WETH_TOKEN } = TOKENS_TO_STAKE;
 
@@ -219,10 +218,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   state.isAA = false;
   state.shownRate = { feeRate: FEE, price: PRICE };
-  state.wstethBalance
-    .mockReset()
-    .mockResolvedValueOnce(BALANCE_BEFORE)
-    .mockResolvedValueOnce(BALANCE_AFTER);
+  state.wstethBalance.mockReset().mockResolvedValue(BALANCE_AFTER);
 });
 afterAll(() => {
   consoleWarnSpy.mockRestore();
@@ -258,11 +254,26 @@ describe('useL2FastStake', () => {
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
-        BALANCE_BEFORE,
         TX_HASH,
       );
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
       expect(state.refetchLiquidity).not.toHaveBeenCalled();
+    });
+
+    it('reports success without a balance when the post-stake read fails', async () => {
+      createModule(legacyPerformTransaction('success'));
+      state.wstethBalance.mockReset().mockRejectedValue(new Error('rpc down'));
+
+      await expect(stake(ETH)).resolves.toBe(true);
+
+      // the stake settled: a failed balance read must not turn it into a failure
+      expect(state.wstethBalance).toHaveBeenCalledTimes(1);
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.success).toHaveBeenCalledExactlyOnceWith(
+        undefined,
+        TX_HASH,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
     });
 
     it('falls back to the configured referral when none is given', async () => {
@@ -391,7 +402,6 @@ describe('useL2FastStake', () => {
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
-        BALANCE_BEFORE,
         TX_HASH,
       );
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
@@ -448,10 +458,7 @@ describe('useL2FastStake', () => {
       setAllowance(AMOUNT);
       walletClient.writeContract.mockClear();
       state.txModalStages.signApproval.mockClear();
-      state.wstethBalance
-        .mockReset()
-        .mockResolvedValueOnce(BALANCE_BEFORE)
-        .mockResolvedValueOnce(BALANCE_AFTER);
+      state.wstethBalance.mockReset().mockResolvedValue(BALANCE_AFTER);
 
       await expect(stake(WETH_TOKEN)).resolves.toBe(true);
 
@@ -493,10 +500,7 @@ describe('useL2FastStake', () => {
       setAllowance(AMOUNT);
       walletClient.writeContract.mockClear();
       state.txModalStages.signApproval.mockClear();
-      state.wstethBalance
-        .mockReset()
-        .mockResolvedValueOnce(BALANCE_BEFORE)
-        .mockResolvedValueOnce(BALANCE_AFTER);
+      state.wstethBalance.mockReset().mockResolvedValue(BALANCE_AFTER);
 
       await expect(stake(WETH_TOKEN)).resolves.toBe(true);
 
@@ -571,9 +575,25 @@ describe('useL2FastStake', () => {
       );
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
-        BALANCE_BEFORE,
         TX_HASH,
       );
+    });
+
+    it('reports success without a balance when the post-stake read fails', async () => {
+      createModule(legacyPerformTransaction('success'));
+      state.sendAACalls.mockImplementation(
+        aaSendCalls({ callId: CALL_ID, txHash: TX_HASH }),
+      );
+      state.wstethBalance.mockReset().mockRejectedValue(new Error('rpc down'));
+
+      await expect(stake(ETH)).resolves.toBe(true);
+
+      expect(state.wstethBalance).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.success).toHaveBeenCalledExactlyOnceWith(
+        undefined,
+        TX_HASH,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
     });
 
     it('batches the approval with the WETH stake', async () => {
@@ -615,7 +635,6 @@ describe('useL2FastStake', () => {
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).toHaveBeenCalledWith(
         BALANCE_AFTER,
-        BALANCE_BEFORE,
         TX_HASH,
       );
     });

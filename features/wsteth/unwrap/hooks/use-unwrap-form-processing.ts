@@ -9,6 +9,9 @@ import {
   useTxFlow,
 } from 'modules/web3';
 
+import { warnError } from 'utils/warn-error';
+import { withFallback } from 'utils/with-fallback';
+
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
@@ -50,8 +53,18 @@ export const useUnwrapFormProcessor = ({
 
         const onUnwrapConfirm = async () => {
           const [, balance] = await Promise.all([
+            // never rejects: the form refetches are settled inside
             onConfirm?.(),
-            isL2Wrap ? l2.steth.balance(address) : stETH.balance(address),
+            // a failed read must not fail a settled tx: the modal drops the balance
+            withFallback(
+              isL2Wrap ? l2.steth.balance(address) : stETH.balance(address),
+              undefined,
+              {
+                onError: warnError(
+                  '[useUnwrapFormProcessor] post-unwrap balance read failed',
+                ),
+              },
+            ),
           ]);
           return balance;
         };
