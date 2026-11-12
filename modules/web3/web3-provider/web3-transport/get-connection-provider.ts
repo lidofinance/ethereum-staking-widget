@@ -7,7 +7,7 @@ import {
 
 import type { Connection } from 'wagmi';
 import { injected, metaMask } from 'wagmi/connectors';
-import { providersStore } from 'reef-knot/core-react';
+import { providersStore } from 'reef-knot';
 
 // A provider is only suitable for routing reads through while it demonstrably
 // serves the same account and chain as the active connection — a provider that

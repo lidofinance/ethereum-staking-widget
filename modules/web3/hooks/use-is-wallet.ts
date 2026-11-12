@@ -1,4 +1,4 @@
-import { useConnectorInfo } from 'reef-knot/core-react';
+import { useConnectorInfo } from 'reef-knot';
 import { useAppFlag } from 'providers/app-flag';
 import { useConnections } from 'wagmi';
 import { injected } from 'wagmi/connectors';

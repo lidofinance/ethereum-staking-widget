@@ -1,7 +1,5 @@
 import { useConnect } from 'wagmi';
-import { useConnectorInfo } from 'reef-knot/core-react';
-// TODO: to remove the 'reef-knot/web3-react' after it will be deprecated
-import { helpers } from 'reef-knot/web3-react';
+import { useConnectorInfo, interceptLedgerError } from 'reef-knot';
 
 import { joinWithOr } from 'utils/join-with-or';
 import { useDappStatus, getPrettyChainName } from 'modules/web3';
@@ -36,7 +34,7 @@ export const useErrorMessage = (toActionText?: string): string | undefined => {
   }
 
   if (isLedger) {
-    return helpers.interceptLedgerError(error).message;
+    return interceptLedgerError(error).message;
   }
 
   return error?.message;
