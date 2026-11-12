@@ -1,4 +1,6 @@
 import type { Hash } from 'viem';
+
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import {
   TransactionModalTransitStage,
   useTransactionModalStage,
@@ -7,7 +9,6 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 import { EarnUpToBanner } from 'shared/banners/earn-up-to-banner';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { AmountBanner } from 'shared/banners/amount-banners';
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 
@@ -73,7 +74,11 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (balance: bigint, preStakeBalance: bigint, txHash?: Hash) =>
+  success: (
+    balance: bigint | undefined,
+    preStakeBalance: bigint,
+    txHash?: Hash,
+  ) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}

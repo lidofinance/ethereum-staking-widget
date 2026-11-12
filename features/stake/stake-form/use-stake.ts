@@ -4,6 +4,7 @@ import { encodeFunctionData, type Address } from 'viem';
 import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 
 import { config, useConfig } from 'config';
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import {
   applyRoundUpTxParameter,
   useDappStatus,
@@ -16,11 +17,13 @@ import {
   TxFlowInterruptedError,
 } from 'modules/web3';
 
-import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
+
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import { getReferralAddress } from 'utils/get-referral-address';
-import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
+import { warnError } from 'utils/warn-error';
+import { withFallback } from 'utils/with-fallback';
 
 import { MockLimitReachedError } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
@@ -135,8 +138,12 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
         onSuccess: async ({ txHash, ctx: { stepId, data } }) => {
           if (stepId !== STEP.stake) return;
           const [, balance] = await Promise.all([
+            // never rejects: the form refetches are settled inside
             onConfirm?.(),
-            stETH.balance(data.address),
+            // a failed read must not fail a settled tx: the modal drops the balance
+            withFallback(stETH.balance(data.address), undefined, {
+              onError: warnError('[useStake] post-stake balance read failed'),
+            }),
           ]);
           if (featureFlags.holidayDecorEnabled) {
             bells();
