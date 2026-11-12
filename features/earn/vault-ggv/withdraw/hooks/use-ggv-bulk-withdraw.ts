@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
-import { encodeFunctionData, WalletClient } from 'viem';
+import { encodeFunctionData, type Address, type WalletClient } from 'viem';
 
 import { getTokenAddress } from 'config/networks/token-address';
 import { useDappStatus, useTxFlow, useLidoSDK } from 'modules/web3';
@@ -16,6 +16,13 @@ import { getGGVAssetsOut, getGGVMinimumAssetsOut } from '../../utils';
 import { useTxModalStagesGGVBulkWithdraw } from './use-ggv-bulk-withdraw-modal';
 import type { GGVWithdrawalFormValidatedValues } from '../types';
 
+const STEP = { withdraw: 'withdraw' } as const;
+
+type BulkWithdrawData = {
+  willReceive: bigint;
+  withdrawArgs: readonly [Address, bigint, bigint, Address];
+};
+
 export const useGGVBulkWithdraw = (onRetry?: () => void) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
@@ -25,72 +32,84 @@ export const useGGVBulkWithdraw = (onRetry?: () => void) => {
   const withdrawGGV = useCallback(
     async ({ amount }: GGVWithdrawalFormValidatedValues) => {
       trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvWithdrawStart);
-      invariant(address, 'the address is required');
 
-      try {
-        const wethAddress = getTokenAddress(core.chainId, 'WETH');
-        invariant(wethAddress, 'WETH address is required');
-
-        const teller = getGGVTellerWritableContract(
+      // Build inside the flow steps, so a failure goes to onFailure
+      const getTeller = () =>
+        getGGVTellerWritableContract(
           core.publicClient,
           core.walletClient as WalletClient,
         );
-        const accountant = getGGVAccountantContract(core.publicClient);
-        const vault = getGGVVaultContract(core.publicClient);
 
-        // Read a fresh rate. The preview in the form can be old.
-        const [rate, shareDecimals] = await Promise.all([
-          accountant.read.getRateInQuoteSafe([wethAddress]),
-          vault.read.decimals(),
-        ]);
-        const willReceive = getGGVAssetsOut(amount, rate, shareDecimals);
-        const minimumAssets = getGGVMinimumAssetsOut(willReceive);
+      const { isSuccess } = await txFlow<BulkWithdrawData>({
+        // Read inside the flow. The flow stops here if the form unmounts.
+        prepare: async () => {
+          invariant(address, 'the address is required');
+          const wethAddress = getTokenAddress(core.chainId, 'WETH');
+          invariant(wethAddress, 'WETH address is required');
 
-        // Teller burns shares from msg.sender, so no approve is necessary
-        const withdrawArgs = [
-          wethAddress,
-          amount,
-          minimumAssets,
-          address,
-        ] as const;
+          // Read a fresh rate. The preview in the form can be old.
+          const [rate, shareDecimals] = await Promise.all([
+            getGGVAccountantContract(core.publicClient).read.getRateInQuoteSafe(
+              [wethAddress],
+            ),
+            getGGVVaultContract(core.publicClient).read.decimals(),
+          ]);
+          const willReceive = getGGVAssetsOut(amount, rate, shareDecimals);
 
-        await txFlow({
-          callsFn: async () => [
+          return {
+            willReceive,
+            // Teller burns shares from msg.sender, so no approve is necessary
+            withdrawArgs: [
+              wethAddress,
+              amount,
+              getGGVMinimumAssetsOut(willReceive),
+              address,
+            ],
+          };
+        },
+        callsFn: async ({ data }) => {
+          const teller = getTeller();
+          return [
             {
+              stepId: STEP.withdraw,
               to: teller.address,
               data: encodeFunctionData({
                 abi: teller.abi,
                 functionName: 'bulkWithdraw',
-                args: withdrawArgs,
+                args: data.withdrawArgs,
               }),
             },
-          ],
-          sendTransaction: async (txStagesCallback) => {
-            await core.performTransaction({
-              getGasLimit: (opts) =>
-                teller.estimateGas.bulkWithdraw(withdrawArgs, opts),
-              sendTransaction: (opts) =>
-                teller.write.bulkWithdraw(withdrawArgs, opts),
-              callback: txStagesCallback,
-            });
-          },
-          onSign: async () => txModalStages.sign(amount, willReceive),
-          onReceipt: async ({ txHashOrCallId, isAA }) =>
-            txModalStages.pending(amount, willReceive, txHashOrCallId, isAA),
-          onSuccess: async ({ txHash }) => {
-            txModalStages.success(amount, txHash);
-            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvWithdrawFinish);
-          },
-          onMultisigDone: () => {
-            txModalStages.successMultisig();
-          },
-        });
-        return true;
-      } catch (error) {
-        console.error(error);
-        txModalStages.failed(error, onRetry);
-        return false;
-      }
+          ];
+        },
+        sendStep: async (_step, txStagesCallback, { data }) => {
+          const teller = getTeller();
+          await core.performTransaction({
+            getGasLimit: (opts) =>
+              teller.estimateGas.bulkWithdraw(data.withdrawArgs, opts),
+            sendTransaction: (opts) =>
+              teller.write.bulkWithdraw(data.withdrawArgs, opts),
+            callback: txStagesCallback,
+          });
+        },
+        onSign: async ({ ctx: { data } }) =>
+          txModalStages.sign(amount, data.willReceive),
+        onReceipt: async ({ txHashOrCallId, isAA, ctx: { data } }) =>
+          txModalStages.pending(amount, data.willReceive, txHashOrCallId, isAA),
+        onSuccess: async ({ txHash }) => {
+          txModalStages.success(amount, txHash);
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvWithdrawFinish);
+        },
+        onMultisigDone: () => {
+          txModalStages.successMultisig();
+        },
+        onFailure: async ({ error }) => {
+          console.error(error);
+          txModalStages.failed(error, onRetry);
+        },
+      });
+
+      // Withdrawn or proposed to a multisig: the form resets
+      return isSuccess;
     },
     [address, core, onRetry, txFlow, txModalStages],
   );

@@ -28,6 +28,8 @@ const MIN_ASSETS = 1011668800602657765n;
 
 const state = vi.hoisted(() => ({
   isAA: false,
+  // Mirrors the operation counter of useTxFlow
+  operation: 0,
   sdk: undefined as { core: unknown } | undefined,
   sendAACalls: vi.fn(),
   getRate: vi.fn(),
@@ -53,14 +55,18 @@ vi.mock('modules/web3', async () => {
     ...context,
     useDappStatus: () => ({ address: ACCOUNT }),
     useLidoSDK: () => state.sdk,
-    useTxFlow: () => (args: TxFlowArgs) =>
-      runTxFlow(args, {
-        isAA: state.isAA,
-        address: ACCOUNT,
-        validateAddress: async () => true,
-        sendAACalls: state.sendAACalls,
-        isCurrent: () => true,
-      }),
+    useTxFlow:
+      () =>
+      <TData,>(args: TxFlowArgs<TData>) => {
+        const operation = ++state.operation;
+        return runTxFlow(args, {
+          isAA: state.isAA,
+          address: ACCOUNT,
+          validateAddress: async () => true,
+          sendAACalls: state.sendAACalls,
+          isCurrent: () => state.operation === operation,
+        });
+      },
   };
 });
 vi.mock('config/networks/token-address', () => ({
@@ -113,6 +119,18 @@ const decodeBulkWithdraw = (data: Hash) => {
 };
 
 const onRetry = vi.fn();
+
+// useTxFlow increases the counter when the form unmounts
+const unmountForm = () => {
+  state.operation++;
+};
+
+// A rate read that resolves only when the test says so
+const delayRate = () => {
+  const { promise, resolve } = Promise.withResolvers<bigint>();
+  state.getRate.mockReturnValue(promise);
+  return resolve;
+};
 
 const withdraw = () =>
   renderHook(() => useGGVBulkWithdraw(onRetry)).withdrawGGV({
@@ -299,6 +317,56 @@ describe('useGGVBulkWithdraw', () => {
         onRetry,
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+  });
+  describe('form unmount', () => {
+    it('does not reach the wallet when the form unmounts during the rate read', async () => {
+      const performTransaction = legacyPerformTransaction('success');
+      createSdk(performTransaction);
+      const resolveRate = delayRate();
+
+      const result = withdraw();
+      unmountForm();
+      resolveRate(RATE);
+
+      await expect(result).resolves.toBe(false);
+      expect(performTransaction).not.toHaveBeenCalled();
+      expect(state.teller.estimateGas.bulkWithdraw).not.toHaveBeenCalled();
+      expect(state.teller.write.bulkWithdraw).not.toHaveBeenCalled();
+      // No UI is left to show a failure
+      expect(state.txModalStages.sign).not.toHaveBeenCalled();
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
+    });
+
+    it('does not send the AA batch when the form unmounts during the rate read', async () => {
+      state.isAA = true;
+      createSdk(legacyPerformTransaction('success'));
+      const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
+      state.sendAACalls.mockImplementation(sendCalls);
+      const resolveRate = delayRate();
+
+      const result = withdraw();
+      unmountForm();
+      resolveRate(RATE);
+
+      await expect(result).resolves.toBe(false);
+      expect(sendCalls).not.toHaveBeenCalled();
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
+    });
+
+    it('sends the withdraw when the form stays mounted during a slow read', async () => {
+      const performTransaction = legacyPerformTransaction('success');
+      createSdk(performTransaction);
+      const resolveRate = delayRate();
+
+      const result = withdraw();
+      resolveRate(RATE);
+
+      await expect(result).resolves.toBe(true);
+      expect(state.teller.write.bulkWithdraw).toHaveBeenCalledWith(
+        EXPECTED_ARGS,
+        expect.anything(),
+      );
     });
   });
 });
