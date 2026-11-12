@@ -77,6 +77,7 @@ export type GGVWithdrawStoppedReason =
   | 'withdrawal-zero-capacity'
   | 'transfer-from-shares-blocked'
   | 'transfer-from-shares-time-locked'
+  | 'bulk-withdraw-unavailable'
   | null;
 
 export type GGVWithdrawalState = {
@@ -89,4 +90,9 @@ export type GGVWithdrawalState = {
 export type GGVWithdrawalFormDataContextValue = GGVWithdrawalState & {
   minDiscount?: number;
   hasActiveRequests: boolean;
+  // Instant WETH withdraw via Teller.bulkWithdraw instead of the queue
+  isBulkWithdraw: boolean;
+  // WETH per one share, for the bulk withdraw preview
+  bulkRate?: bigint | null;
+  shareDecimals?: number;
 };

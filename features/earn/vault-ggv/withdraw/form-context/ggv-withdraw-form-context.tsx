@@ -17,6 +17,7 @@ import { useDappStatus } from 'modules/web3';
 
 import { useGGVAvailable } from '../../hooks/use-ggv-available';
 import { useGGVWithdraw } from '../hooks/use-ggv-withdraw';
+import { useGGVBulkWithdraw } from '../hooks/use-ggv-bulk-withdraw';
 import { useGGVWithdrawFormData } from './use-withdraw-form-data';
 import { GGVWithdrawalFormValidationResolver } from './validation';
 import type {
@@ -49,10 +50,14 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
     withdrawalState,
     withdrawalRequestsQuery,
     withdrawalStateQuery,
+    bulkWithdrawalStateQuery,
+    isBulkWithdraw,
   } = useGGVWithdrawFormData();
 
   const { retryEvent } = useFormControllerRetry();
-  const { withdrawGGV } = useGGVWithdraw(retryEvent.fire);
+  const { withdrawGGV: requestWithdrawGGV } = useGGVWithdraw(retryEvent.fire);
+  const { withdrawGGV: bulkWithdrawGGV } = useGGVBulkWithdraw(retryEvent.fire);
+  const withdrawGGV = isBulkWithdraw ? bulkWithdrawGGV : requestWithdrawGGV;
 
   const formObject = useForm<GGVWithdrawalFormValues>({
     defaultValues: {
@@ -89,12 +94,18 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
       hasActiveRequests:
         withdrawalRequestsQuery.data?.hasActiveRequests ?? false,
       minDiscount: withdrawalStateQuery.data?.minDiscount,
+      isBulkWithdraw,
+      bulkRate: bulkWithdrawalStateQuery.data?.rate,
+      shareDecimals: bulkWithdrawalStateQuery.data?.shareDecimals,
     }),
     [
       isLoadingFormState,
       withdrawalRequestsQuery.data?.hasActiveRequests,
       withdrawalState,
       withdrawalStateQuery.data?.minDiscount,
+      isBulkWithdraw,
+      bulkWithdrawalStateQuery.data?.rate,
+      bulkWithdrawalStateQuery.data?.shareDecimals,
     ],
   );
 

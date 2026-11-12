@@ -14,12 +14,27 @@ const WARNING_TEXT: Record<NonNullable<GGVWithdrawStoppedReason>, string> = {
   'transfer-from-shares-blocked': 'You are not allowed to transfer shares.',
   'transfer-from-shares-time-locked':
     'Recent deposits can’t be withdrawn the first 24 hours, please wait until',
+  'bulk-withdraw-unavailable':
+    'Instant withdrawals are not available yet. Please try again later.',
+};
+
+const BULK_WITHDRAW_WARNING_TEXT: typeof WARNING_TEXT = {
+  ...WARNING_TEXT,
+  'withdrawal-zero-capacity':
+    'The vault currently has no capacity for WETH withdrawals.',
 };
 
 export const GGVWithdrawWarning = () => {
   const { isGGVAvailable, isWithdrawEnabled, withdrawPauseReasonText } =
     useGGVAvailable();
-  const { reason: contractReason, unlockTime } = useGGVWithdrawForm();
+  const {
+    reason: contractReason,
+    unlockTime,
+    isBulkWithdraw,
+  } = useGGVWithdrawForm();
+  const warningText = isBulkWithdraw
+    ? BULK_WITHDRAW_WARNING_TEXT
+    : WARNING_TEXT;
 
   // Without this check, the warning can be displayed even if the vault is generally disabled
   if (!isGGVAvailable) return null;
@@ -35,7 +50,7 @@ export const GGVWithdrawWarning = () => {
   // If there's no custom pause reason, check the reason from the contract
   if (!message) {
     reason = isWithdrawEnabled ? contractReason : 'paused';
-    message = reason ? WARNING_TEXT[reason] : null;
+    message = reason ? warningText[reason] : null;
   }
 
   // If still no message, return null

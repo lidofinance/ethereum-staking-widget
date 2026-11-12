@@ -9,9 +9,11 @@ import {
   VaultDetailsItem,
 } from 'features/earn/shared/vault-details';
 import { getGGVVaultContract } from '../../contracts';
+import { useGGVBulkWithdrawEnabled } from '../../hooks/use-ggv-bulk-withdraw-enabled';
 
 export const GGVVaultDetails = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
+  const isBulkWithdraw = useGGVBulkWithdrawEnabled();
   const chainId = publicClientMainnet?.chain?.id;
 
   invariant(publicClientMainnet, 'Public client is not available');
@@ -47,9 +49,9 @@ export const GGVVaultDetails = () => {
         </VaultDetailsItem>
         <VaultDetailsItem
           title="Withdraw Period"
-          tooltipText="The expected time it takes for withdrawal requests to be processed and tokens to become available."
+          tooltipText="The expected time it takes for withdrawn tokens to become available."
         >
-          ~3 days
+          {isBulkWithdraw ? 'Instant' : '~3 days'}
         </VaultDetailsItem>
         <VaultDetailsItem
           title="Performance fee"

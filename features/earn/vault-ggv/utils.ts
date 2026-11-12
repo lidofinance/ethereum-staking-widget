@@ -1,6 +1,11 @@
 import { type Address } from 'viem';
 import { bnAmountToNumber } from 'utils/bn';
-import { GGV_INCENTIVES, GGV_START_DATE, GGV_STATS_ORIGIN } from './consts';
+import {
+  GGV_BULK_WITHDRAW_SLIPPAGE_BPS,
+  GGV_INCENTIVES,
+  GGV_START_DATE,
+  GGV_STATS_ORIGIN,
+} from './consts';
 import { z } from 'zod';
 import { standardFetcher } from 'utils/standardFetcher';
 import { ManifestConfigVaultApyType } from 'config/external-config';
@@ -94,3 +99,14 @@ export const getGGVApy = async (
       return (await fetchDailyGGVApy(vault)).daily;
   }
 };
+
+// Same math as Teller._withdraw: mulDivDown(shares, rate, ONE_SHARE).
+export const getGGVAssetsOut = (
+  shares: bigint,
+  rateInQuote: bigint,
+  shareDecimals: number,
+): bigint => (shares * rateInQuote) / 10n ** BigInt(shareDecimals);
+
+// Lower bound for bulkWithdraw. The rate can go down before the tx is mined.
+export const getGGVMinimumAssetsOut = (assetsOut: bigint): bigint =>
+  (assetsOut * (10_000n - GGV_BULK_WITHDRAW_SLIPPAGE_BPS)) / 10_000n;
