@@ -7,9 +7,9 @@ import { getTokenAddress } from 'config/networks/token-address';
 import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 
 import {
-  GGV_AUTHORITY_ABI,
   GGV_TELLER_ABI,
   getGGVAccountantContract,
+  getGGVAuthorityContract,
   getGGVTellerContract,
   getGGVVaultContract,
 } from '../../contracts';
@@ -43,6 +43,7 @@ export const useGGVBulkWithdrawalState = (enabled: boolean) => {
       const teller = getGGVTellerContract(publicClientMainnet);
       const accountant = getGGVAccountantContract(publicClientMainnet);
       const vault = getGGVVaultContract(publicClientMainnet);
+      const authority = getGGVAuthorityContract(publicClientMainnet);
       const wethAddress = getTokenAddress(
         publicClientMainnet.chain!.id,
         'WETH',
@@ -53,14 +54,18 @@ export const useGGVBulkWithdrawalState = (enabled: boolean) => {
         isTellerPaused,
         assetData,
         accountantState,
-        authorityAddress,
+        canCall,
         shareDecimals,
         vaultWethBalance,
       ] = await Promise.all([
         teller.read.isPaused(),
         teller.read.assetData([wethAddress]),
         accountant.read.accountantState(),
-        teller.read.authority(),
+        authority.read.canCall([
+          address ?? zeroAddress,
+          teller.address,
+          BULK_WITHDRAW_SELECTOR,
+        ]),
         vault.read.decimals(),
         publicClientMainnet.readContract({
           address: wethAddress,
@@ -73,22 +78,10 @@ export const useGGVBulkWithdrawalState = (enabled: boolean) => {
       const [, allowWithdraws] = assetData;
       const isAccountantPaused = accountantState[8];
 
-      const [canCall, rate] = await Promise.all([
-        publicClientMainnet.readContract({
-          address: authorityAddress,
-          abi: GGV_AUTHORITY_ABI,
-          functionName: 'canCall',
-          args: [
-            address ?? zeroAddress,
-            teller.address,
-            BULK_WITHDRAW_SELECTOR,
-          ],
-        }),
-        // getRateInQuoteSafe reverts while the accountant is paused
-        isAccountantPaused
-          ? Promise.resolve(null)
-          : accountant.read.getRateInQuoteSafe([wethAddress]),
-      ]);
+      // getRateInQuoteSafe reverts while the accountant is paused
+      const rate = isAccountantPaused
+        ? null
+        : await accountant.read.getRateInQuoteSafe([wethAddress]);
 
       const withdrawCapacity =
         rate && rate > 0n

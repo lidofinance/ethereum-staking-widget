@@ -9,6 +9,7 @@ import {
   GGV_ACCOUNTANT_ABI,
   GGV_LENS_ABI,
   GGV_QUEUE_ABI,
+  GGV_AUTHORITY_ABI,
 } from './abi';
 
 export const getGGVVaultContract = <TPublicClient extends PublicClient>(
@@ -190,6 +191,28 @@ export const getGGVQueueWritableContract = <
     client: {
       public: publicClient,
       wallet: walletClient,
+    },
+  });
+};
+
+// Static address, so the /api/rpc allowlist accepts calls to it
+export const getGGVAuthorityContract = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'ggvAuthority',
+  );
+  invariant(
+    address,
+    `no GGV authority contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: GGV_AUTHORITY_ABI,
+    address,
+    client: {
+      public: publicClient,
     },
   });
 };
