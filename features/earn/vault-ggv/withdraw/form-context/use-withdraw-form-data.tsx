@@ -34,8 +34,11 @@ export const useGGVWithdrawFormData = () => {
   );
 
   // Both modes give the same base fields: canWithdraw, reason, limits
-  const { data: withdrawalData, isLoading: isWithdrawalLoading } =
-    isBulkWithdraw ? bulkWithdrawalStateQuery : withdrawalStateQuery;
+  const {
+    data: withdrawalData,
+    isLoading: isWithdrawalLoading,
+    isError: isWithdrawalError,
+  } = isBulkWithdraw ? bulkWithdrawalStateQuery : withdrawalStateQuery;
   const { data: shareData, isLoading: isShareLoading } = shareStateQuery;
 
   const withdrawalState = useMemo<GGVWithdrawalState>(() => {
@@ -44,6 +47,16 @@ export const useGGVWithdrawFormData = () => {
         isLoading: true,
         reason: null,
         canWithdraw: true,
+      };
+    }
+
+    // Without the state the limits are unknown, so validation cannot run.
+    // A failed refetch keeps the earlier data, so this is only the first read.
+    if (isWithdrawalError && !withdrawalData) {
+      return {
+        isLoading: false,
+        reason: 'state-unavailable',
+        canWithdraw: false,
       };
     }
 
@@ -82,6 +95,7 @@ export const useGGVWithdrawFormData = () => {
   }, [
     isWithdrawalLoading,
     isShareLoading,
+    isWithdrawalError,
     withdrawalData,
     shareData,
     areSharesTimeLocked,

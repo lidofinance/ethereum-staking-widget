@@ -78,6 +78,7 @@ export type GGVWithdrawStoppedReason =
   | 'transfer-from-shares-blocked'
   | 'transfer-from-shares-time-locked'
   | 'bulk-withdraw-unavailable'
+  | 'state-unavailable'
   | null;
 
 export type GGVWithdrawalState = {

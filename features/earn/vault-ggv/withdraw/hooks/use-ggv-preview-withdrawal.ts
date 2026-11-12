@@ -20,7 +20,7 @@ export const useGGVPreviewWithdrawal = (
 ) => {
   const { isDappActive } = useDappStatus();
   const { wrap } = useLidoSDK();
-  const { minDiscount, isBulkWithdraw, bulkRate, shareDecimals } =
+  const { minDiscount, isBulkWithdraw, bulkRate, shareDecimals, reason } =
     useGGVWithdrawForm();
   const publicClient = usePublicClient();
   const { isGGVAvailable } = useGGVAvailable();
@@ -80,7 +80,10 @@ export const useGGVPreviewWithdrawal = (
       isLoading:
         isDebounced ||
         // Null rate means the accountant is paused. Then there is no preview.
-        (isEnabled && bulkRate === undefined) ||
+        // A failed state read gives no rate too. Do not wait for it.
+        (isEnabled &&
+          bulkRate === undefined &&
+          reason !== 'state-unavailable') ||
         ethUsdQuery.isLoading,
       data: {
         assets: bulkAssets,

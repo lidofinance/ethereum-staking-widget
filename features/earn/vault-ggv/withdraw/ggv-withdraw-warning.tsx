@@ -16,6 +16,8 @@ const WARNING_TEXT: Record<NonNullable<GGVWithdrawStoppedReason>, string> = {
     'Recent deposits can’t be withdrawn the first 24 hours, please wait until',
   'bulk-withdraw-unavailable':
     'Instant withdrawals are not available yet. Please try again later.',
+  'state-unavailable':
+    'Could not load the withdrawal data. Please try again later.',
 };
 
 const BULK_WITHDRAW_WARNING_TEXT: typeof WARNING_TEXT = {
