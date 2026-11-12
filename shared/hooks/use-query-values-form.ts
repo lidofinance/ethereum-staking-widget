@@ -35,6 +35,41 @@ export const useQueryParamsReferralForm = <
   }, [referral, setValue]);
 };
 
+type UseQueryParamsTokenFormArgs<T extends { token: string }> = {
+  setValue: UseFormSetValue<T>;
+  // Lowercase token key from the URL -> token value of the form
+  tokens: Readonly<Record<string, T['token']>>;
+};
+
+export const useQueryParamsTokenForm = <T extends { token: string }>({
+  setValue,
+  tokens,
+}: UseQueryParamsTokenFormArgs<T>) => {
+  const { isReady, query, pathname, replace } = useRouter();
+
+  useEffect(() => {
+    if (!isReady) return;
+    try {
+      const { token, ...rest } = query;
+
+      if (typeof token === 'string') {
+        // Remove the param, so a page reload keeps the user's own choice.
+        // Shallow: the page data does not change. A cancelled route is not an error.
+        replace({ pathname, query: rest }, undefined, {
+          shallow: true,
+          scroll: false,
+        }).catch(() => {});
+        const formToken = tokens[token.toLowerCase()];
+        if (formToken) {
+          setValue('token' as Path<T>, formToken as PathValue<T, Path<T>>);
+        }
+      }
+    } catch (error) {
+      console.warn('Error setting token value from query params', error);
+    }
+  }, [isReady, pathname, query, replace, setValue, tokens]);
+};
+
 type UseQueryParamsAmountFormArgs<T extends { amount: bigint | null }> = {
   setValue: UseFormSetValue<T>;
 };

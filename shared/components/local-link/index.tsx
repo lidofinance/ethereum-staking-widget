@@ -20,15 +20,19 @@ const KEPT_QUERY_KEYS = [
 ] as const;
 
 type LocalLinkProps = PropsWithChildren<
-  LinkProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps>
+  LinkProps &
+    Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> & {
+      // Use this prop for page params. A "?" in href breaks the link.
+      query?: Record<string, string>;
+    }
 >;
 
 export const LocalLink: FC<LocalLinkProps> = (props) => {
   const router = useRouter();
   const productQuery = useProductQuery();
-  const { href, ...restProps } = props;
+  const { href, query, ...restProps } = props;
 
-  const extraQuery: Record<string, string> = {};
+  const extraQuery: Record<string, string> = { ...query };
   // does not support duplicates ?ref=01234&ref=56789
   for (const key of KEPT_QUERY_KEYS) {
     const value = router.query[key];
