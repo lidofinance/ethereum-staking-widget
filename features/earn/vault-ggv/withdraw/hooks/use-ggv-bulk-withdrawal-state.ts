@@ -88,7 +88,9 @@ export const fetchGGVBulkWithdrawalState = async (
       : null;
 
   let reason: GGVWithdrawStoppedReason = null;
-  if (vaultWethBalance === 0n) reason = 'withdrawal-zero-capacity';
+  // Dust WETH rounds down to 0 shares. Validation skips a zero maximum.
+  if (vaultWethBalance === 0n || withdrawCapacity === 0n)
+    reason = 'withdrawal-zero-capacity';
   if (!allowWithdraws) reason = 'withdrawal-stopped';
   // Teller reverts with UNAUTHORIZED until Veda opens bulkWithdraw
   if (!canCall) reason = 'bulk-withdraw-unavailable';

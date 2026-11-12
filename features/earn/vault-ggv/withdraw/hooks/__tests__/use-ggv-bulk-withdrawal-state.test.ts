@@ -189,6 +189,19 @@ describe('fetchGGVBulkWithdrawalState', () => {
       });
     });
 
+    it('stops the withdraw when the vault WETH is less than one share', async () => {
+      // 1 wei rounds down to 0 shares at RATE
+      state.readContract.mockResolvedValue(1n);
+
+      const result = await fetchState();
+
+      expect(result).toMatchObject({
+        canWithdraw: false,
+        reason: 'withdrawal-zero-capacity',
+        withdrawCapacity: 0n,
+      });
+    });
+
     it('reports a closed method before zero liquidity', async () => {
       state.readContract.mockResolvedValue(0n);
       state.canCall.mockResolvedValue(false);
