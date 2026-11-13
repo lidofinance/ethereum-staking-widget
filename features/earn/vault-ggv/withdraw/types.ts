@@ -9,10 +9,18 @@ export type GGVWithdrawalRequest =
 
 // SevenSeas boring queue API. Numeric strings go through BigInt/Number in the
 // hook, addresses through isAddressEqual — validate them before they get there
+
+// The API gives tx hashes without the 0x prefix. Add it before the check.
+// Else one hash fails the full response and the user sees no requests.
+const API_HASH_SCHEMA = z
+  .string()
+  .transform((value) => (value.startsWith('0x') ? value : `0x${value}`))
+  .pipe(HASH_SCHEMA);
+
 const QUEUE_EVENT_SCHEMA = z.object({
   block_number: BIGINT_STRING_SCHEMA,
   timestamp: BIGINT_STRING_SCHEMA,
-  transaction_hash: HASH_SCHEMA,
+  transaction_hash: API_HASH_SCHEMA,
 });
 
 const REQUEST_SCHEMA = z.looseObject({
@@ -20,7 +28,7 @@ const REQUEST_SCHEMA = z.looseObject({
   blockNumber: BIGINT_STRING_SCHEMA,
   offerToken: ADDRESS_SCHEMA,
   timestamp: BIGINT_STRING_SCHEMA,
-  transaction_hash: HASH_SCHEMA,
+  transaction_hash: API_HASH_SCHEMA,
   user: ADDRESS_SCHEMA,
   wantToken: ADDRESS_SCHEMA,
   wantTokenDecimals: BIGINT_STRING_SCHEMA,
