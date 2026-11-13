@@ -9,10 +9,11 @@ import { useMainnetOnlyWagmi } from 'modules/web3';
 import { getGGVQueueContract } from '../../contracts';
 import type { GGVWithdrawStoppedReason } from '../types';
 
-export const useGGVWithdrawalState = () => {
+export const useGGVWithdrawalState = (enabled = true) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   return useQuery({
     queryKey: ['ggv', 'withdrawal-state'],
+    enabled,
     queryFn: async () => {
       const queue = getGGVQueueContract(publicClientMainnet);
       const wstethAddress = getTokenAddress(

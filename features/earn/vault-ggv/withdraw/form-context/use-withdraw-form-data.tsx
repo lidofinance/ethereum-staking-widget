@@ -6,8 +6,10 @@ import { useDappStatus } from 'modules/web3';
 import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 
 import { useGGVPosition } from '../../hooks/use-ggv-position';
+import { useGGVBulkWithdrawEnabled } from '../../hooks/use-ggv-bulk-withdraw-enabled';
 import { useGGVWithdrawalRequests } from '../hooks/use-ggv-withdrawal-requests';
 import { useGGVWithdrawalState } from '../hooks/use-ggv-withdrawal-state';
+import { useGGVBulkWithdrawalState } from '../hooks/use-ggv-bulk-withdrawal-state';
 
 import type {
   GGVWithdrawalFormAsyncValidationContext,
@@ -21,7 +23,9 @@ export const useGGVWithdrawFormData = () => {
   const queryClient = useQueryClient();
   const { isDappActive } = useDappStatus();
   const balanceQuery = useGGVPosition();
-  const withdrawalStateQuery = useGGVWithdrawalState();
+  const isBulkWithdraw = useGGVBulkWithdrawEnabled();
+  const withdrawalStateQuery = useGGVWithdrawalState(!isBulkWithdraw);
+  const bulkWithdrawalStateQuery = useGGVBulkWithdrawalState(isBulkWithdraw);
   const withdrawalRequestsQuery = useGGVWithdrawalRequests();
   const shareStateQuery = useGGVUserShareState();
 
@@ -29,8 +33,12 @@ export const useGGVWithdrawFormData = () => {
     Number(shareStateQuery.data?.shareUnlockTime ?? 0),
   );
 
-  const { data: withdrawalData, isLoading: isWithdrawalLoading } =
-    withdrawalStateQuery;
+  // Both modes give the same base fields: canWithdraw, reason, limits
+  const {
+    data: withdrawalData,
+    isLoading: isWithdrawalLoading,
+    isError: isWithdrawalError,
+  } = isBulkWithdraw ? bulkWithdrawalStateQuery : withdrawalStateQuery;
   const { data: shareData, isLoading: isShareLoading } = shareStateQuery;
 
   const withdrawalState = useMemo<GGVWithdrawalState>(() => {
@@ -39,6 +47,16 @@ export const useGGVWithdrawFormData = () => {
         isLoading: true,
         reason: null,
         canWithdraw: true,
+      };
+    }
+
+    // Without the state the limits are unknown, so validation cannot run.
+    // A failed refetch keeps the earlier data, so this is only the first read.
+    if (isWithdrawalError && !withdrawalData) {
+      return {
+        isLoading: false,
+        reason: 'state-unavailable',
+        canWithdraw: false,
       };
     }
 
@@ -77,6 +95,7 @@ export const useGGVWithdrawFormData = () => {
   }, [
     isWithdrawalLoading,
     isShareLoading,
+    isWithdrawalError,
     withdrawalData,
     shareData,
     areSharesTimeLocked,
@@ -85,16 +104,16 @@ export const useGGVWithdrawFormData = () => {
   const validationAsyncContextValue = useMemo<
     GGVWithdrawalFormAsyncValidationContext | undefined
   >(() => {
-    if (!balanceQuery.data || !withdrawalStateQuery.data) {
+    if (!balanceQuery.data || !withdrawalData) {
       return undefined;
     }
 
     return {
       balance: balanceQuery.data.sharesBalance,
-      maxWithdrawal: withdrawalStateQuery.data.withdrawCapacity,
-      minWithdrawal: withdrawalStateQuery.data.minimumShares,
+      maxWithdrawal: withdrawalData.withdrawCapacity,
+      minWithdrawal: withdrawalData.minimumShares,
     };
-  }, [balanceQuery.data, withdrawalStateQuery.data]);
+  }, [balanceQuery.data, withdrawalData]);
 
   const asyncContext = useAwaiter(validationAsyncContextValue).awaiter;
 
@@ -123,6 +142,8 @@ export const useGGVWithdrawFormData = () => {
     isLoadingFormState:
       withdrawalRequestsQuery.isLoading || withdrawalState.isLoading,
     withdrawalStateQuery,
+    bulkWithdrawalStateQuery,
+    isBulkWithdraw,
     withdrawalRequestsQuery,
     withdrawalState,
     validationContext,

@@ -20,8 +20,11 @@ import {
   HowDoIClaimRewards,
   WhoIsCurator,
 } from './list';
+import { useGGVBulkWithdrawEnabled } from '../hooks/use-ggv-bulk-withdraw-enabled';
 
 export const GGVFaq: FC = () => {
+  const isBulkWithdraw = useGGVBulkWithdrawEnabled();
+
   return (
     <Section title="FAQ" data-testid="vault-faq">
       <WhatIsLidoGGV />
@@ -33,13 +36,14 @@ export const GGVFaq: FC = () => {
       <WhatCanIDoWithGGToken />
       <WhyDidINotSeeAnyRewards />
       <HowLongShouldIStay />
-      <HowDoesWithdrawalWork />
-      <HowLongToWithdraw />
-      <WhyOnlyWstethOnWithdrawal />
-      <CanITransformWstethToEth />
+      <HowDoesWithdrawalWork isBulkWithdraw={isBulkWithdraw} />
+      <HowLongToWithdraw isBulkWithdraw={isBulkWithdraw} />
+      {/* Bulk withdraw pays out WETH at once and makes no new requests */}
+      {!isBulkWithdraw && <WhyOnlyWstethOnWithdrawal />}
+      {!isBulkWithdraw && <CanITransformWstethToEth />}
       <IsThereAFeeForWithdrawal />
-      <PendingRequestRewards />
-      <HowManyWithdrawalRequests />
+      {!isBulkWithdraw && <PendingRequestRewards />}
+      {!isBulkWithdraw && <HowManyWithdrawalRequests />}
       <CanICancelWithdrawalRequest />
       <HowDoIClaimRewards />
     </Section>

@@ -58,6 +58,8 @@ type LegacyVaultCardProps = {
   illustration?: React.ReactNode;
   depositLinkCallback?: () => void;
   protectedBadgeTooltipText?: React.ReactNode;
+  // False when EarnETH does not accept the vault token any more
+  isUpgradable?: boolean;
 };
 
 export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
@@ -71,6 +73,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
   illustration,
   depositLinkCallback,
   protectedBadgeTooltipText,
+  isUpgradable = true,
 }) => {
   const isDeprecated = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === urlSlug,
@@ -99,7 +102,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
                 />
               </BadgeStyled>
             )}
-            {isDeprecated && (
+            {isDeprecated && isUpgradable && (
               <StyledTooltip
                 title="Vault users can upgrade their tokens to the new unified EarnETH vault without withdrawal or downtime in rewards."
                 placement="bottom"

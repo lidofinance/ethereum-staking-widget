@@ -68,12 +68,11 @@ export const DrawerRight: FC<DrawerRightProps> = ({
           </DrawerRightHeader>
           <DrawerDescription data-testid="description">
             EarnETH Vault is a meta-vault designed to optimize returns on
-            deployed assets across Lido Earn strategies. Today, it allocates
-            assets across GGV and stRATEGY, with the ability to dynamically
-            evolve its allocation mix. By abstracting strategy selection, the
-            meta-vault provides ETH-denominated exposure to Lido Earn with the
-            objective of balancing different risk and return profiles for
-            ETH-denominated assets.
+            deployed assets across Lido Earn strategies, with the ability to
+            dynamically evolve its allocation mix. By abstracting strategy
+            selection, the meta-vault provides ETH-denominated exposure to Lido
+            Earn with the objective of balancing different risk and return
+            profiles for ETH-denominated assets.
           </DrawerDescription>
           <DrawerTable />
           <DrawerRightText data-testid="table-description">

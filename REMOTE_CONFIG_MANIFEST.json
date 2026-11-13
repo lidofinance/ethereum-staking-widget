@@ -89,7 +89,8 @@
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true,
-        "earnInfoBannerEnabled": true
+        "earnInfoBannerEnabled": true,
+        "ggvBulkWithdrawEnabled": false
       },
       "earnAllocation": {
         "labelAllowList": [],
@@ -138,7 +139,8 @@
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true,
-        "earnInfoBannerEnabled": true
+        "earnInfoBannerEnabled": true,
+        "ggvBulkWithdrawEnabled": false
       },
       "earnAllocation": {
         "labelAllowList": [],
