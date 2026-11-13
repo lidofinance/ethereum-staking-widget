@@ -21,6 +21,7 @@ type MockState = {
   featureFlags: Record<string, unknown>;
   queueWithdraw: ReturnType<typeof vi.fn>;
   bulkWithdraw: ReturnType<typeof vi.fn>;
+  refetchBalance: ReturnType<typeof vi.fn>;
   isQueueStateEnabled?: boolean;
   isBulkStateEnabled?: boolean;
   // The state query of the selected mode
@@ -31,6 +32,7 @@ const state = vi.hoisted((): MockState => ({
   featureFlags: {},
   queueWithdraw: vi.fn(async () => false),
   bulkWithdraw: vi.fn(async () => false),
+  refetchBalance: vi.fn(),
   stateQuery: { isLoading: false, isError: false },
 }));
 
@@ -65,7 +67,10 @@ vi.mock('../../../hooks/use-ggv-available', () => ({
   useGGVAvailable: () => ({ isGGVAvailable: true, isWithdrawEnabled: true }),
 }));
 vi.mock('../../../hooks/use-ggv-position', () => ({
-  useGGVPosition: () => ({ data: { sharesBalance: AMOUNT } }),
+  useGGVPosition: () => ({
+    data: { sharesBalance: AMOUNT },
+    refetch: state.refetchBalance,
+  }),
 }));
 vi.mock('../../hooks/use-ggv-withdrawal-requests', () => ({
   useGGVWithdrawalRequests: () => ({ isLoading: false, data: undefined }),
@@ -160,6 +165,16 @@ describe('GGVWithdrawFormProvider mode selection', () => {
     expect(state.isBulkStateEnabled).toBe(true);
     expect(state.bulkWithdraw).toHaveBeenCalledWith({ amount: AMOUNT });
     expect(state.queueWithdraw).not.toHaveBeenCalled();
+  });
+
+  it('refetches the form data after a failed withdraw', async () => {
+    state.featureFlags = { ggvBulkWithdrawEnabled: true };
+    state.bulkWithdraw.mockResolvedValue(false);
+
+    await renderAndSubmit();
+
+    // The form then shows why, e.g. no liquidity left
+    expect(state.refetchBalance).toHaveBeenCalledTimes(1);
   });
 });
 

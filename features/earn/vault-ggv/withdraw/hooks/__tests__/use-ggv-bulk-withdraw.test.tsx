@@ -212,14 +212,15 @@ describe('useGGVBulkWithdraw', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });
 
-    it('reports a reverted transaction as failed', async () => {
+    it('reports a reverted transaction without a retry', async () => {
       createSdk(legacyPerformTransaction('reverted'));
 
       await expect(withdraw()).resolves.toBe(false);
 
+      // The vault state changed, e.g. no WETH left: a retry fails again
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
-        expect.anything(),
-        onRetry,
+        expect.objectContaining({ name: 'TransactionRevertedError' }),
+        undefined,
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });

@@ -3,7 +3,12 @@ import { useCallback } from 'react';
 import { encodeFunctionData, type Address, type WalletClient } from 'viem';
 
 import { getTokenAddress } from 'config/networks/token-address';
-import { useDappStatus, useTxFlow, useLidoSDK } from 'modules/web3';
+import {
+  TransactionRevertedError,
+  useDappStatus,
+  useTxFlow,
+  useLidoSDK,
+} from 'modules/web3';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
@@ -104,7 +109,10 @@ export const useGGVBulkWithdraw = (onRetry?: () => void) => {
         },
         onFailure: async ({ error }) => {
           console.error(error);
-          txModalStages.failed(error, onRetry);
+          // A revert means the vault state changed, e.g. no WETH left.
+          // A retry with the same data fails again, so do not offer it.
+          const isReverted = error instanceof TransactionRevertedError;
+          txModalStages.failed(error, isReverted ? undefined : onRetry);
         },
       });
 

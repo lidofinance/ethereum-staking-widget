@@ -77,9 +77,8 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
     (): FormControllerContextValueType<any> => ({
       onSubmit: async (values: GGVWithdrawalFormValidatedValues) => {
         const result = await withdrawGGV(values);
-        if (result) {
-          await refetchData();
-        }
+        // Refetch after a failure too, so the form shows why, e.g. no liquidity
+        await refetchData();
         return result;
       },
       retryEvent,
