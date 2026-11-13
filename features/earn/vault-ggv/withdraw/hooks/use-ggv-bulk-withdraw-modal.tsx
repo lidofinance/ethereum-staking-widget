@@ -50,8 +50,8 @@ const getTxModalStagesBulkWithdraw = (
       />,
     ),
 
-  // Show the burned GG amount. The WETH amount can differ a little from the preview.
-  success: (amount: bigint, txHash?: Hash) =>
+  // The WETH amount is the balance change. Without it, show only the burned GG.
+  success: (amount: bigint, received?: bigint, txHash?: Hash) =>
     transitStage(
       <VaultCustomTxStageSuccess
         txHash={txHash}
@@ -60,7 +60,12 @@ const getTxModalStagesBulkWithdraw = (
           <>
             You exchanged{' '}
             <FormatToken amount={amount} symbol={getTokenSymbol('gg')} /> for{' '}
-            {getTokenSymbol('WETH')}.
+            {received != null ? (
+              <FormatToken amount={received} symbol={getTokenSymbol('WETH')} />
+            ) : (
+              getTokenSymbol('WETH')
+            )}
+            .
           </>
         }
       />,

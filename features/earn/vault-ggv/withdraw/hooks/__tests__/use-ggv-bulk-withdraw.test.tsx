@@ -33,6 +33,7 @@ const state = vi.hoisted(() => ({
   sdk: undefined as { core: unknown } | undefined,
   sendAACalls: vi.fn(),
   getRate: vi.fn(),
+  readWethBalance: vi.fn(),
   teller: {
     estimateGas: { bulkWithdraw: vi.fn() },
     write: { bulkWithdraw: vi.fn() },
@@ -105,7 +106,7 @@ const createSdk = (
   state.sdk = {
     core: {
       chainId: 1,
-      publicClient: {},
+      publicClient: { readContract: state.readWethBalance },
       walletClient: {},
       performTransaction,
     },
@@ -141,10 +142,19 @@ const consoleErrorSpy = vi
   .spyOn(console, 'error')
   .mockImplementation(() => undefined);
 
+// WETH of the account before and after the withdraw
+const BALANCE_BEFORE = 5n * 10n ** 18n;
+// The tx used the rate at execution, so it differs from the estimate
+const RECEIVED = WILL_RECEIVE - 5n;
+
 beforeEach(() => {
   vi.clearAllMocks();
   state.isAA = false;
   state.getRate.mockResolvedValue(RATE);
+  state.readWethBalance
+    .mockReset()
+    .mockResolvedValueOnce(BALANCE_BEFORE)
+    .mockResolvedValueOnce(BALANCE_BEFORE + RECEIVED);
   state.teller.estimateGas.bulkWithdraw.mockResolvedValue(100_000n);
   state.teller.write.bulkWithdraw.mockResolvedValue(TX_HASH);
 });
@@ -182,7 +192,11 @@ describe('useGGVBulkWithdraw', () => {
         TX_HASH,
         false,
       );
-      expect(state.txModalStages.success).toHaveBeenCalledWith(AMOUNT, TX_HASH);
+      expect(state.txModalStages.success).toHaveBeenCalledWith(
+        AMOUNT,
+        RECEIVED,
+        TX_HASH,
+      );
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
     });
 
@@ -256,6 +270,52 @@ describe('useGGVBulkWithdraw', () => {
       );
     });
 
+    it('reads the WETH balance of the account for the received amount', async () => {
+      createSdk(legacyPerformTransaction('success'));
+
+      await withdraw();
+
+      expect(state.readWethBalance).toHaveBeenCalledTimes(2);
+      expect(state.readWethBalance).toHaveBeenCalledWith(
+        expect.objectContaining({
+          address: WETH,
+          functionName: 'balanceOf',
+          args: [ACCOUNT],
+        }),
+      );
+    });
+
+    it('withdraws and shows no amount when the first balance read fails', async () => {
+      createSdk(legacyPerformTransaction('success'));
+      state.readWethBalance
+        .mockReset()
+        .mockRejectedValueOnce(new Error('RPC error'))
+        .mockResolvedValueOnce(BALANCE_BEFORE + RECEIVED);
+
+      await expect(withdraw()).resolves.toBe(true);
+
+      expect(state.teller.write.bulkWithdraw).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.success).toHaveBeenCalledWith(
+        AMOUNT,
+        undefined,
+        TX_HASH,
+      );
+    });
+
+    it('shows no amount when the balance after the tx is not updated yet', async () => {
+      createSdk(legacyPerformTransaction('success'));
+      state.readWethBalance.mockReset().mockResolvedValue(BALANCE_BEFORE);
+
+      await expect(withdraw()).resolves.toBe(true);
+
+      expect(state.txModalStages.success).toHaveBeenCalledWith(
+        AMOUNT,
+        undefined,
+        TX_HASH,
+      );
+      expect(state.txModalStages.failed).not.toHaveBeenCalled();
+    });
+
     it('reports a multisig proposal without waiting for a receipt', async () => {
       createSdk(legacyPerformTransaction('multisig'));
 
@@ -298,7 +358,11 @@ describe('useGGVBulkWithdraw', () => {
         CALL_ID,
         true,
       );
-      expect(state.txModalStages.success).toHaveBeenCalledWith(AMOUNT, TX_HASH);
+      expect(state.txModalStages.success).toHaveBeenCalledWith(
+        AMOUNT,
+        RECEIVED,
+        TX_HASH,
+      );
     });
 
     it('reports a rejected batch and offers a retry', async () => {
