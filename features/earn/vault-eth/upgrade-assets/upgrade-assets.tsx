@@ -2,7 +2,7 @@ import { type FC, useCallback, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
-import { TokenGGIcon, TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
+import { TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
 import { FormatToken } from 'shared/formatters/format-token';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -32,15 +32,12 @@ import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 
 const TOKEN_ICON_MAP = {
-  [TOKENS.gg]: <TokenGGIcon />,
   [TOKENS.streth]: <TokenStrethIcon />,
   [TOKENS.dvsteth]: <TokenDvstethIcon />,
 };
 
 const getMatomoEventForToken = (token: EthDepositTokenUpgradable) => {
   switch (token) {
-    case TOKENS.gg:
-      return MATOMO_EARN_EVENTS_TYPES.earnEthGgTokenUpgrade;
     case TOKENS.streth:
       return MATOMO_EARN_EVENTS_TYPES.earnEthStrethTokenUpgrade;
     case TOKENS.dvsteth:

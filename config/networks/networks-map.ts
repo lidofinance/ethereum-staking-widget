@@ -120,6 +120,7 @@ export const CONTRACT_NAMES = {
   ggvAccountant: 'ggvAccountant',
   ggvLens: 'ggvLens',
   ggvQueue: 'ggvQueue',
+  ggvAuthority: 'ggvAuthority',
   // DVV
   dvvVault: 'dvvVault',
   dvvDepositWrapper: 'dvvDepositWrapper',

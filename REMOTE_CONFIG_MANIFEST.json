@@ -20,7 +20,8 @@
       {
         "name": "ggv",
         "apy": { "type": "weekly_moving_average" },
-        "deprecated": true
+        "deprecated": true,
+        "depositPauseReasonText": "The Lido GGV vault is being sunset and no longer accepts new deposits. GG tokens can be withdrawn to wstETH until November\u00a017,\u00a02026. After that, GGV positions will be held in WETH and withdrawals will be available in WETH only."
       },
       { "name": "dvv", "deprecated": true }
     ],
@@ -30,7 +31,8 @@
       "rewardsMaintenance": false,
       "holidayDecorEnabled": false,
       "forceAllowance": false,
-      "amountBannerEnabled": true
+      "amountBannerEnabled": true,
+      "ggvBulkWithdrawEnabled": false
     },
     "earnInfoBanner": {
       "title": "EarnETH and EarnUSD now have two layers of loss protection:",
@@ -60,45 +62,10 @@
   },
   "1": {
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
-    "leastSafeVersion": "0.76.1",
+    "leastSafeVersion": "0.147.0",
     "config": {
-      "withdrawalDex": {
-        "integration": "cowswap",
-        "enabled": true
-      },
-      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
-      "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
-      },
-      "earnVaults": [
-        { "name": "eth" },
-        { "name": "usd" },
-        { "name": "strategy", "deprecated": true },
-        {
-          "name": "ggv",
-          "apy": { "type": "weekly_moving_average" },
-          "deprecated": true
-        },
-        { "name": "dvv", "deprecated": true }
-      ],
       "featureFlags": {
-        "disableSendCalls": false,
-        "dgBannerEnabled": true,
-        "rewardsMaintenance": false,
-        "holidayDecorEnabled": false,
-        "forceAllowance": false,
-        "amountBannerEnabled": true,
         "earnInfoBannerEnabled": true
-      },
-      "earnAllocation": {
-        "labelAllowList": [],
-        "hiddenIds": []
-      },
-      "pages": {
-        "/earn": {
-          "shouldDisable": false
-        }
       },
       "api": {
         "validation": {
@@ -109,50 +76,10 @@
   },
   "1-staging": {
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
-    "leastSafeVersion": "0.76.1",
+    "leastSafeVersion": "0.147.0",
     "config": {
-      "withdrawalDex": {
-        "integration": "cowswap",
-        "enabled": true
-      },
-      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
-      "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
-      },
-      "earnVaults": [
-        { "name": "eth" },
-        { "name": "usd" },
-        { "name": "strategy", "deprecated": true },
-        {
-          "name": "ggv",
-          "apy": { "type": "weekly_moving_average" },
-          "deprecated": true
-        },
-        { "name": "dvv", "deprecated": true }
-      ],
       "featureFlags": {
-        "disableSendCalls": false,
-        "dgBannerEnabled": true,
-        "rewardsMaintenance": false,
-        "holidayDecorEnabled": false,
-        "forceAllowance": false,
-        "amountBannerEnabled": true,
         "earnInfoBannerEnabled": true
-      },
-      "earnAllocation": {
-        "labelAllowList": [],
-        "hiddenIds": []
-      },
-      "pages": {
-        "/earn": {
-          "shouldDisable": false
-        }
-      },
-      "api": {
-        "validation": {
-          "version": "1"
-        }
       }
     }
   },
@@ -169,7 +96,6 @@
         "showOnStakeForm": false,
         "showAfterStake": false
       },
-      "earnVaults": [],
       "featureFlags": {
         "ledgerLiveL2": true,
         "dgBannerEnabled": false,

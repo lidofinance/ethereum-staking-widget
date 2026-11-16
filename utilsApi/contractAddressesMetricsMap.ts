@@ -51,6 +51,7 @@ import {
   GGV_TELLER_ABI,
   GGV_VAULT_ABI,
   GGV_QUEUE_ABI,
+  GGV_AUTHORITY_ABI,
 } from 'features/earn/vault-ggv/contracts/abi';
 // DVV
 import {
@@ -176,6 +177,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ggvAccountant]: GGV_ACCOUNTANT_ABI,
   [CONTRACT_NAMES.ggvLens]: GGV_LENS_ABI,
   [CONTRACT_NAMES.ggvQueue]: GGV_QUEUE_ABI,
+  [CONTRACT_NAMES.ggvAuthority]: GGV_AUTHORITY_ABI,
   // DVV
   [CONTRACT_NAMES.dvvVault]: DVV_VAULT_ABI,
   [CONTRACT_NAMES.dvvDepositWrapper]: DVV_DEPOSIT_WRAPPER_ABI,
