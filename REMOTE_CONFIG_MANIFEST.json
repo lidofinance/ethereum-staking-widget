@@ -62,34 +62,10 @@
   },
   "1": {
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
-    "leastSafeVersion": "0.76.1",
+    "leastSafeVersion": "0.147.0",
     "config": {
-      "withdrawalDex": {
-        "integration": "cowswap",
-        "enabled": true
-      },
-      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
-      "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
-      },
       "featureFlags": {
-        "disableSendCalls": false,
-        "dgBannerEnabled": true,
-        "rewardsMaintenance": false,
-        "holidayDecorEnabled": false,
-        "forceAllowance": false,
-        "amountBannerEnabled": true,
         "earnInfoBannerEnabled": true
-      },
-      "earnAllocation": {
-        "labelAllowList": [],
-        "hiddenIds": []
-      },
-      "pages": {
-        "/earn": {
-          "shouldDisable": false
-        }
       },
       "api": {
         "validation": {
@@ -100,39 +76,10 @@
   },
   "1-staging": {
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
-    "leastSafeVersion": "0.76.1",
+    "leastSafeVersion": "0.147.0",
     "config": {
-      "withdrawalDex": {
-        "integration": "cowswap",
-        "enabled": true
-      },
-      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
-      "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
-      },
       "featureFlags": {
-        "disableSendCalls": false,
-        "dgBannerEnabled": true,
-        "rewardsMaintenance": false,
-        "holidayDecorEnabled": false,
-        "forceAllowance": false,
-        "amountBannerEnabled": true,
         "earnInfoBannerEnabled": true
-      },
-      "earnAllocation": {
-        "labelAllowList": [],
-        "hiddenIds": []
-      },
-      "pages": {
-        "/earn": {
-          "shouldDisable": false
-        }
-      },
-      "api": {
-        "validation": {
-          "version": "1"
-        }
       }
     }
   },
