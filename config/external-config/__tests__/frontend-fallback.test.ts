@@ -46,15 +46,31 @@ describe('getFallbackedManifestEntry', () => {
     const mainnet = getFallbackedManifestEntry({}, '1');
     const staging = getFallbackedManifestEntry({}, '1-staging');
     const hoodi = getFallbackedManifestEntry({}, '560048');
+    const sepolia = getFallbackedManifestEntry({}, '11155111');
 
     expect(mainnet.config.api.validation?.version).toBe('2');
     expect(staging.config.api.validation?.version).toBe('1');
-    expect(hoodi.config.earnVaults.map(({ name }) => name)).toEqual([
+    expect(mainnet.config.earnVaults.map(({ name }) => name)).toEqual([
       'eth',
       'usd',
       'strategy',
       'ggv',
       'dvv',
+    ]);
+    expect(staging.config.earnVaults.map(({ name }) => name)).toEqual([
+      'eth',
+      'usd',
+      'strategy',
+      'ggv',
+      'dvv',
+    ]);
+    expect(hoodi.config.earnVaults.map(({ name }) => name)).toEqual([
+      'eth',
+      'usd',
+    ]);
+    expect(sepolia.config.earnVaults.map(({ name }) => name)).toEqual([
+      'eth',
+      'usd',
     ]);
     expect(hoodi.config.featureFlags.dgBannerEnabled).toBe(false);
   });

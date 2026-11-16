@@ -1,9 +1,6 @@
 import type { FC } from 'react';
 
-import {
-  VaultTxInfo,
-  VaultTxInfoRow,
-} from 'features/earn/shared/vault-tx-info';
+import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 
@@ -15,6 +12,7 @@ import { GGVWithdrawWarning } from './ggv-withdraw-warning';
 import { GGVWithdrawSubmitButton } from './ggv-withdraw-submit';
 import { GGVWithdrawRequest } from './ggv-withdraw-request';
 import { GGVWhenNoActiveRequests } from './ggv-when-no-active-requests';
+import { GGVWithdrawWaitingTime } from './ggv-withdraw-waiting-time';
 
 export const GGVWithdrawForm: FC = () => {
   return (
@@ -29,19 +27,7 @@ export const GGVWithdrawForm: FC = () => {
           </VaultFormSection>
           <VaultTxInfo>
             <GGVWithdrawWillReceive />
-            <VaultTxInfoRow
-              title="Waiting time"
-              help={
-                <>
-                  Withdrawals usually complete within 3 days, often sooner. You
-                  can track progress in your wallet or in the Withdrawal section
-                  of the Lido GGV UI.
-                </>
-              }
-              data-testid="waiting-time"
-            >
-              3 days
-            </VaultTxInfoRow>
+            <GGVWithdrawWaitingTime />
           </VaultTxInfo>
           <GGVWithdrawSubmitButton />
         </GGVWhenNoActiveRequests>

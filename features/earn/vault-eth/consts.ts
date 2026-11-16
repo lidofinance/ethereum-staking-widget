@@ -26,14 +26,18 @@ export const ETH_VAULT_DEPOSIT_TOKENS_FORM = [
 // Tokens not available for direct deposit via deposit form,
 // but a user can upgrade the whole amount of them via one "upgrade" action
 export const ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE = [
-  TOKENS.gg,
   TOKENS.streth,
   TOKENS.dvsteth,
 ] as const;
 
+// EarnETH does not accept these tokens now.
+// Keep them to show and cancel old pending deposit requests.
+export const ETH_VAULT_DEPOSIT_TOKENS_LEGACY = [TOKENS.gg] as const;
+
 export const ETH_VAULT_DEPOSIT_TOKENS = [
   ...ETH_VAULT_DEPOSIT_TOKENS_FORM,
   ...ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE,
+  ...ETH_VAULT_DEPOSIT_TOKENS_LEGACY,
 ] as const;
 
 export const ETH_VAULT_QUERY_SCOPE = 'earn-vault-eth';

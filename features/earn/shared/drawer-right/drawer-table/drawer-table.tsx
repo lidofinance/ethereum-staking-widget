@@ -41,7 +41,7 @@ const DATA = [
       {
         cells: [
           'Vault Token',
-          'GG / strETH tokens, representing shares in the specific vault',
+          'strETH tokens, representing shares in the specific vault',
           'earnETH, representing shares in the ETH meta-vault',
         ],
       },
@@ -93,7 +93,7 @@ export const DrawerTable = () => {
   return (
     <div>
       <TableHeader data-testid="table-title">
-        Comparison between GGV/stRATEGY and the EarnETH Vault
+        Comparison between stRATEGY and the EarnETH Vault
       </TableHeader>
       {DATA.map((item) => (
         <Table key={item.id}>
