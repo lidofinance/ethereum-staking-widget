@@ -44,8 +44,8 @@ export const GGVFaq: FC = () => {
       <IsThereAFeeForWithdrawal />
       {!isBulkWithdraw && <PendingRequestRewards />}
       {!isBulkWithdraw && <HowManyWithdrawalRequests />}
-      <CanICancelWithdrawalRequest />
-      <HowDoIClaimRewards />
+      {!isBulkWithdraw && <CanICancelWithdrawalRequest />}
+      {!isBulkWithdraw && <HowDoIClaimRewards />}
     </Section>
   );
 };
