@@ -13,7 +13,7 @@
       "showOnStakeForm": true,
       "showAfterStake": true
     },
-    "earnVaults": [],
+    "earnVaults": [{ "name": "eth" }, { "name": "usd" }],
     "featureFlags": {
       "disableSendCalls": false,
       "dgBannerEnabled": true,
@@ -162,7 +162,6 @@
         "showOnStakeForm": false,
         "showAfterStake": false
       },
-      "earnVaults": [],
       "featureFlags": {
         "ledgerLiveL2": true,
         "dgBannerEnabled": false,
