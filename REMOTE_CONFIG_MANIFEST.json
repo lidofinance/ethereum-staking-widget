@@ -13,7 +13,18 @@
       "showOnStakeForm": true,
       "showAfterStake": true
     },
-    "earnVaults": [{ "name": "eth" }, { "name": "usd" }],
+    "earnVaults": [
+      { "name": "eth" },
+      { "name": "usd" },
+      { "name": "strategy", "deprecated": true },
+      {
+        "name": "ggv",
+        "apy": { "type": "weekly_moving_average" },
+        "deprecated": true,
+        "depositPauseReasonText": "The Lido GGV vault is being sunset and no longer accepts new deposits. GG tokens can be withdrawn to wstETH until November\u00a017,\u00a02026. After that, GGV positions will be held in WETH and withdrawals will be available in WETH only."
+      },
+      { "name": "dvv", "deprecated": true }
+    ],
     "featureFlags": {
       "disableSendCalls": false,
       "dgBannerEnabled": true,
@@ -62,18 +73,6 @@
         "showOnStakeForm": true,
         "showAfterStake": true
       },
-      "earnVaults": [
-        { "name": "eth" },
-        { "name": "usd" },
-        { "name": "strategy", "deprecated": true },
-        {
-          "name": "ggv",
-          "apy": { "type": "weekly_moving_average" },
-          "deprecated": true,
-          "depositPauseReasonText": "The Lido GGV vault is being sunset and no longer accepts new deposits. GG tokens can be withdrawn to wstETH until November\u00a017,\u00a02026. After that, GGV positions will be held in WETH and withdrawals will be available in WETH only."
-        },
-        { "name": "dvv", "deprecated": true }
-      ],
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true,
@@ -112,18 +111,6 @@
         "showOnStakeForm": true,
         "showAfterStake": true
       },
-      "earnVaults": [
-        { "name": "eth" },
-        { "name": "usd" },
-        { "name": "strategy", "deprecated": true },
-        {
-          "name": "ggv",
-          "apy": { "type": "weekly_moving_average" },
-          "deprecated": true,
-          "depositPauseReasonText": "The Lido GGV vault is being sunset and no longer accepts new deposits. GG tokens can be withdrawn to wstETH until November\u00a017,\u00a02026. After that, GGV positions will be held in WETH and withdrawals will be available in WETH only."
-        },
-        { "name": "dvv", "deprecated": true }
-      ],
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true,
