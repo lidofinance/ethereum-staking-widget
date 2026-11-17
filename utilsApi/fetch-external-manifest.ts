@@ -96,6 +96,10 @@ const fetchManifestFromRemote = async (): Promise<Manifest> => {
   throw lastError;
 };
 
+// overlapping loads share one run, so an older response can never land after
+// a newer one and overwrite the cache or lastGoodManifest
+let inFlightLoad: Promise<ExternalConfigResult> | null = null;
+
 export const fetchExternalManifest =
   async (): Promise<ExternalConfigResult> => {
     // for IPFS build we use local manifest
@@ -107,41 +111,47 @@ export const fetchExternalManifest =
     const cached = cache.get(config.CACHE_EXTERNAL_CONFIG_KEY);
     if (cached) return cached;
 
-    // with CONFIG_MANIFEST_PATH the file is the source of truth, no remote fetch
-    const manifestPath = getConfigManifestPath();
-    try {
-      const manifest = manifestPath
-        ? await readManifestFromFile(manifestPath)
-        : await fetchManifestFromRemote();
-
-      const result = { ___prefetch_manifest___: manifest };
-      lastGoodManifest = result;
-      lastManifestSource = manifestPath ? 'file' : 'remote';
-      cache.put(
-        config.CACHE_EXTERNAL_CONFIG_KEY,
-        result,
-        manifestPath
-          ? config.CACHE_EXTERNAL_CONFIG_FILE_TTL
-          : config.CACHE_EXTERNAL_CONFIG_TTL,
-      );
-      return result;
-    } catch (error) {
-      console.error('[fetchExternalManifest] failed to load manifest', error);
-      Metrics.request.configManifestLoadError
-        .labels({ source: manifestPath ? 'file' : 'remote' })
-        .inc(1);
-
-      if (lastGoodManifest) {
-        console.error(
-          '[fetchExternalManifest] serving last known good manifest',
-        );
-        lastManifestSource = 'last-known-good';
-
-        return lastGoodManifest;
-      }
-
-      lastManifestSource = 'local-fallback';
-
-      return { ___prefetch_manifest___: getLocalFallbackManifest() };
-    }
+    // loadManifest never rejects: errors resolve to the last good manifest
+    inFlightLoad ??= loadManifest().finally(() => {
+      inFlightLoad = null;
+    });
+    return inFlightLoad;
   };
+
+const loadManifest = async (): Promise<ExternalConfigResult> => {
+  // with CONFIG_MANIFEST_PATH the file is the source of truth, no remote fetch
+  const manifestPath = getConfigManifestPath();
+  try {
+    const manifest = manifestPath
+      ? await readManifestFromFile(manifestPath)
+      : await fetchManifestFromRemote();
+
+    const result = { ___prefetch_manifest___: manifest };
+    lastGoodManifest = result;
+    lastManifestSource = manifestPath ? 'file' : 'remote';
+    cache.put(
+      config.CACHE_EXTERNAL_CONFIG_KEY,
+      result,
+      manifestPath
+        ? config.CACHE_EXTERNAL_CONFIG_FILE_TTL
+        : config.CACHE_EXTERNAL_CONFIG_TTL,
+    );
+    return result;
+  } catch (error) {
+    console.error('[fetchExternalManifest] failed to load manifest', error);
+    Metrics.request.configManifestLoadError
+      .labels({ source: manifestPath ? 'file' : 'remote' })
+      .inc(1);
+
+    if (lastGoodManifest) {
+      console.error('[fetchExternalManifest] serving last known good manifest');
+      lastManifestSource = 'last-known-good';
+
+      return lastGoodManifest;
+    }
+
+    lastManifestSource = 'local-fallback';
+
+    return { ___prefetch_manifest___: getLocalFallbackManifest() };
+  }
+};

@@ -19,7 +19,18 @@ import { useWithdrawalApprove } from './use-withdrawal-approve';
 
 import { useIsForceAllowance } from '../use-is-force-allowance';
 
-type useWithdrawalRequestApproveParams = {
+type TxModalStagesRequest = ReturnType<
+  typeof useTxModalStagesRequest
+>['txModalStages'];
+
+type ProcessApproveTxArgs = {
+  onRetry?: () => void;
+  // the stages of the request this approval is part of, so the approval
+  // shows in the same modal run as the request
+  txModalStages: TxModalStagesRequest;
+};
+
+type UseWithdrawalRequestTxApproveArgs = {
   amount: bigint | null;
   token: TOKENS_TO_WITHDRAWLS;
 };
@@ -27,10 +38,9 @@ type useWithdrawalRequestApproveParams = {
 export const useWithdrawalRequestTxApprove = ({
   amount,
   token,
-}: useWithdrawalRequestApproveParams) => {
+}: UseWithdrawalRequestTxApproveArgs) => {
   const { address } = useDappStatus();
   const { withdraw } = useLidoSDK();
-  const { txModalStages } = useTxModalStagesRequest();
   const { isAA } = useAA();
   const {
     isSmartAccount,
@@ -58,7 +68,7 @@ export const useWithdrawalRequestTxApprove = ({
   );
 
   const processApproveTx = useCallback(
-    async ({ onRetry }: { onRetry?: () => void }) => {
+    async ({ onRetry, txModalStages }: ProcessApproveTxArgs) => {
       invariant(amount, 'cannot submit empty amount');
       trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalRequestApprovalStart);
 
@@ -91,7 +101,7 @@ export const useWithdrawalRequestTxApprove = ({
 
       return approveTx.hash;
     },
-    [amount, refetchAllowance, token, txModalStages, withdraw.approval],
+    [amount, refetchAllowance, token, withdraw.approval],
   );
 
   return useMemo(

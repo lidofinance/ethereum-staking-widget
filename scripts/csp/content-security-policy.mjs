@@ -62,7 +62,7 @@ export const cspInputsFromEnv = (env = process.env) => ({
  * @param {boolean} inputs.ipfsMode - <meta> delivery, which ignores the header-only directives
  * @param {string} [inputs.ipfsBaseScriptHash] - hash of the IPFS bootstrap inline script
  */
-export const createContentSecurityPolicy = ({
+const buildContentSecurityPolicy = ({
   trustedHosts,
   reportUri,
   reportOnly,
@@ -116,3 +116,51 @@ export const createContentSecurityPolicy = ({
   },
   reportOnly,
 });
+
+// What Node's http.validateHeaderValue rejects (no node:http import: this
+// module also runs in the browser bundle and the IPFS build)
+const INVALID_HEADER_CHAR = /[^\t\u0020-\u007E\u0080-\u00FF]/;
+
+const isAbsoluteUrl = (value) => {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const policyProblem = (policy) => {
+  const { directives } = policy;
+  const values = Object.values(directives).flat().filter(Boolean);
+  if (values.some((value) => INVALID_HEADER_CHAR.test(String(value)))) {
+    return 'a source has a character that is not allowed in a header value';
+  }
+  if (directives.reportURI && !isAbsoluteUrl(directives.reportURI)) {
+    return 'the report URI is not an absolute URL';
+  }
+  return undefined;
+};
+
+/**
+ * The policy for the inputs. A policy that cannot become a valid header
+ * (a bad CSP_TRUSTED_HOSTS or CSP_REPORT_URI value) is logged and replaced by
+ * the same policy without the env-derived parts: a broken env costs the custom
+ * sources, not every page.
+ * @param {Parameters<typeof buildContentSecurityPolicy>[0]} inputs see above
+ */
+export const createContentSecurityPolicy = (inputs) => {
+  const policy = buildContentSecurityPolicy(inputs);
+  const problem = policyProblem(policy);
+  if (!problem) return policy;
+
+  console.error(
+    `[csp] the configured policy is not valid (${problem}), using the default policy`,
+  );
+  return buildContentSecurityPolicy({
+    ...inputs,
+    trustedHosts: [],
+    reportUri: undefined,
+    cowswapBaseUrl: DEFAULT_COWSWAP_WIDGET_BASE_URL,
+  });
+};

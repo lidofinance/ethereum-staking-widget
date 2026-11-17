@@ -1,3 +1,5 @@
+import { validateHeaderValue } from 'node:http';
+
 import {
   DEFAULT_COWSWAP_WIDGET_BASE_URL,
   createContentSecurityPolicy,
@@ -119,6 +121,56 @@ describe('createContentSecurityPolicy', () => {
       createContentSecurityPolicy({ ...serverInputs, reportOnly: true })
         .reportOnly,
     ).toBe(true);
+  });
+});
+
+describe('createContentSecurityPolicy with an invalid value', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it.each([
+    [
+      'a trusted host with a control character',
+      { trustedHosts: ['https://a.example\r\nX: 1'] },
+    ],
+    ['a trusted host with NUL', { trustedHosts: ['https://a.example\u0000'] }],
+    ['a relative report URI', { reportUri: '/api/csp-report' }],
+  ])('falls back to the default policy and logs for %s', (_name, override) => {
+    const directives = directivesOf({ ...serverInputs, ...override });
+
+    expect(directives.scriptSrc).toEqual([
+      "'self'",
+      "'sha256-wTvVT3oJ2rMAqNUILvSYccTn53N47S3NIZbPE0ql0No='",
+    ]);
+    expect(directives.reportURI).toBeUndefined();
+    expect(console.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back to the default CoW base URL', () => {
+    const directives = directivesOf({
+      ...serverInputs,
+      trustedHosts: ['bad\u0000'],
+    });
+    expect(directives.frameSrc).toContain(DEFAULT_COWSWAP_WIDGET_BASE_URL);
+    expect(directives.frameSrc).not.toContain(COWSWAP);
+  });
+
+  it('keeps the policy and logs nothing when the inputs are valid', () => {
+    expect(directivesOf(serverInputs).scriptSrc).toContain(
+      'https://trusted.example',
+    );
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it('renders a header Node accepts after the fallback', () => {
+    const [name, value] = createCspHeader(
+      createContentSecurityPolicy({ ...serverInputs, reportUri: 'relative' }),
+    );
+    expect(() => validateHeaderValue(name, value)).not.toThrow();
   });
 });
 

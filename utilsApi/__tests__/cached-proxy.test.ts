@@ -247,3 +247,61 @@ describe('createCachedProxy byte budget', () => {
     expect(standardFetcher).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('createCachedProxy concurrent requests', () => {
+  const makeRes = () =>
+    ({
+      setHeader: vi.fn(),
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+      send: vi.fn(),
+      end: vi.fn(),
+    }) as any;
+  const req = { query: { address: '0xabc' } } as unknown as NextApiRequest;
+
+  afterEach(() => {
+    vi.mocked(standardFetcher).mockReset();
+  });
+
+  it('fetches upstream once for identical concurrent requests', async () => {
+    const upstream = Promise.withResolvers<unknown>();
+    vi.mocked(standardFetcher).mockReturnValue(upstream.promise);
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/',
+      cacheTTL: 1000,
+    });
+    const responses = [makeRes(), makeRes(), makeRes()];
+
+    const calls = responses.map((res) => proxy(req, res));
+    upstream.resolve({ ok: true });
+    await Promise.all(calls);
+
+    expect(standardFetcher).toHaveBeenCalledTimes(1);
+    responses.forEach((res) =>
+      expect(res.send).toHaveBeenCalledWith('{"ok":true}'),
+    );
+  });
+
+  it('does not share a failed fetch with later requests', async () => {
+    vi.mocked(standardFetcher)
+      .mockRejectedValueOnce(new FetcherError('bad gateway', 502))
+      .mockResolvedValueOnce({ ok: true });
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/',
+      cacheTTL: 1000,
+    });
+
+    const first = [makeRes(), makeRes()];
+    const results = await Promise.allSettled(
+      first.map((res) => proxy(req, res)),
+    );
+    expect(results.every((r) => r.status === 'rejected')).toBe(true);
+    expect(standardFetcher).toHaveBeenCalledTimes(1);
+
+    const later = makeRes();
+    await proxy(req, later);
+
+    expect(standardFetcher).toHaveBeenCalledTimes(2);
+    expect(later.send).toHaveBeenCalledWith('{"ok":true}');
+  });
+});

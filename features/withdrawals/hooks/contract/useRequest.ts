@@ -11,6 +11,7 @@ import {
   useIsSmartAccount,
   useLidoSDK,
   useTxFlow,
+  TxStaleError,
 } from 'modules/web3';
 import { config } from 'config';
 import { applyRoundUpTxParameter } from 'modules/web3';
@@ -80,7 +81,10 @@ export const useWithdrawalRequest = ({
       let isSigningPermit = false;
 
       try {
-        if (isBunker) {
+        // The queue state behind the form is cached and can predate bunker
+        // mode: read it again before anything is signed, so the user always
+        // confirms the slower withdrawal first
+        if (isBunker || (await withdraw.views.isBunkerModeActive())) {
           const bunkerDialogResult = await txModalStages.dialogBunker();
           if (!bunkerDialogResult) {
             closeModal();
@@ -97,7 +101,7 @@ export const useWithdrawalRequest = ({
           await txFlow({
             sendTransaction: async (txStagesCallback) => {
               if (needsApprove) {
-                await processApproveTx({ onRetry });
+                await processApproveTx({ onRetry, txModalStages });
               }
               await withdraw.request.requestWithdrawal({
                 requests,
@@ -205,6 +209,8 @@ export const useWithdrawalRequest = ({
         return true;
       } catch (error) {
         console.error(error);
+        // superseded by a newer request before it reached the wallet
+        if (error instanceof TxStaleError) return false;
         txModalStages.failed(error, onRetry, isSigningPermit, onTryAllowance);
         isSigningPermit = false;
         return false;
@@ -229,6 +235,7 @@ export const useWithdrawalRequest = ({
       txModalStages,
       withdraw.approval,
       withdraw.request,
+      withdraw.views,
     ],
   );
 

@@ -2,7 +2,7 @@ import { Modal } from '@lidofinance/lido-ui';
 import { useConnectorInfo } from 'reef-knot/core-react';
 import { getUseModal, ModalComponentType } from 'providers/modal-provider';
 
-type TransactionModalProps = {
+export type TransactionModalProps = {
   isClosableOnLedger?: boolean;
   children?: React.ReactNode;
 };

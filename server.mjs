@@ -44,8 +44,9 @@ app
     // static (ISR), so nothing in the app runs for a page served from the
     // cache, and next.config headers are fixed at build time while the policy
     // reads runtime env. Built here, after prepare() loaded the env and before
-    // listen: a policy that cannot be rendered (a relative CSP_REPORT_URI, say)
-    // fails startup instead of failing every page behind a green readiness.
+    // listen. An invalid env-derived value (a relative CSP_REPORT_URI, say) is
+    // logged and replaced by the default policy inside createContentSecurityPolicy,
+    // so it neither fails startup nor every page.
     const cspHeader = createCspHeader(
       createContentSecurityPolicy({
         ...cspInputsFromEnv(),

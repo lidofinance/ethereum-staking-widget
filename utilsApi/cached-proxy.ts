@@ -54,6 +54,10 @@ export const createCachedProxy = ({
     // again or the cache is full
     ttlAutopurge: true,
   });
+  // Concurrent misses of one key share a single upstream fetch. Entries live
+  // only while the fetch runs, so a failed fetch is not remembered.
+  const inFlight = new Map<string, Promise<string>>();
+
   return async (req, res) => {
     const params = buildParams(req.query, ignoreParams, allowedQueryParams);
 
@@ -75,7 +79,7 @@ export const createCachedProxy = ({
     }
     const url = proxyUrlString + (params ? `?${params.toString()}` : '');
 
-    try {
+    const fetchBody = async () => {
       // set() is case-insensitive, so forwarded headers can't override these
       const headers = new Headers(forwardHeaders?.(req));
       headers.set('Accept', 'application/json');
@@ -91,8 +95,18 @@ export const createCachedProxy = ({
       });
 
       const body = JSON.stringify(transformData(data) ?? data);
-
       cache.set(cacheKey, body);
+      return body;
+    };
+
+    try {
+      let pending = inFlight.get(cacheKey);
+      if (!pending) {
+        pending = fetchBody().finally(() => inFlight.delete(cacheKey));
+        inFlight.set(cacheKey, pending);
+      }
+      const body = await pending;
+
       sendJson(body);
     } catch (e) {
       // route-level cacheControl set public caching before the handler ran

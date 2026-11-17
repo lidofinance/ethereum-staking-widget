@@ -42,7 +42,7 @@ type StakeArguments = {
   referral: string | null;
 };
 
-type StakeOptions = {
+type UseL2FastStakeArgs = {
   onConfirm?: () => Promise<void> | void;
   onRetry?: () => void;
 };
@@ -61,7 +61,7 @@ type FastStakeData = {
   needsApprove: boolean;
 };
 
-export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
+export const useL2FastStake = ({ onConfirm, onRetry }: UseL2FastStakeArgs) => {
   const { bells } = useBells();
   const { address } = useDappStatus();
   const { isAA } = useAA();
