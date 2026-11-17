@@ -275,7 +275,9 @@ export const getSyncDepositQueueWritableContract = <
 
 // The LEGACY async deposit queues: deposits go through the sync queues now.
 // Kept for users who deposited before the migration: reading their pending
-// request (the sync queue has no `requestOf`) and cancelling it
+// request (the sync queue has no `requestOf`) and cancelling it. A new
+// deposit goes here only while the sync queue charges a penalty, see
+// selectDepositQueue
 const getLegacyAsyncDepositQueueContractAddress = <
   TPublicClient extends PublicClient,
 >({
@@ -323,9 +325,9 @@ const getLegacyAsyncDepositQueueContractAddress = <
 };
 
 /**
- * Read access to a token's LEGACY async deposit queue, for the pending
- * requests of users who deposited before the sync queue migration. Not for
- * new deposits: those go through getSyncDepositQueueWritableContract
+ * Read access to a token's LEGACY async deposit queue, for pending requests:
+ * those made before the sync queue migration, and those made while the sync
+ * queue charges a penalty
  */
 export const getLegacyAsyncDepositQueueContract = <
   TPublicClient extends PublicClient,
@@ -346,8 +348,8 @@ export const getLegacyAsyncDepositQueueContract = <
 };
 
 /**
- * Write access to a token's LEGACY async deposit queue, only to cancel a
- * pending request made before the sync queue migration
+ * Write access to a token's LEGACY async deposit queue: to cancel a pending
+ * request, and to deposit while the sync queue charges a penalty
  */
 export const getLegacyAsyncDepositQueueWritableContract = <
   TPublicClient extends PublicClient,

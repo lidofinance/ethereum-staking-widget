@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import invariant from 'tiny-invariant';
 import type { Address } from 'viem';
 
@@ -30,6 +30,7 @@ import { ErrorMessage } from 'utils/getErrorMessage';
 import { warnError } from 'utils/warn-error';
 import { withFallback } from 'utils/with-fallback';
 
+import { useL2StakeState } from './use-l2-stake-state';
 import { useFastStakeConversion } from './use-conversion';
 import { useFastStakeLiquidity } from './use-fast-liquidity';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
@@ -72,6 +73,10 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { txModalStages } = useTxModalStagesL2FastStake();
   const txFlow = useTxFlow();
   const { featureFlags } = useConfig().externalConfig;
+  // Read at call time: the config can change while a stake is in progress
+  const l2StakeState = useL2StakeState();
+  const l2StakeStateRef = useRef(l2StakeState);
+  l2StakeStateRef.current = l2StakeState;
   const trackStart = useTrackStakeEvent('fast_stake_start');
   const trackEnd = useTrackStakeEvent('fast_stake_end');
 
@@ -95,6 +100,18 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
           throw new QuoteMismatchError();
         }
         return calcFastStakeWstethByEth(amount, rate.feeRate, rate.price);
+      };
+      // Stops a stake the config disabled after it started. When the approval
+      // already landed, the modal says so
+      const assertStakeEnabled = (approved: boolean) => {
+        if (l2StakeStateRef.current.isEnabled) return;
+        const cause = new Error('L2 staking is disabled');
+        throw approved
+          ? new TxFlowInterruptedError(
+              ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
+              cause,
+            )
+          : cause;
       };
       // the verified floor, kept for the sign stage of the modal
       let minReceiveAmount = 0n;
@@ -125,6 +142,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
         // transaction otherwise. A batch is signed as built, so it carries
         // the verified floor; a stepwise send re-quotes right before the stake
         callsFn: async ({ isAA, data }) => {
+          assertStakeEnabled(false);
           if (isAA) minReceiveAmount = await verifyQuote(data.amount);
           return [
             data.needsApprove && {
@@ -152,6 +170,7 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
             });
             return;
           }
+          assertStakeEnabled(data.needsApprove);
           minReceiveAmount = await verifyQuote(data.amount);
           await l2Stake.fastStakeEth({
             amount: data.amount,

@@ -31,7 +31,11 @@ export enum ErrorMessage {
   QUOTE_CHANGED = 'The exchange rate has changed. Check the updated amount and try again.',
   STAKE_WETH_INTERRUPTED = 'Your WETH was unwrapped, but the stake was not sent. Retry to stake the ETH.',
   STAKE_WETH_L2_INTERRUPTED = 'Your WETH was approved, but the stake was not sent. Retry to stake it.',
+  WRAP_INTERRUPTED = 'Your stETH was approved, but the wrap was not sent. Retry to wrap it.',
+  UNWRAP_INTERRUPTED = 'Your wstETH was approved, but the unwrap was not sent. Retry to unwrap it.',
   DEPOSIT_INTERRUPTED = 'Your tokens were approved, but the deposit was not sent. Retry to deposit them.',
+  DEPOSIT_RESET_INTERRUPTED = 'Your token approval was reset, but the deposit was not sent. Retry to approve and deposit them.',
+  DEPOSIT_WRAPPED_INTERRUPTED = 'Your stETH was wrapped to wstETH, but the deposit was not sent. Select wstETH to deposit it.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -88,12 +92,14 @@ export const getError = (error: unknown): ErrorMessage | string => {
 /**
  * Whether the failed stage may offer to submit the transaction again. Not for
  * one that settled or was sent and never read back (it may have landed: a
- * retry could submit it twice), nor for one the wallet cannot pay for.
+ * retry could submit it twice), nor for one the wallet cannot pay for. Nor
+ * for a flow superseded by a newer one: it is not the form's current state.
  */
 export const isRetryableTxError = (error: unknown): boolean => {
   if (
     error instanceof TxSettledError ||
-    error instanceof TxSentDataUnavailableError
+    error instanceof TxSentDataUnavailableError ||
+    error instanceof TxStaleError
   )
     return false;
   return getError(error) !== ErrorMessage.NOT_ENOUGH_ETHER;
@@ -387,6 +393,13 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
     MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED,
   [ErrorMessage.STAKE_WETH_L2_INTERRUPTED]:
     MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_L2_INTERRUPTED,
+  [ErrorMessage.WRAP_INTERRUPTED]: MATOMO_ERROR_EVENTS_TYPES.WRAP_INTERRUPTED,
+  [ErrorMessage.UNWRAP_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.UNWRAP_INTERRUPTED,
+  [ErrorMessage.DEPOSIT_RESET_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_RESET_INTERRUPTED,
+  [ErrorMessage.DEPOSIT_WRAPPED_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_WRAPPED_INTERRUPTED,
   [ErrorMessage.DEPOSIT_INTERRUPTED]:
     MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_INTERRUPTED,
 };

@@ -55,9 +55,11 @@ export type TxFlowResult<TData = undefined> = {
   // an earlier step landed but the last one was never sent: the funds moved
   // without the action happening, a retry continues from there
   isInterrupted: boolean;
-  // nothing happened: the address failed validation or the flow went stale
+  // the flow stopped without reporting: the address failed validation or the
+  // flow went stale. The context still says what landed before that
   isAborted: boolean;
-  // the failure reported to onFailure, if any
+  // the failure reported to onFailure, if any; for a stale flow, the outcome
+  // of a tx that settled or was sent before it stopped
   error?: unknown;
 };
 
@@ -178,7 +180,7 @@ export type LegacyTxFlowArgs = StageCallbacks &
  * stage, so reads and checks the flow needs happen inside it. Every failure,
  * in `prepare` or before or after settlement, is reported to `onFailure` with
  * the context, and the flow resolves with the final context; a stale flow
- * resolves to undefined without reporting, its UI is gone.
+ * resolves as aborted without reporting, its UI is gone or shows a newer flow.
  *
  * @property prepare - Computes the data every stage needs; its failures are reported like any other.
  * @property callsFn - Builds the ordered steps; `ctx.isAA` tells whether they will be signed as a batch.

@@ -1,12 +1,8 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { useLidoSDKL2, useDappStatus, useAllowance, useAA } from 'modules/web3';
-
-import { useTxModalWrap } from '../../wrap/hooks/use-tx-modal-stages-wrap';
-import { TOKENS_TO_WRAP } from '../../shared/types';
 
 type UseUnwrapTxApproveArgs = {
   amount: bigint;
@@ -14,8 +10,7 @@ type UseUnwrapTxApproveArgs = {
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const { isDappActiveOnL2, isChainIdOnL2, address } = useDappStatus();
-  const { l2, core } = useLidoSDKL2();
-  const { txModalStages } = useTxModalWrap();
+  const { core } = useLidoSDKL2();
   const { isAA } = useAA();
 
   const staticTokenAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.wsteth;
@@ -43,44 +38,8 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   // because the approval tx will be included in the batch.
   const shouldShowUnlockRequirement = needsApprove && !isAA;
 
-  const processApproveTx = useCallback(
-    async ({ onRetry }: { onRetry?: () => void }) => {
-      const approveTxHash = await l2.approveWstethForWrap({
-        value: amount,
-        callback: async ({ stage, payload }) => {
-          switch (stage) {
-            case TransactionCallbackStage.SIGN:
-              txModalStages.signApproval(amount, TOKENS_TO_WRAP.wstETH);
-              break;
-            case TransactionCallbackStage.RECEIPT:
-              txModalStages.pendingApproval(
-                amount,
-                TOKENS_TO_WRAP.wstETH,
-                payload,
-              );
-              break;
-            case TransactionCallbackStage.MULTISIG_DONE:
-              txModalStages.successMultisig();
-              break;
-            case TransactionCallbackStage.ERROR:
-              txModalStages.failed(payload, onRetry);
-              break;
-            default:
-          }
-        },
-      });
-
-      // wait for refetch to settle
-      await refetchAllowance().catch();
-
-      return approveTxHash;
-    },
-    [refetchAllowance, l2, amount, txModalStages],
-  );
-
   return useMemo(
     () => ({
-      processApproveTx,
       refetchAllowance,
       allowance,
       needsApprove,
@@ -92,7 +51,6 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       isShowAllowance: isDappActiveOnL2 || isChainIdOnL2,
     }),
     [
-      processApproveTx,
       refetchAllowance,
       allowance,
       needsApprove,

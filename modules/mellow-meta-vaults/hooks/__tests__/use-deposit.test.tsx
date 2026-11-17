@@ -1,7 +1,11 @@
 import { decodeFunctionData, getAddress, type Address, type Hash } from 'viem';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import { TxSettledError, TxSentDataUnavailableError } from 'modules/web3';
+import {
+  QuoteMismatchError,
+  TxSettledError,
+  TxSentDataUnavailableError,
+} from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import { TOKENS } from 'consts/tokens';
 import {
@@ -11,8 +15,17 @@ import {
   renderHook,
   sentAACalls,
 } from 'features/stake/shared/__tests__/stake-test-utils';
-import { SYNC_DEPOSIT_QUEUE_ABI } from 'modules/mellow-meta-vaults/abi';
-import type { DepositQueueGetter } from 'modules/mellow-meta-vaults/types/deposit-queue-getter';
+import {
+  DEPOSIT_QUEUE_ABI,
+  SYNC_DEPOSIT_QUEUE_ABI,
+} from 'modules/mellow-meta-vaults/abi';
+import { COLLECTOR_CONFIG } from 'modules/mellow-meta-vaults/consts';
+import type {
+  AsyncDepositQueueGetter,
+  SyncDepositQueueGetter,
+} from 'modules/mellow-meta-vaults/types/deposit-queue-getter';
+import type { CollectorContract } from 'modules/mellow-meta-vaults/types/contracts';
+import type { VaultQuote } from 'modules/mellow-meta-vaults/utils/quote';
 
 // Referenced from the hoisted mock factories, so hoisted with them
 const { ACCOUNT, REFERRAL, TOKEN_ADDRESSES, ERC20_ABI } = vi.hoisted(() => {
@@ -52,11 +65,15 @@ const { ACCOUNT, REFERRAL, TOKEN_ADDRESSES, ERC20_ABI } = vi.hoisted(() => {
     ] as const,
   };
 });
-const QUEUE: Address = '0x00000000000000000000000000000000000000c1';
+const SYNC_QUEUE: Address = '0x00000000000000000000000000000000000000c1';
+const ASYNC_QUEUE: Address = '0x00000000000000000000000000000000000000c2';
 const TX_HASH: Hash =
   '0x1111111111111111111111111111111111111111111111111111111111111111';
 const CALL_ID = '0xcall';
 const AMOUNT = 2n * 10n ** 18n;
+const SHARES = 19n * 10n ** 17n;
+// the quote the form displays for AMOUNT
+const SHOWN_QUOTE: VaultQuote = { amount: AMOUNT, output: SHARES };
 
 const state = vi.hoisted(() => ({
   isAA: false,
@@ -123,32 +140,80 @@ vi.mock('utils/track-matomo-event', () => ({ trackMatomoEvent: vi.fn() }));
 
 import { useDeposit } from '../use-deposit';
 
-const createQueue = () => ({
-  address: QUEUE,
-  abi: SYNC_DEPOSIT_QUEUE_ABI,
-  estimateGas: { deposit: vi.fn(async () => 200_000n) },
-  write: { deposit: vi.fn(async () => TX_HASH) },
+type QueuesSetup = {
+  // the sync queue's penaltyD6
+  penaltyD6?: bigint;
+  // the shares the Collector quotes right before the deposit
+  freshShares?: bigint;
+};
+
+const createQueues = ({
+  penaltyD6 = 0n,
+  freshShares = SHARES,
+}: QueuesSetup = {}) => ({
+  syncQueue: {
+    address: SYNC_QUEUE,
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
+    read: {
+      syncDepositParams: vi.fn(async () => [penaltyD6, 115_200] as const),
+    },
+    estimateGas: { deposit: vi.fn(async () => 200_000n) },
+    write: { deposit: vi.fn(async () => TX_HASH) },
+  },
+  asyncQueue: {
+    address: ASYNC_QUEUE,
+    abi: DEPOSIT_QUEUE_ABI,
+    estimateGas: { deposit: vi.fn(async () => 200_000n) },
+    write: { deposit: vi.fn(async () => TX_HASH) },
+  },
+  collector: {
+    read: {
+      getDepositParams: vi.fn(async () => ({ shares: freshShares })),
+    },
+  },
 });
-type Queue = ReturnType<typeof createQueue>;
+type Queues = ReturnType<typeof createQueues>;
+
+type DepositOptions = {
+  // the token has no sync queue
+  isAsyncOnly?: boolean;
+  shownQuote?: VaultQuote;
+};
 
 const onRetry = vi.fn();
+const refetchQuote = vi.fn();
 
-const deposit = (queue: Queue, token: string) =>
+const deposit = (
+  queues: Queues,
+  token: string,
+  { isAsyncOnly = false, shownQuote }: DepositOptions = {},
+) =>
   renderHook(() =>
     useDeposit({
-      depositQueueGetter: (() =>
-        queue) as unknown as DepositQueueGetter<string>,
+      syncDepositQueueGetter: (() =>
+        isAsyncOnly
+          ? undefined
+          : queues.syncQueue) as unknown as SyncDepositQueueGetter<string>,
+      asyncDepositQueueGetter: (() =>
+        queues.asyncQueue) as unknown as AsyncDepositQueueGetter<string>,
+      collector: queues.collector as unknown as CollectorContract,
+      shownQuote,
+      refetchQuote,
       txModalStages: state.txModalStages,
       onRetry,
     }),
   ).deposit({ amount: AMOUNT, token: token as never, referral: REFERRAL });
 
 // the contract keeps the address as the token map spells it
-const approveWrite = (value: bigint, tokenAddress: Address) =>
+const approveWrite = (
+  value: bigint,
+  tokenAddress: Address,
+  spender: Address = SYNC_QUEUE,
+) =>
   expect.objectContaining({
     address: tokenAddress,
     functionName: 'approve',
-    args: [QUEUE, value],
+    args: [spender, value],
   });
 
 const consoleErrorSpy = vi
@@ -169,12 +234,12 @@ afterAll(() => {
 describe('useDeposit', () => {
   describe('legacy signing', () => {
     it('deposits ETH with the value and no approval', async () => {
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.eth)).resolves.toBe(true);
+      await expect(deposit(queues, TOKENS.eth)).resolves.toBe(true);
 
       expect(state.walletClient.writeContract).not.toHaveBeenCalled();
-      expect(queue.write.deposit).toHaveBeenCalledWith(
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledWith(
         [AMOUNT, REFERRAL, []],
         expect.objectContaining({ value: AMOUNT }),
       );
@@ -191,20 +256,23 @@ describe('useDeposit', () => {
         TOKENS.eth,
         TX_HASH,
         undefined,
+        false,
       );
       expect(state.txModalStages.failed).not.toHaveBeenCalled();
     });
 
     it('approves and then deposits a token short of allowance', async () => {
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(true);
+      await expect(
+        deposit(queues, TOKENS.weth, { shownQuote: SHOWN_QUOTE }),
+      ).resolves.toBe(true);
 
       expect(state.walletClient.writeContract).toHaveBeenCalledTimes(1);
       expect(state.walletClient.writeContract).toHaveBeenCalledWith(
         approveWrite(AMOUNT, TOKEN_ADDRESSES.weth),
       );
-      expect(queue.write.deposit).toHaveBeenCalledWith(
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledWith(
         [AMOUNT, REFERRAL, []],
         expect.objectContaining({ value: 0n }),
       );
@@ -220,20 +288,20 @@ describe('useDeposit', () => {
 
     it('skips the approval when the allowance covers the amount', async () => {
       state.allowance = AMOUNT;
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(true);
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
 
       expect(state.walletClient.writeContract).not.toHaveBeenCalled();
-      expect(queue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.signApproval).not.toHaveBeenCalled();
     });
 
     it('resets a non-zero USDT allowance before approving', async () => {
       state.allowance = 1n;
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.usdt)).resolves.toBe(true);
+      await expect(deposit(queues, TOKENS.usdt)).resolves.toBe(true);
 
       expect(state.walletClient.writeContract).toHaveBeenCalledTimes(2);
       expect(state.walletClient.writeContract).toHaveBeenNthCalledWith(
@@ -244,20 +312,19 @@ describe('useDeposit', () => {
         2,
         approveWrite(AMOUNT, TOKEN_ADDRESSES.usdt),
       );
-      expect(queue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
     });
 
-    // ETHV-DEP-BIND-05: a settled approval must not read as a completed deposit
     it('reports an unfinished deposit when the approval settles but its confirmation read fails', async () => {
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('unconfirmed'),
       );
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(false);
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(false);
 
       expect(state.walletClient.writeContract).toHaveBeenCalledTimes(1);
-      expect(queue.write.deposit).not.toHaveBeenCalled();
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -273,32 +340,77 @@ describe('useDeposit', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });
 
+    it('reports an unfinished deposit when the approval lands and the deposit estimate fails', async () => {
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('success', 'unestimated'),
+      );
+      const queues = createQueues();
+
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(false);
+
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'TxFlowInterruptedError',
+          message: ErrorMessage.DEPOSIT_INTERRUPTED,
+        }),
+        onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('reports an unfinished deposit when only the USDT reset settles', async () => {
+      state.allowance = 1n;
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('unconfirmed'),
+      );
+      const queues = createQueues();
+
+      await expect(deposit(queues, TOKENS.usdt)).resolves.toBe(false);
+
+      // the reset went out, the approval and the deposit never did
+      expect(state.walletClient.writeContract).toHaveBeenCalledTimes(1);
+      expect(state.walletClient.writeContract).toHaveBeenCalledWith(
+        approveWrite(0n, TOKEN_ADDRESSES.usdt),
+      );
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'TxFlowInterruptedError',
+          message: ErrorMessage.DEPOSIT_RESET_INTERRUPTED,
+        }),
+        onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
     it('does not approve again when retried after a confirmed approval', async () => {
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('unconfirmed'),
       );
-      const queue = createQueue();
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(false);
+      const queues = createQueues();
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(false);
 
       // the allowance is on chain now; the retry reads it and goes to the deposit
       state.allowance = AMOUNT;
       state.performTransaction.mockImplementation(legacyPerformTransaction());
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(true);
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
 
       expect(state.walletClient.writeContract).toHaveBeenCalledTimes(1);
-      expect(queue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).toHaveBeenCalledTimes(1);
     });
 
     it('reports a deposit whose confirmation read failed as completed', async () => {
-      const queue = createQueue();
+      const queues = createQueues();
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('unconfirmed'),
       );
 
-      await expect(deposit(queue, TOKENS.eth)).resolves.toBe(true);
+      await expect(deposit(queues, TOKENS.eth)).resolves.toBe(true);
 
-      expect(queue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.any(TxSettledError),
         onRetry,
@@ -307,15 +419,15 @@ describe('useDeposit', () => {
     });
 
     it('reports a deposit that could not be read back as sent, not failed', async () => {
-      const queue = createQueue();
+      const queues = createQueues();
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('unlocated'),
       );
 
       // not a success: the form keeps its state, the modal says to reload
-      await expect(deposit(queue, TOKENS.eth)).resolves.toBe(false);
+      await expect(deposit(queues, TOKENS.eth)).resolves.toBe(false);
 
-      expect(queue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed.mock.calls[0]?.[0]).toBeInstanceOf(
         TxSentDataUnavailableError,
@@ -324,15 +436,15 @@ describe('useDeposit', () => {
     });
 
     it('reports an approval that could not be read back as sent, not as an interrupted deposit', async () => {
-      const queue = createQueue();
+      const queues = createQueues();
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('unlocated'),
       );
 
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(false);
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(false);
 
       // the approval may or may not have landed: no deposit on top of it
-      expect(queue.write.deposit).not.toHaveBeenCalled();
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
       expect(state.txModalStages.failed.mock.calls[0]?.[0]).toBeInstanceOf(
         TxSentDataUnavailableError,
       );
@@ -342,11 +454,11 @@ describe('useDeposit', () => {
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('rejected'),
       );
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(false);
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(false);
 
-      expect(queue.write.deposit).not.toHaveBeenCalled();
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.any(Error),
         onRetry,
@@ -361,12 +473,147 @@ describe('useDeposit', () => {
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('multisig'),
       );
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.eth)).resolves.toBe(true);
+      await expect(deposit(queues, TOKENS.eth)).resolves.toBe(true);
 
       expect(state.txModalStages.successMultisig).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('routing', () => {
+    it('deposits through the sync queue when it charges no penalty', async () => {
+      const queues = createQueues();
+
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
+
+      expect(queues.syncQueue.read.syncDepositParams).toHaveBeenCalledTimes(1);
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(queues.asyncQueue.write.deposit).not.toHaveBeenCalled();
+    });
+
+    it('routes the deposit to the async queue while the sync queue charges a penalty', async () => {
+      const queues = createQueues({ penaltyD6: 1_000n });
+
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
+
+      // the approval is for the queue the deposit goes to
+      expect(state.walletClient.writeContract).toHaveBeenCalledWith(
+        approveWrite(AMOUNT, TOKEN_ADDRESSES.weth, ASYNC_QUEUE),
+      );
+      expect(queues.asyncQueue.write.deposit).toHaveBeenCalledWith(
+        [AMOUNT, REFERRAL, []],
+        expect.anything(),
+      );
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
+      // an async deposit is a request
+      expect(state.txModalStages.success).toHaveBeenCalledWith(
+        AMOUNT,
+        TOKENS.weth,
+        TX_HASH,
+        undefined,
+        true,
+      );
+    });
+
+    it('deposits a token without a sync queue through the async queue', async () => {
+      const queues = createQueues();
+
+      await expect(
+        deposit(queues, TOKENS.weth, { isAsyncOnly: true }),
+      ).resolves.toBe(true);
+
+      expect(queues.syncQueue.read.syncDepositParams).not.toHaveBeenCalled();
+      expect(queues.asyncQueue.write.deposit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('quote check', () => {
+    it('re-reads the quote on the deposit queue after the approval, right before the deposit', async () => {
+      const queues = createQueues();
+
+      await expect(
+        deposit(queues, TOKENS.weth, { shownQuote: SHOWN_QUOTE }),
+      ).resolves.toBe(true);
+
+      expect(queues.collector.read.getDepositParams).toHaveBeenCalledTimes(1);
+      expect(queues.collector.read.getDepositParams).toHaveBeenCalledWith([
+        SYNC_QUEUE,
+        AMOUNT,
+        ACCOUNT,
+        COLLECTOR_CONFIG,
+      ]);
+      expectOrdered(
+        state.walletClient.writeContract,
+        queues.collector.read.getDepositParams,
+        queues.syncQueue.write.deposit,
+      );
+      expect(refetchQuote).not.toHaveBeenCalled();
+    });
+
+    it('stops before the deposit when the fresh quote is worse than the displayed one', async () => {
+      const queues = createQueues({ freshShares: SHARES - 1n });
+
+      await expect(
+        deposit(queues, TOKENS.weth, { shownQuote: SHOWN_QUOTE }),
+      ).resolves.toBe(false);
+
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
+      expect(refetchQuote).toHaveBeenCalledTimes(1);
+      // the stop says why, not that the approval landed
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+        onRetry,
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('deposits when the fresh quote is better than the displayed one', async () => {
+      const queues = createQueues({ freshShares: SHARES + 1n });
+
+      await expect(
+        deposit(queues, TOKENS.eth, { shownQuote: SHOWN_QUOTE }),
+      ).resolves.toBe(true);
+
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(refetchQuote).not.toHaveBeenCalled();
+    });
+
+    it('holds a quote displayed for another amount to its rate', async () => {
+      // the debounced preview showed half the amount at the same rate
+      const queues = createQueues();
+      const shownQuote = { amount: AMOUNT / 2n, output: SHARES / 2n };
+
+      await expect(deposit(queues, TOKENS.eth, { shownQuote })).resolves.toBe(
+        true,
+      );
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
+    });
+
+    it('re-reads the quote on the async queue when the deposit goes there', async () => {
+      const queues = createQueues({ penaltyD6: 1_000n });
+
+      await expect(
+        deposit(queues, TOKENS.eth, { shownQuote: SHOWN_QUOTE }),
+      ).resolves.toBe(true);
+
+      expect(queues.collector.read.getDepositParams).toHaveBeenCalledWith([
+        ASYNC_QUEUE,
+        AMOUNT,
+        ACCOUNT,
+        COLLECTOR_CONFIG,
+      ]);
+      expect(queues.asyncQueue.write.deposit).toHaveBeenCalledTimes(1);
+    });
+
+    it('skips the quote check where no quote is displayed', async () => {
+      const queues = createQueues({ freshShares: 1n });
+
+      await expect(deposit(queues, TOKENS.eth)).resolves.toBe(true);
+
+      expect(queues.collector.read.getDepositParams).not.toHaveBeenCalled();
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -378,15 +625,18 @@ describe('useDeposit', () => {
     it('batches the approval with the deposit and reports as one deposit', async () => {
       const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
       state.sendAACalls.mockImplementation(sendCalls);
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(true);
+      await expect(
+        deposit(queues, TOKENS.weth, { shownQuote: SHOWN_QUOTE }),
+      ).resolves.toBe(true);
 
       expect(state.performTransaction).not.toHaveBeenCalled();
+      expect(queues.collector.read.getDepositParams).toHaveBeenCalledTimes(1);
       const calls = sentAACalls(sendCalls);
       expect(calls).toHaveLength(2);
       expect(calls[0]?.to).toBe(TOKEN_ADDRESSES.weth);
-      expect(calls[1]?.to).toBe(QUEUE);
+      expect(calls[1]?.to).toBe(SYNC_QUEUE);
       const decoded = decodeFunctionData({
         abi: SYNC_DEPOSIT_QUEUE_ABI,
         data: calls[1]?.data as Hash,
@@ -411,13 +661,47 @@ describe('useDeposit', () => {
     it('sends the ETH deposit as a single call carrying the value', async () => {
       const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
       state.sendAACalls.mockImplementation(sendCalls);
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.eth)).resolves.toBe(true);
+      await expect(deposit(queues, TOKENS.eth)).resolves.toBe(true);
 
       const calls = sentAACalls(sendCalls);
       expect(calls).toHaveLength(1);
       expect(calls[0]?.value).toBe(AMOUNT);
+    });
+
+    it('batches the deposit for the async queue while the sync queue charges a penalty', async () => {
+      const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
+      state.sendAACalls.mockImplementation(sendCalls);
+      const queues = createQueues({ penaltyD6: 1n });
+
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
+
+      const calls = sentAACalls(sendCalls);
+      expect(calls[1]?.to).toBe(ASYNC_QUEUE);
+      const approval = decodeFunctionData({
+        abi: ERC20_ABI,
+        data: calls[0]?.data as Hash,
+      });
+      expect(approval.args).toEqual([getAddress(ASYNC_QUEUE), AMOUNT]);
+    });
+
+    it('sends no batch when the fresh quote is worse than the displayed one', async () => {
+      state.sendAACalls.mockImplementation(
+        aaSendCalls({ callId: CALL_ID, txHash: TX_HASH }),
+      );
+      const queues = createQueues({ freshShares: SHARES - 1n });
+
+      await expect(
+        deposit(queues, TOKENS.weth, { shownQuote: SHOWN_QUOTE }),
+      ).resolves.toBe(false);
+
+      expect(state.sendAACalls).not.toHaveBeenCalled();
+      expect(refetchQuote).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+        onRetry,
+      );
     });
 
     it('reports a rejected batch and offers a retry', async () => {
@@ -428,9 +712,9 @@ describe('useDeposit', () => {
           failWith: new Error('User rejected the request'),
         }),
       );
-      const queue = createQueue();
+      const queues = createQueues();
 
-      await expect(deposit(queue, TOKENS.weth)).resolves.toBe(false);
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(false);
 
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.any(Error),

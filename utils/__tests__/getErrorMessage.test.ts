@@ -9,6 +9,7 @@ import {
   TransactionRevertedError,
   TxSentDataUnavailableError,
   TxSettledError,
+  TxStaleError,
 } from 'modules/web3';
 import {
   getErrorMessage,
@@ -33,6 +34,10 @@ describe('isRetryableTxError', () => {
     expect(
       isRetryableTxError(new TxSentDataUnavailableError(new Error('timeout'))),
     ).toBe(false);
+  });
+
+  it('refuses a retry of a flow superseded by a newer one', () => {
+    expect(isRetryableTxError(new TxStaleError())).toBe(false);
   });
 
   it('refuses a retry the wallet cannot pay for', () => {

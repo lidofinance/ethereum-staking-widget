@@ -8,7 +8,12 @@ export const FormController: FC<React.ComponentProps<'form'>> = ({
   children,
   ...props
 }) => {
-  const { handleSubmit, reset: resetHookForm, getValues } = useFormContext();
+  const {
+    handleSubmit,
+    reset: resetHookForm,
+    getValues,
+    formState: { disabled },
+  } = useFormContext();
   const {
     onSubmit,
     onReset: resetCustom,
@@ -27,17 +32,24 @@ export const FormController: FC<React.ComponentProps<'form'>> = ({
   }, [resetCustom, resetHookForm]);
 
   // Bind submit action
-  const doSubmit = useMemo(
-    () =>
-      handleSubmit(async (args) => {
-        const success = await onSubmit(args);
-        // Reset from the live state, not the submitted snapshot: the form can
-        // move while the tx is pending (an account switch resets it, a chain
-        // switch may normalize a field) and the submission must not undo that
-        if (success) reset(getValues());
-      }),
-    [handleSubmit, onSubmit, reset, getValues],
-  );
+  const doSubmit = useMemo(() => {
+    const submit = handleSubmit(async (args) => {
+      const success = await onSubmit(args);
+      // Reset from the live state, not the submitted snapshot: the form can
+      // move while the tx is pending (an account switch resets it, a chain
+      // switch may normalize a field) and the submission must not undo that
+      if (success) reset(getValues());
+    });
+    // handleSubmit does not look at the form-level `disabled`, so a disabled
+    // form (and a retry of an earlier attempt) is stopped here
+    return async (event?: React.BaseSyntheticEvent) => {
+      if (disabled) {
+        event?.preventDefault?.();
+        return;
+      }
+      return submit(event);
+    };
+  }, [handleSubmit, onSubmit, reset, getValues, disabled]);
 
   // Bind retry callback
   useEffect(() => {

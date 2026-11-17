@@ -4,15 +4,19 @@ import invariant from 'tiny-invariant';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
-import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
+import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
+import { readWithdrawQuote, type VaultQuote } from '../utils/quote';
 import {
   CollectorContract,
   AsyncRedeemQueueContract,
 } from '../types/contracts';
 import { TOKENS, type Token } from 'consts/tokens';
 
-export type WithdrawParams = {
-  assets: bigint; // e.g. wstETH or USDC amount to receive from redeeming the shares
+type UsePreviewWithdrawArgs = {
+  redeemQueue: AsyncRedeemQueueContract;
+  redeemQueueToken: Token;
+  collector: CollectorContract;
+  shares: bigint | null | undefined;
 };
 
 export const usePreviewWithdraw = ({
@@ -20,12 +24,7 @@ export const usePreviewWithdraw = ({
   redeemQueueToken,
   collector,
   shares,
-}: {
-  redeemQueue: AsyncRedeemQueueContract;
-  redeemQueueToken: Token;
-  collector: CollectorContract;
-  shares: bigint | null | undefined;
-}) => {
+}: UsePreviewWithdrawArgs) => {
   const { isDappActive, address: userAddress } = useDappStatus();
 
   const isEnabled = isDappActive && shares != null;
@@ -44,28 +43,21 @@ export const usePreviewWithdraw = ({
       },
     ] as const,
     enabled: isEnabled,
-    queryFn: async () => {
+    queryFn: async (): Promise<VaultQuote> => {
       invariant(userAddress, 'User address is not available');
 
-      if (!debouncedStrethShares)
-        return {
-          assets: 0n,
-        };
+      if (!debouncedStrethShares) return { amount: 0n, output: 0n };
 
-      const { assets } = (await collector.read.getWithdrawalParams([
-        debouncedStrethShares,
-        redeemQueue.address,
-        COLLECTOR_CONFIG,
-      ])) as WithdrawParams;
-
-      return {
-        assets,
-      };
+      return readWithdrawQuote({
+        collector,
+        redeemQueue,
+        shares: debouncedStrethShares,
+      });
     },
   });
 
   // Actual if redeeming wstETH
-  const wstethUsdQuery = useWstethUsd(query.data?.assets ?? 0n);
+  const wstethUsdQuery = useWstethUsd(query.data?.output ?? 0n);
 
   const usd =
     redeemQueueToken === TOKENS.wsteth ? wstethUsdQuery.usdAmount : undefined;
@@ -73,8 +65,11 @@ export const usePreviewWithdraw = ({
   return {
     isLoading: isDebounced || query.isLoading || wstethUsdQuery.isLoading,
     data: {
-      assets: query.data?.assets,
+      assets: query.data?.output,
       usd,
     },
+    // the displayed quote and its refetch: a withdrawal is held to it
+    quote: query.data,
+    refetchQuote: query.refetch,
   };
 };

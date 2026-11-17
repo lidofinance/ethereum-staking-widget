@@ -27,7 +27,6 @@
       { "name": "dvv", "deprecated": true }
     ],
     "featureFlags": {
-      "disableSendCalls": false,
       "dgBannerEnabled": true,
       "rewardsMaintenance": false,
       "holidayDecorEnabled": false,

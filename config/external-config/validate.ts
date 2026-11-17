@@ -178,7 +178,6 @@ const GeoSchema = z
 const FeatureFlagsSchema = z
   .object({
     ledgerLiveL2: z.boolean(),
-    disableSendCalls: z.boolean(),
     dgBannerEnabled: z.boolean(),
     dgWarningState: z.boolean(),
     rewardsMaintenance: z.boolean(),

@@ -7,19 +7,15 @@ import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { useStETHByWstETH } from 'modules/web3/hooks/use-stETH-by-wstETH';
 import { TOKENS } from 'consts/tokens';
-import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
+import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 import { CollectorContract, DepositQueueContract } from '../types/contracts';
+import { readDepositQuote, type VaultQuote } from '../utils/quote';
 
-export type DepositParams = {
-  isDepositPossible: boolean;
-  isDepositorWhitelisted: boolean;
-  isMerkleProofRequired: boolean;
-  asset: string; // address as hex string
-  shares: bigint;
-  sharesUSDC: bigint;
-  assets: bigint;
-  assetsUSDC: bigint;
-  eta: bigint;
+type UsePreviewDepositArgs<DepositToken extends string> = {
+  depositQueue: DepositQueueContract;
+  collector: CollectorContract;
+  amount?: bigint | null;
+  token?: DepositToken;
 };
 
 export const usePreviewDeposit = <DepositToken extends string>({
@@ -27,12 +23,7 @@ export const usePreviewDeposit = <DepositToken extends string>({
   collector,
   amount,
   token,
-}: {
-  depositQueue: DepositQueueContract;
-  collector: CollectorContract;
-  amount?: bigint | null;
-  token?: DepositToken;
-}) => {
+}: UsePreviewDepositArgs<DepositToken>) => {
   const { isDappActive, address: userAddress } = useDappStatus();
 
   const isEnabled = isDappActive && amount != null;
@@ -52,24 +43,17 @@ export const usePreviewDeposit = <DepositToken extends string>({
       },
     ] as const,
     enabled: isEnabled,
-    queryFn: async () => {
+    queryFn: async (): Promise<VaultQuote> => {
       invariant(userAddress, 'User address is not available');
 
-      if (!debouncedAmount)
-        return {
-          shares: 0n,
-        };
+      if (!debouncedAmount) return { amount: 0n, output: 0n };
 
-      const { shares } = (await collector.read.getDepositParams([
-        depositQueue.address, // queue
-        debouncedAmount, // assets
-        userAddress, // account
-        COLLECTOR_CONFIG, // config
-      ])) as DepositParams;
-
-      return {
-        shares,
-      };
+      return readDepositQuote({
+        collector,
+        depositQueue,
+        amount: debouncedAmount,
+        account: userAddress,
+      });
     },
   });
 
@@ -82,14 +66,17 @@ export const usePreviewDeposit = <DepositToken extends string>({
   const usdQuery = isWstEth ? wstethUsdQuery : ethUsdQuery;
 
   const { data: stethByWsteth } = useStETHByWstETH(debouncedAmount);
-  const eth = isWstEth ? stethByWsteth : debouncedAmount ?? 0n;
+  const eth = isWstEth ? stethByWsteth : (debouncedAmount ?? 0n);
 
   return {
     isLoading: isDebounced || query.isLoading || usdQuery?.isLoading,
     data: {
-      shares: query.data?.shares,
+      shares: query.data?.output,
       eth,
       usd: usdQuery.usdAmount,
     },
+    // the displayed quote and its refetch: a deposit is held to it
+    quote: query.data,
+    refetchQuote: query.refetch,
   };
 };

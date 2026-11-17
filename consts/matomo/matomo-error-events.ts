@@ -19,7 +19,11 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   QUOTE_CHANGED = 'QUOTE_CHANGED',
   STAKE_WETH_INTERRUPTED = 'STAKE_WETH_INTERRUPTED',
   STAKE_WETH_L2_INTERRUPTED = 'STAKE_WETH_L2_INTERRUPTED',
+  WRAP_INTERRUPTED = 'WRAP_INTERRUPTED',
+  UNWRAP_INTERRUPTED = 'UNWRAP_INTERRUPTED',
   DEPOSIT_INTERRUPTED = 'DEPOSIT_INTERRUPTED',
+  DEPOSIT_RESET_INTERRUPTED = 'DEPOSIT_RESET_INTERRUPTED',
+  DEPOSIT_WRAPPED_INTERRUPTED = 'DEPOSIT_WRAPPED_INTERRUPTED',
   SOMETHING_WRONG = 'SOMETHING_WRONG',
 }
 
@@ -117,10 +121,30 @@ export const MATOMO_ERROR_EVENTS: Record<
     'WETH approved but the L2 stake was not sent',
     'eth_widget_errors_stake_weth_l2_interrupted',
   ],
+  [MATOMO_ERROR_EVENTS_TYPES.WRAP_INTERRUPTED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'stETH approved but the wrap was not sent',
+    'eth_widget_errors_wrap_interrupted',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.UNWRAP_INTERRUPTED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'wstETH approved but the unwrap was not sent',
+    'eth_widget_errors_unwrap_interrupted',
+  ],
   [MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_INTERRUPTED]: [
     'Ethereum_Staking_Widget_Errors',
     'Tokens approved but the vault deposit was not sent',
     'eth_widget_errors_deposit_interrupted',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_RESET_INTERRUPTED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'Token approval reset but the vault deposit was not sent',
+    'eth_widget_errors_deposit_reset_interrupted',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_WRAPPED_INTERRUPTED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'stETH wrapped but the vault deposit was not sent',
+    'eth_widget_errors_deposit_wrapped_interrupted',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG]: [
     'Ethereum_Staking_Widget_Errors',

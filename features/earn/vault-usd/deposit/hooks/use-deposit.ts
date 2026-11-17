@@ -1,27 +1,69 @@
-import { useDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit';
-import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
-import { getVaultRefetchScope } from 'modules/mellow-meta-vaults/consts';
+import { useMemo } from 'react';
+import invariant from 'tiny-invariant';
+
+import {
+  getVaultRefetchScope,
+  useDeposit,
+  useTxModalStagesDeposit,
+  type VaultQuote,
+} from 'modules/mellow-meta-vaults';
+import { useMainnetOnlyWagmi } from 'modules/web3';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { TOKENS } from 'consts/tokens';
-import { getDepositQueueWritableContract } from '../../contracts';
+import {
+  getAsyncDepositQueueWritableContract,
+  getCollectorContract,
+  getSyncDepositQueueWritableContract,
+} from '../../contracts';
 import { USD_VAULT_QUERY_SCOPE, USD_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { UsdDepositToken } from '../../types';
 
-export const useUsdVaultDeposit = (onRetry?: () => void) => {
+type SyncDepositQueueGetterArgs = Parameters<
+  typeof getSyncDepositQueueWritableContract
+>[0];
+
+// USDe has no sync queue: its deposits always go to the async one
+const getSyncDepositQueue = (args: SyncDepositQueueGetterArgs) =>
+  args.token === TOKENS.usde
+    ? undefined
+    : getSyncDepositQueueWritableContract(args);
+
+type UseUsdVaultDepositArgs = {
+  onRetry?: () => void;
+  // the quote the form displays and its refetch: the deposit is held to it
+  shownQuote?: VaultQuote;
+  refetchQuote?: () => unknown;
+};
+
+export const useUsdVaultDeposit = ({
+  onRetry,
+  shownQuote,
+  refetchQuote,
+}: UseUsdVaultDepositArgs) => {
   const { txModalStages } = useTxModalStagesDeposit({
     stageOperationArgs: {
       willReceiveToken: USD_VAULT_TOKEN_SYMBOL,
       operationText: 'Requesting deposit for',
-      isAsyncQueueToken: (token) => token === TOKENS.usde,
     },
     stageApproveArgs: {
       willReceiveToken: USD_VAULT_TOKEN_SYMBOL,
       operationText: 'Unlocking',
     },
   });
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
+
+  const collector = useMemo(
+    () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
+  );
 
   return useDeposit<UsdDepositToken>({
-    depositQueueGetter: getDepositQueueWritableContract,
+    syncDepositQueueGetter: getSyncDepositQueue,
+    asyncDepositQueueGetter: getAsyncDepositQueueWritableContract,
+    collector,
+    shownQuote,
+    refetchQuote,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnUsdDepositingStart,
