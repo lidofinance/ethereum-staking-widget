@@ -85,7 +85,7 @@ export const createCachedProxy = ({
         payload: metricsHost || proxyUrlString,
         request: () =>
           standardFetcher(url, {
-            signal: AbortSignal.timeout(timeout),
+            timeoutMs: timeout,
             headers,
           }),
       });

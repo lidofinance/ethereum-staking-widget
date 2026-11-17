@@ -64,6 +64,9 @@ const readManifestFromFile = async (
   return parsing.data;
 };
 
+// per attempt; same as the cached-proxy default
+const MANIFEST_FETCH_TIMEOUT_MS = 5_000;
+
 // pure loader: fetch with retries + parse or throw
 const fetchManifestFromRemote = async (): Promise<Manifest> => {
   let lastError: unknown;
@@ -74,6 +77,7 @@ const fetchManifestFromRemote = async (): Promise<Manifest> => {
         request: () =>
           standardFetcher<unknown>(REMOTE_CONFIG_MANIFEST_URL, {
             headers: { Accept: 'application/json' },
+            timeoutMs: MANIFEST_FETCH_TIMEOUT_MS,
           }),
       });
       const parsing = ManifestSchema.safeParse(data);

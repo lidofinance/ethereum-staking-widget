@@ -163,6 +163,7 @@ const GeoCountryListSchema = z.preprocess(
     ]),
 );
 
+// missing geo → no restrictions (fail-open by design, see geo-handler)
 const GeoSchema = z
   .object({
     limited: GeoCountryListSchema.optional().default([]),

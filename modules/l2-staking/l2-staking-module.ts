@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { Address, encodeFunctionData, getContract, zeroAddress } from 'viem';
 import {
   ERROR_CODE,
