@@ -54,7 +54,6 @@ const { ETH, WETH: WETH_TOKEN } = TOKENS_TO_STAKE;
 
 const state = vi.hoisted(() => ({
   isAA: false,
-  l2Enabled: true,
   l2Stake: undefined as L2StakeModule | undefined,
   // the rate the form displays, as the conversion query hands it over
   shownRate: undefined as { feeRate: bigint; price: bigint } | undefined,
@@ -77,14 +76,6 @@ vi.mock('../hooks/use-conversion', () => ({
   useFastStakeConversion: () => ({
     data: state.shownRate,
     refetch: state.refetchRate,
-  }),
-}));
-vi.mock('../hooks/use-l2-stake-state', () => ({
-  // handed over as an object, like the form's state that re-renders
-  useL2StakeState: () => ({
-    get isEnabled() {
-      return state.l2Enabled;
-    },
   }),
 }));
 vi.mock('../hooks/use-fast-liquidity', () => ({
@@ -226,7 +217,6 @@ const consoleWarnSpy = vi
 beforeEach(() => {
   vi.clearAllMocks();
   state.isAA = false;
-  state.l2Enabled = true;
   state.shownRate = { feeRate: FEE, price: PRICE };
   state.wstethBalance.mockReset().mockResolvedValue(BALANCE_AFTER);
 });
@@ -777,53 +767,5 @@ describe('quote verification', () => {
       expect.any(QuoteMismatchError),
       onRetry,
     );
-  });
-});
-
-describe('L2 staking switched off during a stake', () => {
-  it('does not send the stake when the flag flips after the approve settled', async () => {
-    const { walletClient } = createModule(
-      legacyPerformTransaction('success', 'success'),
-    );
-    walletClient.writeContract.mockImplementationOnce(async () => {
-      state.l2Enabled = false;
-      return TX_HASH;
-    });
-
-    await expect(stake(WETH_TOKEN)).resolves.toBe(false);
-
-    expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
-    expect(walletClient.writeContract).toHaveBeenCalledWith(approveCall);
-    expect(state.txModalStages.failed).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'TxFlowInterruptedError',
-        message: ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
-      }),
-      onRetry,
-    );
-  });
-
-  it('does not send a stake that needs no approval when the flag is off', async () => {
-    const { walletClient } = createModule(legacyPerformTransaction('success'));
-    state.l2Enabled = false;
-
-    await expect(stake(ETH)).resolves.toBe(false);
-
-    expect(walletClient.writeContract).not.toHaveBeenCalled();
-    expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
-  });
-
-  it('does not send an AA batch when the flag is off', async () => {
-    state.isAA = true;
-    createModule(legacyPerformTransaction());
-    state.sendAACalls.mockImplementation(
-      aaSendCalls({ callId: CALL_ID, txHash: TX_HASH }),
-    );
-    state.l2Enabled = false;
-
-    await expect(stake(WETH_TOKEN)).resolves.toBe(false);
-
-    expect(state.sendAACalls).not.toHaveBeenCalled();
-    expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
   });
 });

@@ -22,9 +22,10 @@ import { useEthVaultDepositSteth } from './use-deposit-steth';
 type UseEthVaultDepositArgs = {
   onRetry?: () => void;
   // The quote the form displays for the selected token and its refetch: the
-  // deposit is held to it. Omitted where no quote is displayed
-  shownQuote?: VaultQuote;
-  refetchQuote?: () => unknown;
+  // deposit is held to it. Required, so a caller states it: undefined only
+  // where no quote is displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
 };
 
 type EthVaultDepositArgs = {
@@ -37,7 +38,7 @@ export const useEthVaultDeposit = ({
   onRetry,
   shownQuote,
   refetchQuote,
-}: UseEthVaultDepositArgs = {}) => {
+}: UseEthVaultDepositArgs) => {
   const { txModalStages } = useTxModalStagesDeposit({
     stageOperationArgs: {
       willReceiveToken: ETH_VAULT_TOKEN_SYMBOL,

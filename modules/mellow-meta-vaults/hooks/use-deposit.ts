@@ -82,9 +82,10 @@ type UseDepositArgs<DepositQueueToken extends string> = {
   // quotes the deposit right before it is sent
   collector: CollectorContract;
   // The quote the form displays and its refetch: the deposit is held to it.
-  // Omitted where no quote is displayed
-  shownQuote?: VaultQuote;
-  refetchQuote?: () => unknown;
+  // Required, so a caller states it: undefined only where no quote is
+  // displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
   txModalStages: TxModalStages;
   onRetry?: () => void;
   matomoEventStart?: MATOMO_EVENT_TYPE;

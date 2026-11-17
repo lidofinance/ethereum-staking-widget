@@ -25,8 +25,8 @@ type UseUsdVaultWithdrawArgs = {
   // the payout token, which decides the redeem queues
   token: UsdWithdrawToken;
   // the quote the form displays and its refetch: the withdrawal is held to it
-  shownQuote?: VaultQuote;
-  refetchQuote?: () => unknown;
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
 };
 
 export const useUsdVaultWithdraw = ({

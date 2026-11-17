@@ -1,7 +1,12 @@
 import { decodeFunctionData, getAddress, type Address, type Hash } from 'viem';
 
 import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import { QuoteMismatchError, TxSettledError } from 'modules/web3';
+import {
+  QuoteMismatchError,
+  TransactionRevertedError,
+  TxSentDataUnavailableError,
+  TxSettledError,
+} from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import { TOKENS } from 'consts/tokens';
 import {
@@ -240,12 +245,23 @@ describe('useEthVaultDepositSteth', () => {
     it('approves stETH, wraps, approves wstETH and deposits, in order', async () => {
       await expect(deposit({ shownQuote: SHOWN_QUOTE })).resolves.toBe(true);
 
+      // the quote is checked before the first step and again right before
+      // the deposit
       expectOrdered(
+        collector.read.getDepositParams,
         wrap.approveStethForWrap,
         wrap.wrapSteth,
         state.walletClient.writeContract,
-        collector.read.getDepositParams,
         state.queues.sync.write.deposit,
+      );
+      expect(collector.read.getDepositParams).toHaveBeenCalledTimes(2);
+      const [, lastQuoteOrder] =
+        collector.read.getDepositParams.mock.invocationCallOrder;
+      expect(lastQuoteOrder).toBeGreaterThan(
+        state.walletClient.writeContract.mock.invocationCallOrder[0] ?? 0,
+      );
+      expect(lastQuoteOrder).toBeLessThan(
+        state.queues.sync.write.deposit.mock.invocationCallOrder[0] ?? 0,
       );
       expect(wrap.approveStethForWrap).toHaveBeenCalledWith(
         expect.objectContaining({ value: AMOUNT }),
@@ -385,13 +401,35 @@ describe('useEthVaultDepositSteth', () => {
       );
     });
 
-    it('stops before the deposit when the fresh quote is worse than the displayed one', async () => {
-      state.stethAllowance = AMOUNT;
-      state.wstethAllowance = WSTETH_AMOUNT;
+    it('stops before any step when the quote is already worse than the displayed one', async () => {
       state.freshShares = SHARES - 1n;
 
       await expect(deposit({ shownQuote: SHOWN_QUOTE })).resolves.toBe(false);
 
+      expect(wrap.approveStethForWrap).not.toHaveBeenCalled();
+      expect(wrap.wrapSteth).not.toHaveBeenCalled();
+      expect(state.performTransaction).not.toHaveBeenCalled();
+      expect(collector.read.getDepositParams).toHaveBeenCalledTimes(1);
+      expect(refetchQuote).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+        onRetry,
+      );
+    });
+
+    it('stops before the deposit when the quote turns worse after the wrap', async () => {
+      state.stethAllowance = AMOUNT;
+      state.wstethAllowance = WSTETH_AMOUNT;
+      // the check before the first step passes, the one before the deposit not
+      collector.read.getDepositParams.mockImplementationOnce(async () => ({
+        shares: SHARES,
+      }));
+      state.freshShares = SHARES - 1n;
+
+      await expect(deposit({ shownQuote: SHOWN_QUOTE })).resolves.toBe(false);
+
+      expect(wrap.wrapSteth).toHaveBeenCalledTimes(1);
+      expect(collector.read.getDepositParams).toHaveBeenCalledTimes(2);
       expect(state.queues.sync.write.deposit).not.toHaveBeenCalled();
       expect(refetchQuote).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
@@ -399,6 +437,59 @@ describe('useEthVaultDepositSteth', () => {
           message: ErrorMessage.DEPOSIT_WRAPPED_INTERRUPTED,
           cause: expect.any(QuoteMismatchError),
         }),
+      );
+    });
+
+    it('reports the funds as wrapped, with no retry, when the deposit reverts after the wrap', async () => {
+      state.stethAllowance = AMOUNT;
+      state.wstethAllowance = WSTETH_AMOUNT;
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('success', 'reverted'),
+      );
+
+      await expect(deposit({ shownQuote: SHOWN_QUOTE })).resolves.toBe(false);
+
+      expect(state.queues.sync.write.deposit).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'TxFlowInterruptedError',
+          message: ErrorMessage.DEPOSIT_WRAPPED_INTERRUPTED,
+          cause: expect.any(TransactionRevertedError),
+        }),
+      );
+      expect(state.txModalStages.success).not.toHaveBeenCalled();
+    });
+
+    it('keeps the unread outcome of a sent deposit, which may have landed', async () => {
+      state.stethAllowance = AMOUNT;
+      state.wstethAllowance = WSTETH_AMOUNT;
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('success', 'unlocated'),
+      );
+
+      await expect(deposit({ shownQuote: SHOWN_QUOTE })).resolves.toBe(false);
+
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(TxSentDataUnavailableError),
+        onRetry,
+      );
+    });
+
+    it('keeps the settled outcome of a deposit whose follow-up read fails', async () => {
+      state.stethAllowance = AMOUNT;
+      state.wstethAllowance = WSTETH_AMOUNT;
+      state.performTransaction.mockImplementation(
+        legacyPerformTransaction('success', 'unconfirmed'),
+      );
+
+      await expect(deposit({ shownQuote: SHOWN_QUOTE })).resolves.toBe(true);
+
+      expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(TxSettledError),
+        onRetry,
       );
     });
   });

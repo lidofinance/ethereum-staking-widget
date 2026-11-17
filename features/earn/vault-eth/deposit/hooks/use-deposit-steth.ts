@@ -17,6 +17,7 @@ import {
   isStepSettled,
   QuoteMismatchError,
   TxFlowInterruptedError,
+  TxSentDataUnavailableError,
   TxSettledError,
   useDappStatus,
   useLidoSDK,
@@ -80,9 +81,9 @@ type UseEthVaultDepositStethArgs = {
   // quotes the deposit right before it is sent
   collector: CollectorContract;
   // The quote the form displays (for the wstETH the stETH wraps to) and its
-  // refetch: the deposit is held to it. Omitted where no quote is displayed
-  shownQuote?: VaultQuote;
-  refetchQuote?: () => unknown;
+  // refetch: the deposit is held to it. Undefined where no quote is displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
   txModalStages: DepositTxModalStages;
   onRetry?: () => void;
 };
@@ -114,7 +115,9 @@ export const useEthVaultDepositSteth = ({
       // Run right before the deposit is sent, as the last step before the
       // wallet is reached in both signing paths, after the wrap and any
       // approval: the quote re-read on the queue the deposit goes to must not
-      // be worse than the displayed one. A better quote passes
+      // be worse than the displayed one. A better quote passes. A stepwise
+      // send also runs it once before the first step, so a quote that is
+      // already worse stops the flow before the approval and the wrap
       const checkBeforeDeposit = async (data: DepositStethData) => {
         if (!shownQuote) return;
         const quote = await readDepositQuote({
@@ -131,7 +134,7 @@ export const useEthVaultDepositSteth = ({
 
       const { isSuccess } = await txFlow<DepositStethData>({
         refetchScope: getVaultRefetchScope(ETH_VAULT_QUERY_SCOPE),
-        prepare: async () => {
+        prepare: async ({ isAA }) => {
           invariant(address, 'needs address');
           const wstethAddress = getTokenAddress(core.chainId, TOKENS.wsteth);
           invariant(wstethAddress, 'wstETH address not defined');
@@ -159,7 +162,7 @@ export const useEthVaultDepositSteth = ({
             wstethAddress,
           ).read.allowance([address, depositQueue.address]);
 
-          return {
+          const data = {
             address,
             wstethAddress,
             depositQueue,
@@ -169,6 +172,9 @@ export const useEthVaultDepositSteth = ({
             needsStethApprove: stethAllowance < amount,
             needsWstethApprove: wstethAllowance < wstethAmount,
           };
+          // a batch is checked once built, see callsFn
+          if (!isAA) await checkBeforeDeposit(data);
+          return data;
         },
         // every step joins the batch for AA wallets and goes as a separate
         // transaction otherwise. A batch is signed as built, so it is checked
@@ -330,12 +336,21 @@ export const useEthVaultDepositSteth = ({
         onFailure: async ({ error, ctx }) => {
           console.error(error);
           const cause = error instanceof TxSettledError ? error.cause : error;
-          // The wrap landed but the deposit was never sent (an approval or
-          // the deposit failed before reaching the chain, or the quote
-          // changed). The funds are wstETH now and a
+          // The wrap landed but the deposit did not: it was never sent (an
+          // approval or the deposit failed before reaching the chain, or the
+          // quote changed) or it reverted. The funds are wstETH now and a
           // retry of a stETH deposit would wrap again: whatever stopped the
-          // deposit, the user must learn where the funds are
-          if (isStepSettled(ctx, STEP.wrap) && !isStepSent(ctx, STEP.deposit)) {
+          // deposit, the user must learn where the funds are. A deposit that
+          // settled, or was sent and never read back and so may have landed,
+          // keeps its own error, which offers no retry
+          const isDepositOutcomeUnknown =
+            isStepSent(ctx, STEP.deposit) &&
+            error instanceof TxSentDataUnavailableError;
+          if (
+            isStepSettled(ctx, STEP.wrap) &&
+            !isStepSettled(ctx, STEP.deposit) &&
+            !isDepositOutcomeUnknown
+          ) {
             txModalStages.failed(
               new TxFlowInterruptedError(
                 ErrorMessage.DEPOSIT_WRAPPED_INTERRUPTED,

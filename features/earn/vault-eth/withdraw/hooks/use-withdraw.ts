@@ -22,8 +22,8 @@ import { ETH_VAULT_QUERY_SCOPE } from '../../consts';
 type UseEthVaultWithdrawArgs = {
   onRetry: () => void;
   // the quote the form displays and its refetch: the withdrawal is held to it
-  shownQuote?: VaultQuote;
-  refetchQuote?: () => unknown;
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
 };
 
 export const useEthVaultWithdraw = ({

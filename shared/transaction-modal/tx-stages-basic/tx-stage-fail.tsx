@@ -9,7 +9,8 @@ type TxStageFailProps = {
   failedText?: React.ReactNode;
   // Present only when the transaction may be submitted again: the stage
   // builders decide that from the error, see `isRetryableTxError`
-  onRetry?: React.MouseEventHandler<HTMLSpanElement>;
+  // Returning false means the retry was not started: the failure stays as is
+  onRetry?: (e: React.MouseEvent<HTMLSpanElement>) => void | boolean;
   // The transaction itself went through, only a follow-up read failed
   isSettled?: boolean;
   footer?: React.ReactNode;
@@ -25,7 +26,7 @@ export const TxStageFail = ({
   const handleRetry = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
       setLoading(true);
-      onRetry?.(e);
+      if (onRetry?.(e) === false) setLoading(false);
     },
     [onRetry],
   );

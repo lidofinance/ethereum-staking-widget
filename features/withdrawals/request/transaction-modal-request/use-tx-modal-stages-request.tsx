@@ -16,6 +16,7 @@ import { TxRequestStageSuccess } from './tx-stage-request-success';
 
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import type { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
+import { TxStaleError } from 'modules/web3';
 import { getErrorMessage, isRetryableTxError, isSettledTxError } from 'utils';
 
 const STAGE_APPROVE_ARGS = {
@@ -104,6 +105,8 @@ const getTxModalStagesRequest = (
     suggestTryAllowance?: boolean,
     onTryAllowance?: () => void,
   ) => {
+    // a flow superseded before it reached the wallet: nothing to report
+    if (error instanceof TxStaleError) return;
     return transitStage(
       <TxStageFail
         footer={

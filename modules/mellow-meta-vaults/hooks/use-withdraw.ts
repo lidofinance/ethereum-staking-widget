@@ -70,9 +70,11 @@ type UseWithdrawArgs = {
   // the vault's oracle; the sync queue prices a redemption with its report
   oracle: OracleContract;
   collector: CollectorContract;
-  // The quote the form displays and its refetch: the withdrawal is held to it
-  shownQuote?: VaultQuote;
-  refetchQuote?: () => unknown;
+  // The quote the form displays and its refetch: the withdrawal is held to
+  // it. Required, so a caller states it: undefined only where no quote is
+  // displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
   txModalStages: TxModalStages;
   onRetry?: () => void;
   matomoEventStart?: MATOMO_EVENT_TYPE;
@@ -205,7 +207,11 @@ export const useWithdraw = ({
       // The quote is re-read right before sending, as the last step before
       // the wallet is reached in both signing paths, on the queue the
       // withdrawal goes to. Only a worse quote than the displayed one stops
-      // the withdrawal; a better one passes
+      // the withdrawal; a better one passes. The form displays the async
+      // queue's quote: the Collector prices a redemption by the queue's asset
+      // alone (oracle price, less the redeem fee), so the sync queue of the
+      // same asset quotes the same, and its own penalty routes to the async
+      // queue in prepare
       const verifyQuote = async ({ syncQueue }: WithdrawData) => {
         if (!shownQuote) return;
         const quote = await readWithdrawQuote({

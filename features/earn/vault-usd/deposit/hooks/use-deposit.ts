@@ -31,8 +31,8 @@ const getSyncDepositQueue = (args: SyncDepositQueueGetterArgs) =>
 type UseUsdVaultDepositArgs = {
   onRetry?: () => void;
   // the quote the form displays and its refetch: the deposit is held to it
-  shownQuote?: VaultQuote;
-  refetchQuote?: () => unknown;
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
 };
 
 export const useUsdVaultDeposit = ({

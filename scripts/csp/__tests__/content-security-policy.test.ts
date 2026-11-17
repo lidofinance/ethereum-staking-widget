@@ -133,30 +133,44 @@ describe('createContentSecurityPolicy with an invalid value', () => {
   });
 
   it.each([
-    [
-      'a trusted host with a control character',
-      { trustedHosts: ['https://a.example\r\nX: 1'] },
-    ],
-    ['a trusted host with NUL', { trustedHosts: ['https://a.example\u0000'] }],
-    ['a relative report URI', { reportUri: '/api/csp-report' }],
-  ])('falls back to the default policy and logs for %s', (_name, override) => {
-    const directives = directivesOf({ ...serverInputs, ...override });
+    ['a control character', 'https://a.example\r\nX: 1'],
+    ['NUL', 'https://a.example\u0000'],
+    ['a directive separator', 'https://a.example; script-src *'],
+  ])('drops only a trusted host with %s', (_name, bad) => {
+    const directives = directivesOf({
+      ...serverInputs,
+      trustedHosts: ['https://ok.example', bad],
+    });
 
-    expect(directives.scriptSrc).toEqual([
-      "'self'",
-      "'sha256-wTvVT3oJ2rMAqNUILvSYccTn53N47S3NIZbPE0ql0No='",
-    ]);
-    expect(directives.reportURI).toBeUndefined();
+    expect(directives.scriptSrc).toContain('https://ok.example');
+    expect(directives.scriptSrc).not.toContain(bad);
+    expect(directives.frameSrc).toContain(COWSWAP);
+    expect(directives.reportURI).toBe(REPORT_URI);
     expect(console.error).toHaveBeenCalledTimes(1);
   });
 
-  it('falls back to the default CoW base URL', () => {
+  it('drops only a relative report URI', () => {
     const directives = directivesOf({
       ...serverInputs,
-      trustedHosts: ['bad\u0000'],
+      reportUri: '/api/csp-report',
     });
+
+    expect(directives.reportURI).toBeUndefined();
+    expect(directives.scriptSrc).toContain('https://trusted.example');
+    expect(directives.frameSrc).toContain(COWSWAP);
+    expect(console.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the default CoW base URL when the configured one is invalid', () => {
+    const directives = directivesOf({
+      ...serverInputs,
+      cowswapBaseUrl: 'not a url',
+    });
+
     expect(directives.frameSrc).toContain(DEFAULT_COWSWAP_WIDGET_BASE_URL);
-    expect(directives.frameSrc).not.toContain(COWSWAP);
+    expect(directives.scriptSrc).toContain('https://trusted.example');
+    expect(directives.reportURI).toBe(REPORT_URI);
+    expect(console.error).toHaveBeenCalledTimes(1);
   });
 
   it('keeps the policy and logs nothing when the inputs are valid', () => {

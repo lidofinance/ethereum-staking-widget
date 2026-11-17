@@ -53,8 +53,13 @@ export const FormController: FC<React.ComponentProps<'form'>> = ({
 
   // Bind retry callback
   useEffect(() => {
-    return retryEvent.subscribe(doSubmit);
-  }, [retryEvent, doSubmit]);
+    // a retry dropped by a disabled form reports it, so the modal that
+    // asked keeps showing the failure instead of waiting for a new attempt
+    return retryEvent.subscribe(() => {
+      if (disabled) return false;
+      void doSubmit();
+    });
+  }, [retryEvent, doSubmit, disabled]);
 
   const resetWithValues = useCallback(() => {
     reset(getValues());

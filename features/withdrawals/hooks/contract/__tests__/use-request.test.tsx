@@ -7,6 +7,12 @@ const state = vi.hoisted(() => ({
   isBunker: false,
   isBunkerModeActive: vi.fn(async () => false),
   requestWithdrawal: vi.fn(async () => undefined),
+  requestWithdrawalWithPermit: vi.fn(async () => undefined),
+  processApproveTx: vi.fn(async () => undefined),
+  // the allowance the form loaded with
+  needsApprove: false,
+  hasEnoughAllowance: true,
+  isApprovalFlow: true,
   closeModal: vi.fn(),
   txModalStages: {
     dialogBunker: vi.fn(async () => true),
@@ -49,8 +55,12 @@ vi.mock('modules/web3', async () => ({
   useLidoSDK: () => ({
     withdraw: {
       views: { isBunkerModeActive: state.isBunkerModeActive },
-      request: { requestWithdrawal: state.requestWithdrawal },
-      approval: {},
+      request: {
+        requestWithdrawal: state.requestWithdrawal,
+        requestWithdrawalWithPermit: state.requestWithdrawalWithPermit,
+        requestWithdrawalPopulateTx: vi.fn(),
+      },
+      approval: { approvePopulateTx: vi.fn() },
     },
   }),
   useTxFlow: () => txFlow,
@@ -59,19 +69,22 @@ vi.mock('modules/web3', async () => ({
 vi.mock('config', () => ({ config: {} }));
 vi.mock('../use-withdrawal-request-tx-approve', () => ({
   useWithdrawalRequestTxApprove: () => ({
-    hasEnoughAllowance: true,
-    needsApprove: false,
-    isApprovalFlow: true,
+    hasEnoughAllowance: state.hasEnoughAllowance,
+    needsApprove: state.needsApprove,
+    isApprovalFlow: state.isApprovalFlow,
     isForceAllowance: false,
     setIsForceAllowance: vi.fn(),
     refetchAllowance: vi.fn(),
-    processApproveTx: vi.fn(),
+    processApproveTx: state.processApproveTx,
   }),
 }));
 
+import { TxStaleError } from 'modules/web3';
 import { useWithdrawalRequest } from '../useRequest';
 
 const AMOUNT = 10n ** 18n;
+
+const onRetry = vi.fn();
 
 const renderRequest = () => {
   let request: ReturnType<typeof useWithdrawalRequest>['request'] | undefined;
@@ -79,6 +92,7 @@ const renderRequest = () => {
     request = useWithdrawalRequest({
       amount: AMOUNT,
       token: TOKENS_TO_WITHDRAWLS.stETH,
+      onRetry,
     }).request;
     return null;
   };
@@ -99,6 +113,9 @@ describe('useWithdrawalRequest bunker mode', () => {
     state.isBunker = false;
     state.isBunkerModeActive.mockResolvedValue(false);
     state.txModalStages.dialogBunker.mockResolvedValue(true);
+    state.needsApprove = false;
+    state.hasEnoughAllowance = true;
+    state.isApprovalFlow = true;
   });
 
   it('sends the request when bunker mode is off', async () => {
@@ -157,9 +174,97 @@ describe('useWithdrawalRequest bunker mode', () => {
     expect(txFlow).not.toHaveBeenCalled();
     expect(state.txModalStages.failed).toHaveBeenCalledWith(
       error,
-      undefined,
+      onRetry,
       false,
       expect.any(Function),
     );
+  });
+});
+
+describe('useWithdrawalRequest approval and permit', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    state.isBunker = false;
+    state.isBunkerModeActive.mockResolvedValue(false);
+    state.txModalStages.dialogBunker.mockResolvedValue(true);
+    state.needsApprove = false;
+    state.hasEnoughAllowance = true;
+    state.isApprovalFlow = true;
+  });
+
+  it('approves first and then sends the request, on the shared stages', async () => {
+    state.needsApprove = true;
+
+    const result = await renderRequest()();
+
+    expect(result).toBe(true);
+    expect(state.processApproveTx).toHaveBeenCalledTimes(1);
+    expect(state.processApproveTx).toHaveBeenCalledWith({
+      onRetry,
+      txModalStages: state.txModalStages,
+    });
+    expect(state.requestWithdrawal).toHaveBeenCalledTimes(1);
+    expect(state.processApproveTx.mock.invocationCallOrder[0]).toBeLessThan(
+      state.requestWithdrawal.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('confirms bunker mode before the approval', async () => {
+    state.needsApprove = true;
+    state.isBunkerModeActive.mockResolvedValue(true);
+
+    await renderRequest()();
+
+    expect(
+      state.txModalStages.dialogBunker.mock.invocationCallOrder[0],
+    ).toBeLessThan(state.processApproveTx.mock.invocationCallOrder[0]);
+  });
+
+  it('does not approve when the allowance covers the request', async () => {
+    await renderRequest()();
+
+    expect(state.processApproveTx).not.toHaveBeenCalled();
+    expect(state.requestWithdrawal).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends no request when the approval fails', async () => {
+    state.needsApprove = true;
+    const error = new Error('approval rejected');
+    state.processApproveTx.mockRejectedValueOnce(error);
+
+    const result = await renderRequest()();
+
+    expect(result).toBe(false);
+    expect(state.requestWithdrawal).not.toHaveBeenCalled();
+    expect(state.txModalStages.failed).toHaveBeenCalledWith(
+      error,
+      onRetry,
+      false,
+      expect.any(Function),
+    );
+  });
+
+  it('requests with a permit when the allowance is short', async () => {
+    state.hasEnoughAllowance = false;
+    state.needsApprove = true;
+    state.isApprovalFlow = false;
+
+    const result = await renderRequest()();
+
+    expect(result).toBe(true);
+    expect(state.processApproveTx).not.toHaveBeenCalled();
+    expect(state.requestWithdrawal).not.toHaveBeenCalled();
+    expect(state.requestWithdrawalWithPermit).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows nothing and sends nothing more for a superseded flow', async () => {
+    txFlow.mockRejectedValueOnce(new TxStaleError());
+
+    const result = await renderRequest()();
+
+    expect(result).toBe(false);
+    expect(state.txModalStages.failed).not.toHaveBeenCalled();
+    expect(state.requestWithdrawal).not.toHaveBeenCalled();
   });
 });

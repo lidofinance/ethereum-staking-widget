@@ -142,23 +142,71 @@ const policyProblem = (policy) => {
   return undefined;
 };
 
+// A source or URL that stays one token of one directive in the header
+const isSafeToken = (value) =>
+  typeof value === 'string' &&
+  value !== '' &&
+  !INVALID_HEADER_CHAR.test(value) &&
+  !/[\s;,]/.test(value);
+
+const isSafeUrl = (value) => isSafeToken(value) && isAbsoluteUrl(value);
+
 /**
- * The policy for the inputs. A policy that cannot become a valid header
- * (a bad CSP_TRUSTED_HOSTS or CSP_REPORT_URI value) is logged and replaced by
- * the same policy without the env-derived parts: a broken env costs the custom
- * sources, not every page.
+ * Keeps the valid env-derived inputs and drops the rest
+ * @param {Parameters<typeof buildContentSecurityPolicy>[0]} inputs
+ * @returns {{ inputs: typeof inputs, dropped: string[] }}
+ */
+const sanitizeInputs = (inputs) => {
+  const dropped = [];
+  const trustedHosts = [];
+  for (const host of inputs.trustedHosts) {
+    const value = typeof host === 'string' ? host.trim() : host;
+    if (value === '') continue;
+    if (isSafeToken(value)) trustedHosts.push(value);
+    else dropped.push(`trusted host ${JSON.stringify(host)}`);
+  }
+
+  let { reportUri, cowswapBaseUrl } = inputs;
+  if (reportUri && !isSafeUrl(reportUri)) {
+    dropped.push(`report URI ${JSON.stringify(reportUri)}`);
+    reportUri = undefined;
+  }
+  if (!isSafeUrl(cowswapBaseUrl)) {
+    dropped.push(
+      `CoW base URL ${JSON.stringify(cowswapBaseUrl)} (using the default)`,
+    );
+    cowswapBaseUrl = DEFAULT_COWSWAP_WIDGET_BASE_URL;
+  }
+  return {
+    inputs: { ...inputs, trustedHosts, reportUri, cowswapBaseUrl },
+    dropped,
+  };
+};
+
+/**
+ * The policy for the inputs. Each env-derived input (CSP_TRUSTED_HOSTS sources,
+ * CSP_REPORT_URI, the CoW base URL) is checked on its own: an invalid one is
+ * logged and left out, the valid ones are kept. A broken env costs only its
+ * own contribution, not every page.
  * @param {Parameters<typeof buildContentSecurityPolicy>[0]} inputs see above
  */
 export const createContentSecurityPolicy = (inputs) => {
-  const policy = buildContentSecurityPolicy(inputs);
+  const { inputs: valid, dropped } = sanitizeInputs(inputs);
+  if (dropped.length > 0) {
+    console.error(
+      `[csp] ignoring invalid configuration: ${dropped.join(', ')}`,
+    );
+  }
+  const policy = buildContentSecurityPolicy(valid);
   const problem = policyProblem(policy);
   if (!problem) return policy;
 
+  // last safety net: a problem the per-input checks did not catch
   console.error(
-    `[csp] the configured policy is not valid (${problem}), using the default policy`,
+    `[csp] the policy is not valid (${problem}), using the default policy`,
   );
   return buildContentSecurityPolicy({
-    ...inputs,
+    ...valid,
     trustedHosts: [],
     reportUri: undefined,
     cowswapBaseUrl: DEFAULT_COWSWAP_WIDGET_BASE_URL,

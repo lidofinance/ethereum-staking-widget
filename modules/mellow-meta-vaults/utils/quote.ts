@@ -37,13 +37,27 @@ export type VaultQuote = {
 };
 
 /**
- * The fresh quote gives less per unit than the displayed one. Compared as
- * rates, so a quote displayed for a slightly different amount (the preview
- * is debounced) is still held to its rate. A displayed zero amount means
- * nothing was displayed and never stops the transaction.
+ * The fresh quote gives less per unit than the displayed one. A displayed
+ * zero amount means nothing was displayed and never stops the transaction.
+ *
+ * For the same amount the outputs compare exactly: the Collector computes
+ * both the same way, so a smaller output means worse terms. A quote can also
+ * be displayed for a slightly different amount (the preview is debounced; a
+ * stETH amount is converted to wstETH at a cached rate), and then the rates
+ * compare. The Collector's output is the amount times the rate rounded by
+ * integer division (and less the floored fee), within one unit of the exact
+ * product either way, so each rate is only known to within one unit of
+ * output over the amount. The fresh quote is worse only when even its
+ * highest possible rate, (output + 1) / amount, is at most the lowest
+ * possible displayed one, (output - 1) / amount; compared cross-multiplied
  */
-export const isQuoteWorse = (fresh: VaultQuote, shown: VaultQuote) =>
-  fresh.output * shown.amount < shown.output * fresh.amount;
+export const isQuoteWorse = (fresh: VaultQuote, shown: VaultQuote) => {
+  if (shown.amount === 0n) return false;
+  if (fresh.amount === shown.amount) return fresh.output < shown.output;
+  return (
+    (fresh.output + 1n) * shown.amount <= (shown.output - 1n) * fresh.amount
+  );
+};
 
 type ReadDepositQuoteArgs = {
   collector: CollectorContract;
