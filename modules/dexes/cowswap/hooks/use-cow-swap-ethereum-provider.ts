@@ -1,11 +1,12 @@
 import { useEffect, useMemo } from 'react';
 import { EthereumProvider } from '@cowprotocol/widget-react';
+import { isAddressEqual } from 'viem';
 import { useConnection, useWalletClient } from 'wagmi';
 
 import { useDappStatus, useIsLedgerLive } from 'modules/web3';
 
 import type { ApprovalData, OrderData, NetworkTxConfig } from '../guards/tx';
-import type { SigningHelpTip } from '../guards/trade';
+import type { CowSwapSession, SigningHelpTip } from '../guards/trade';
 import { createCowSwapProvider } from '../utils';
 
 const CLEANUP_SET = new Set<() => void>();
@@ -25,7 +26,11 @@ const cleanup = () => {
   CLEANUP_SET.clear();
 };
 
-type UseCowSwapEthereumProviderOptions = {
+type UseCowSwapEthereumProviderArgs = {
+  // starts the provider's session; cleanup revokes it
+  startSession: () => CowSwapSession;
+  // address check of the connected signer, run before every wallet signature
+  validateSigner: () => Promise<boolean>;
   consumeSignedOrder: (order: OrderData) => string | null;
   verifyApproval: (approval: ApprovalData) => string | null;
   openTransactionGuardModal: (reason: string) => Promise<void>;
@@ -38,19 +43,22 @@ type UseCowSwapEthereumProviderOptions = {
 };
 
 export const useCowSwapEthereumProvider = ({
+  startSession,
+  validateSigner,
   consumeSignedOrder,
   verifyApproval,
   openTransactionGuardModal,
   openSigningErrorModal,
   getNetworkTxConfig,
   appCode,
-}: UseCowSwapEthereumProviderOptions): {
+}: UseCowSwapEthereumProviderArgs): {
   provider: EthereumProvider | undefined;
   // wallet is on the dapp chain but its client is not ready yet
   isProviderPending: boolean;
 } => {
-  const { chainId, walletChainId } = useDappStatus();
-  const { data: walletClient } = useWalletClient();
+  const { address, chainId, walletChainId } = useDappStatus();
+  // keyed by the account: a client fetched for the previous one is never reused
+  const { data: walletClient } = useWalletClient({ account: address });
   const { connector } = useConnection();
   const isLedgerLive = useIsLedgerLive();
 
@@ -62,16 +70,26 @@ export const useCowSwapEthereumProvider = ({
   }, []);
 
   return useMemo(() => {
+    // any change ends the previous provider's session, also when no new provider follows
+    cleanup();
+
     // resolved from the same chainId the validators receive
     const networkTxConfig = getNetworkTxConfig(chainId);
     if (walletChainId !== chainId || !networkTxConfig) {
       return { provider: undefined, isProviderPending: false };
     }
-    if (!walletClient || !connector || walletClient.chain.id !== chainId) {
+    if (
+      !walletClient ||
+      !connector ||
+      !address ||
+      walletClient.chain.id !== chainId ||
+      !isAddressEqual(walletClient.account.address, address)
+    ) {
       return { provider: undefined, isProviderPending: true };
     }
 
-    cleanup();
+    const session = startSession();
+    addCleanup(session.revoke);
 
     const provider = createCowSwapProvider({
       walletClient,
@@ -80,6 +98,8 @@ export const useCowSwapEthereumProvider = ({
       isLedgerLive,
       networkTxConfig,
       appCode,
+      isSessionActive: session.isActive,
+      validateSigner,
       consumeSignedOrder,
       verifyApproval,
       openTransactionGuardModal,
@@ -90,10 +110,13 @@ export const useCowSwapEthereumProvider = ({
   }, [
     walletClient,
     connector,
+    address,
     chainId,
     walletChainId,
     getNetworkTxConfig,
     appCode,
+    startSession,
+    validateSigner,
     consumeSignedOrder,
     verifyApproval,
     openTransactionGuardModal,

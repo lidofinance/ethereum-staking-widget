@@ -5,6 +5,24 @@
 
 export const DEFAULT_COWSWAP_WIDGET_BASE_URL = 'https://cow-ipfs.testnet.fi/';
 
+/**
+ * The CoW widget base URL in one form for the frame-src source and the widget:
+ * the widget library loads `<origin><path>/#/...`, so the path ends with one
+ * '/' whether or not the configured value has it, and a source with a final
+ * '/' admits that document by path prefix
+ * @param {string | undefined} value - COWSWAP_WIDGET_BASE_URL
+ */
+export const resolveCowswapBaseUrl = (value) => {
+  const baseUrl = value?.trim() || DEFAULT_COWSWAP_WIDGET_BASE_URL;
+  try {
+    const url = new URL(baseUrl);
+    return `${url.origin}${url.pathname.replace(/\/+$/, '')}/`;
+  } catch {
+    // not a URL: the widget library refuses it as well
+    return baseUrl;
+  }
+};
+
 // light/dark theme on pageload apply script
 // if script changes, new hash must be checked against CSP error and updated
 const THEME_BOOTSTRAP_SCRIPT_HASH =
@@ -31,8 +49,7 @@ export const cspInputsFromEnv = (env = process.env) => ({
   // empty means "no reporting": next-secure-headers rejects '' as an invalid URL
   reportUri: env.CSP_REPORT_URI || undefined,
   reportOnly: toBoolean(env.CSP_REPORT_ONLY),
-  cowswapBaseUrl:
-    env.COWSWAP_WIDGET_BASE_URL || DEFAULT_COWSWAP_WIDGET_BASE_URL,
+  cowswapBaseUrl: resolveCowswapBaseUrl(env.COWSWAP_WIDGET_BASE_URL),
 });
 
 /**
@@ -40,7 +57,7 @@ export const cspInputsFromEnv = (env = process.env) => ({
  * @param {string[]} inputs.trustedHosts - extra script sources (CSP_TRUSTED_HOSTS)
  * @param {string | undefined} inputs.reportUri - violation report endpoint (CSP_REPORT_URI)
  * @param {boolean} inputs.reportOnly - report-only delivery (CSP_REPORT_ONLY)
- * @param {string} inputs.cowswapBaseUrl - the CoW swap widget origin the DEX withdrawals frame
+ * @param {string} inputs.cowswapBaseUrl - the CoW swap widget base URL the DEX frame loads, from resolveCowswapBaseUrl
  * @param {boolean} inputs.developmentMode - allows HMR: 'unsafe-eval' and ws:
  * @param {boolean} inputs.ipfsMode - <meta> delivery, which ignores the header-only directives
  * @param {string} [inputs.ipfsBaseScriptHash] - hash of the IPFS bootstrap inline script

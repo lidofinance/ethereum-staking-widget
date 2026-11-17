@@ -92,6 +92,11 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   // throw on CSP violation
   useCspBlocked();
 
+  const validate = useCallback(
+    () => validateAddress(address),
+    [validateAddress, address],
+  );
+
   const {
     modalState,
     handleModalClose,
@@ -103,6 +108,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     consumeSignedOrder,
     verifyApproval,
     rejectWrapOrUnwrap,
+    startSession,
   } = useTradeGuard({
     chainId: widgetChainId,
     isTestnet,
@@ -110,6 +116,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     oracleFeeds,
     quoteErrorEvent: analytics.quoteError,
     weth,
+    validateSigner: validate,
   });
 
   // token pairs for the Matomo token dimension, kept for the order lifecycle events
@@ -127,12 +134,9 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     [analytics.quoteViewed, tokenPairs],
   );
 
-  const validate = useCallback(
-    () => validateAddress(address),
-    [validateAddress, address],
-  );
-
   const { provider, isProviderPending } = useCowSwapEthereumProvider({
+    startSession,
+    validateSigner: validate,
     consumeSignedOrder,
     verifyApproval,
     openTransactionGuardModal,
@@ -217,6 +221,9 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       // enables opening explorer and `powered by cowswap` links
       // ONLY safe when used with pinned IPFS cowswap UI,
       // otherwise prone to security risks during domain takeover
+      // Kept enabled: the widget is expected to run a pinned build of the CoW UI, so its window-open
+      // targets come from fixed content. The base URL is a configured hostname (COWSWAP_WIDGET_BASE_URL),
+      // not a content-addressed one, so the pin is operational and not enforced in code.
       disableWindowOpen: false,
       disableSwitchingTokens: true,
       // wrapping ETH is blocked by the trade guard, so the banner offering it is hidden
@@ -242,10 +249,8 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       locale: LOCALE,
 
       hooks: {
-        onBeforeApproval: async () => {
-          if (!(await validateApproval())) return false;
-          return await validate();
-        },
+        // trade and approval gates check the signer first and drop stored snapshots on rejection
+        onBeforeApproval: validateApproval,
         // ETH ↔ WETH wrap/unwrap is not allowed; explain instead of failing silently
         onBeforeWrapOrUnwrap: rejectWrapOrUnwrap,
         onBeforeTrade: async (payload) => {
@@ -254,7 +259,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
           trackMatomoEvent(analytics.swapStart, {
             token: tokenPairs.pair(payload.sellToken, payload.buyToken),
           });
-          return await validate();
+          return true;
         },
         onBeforeOrderCancel: async () => {
           return await validate();

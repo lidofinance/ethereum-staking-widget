@@ -59,6 +59,7 @@ const TRADE = {
 } as unknown as OnTradeParamsPayload;
 
 const setup = () => {
+  const validateSigner = vi.fn().mockResolvedValue(true);
   const guard = renderHook(() =>
     useTradeGuard({
       chainId: 1,
@@ -66,6 +67,7 @@ const setup = () => {
       oracleFeeds: { sell: {}, buy: {} },
       quoteErrorEvent: 'swapQuoteError' as never,
       weth: WETH,
+      validateSigner,
     }),
   );
   const walletClient = {
@@ -75,20 +77,40 @@ const setup = () => {
     getAddresses: vi.fn().mockResolvedValue([SIGNER]),
   };
   const openTransactionGuardModal = vi.fn().mockResolvedValue(undefined);
-  const provider = createCowSwapProvider({
+  // the provider of one session, as the provider hook creates it
+  const createProvider = () =>
+    createCowSwapProvider({
+      walletClient,
+      connector: { emitter: { on: vi.fn(), off: vi.fn() } },
+      chainId: 1,
+      isLedgerLive: false,
+      networkTxConfig: MAINNET_TX_CONFIG,
+      appCode: 'Test App',
+      isSessionActive: guard.startSession().isActive,
+      validateSigner: () => Promise.resolve(true),
+      consumeSignedOrder: guard.consumeSignedOrder,
+      verifyApproval: guard.verifyApproval,
+      openTransactionGuardModal,
+      openSigningErrorModal: vi.fn().mockResolvedValue(undefined),
+      addCleanup: () => {},
+    } as never);
+  const provider = createProvider();
+  return {
+    guard,
+    provider,
+    createProvider,
     walletClient,
-    connector: { emitter: { on: vi.fn(), off: vi.fn() } },
-    chainId: 1,
-    isLedgerLive: false,
-    networkTxConfig: MAINNET_TX_CONFIG,
-    appCode: 'Test App',
-    consumeSignedOrder: guard.consumeSignedOrder,
-    verifyApproval: guard.verifyApproval,
     openTransactionGuardModal,
-    openSigningErrorModal: vi.fn().mockResolvedValue(undefined),
-    addCleanup: () => {},
-  } as never);
-  return { guard, provider, walletClient, openTransactionGuardModal };
+    validateSigner,
+  };
+};
+
+const deferred = <T,>() => {
+  let settle!: (value: T) => void;
+  const promise = new Promise<T>((resolve) => {
+    settle = resolve;
+  });
+  return { promise, resolve: settle };
 };
 
 beforeEach(() => {
@@ -128,5 +150,141 @@ describe('useTradeGuard: one native ETH request per validated trade', () => {
     expect(await guard.validateTrade(TRADE)).toBe(true);
     await expect(request()).resolves.toBe('0xhash');
     expect(walletClient.request).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('useTradeGuard: signer check gates signing', () => {
+  const send = (provider: ReturnType<typeof setup>['provider']) =>
+    provider.request({ id: 1, method: 'eth_sendTransaction', params: [{}] });
+
+  it('a rejected trade followed by a sign request does not reach the wallet', async () => {
+    const { guard, provider, walletClient, validateSigner } = setup();
+    validateSigner.mockResolvedValue(false);
+
+    guard.reportTradeParams(TRADE);
+    expect(await guard.validateTrade(TRADE)).toBe(false);
+
+    await expect(send(provider)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('a valid trade proceeds to the wallet', async () => {
+    const { guard, provider, walletClient } = setup();
+
+    guard.reportTradeParams(TRADE);
+    expect(await guard.validateTrade(TRADE)).toBe(true);
+
+    await expect(send(provider)).resolves.toBe('0xhash');
+    expect(walletClient.request).toHaveBeenCalledTimes(1);
+  });
+
+  it('a valid trade followed by a rejected one clears the stored trade', async () => {
+    const { guard, provider, walletClient, validateSigner } = setup();
+
+    guard.reportTradeParams(TRADE);
+    expect(await guard.validateTrade(TRADE)).toBe(true);
+
+    validateSigner.mockResolvedValue(false);
+    expect(await guard.validateTrade(TRADE)).toBe(false);
+
+    await expect(send(provider)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('a rejected approval check clears the stored trade and approval', async () => {
+    const { guard, provider, walletClient, validateSigner } = setup();
+
+    guard.reportTradeParams(TRADE);
+    expect(await guard.validateTrade(TRADE)).toBe(true);
+
+    validateSigner.mockResolvedValue(false);
+    expect(await guard.validateApproval()).toBe(false);
+
+    await expect(send(provider)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+});
+
+describe('useTradeGuard: sessions', () => {
+  const send = (provider: ReturnType<typeof setup>['provider']) =>
+    provider.request({ id: 1, method: 'eth_sendTransaction', params: [{}] });
+
+  it('a trade validation that completes after its session ended stores nothing', async () => {
+    const { guard, createProvider, walletClient } = setup();
+    const evaluation = deferred<Awaited<ReturnType<typeof evaluateTrade>>>();
+    vi.mocked(evaluateTrade).mockReturnValueOnce(evaluation.promise);
+
+    guard.reportTradeParams(TRADE);
+    const late = guard.validateTrade(TRADE);
+    // the widget is replaced while the trade check is pending
+    const nextProvider = createProvider();
+    evaluation.resolve({ ok: true, snapshot: WETH_SNAPSHOT });
+
+    expect(await late).toBe(false);
+    await expect(send(nextProvider)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('a signer check that completes after its session ended stores nothing', async () => {
+    const { guard, createProvider, walletClient, validateSigner } = setup();
+    const signerCheck = deferred<boolean>();
+    validateSigner.mockReturnValueOnce(signerCheck.promise);
+
+    guard.reportTradeParams(TRADE);
+    const late = guard.validateTrade(TRADE);
+    const nextProvider = createProvider();
+    signerCheck.resolve(true);
+
+    expect(await late).toBe(false);
+    expect(evaluateTrade).not.toHaveBeenCalled();
+    await expect(send(nextProvider)).rejects.toMatchObject({
+      code: InvalidRequestRpcError.code,
+    });
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('a revoked session drops its validated trade', async () => {
+    const { guard, walletClient } = setup();
+    const session = guard.startSession();
+
+    guard.reportTradeParams(TRADE);
+    expect(await guard.validateTrade(TRADE)).toBe(true);
+    session.revoke();
+
+    expect(session.isActive()).toBe(false);
+    expect(guard.consumeSignedOrder(ETH_ORDER)).not.toBeNull();
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('revoking an already replaced session leaves the current one active', async () => {
+    const { guard } = setup();
+    const previous = guard.startSession();
+    const current = guard.startSession();
+
+    guard.reportTradeParams(TRADE);
+    expect(await guard.validateTrade(TRADE)).toBe(true);
+    previous.revoke();
+
+    expect(current.isActive()).toBe(true);
+    expect(guard.consumeSignedOrder(ETH_ORDER)).toBeNull();
+  });
+
+  it('the trade of the current session still signs', async () => {
+    const { guard, createProvider, walletClient } = setup();
+    const nextProvider = createProvider();
+
+    guard.reportTradeParams(TRADE);
+    expect(await guard.validateTrade(TRADE)).toBe(true);
+
+    await expect(send(nextProvider)).resolves.toBe('0xhash');
+    expect(walletClient.request).toHaveBeenCalledTimes(1);
   });
 });
