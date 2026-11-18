@@ -166,9 +166,15 @@ const createQueues = ({
     estimateGas: { deposit: vi.fn(async () => 200_000n) },
     write: { deposit: vi.fn(async () => TX_HASH) },
   },
+  // shares in proportion to the amount it is asked about: a penalised
+  // amount quotes fewer
   collector: {
     read: {
-      getDepositParams: vi.fn(async () => ({ shares: freshShares })),
+      getDepositParams: vi.fn(
+        async ([, amount]: readonly [unknown, bigint]) => ({
+          shares: (amount * freshShares) / AMOUNT,
+        }),
+      ),
     },
   },
 });
@@ -483,38 +489,28 @@ describe('useDeposit', () => {
   });
 
   describe('routing', () => {
-    it('deposits through the sync queue when it charges no penalty', async () => {
+    it('deposits through the sync queue', async () => {
       const queues = createQueues();
 
       await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
 
-      expect(queues.syncQueue.read.syncDepositParams).toHaveBeenCalledTimes(1);
       expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
       expect(queues.asyncQueue.write.deposit).not.toHaveBeenCalled();
     });
 
-    it('routes the deposit to the async queue while the sync queue charges a penalty', async () => {
+    it('deposits through the sync queue while it charges a penalty: no async fallback', async () => {
       const queues = createQueues({ penaltyD6: 1_000n });
 
       await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
 
-      // the approval is for the queue the deposit goes to
       expect(state.walletClient.writeContract).toHaveBeenCalledWith(
-        approveWrite(AMOUNT, TOKEN_ADDRESSES.weth, ASYNC_QUEUE),
+        approveWrite(AMOUNT, TOKEN_ADDRESSES.weth, SYNC_QUEUE),
       );
-      expect(queues.asyncQueue.write.deposit).toHaveBeenCalledWith(
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledWith(
         [AMOUNT, REFERRAL, []],
         expect.anything(),
       );
-      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
-      // an async deposit is a request
-      expect(state.txModalStages.success).toHaveBeenCalledWith(
-        AMOUNT,
-        TOKENS.weth,
-        TX_HASH,
-        undefined,
-        true,
-      );
+      expect(queues.asyncQueue.write.deposit).not.toHaveBeenCalled();
     });
 
     it('deposits a token without a sync queue through the async queue', async () => {
@@ -591,11 +587,50 @@ describe('useDeposit', () => {
       expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
     });
 
-    it('re-reads the quote on the async queue when the deposit goes there', async () => {
+    it('quotes the sync queue for the amount its penalty leaves', async () => {
+      const queues = createQueues({ penaltyD6: 1_000n });
+      // the form quoted the same penalty
+      const shownQuote = {
+        amount: AMOUNT,
+        output: (((AMOUNT * 999_000n) / 1_000_000n) * SHARES) / AMOUNT,
+      };
+
+      await expect(deposit(queues, TOKENS.eth, { shownQuote })).resolves.toBe(
+        true,
+      );
+
+      expect(queues.collector.read.getDepositParams).toHaveBeenCalledWith([
+        SYNC_QUEUE,
+        (AMOUNT * 999_000n) / 1_000_000n,
+        ACCOUNT,
+        COLLECTOR_CONFIG,
+      ]);
+      expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops the deposit when a penalty was set since the form quoted', async () => {
       const queues = createQueues({ penaltyD6: 1_000n });
 
       await expect(
         deposit(queues, TOKENS.eth, { shownQuote: SHOWN_QUOTE }),
+      ).resolves.toBe(false);
+
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
+      expect(refetchQuote).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+        onRetry,
+      );
+    });
+
+    it('quotes a queue without a penalty for the full amount', async () => {
+      const queues = createQueues();
+
+      await expect(
+        deposit(queues, TOKENS.weth, {
+          isAsyncOnly: true,
+          shownQuote: SHOWN_QUOTE,
+        }),
       ).resolves.toBe(true);
 
       expect(queues.collector.read.getDepositParams).toHaveBeenCalledWith([
@@ -604,7 +639,7 @@ describe('useDeposit', () => {
         ACCOUNT,
         COLLECTOR_CONFIG,
       ]);
-      expect(queues.asyncQueue.write.deposit).toHaveBeenCalledTimes(1);
+      expect(queues.syncQueue.read.syncDepositParams).not.toHaveBeenCalled();
     });
 
     it('skips the quote check where no quote is displayed', async () => {
@@ -670,7 +705,7 @@ describe('useDeposit', () => {
       expect(calls[0]?.value).toBe(AMOUNT);
     });
 
-    it('batches the deposit for the async queue while the sync queue charges a penalty', async () => {
+    it('batches the deposit for the sync queue while it charges a penalty', async () => {
       const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
       state.sendAACalls.mockImplementation(sendCalls);
       const queues = createQueues({ penaltyD6: 1n });
@@ -678,12 +713,12 @@ describe('useDeposit', () => {
       await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
 
       const calls = sentAACalls(sendCalls);
-      expect(calls[1]?.to).toBe(ASYNC_QUEUE);
+      expect(calls[1]?.to).toBe(SYNC_QUEUE);
       const approval = decodeFunctionData({
         abi: ERC20_ABI,
         data: calls[0]?.data as Hash,
       });
-      expect(approval.args).toEqual([getAddress(ASYNC_QUEUE), AMOUNT]);
+      expect(approval.args).toEqual([getAddress(SYNC_QUEUE), AMOUNT]);
     });
 
     it('sends no batch when the fresh quote is worse than the displayed one', async () => {

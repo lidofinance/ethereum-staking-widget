@@ -61,6 +61,7 @@ export const useUsdVaultDeposit = ({
 
   return useDeposit<UsdDepositToken>({
     syncDepositQueueGetter: getSyncDepositQueue,
+    // for USDe only: USDC and USDT have a sync queue
     asyncDepositQueueGetter: getAsyncDepositQueueWritableContract,
     collector,
     shownQuote,

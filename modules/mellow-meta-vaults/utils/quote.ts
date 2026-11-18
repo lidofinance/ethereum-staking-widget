@@ -5,6 +5,7 @@ import type {
   AsyncRedeemQueueContract,
   CollectorContract,
   DepositQueueContract,
+  SyncDepositQueueContract,
   SyncRedeemQueueContract,
 } from '../types/contracts';
 
@@ -59,6 +60,24 @@ export const isQuoteWorse = (fresh: VaultQuote, shown: VaultQuote) => {
   );
 };
 
+const PENALTY_DENOMINATOR = 1_000_000n;
+
+/**
+ * The amount the sync deposit queue prices once its `penaltyD6` is taken:
+ * the queue mints at `priceD18 * (1e6 - penaltyD6) / 1e6`, which gives the
+ * shares the full price gives for this amount.
+ */
+export const applySyncDepositPenalty = (amount: bigint, penaltyD6: bigint) =>
+  (amount * (PENALTY_DENOMINATOR - penaltyD6)) / PENALTY_DENOMINATOR;
+
+// the sync queue is the one with a penalty; its ABI is the only one with the getter
+export const isSyncDepositQueue = (
+  depositQueue: DepositQueueContract,
+): depositQueue is SyncDepositQueueContract =>
+  depositQueue.abi.some(
+    (item) => item.type === 'function' && item.name === 'syncDepositParams',
+  );
+
 type ReadDepositQuoteArgs = {
   collector: CollectorContract;
   depositQueue: DepositQueueContract;
@@ -66,16 +85,27 @@ type ReadDepositQuoteArgs = {
   account: Address;
 };
 
-// the shares a deposit of `amount` into the queue mints, read from the chain
+/**
+ * The shares a deposit of `amount` into the queue mints, read from the chain.
+ * The Collector prices at the oracle report alone, while the sync queue mints
+ * at the report price less its current `penaltyD6`: for the sync queue the
+ * Collector is asked for the penalised amount, which matches the mint to
+ * within the rounding of the price (the queue) or of the amount (here). The
+ * form, the pre-send check and every deposit path quote through this one
+ * function, so they agree on the penalty.
+ */
 export const readDepositQuote = async ({
   collector,
   depositQueue,
   amount,
   account,
 }: ReadDepositQuoteArgs): Promise<VaultQuote> => {
+  const penaltyD6 = isSyncDepositQueue(depositQueue)
+    ? (await depositQueue.read.syncDepositParams())[0]
+    : 0n;
   const { shares } = (await collector.read.getDepositParams([
     depositQueue.address,
-    amount,
+    applySyncDepositPenalty(amount, penaltyD6),
     account,
     COLLECTOR_CONFIG,
   ])) as DepositParams;

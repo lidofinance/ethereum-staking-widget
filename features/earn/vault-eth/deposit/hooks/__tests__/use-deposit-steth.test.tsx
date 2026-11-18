@@ -190,7 +190,11 @@ import { useEthVaultDepositSteth } from '../use-deposit-steth';
 
 const collector = {
   read: {
-    getDepositParams: vi.fn(async () => ({ shares: state.freshShares })),
+    // shares in proportion to the amount it is asked about: a penalised
+    // amount quotes fewer
+    getDepositParams: vi.fn(async ([, amount]: readonly [unknown, bigint]) => ({
+      shares: (amount * state.freshShares) / WSTETH_AMOUNT,
+    })),
   },
 };
 const onRetry = vi.fn();
@@ -307,22 +311,24 @@ describe('useEthVaultDepositSteth', () => {
       expect(state.queues.sync.write.deposit).toHaveBeenCalledTimes(1);
     });
 
-    it('routes the deposit to the async queue while the sync queue charges a penalty', async () => {
+    it('deposits through the sync queue while it charges a penalty: no async fallback', async () => {
       state.penaltyD6 = 1_000n;
 
       await expect(deposit()).resolves.toBe(true);
 
-      expect(state.walletClient.writeContract).toHaveBeenCalledWith(
-        wstethApproveWrite(ASYNC_QUEUE),
-      );
-      expect(state.queues.async.write.deposit).toHaveBeenCalledTimes(1);
+      expect(state.queues.sync.write.deposit).toHaveBeenCalledTimes(1);
+      expect(state.queues.async.write.deposit).not.toHaveBeenCalled();
+    });
+
+    it('stops before the approval and the wrap when a penalty was set since the form quoted', async () => {
+      state.penaltyD6 = 1_000n;
+
+      await expect(deposit({ shownQuote: SHOWN_QUOTE })).resolves.toBe(false);
+
+      expect(state.performTransaction).not.toHaveBeenCalled();
       expect(state.queues.sync.write.deposit).not.toHaveBeenCalled();
-      expect(state.txModalStages.success).toHaveBeenCalledWith(
-        WSTETH_AMOUNT,
-        TOKENS.wsteth,
-        TX_HASH,
-        undefined,
-        true,
+      expect(collector.read.getDepositParams).toHaveBeenCalledWith(
+        expect.arrayContaining([(WSTETH_AMOUNT * 999_000n) / 1_000_000n]),
       );
     });
 

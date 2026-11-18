@@ -1,13 +1,16 @@
+import invariant from 'tiny-invariant';
+
 import type {
   AsyncDepositQueueWritableContract,
   DepositQueueWritableContract,
   SyncDepositQueueWritableContract,
 } from '../types/contracts';
 
-type SelectDepositQueueArgs = {
+type GetDepositRouteArgs = {
   // undefined for a token without a sync queue
   syncQueue?: SyncDepositQueueWritableContract;
-  asyncQueue: AsyncDepositQueueWritableContract;
+  // only for a token without a sync queue
+  asyncQueue?: AsyncDepositQueueWritableContract;
 };
 
 export type DepositRoute = {
@@ -18,18 +21,17 @@ export type DepositRoute = {
 };
 
 /**
- * The queue a deposit goes to, read fresh for every deposit. The sync queue
- * mints at once, but it prices the deposit with its `penaltyD6` while the
- * async queue charges none: a non-zero sync penalty makes the async queue
- * cheaper, so route there.
+ * The queue a new deposit goes to: the token's sync queue whenever it has one.
+ * The sync queue mints at the report price less its `penaltyD6`; the quote
+ * the form shows and the deposit is held to includes that penalty, see
+ * readDepositQuote. Only a token without a sync queue deposits through its
+ * async queue.
  */
-export const selectDepositQueue = async ({
+export const getDepositRoute = ({
   syncQueue,
   asyncQueue,
-}: SelectDepositQueueArgs): Promise<DepositRoute> => {
-  if (syncQueue) {
-    const [penaltyD6] = await syncQueue.read.syncDepositParams();
-    if (penaltyD6 === 0n) return { depositQueue: syncQueue, isSyncQueue: true };
-  }
+}: GetDepositRouteArgs): DepositRoute => {
+  if (syncQueue) return { depositQueue: syncQueue, isSyncQueue: true };
+  invariant(asyncQueue, 'the token has no deposit queue');
   return { depositQueue: asyncQueue, isSyncQueue: false };
 };

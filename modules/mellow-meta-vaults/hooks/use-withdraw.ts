@@ -214,12 +214,28 @@ export const useWithdraw = ({
       // same asset quotes the same, and its own penalty routes to the async
       // queue in prepare
       const verifyQuote = async ({ syncQueue }: WithdrawData) => {
-        if (!shownQuote) return;
-        const quote = await readWithdrawQuote({
-          collector,
-          redeemQueue: syncQueue ?? asyncRedeemQueue,
-          shares: amount,
-        });
+        // A penalty set on the sync queue since prepare: the instant route
+        // would charge it, so stop here; the next attempt goes async
+        const syncPenaltyCheck = syncQueue
+          ? syncQueue.read.syncRedeemParams().then(([penaltyD6]) => {
+              if (penaltyD6 > 0n) {
+                void refetchQuote?.();
+                throw new QuoteMismatchError();
+              }
+            })
+          : undefined;
+        if (!shownQuote) {
+          await syncPenaltyCheck;
+          return;
+        }
+        const [quote] = await Promise.all([
+          readWithdrawQuote({
+            collector,
+            redeemQueue: syncQueue ?? asyncRedeemQueue,
+            shares: amount,
+          }),
+          syncPenaltyCheck,
+        ]);
         if (isQuoteWorse(quote, shownQuote)) {
           void refetchQuote?.();
           throw new QuoteMismatchError();

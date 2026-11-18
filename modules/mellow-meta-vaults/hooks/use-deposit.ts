@@ -40,7 +40,7 @@ import {
   DepositQueueWritableContract,
   SyncDepositQueueWritableContract,
 } from '../types/contracts';
-import { selectDepositQueue } from '../utils/deposit-route';
+import { getDepositRoute } from '../utils/deposit-route';
 import {
   isQuoteWorse,
   readDepositQuote,
@@ -76,10 +76,10 @@ type DepositData = {
 };
 
 type UseDepositArgs<DepositQueueToken extends string> = {
-  // the token's sync queue, if it has one, and its async queue: the deposit
-  // goes to one of them, see selectDepositQueue
+  // the token's sync queue, which every token that has one deposits through,
+  // and the async queue of a token without one, see getDepositRoute
   syncDepositQueueGetter: SyncDepositQueueGetter<DepositQueueToken>;
-  asyncDepositQueueGetter: AsyncDepositQueueGetter<DepositQueueToken>;
+  asyncDepositQueueGetter?: AsyncDepositQueueGetter<DepositQueueToken>;
   // quotes the deposit right before it is sent
   collector: CollectorContract;
   // The quote the form displays and its refetch: the deposit is held to it.
@@ -130,7 +130,9 @@ export const useDeposit = <DepositQueueToken extends string>({
       // Run right before the deposit is sent, as the last step before the
       // wallet is reached in both signing paths, after any approval: the quote
       // re-read on the queue the deposit goes to must not be worse than the
-      // displayed one. A better quote passes
+      // displayed one. A better quote passes. The quote includes the sync
+      // queue's current penalty, so a penalty set or raised since the form
+      // quoted stops the deposit here
       const checkBeforeDeposit = async (data: DepositData) => {
         if (!shownQuote) return;
         const quote = await readDepositQuote({
@@ -157,14 +159,14 @@ export const useDeposit = <DepositQueueToken extends string>({
             walletClient: core.walletClient as WalletClient,
             token: token as DepositQueueToken,
           };
-          const [{ depositQueue, isSyncQueue }, referralAddress] =
-            await Promise.all([
-              selectDepositQueue({
-                syncQueue: syncDepositQueueGetter(queueArgs),
-                asyncQueue: asyncDepositQueueGetter(queueArgs),
-              }),
-              getReferralAddress(referral, core.publicClient),
-            ]);
+          const { depositQueue, isSyncQueue } = getDepositRoute({
+            syncQueue: syncDepositQueueGetter(queueArgs),
+            asyncQueue: asyncDepositQueueGetter?.(queueArgs),
+          });
+          const referralAddress = await getReferralAddress(
+            referral,
+            core.publicClient,
+          );
 
           let needsApprove = false;
           let needsApprovalReset = false;

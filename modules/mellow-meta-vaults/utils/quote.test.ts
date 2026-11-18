@@ -1,9 +1,17 @@
+import { DEPOSIT_QUEUE_ABI, SYNC_DEPOSIT_QUEUE_ABI } from '../abi';
 import type {
   AsyncDepositQueueWritableContract,
+  CollectorContract,
+  DepositQueueContract,
   SyncDepositQueueWritableContract,
 } from '../types/contracts';
-import { selectDepositQueue } from './deposit-route';
-import { isQuoteWorse, type VaultQuote } from './quote';
+import { getDepositRoute } from './deposit-route';
+import {
+  applySyncDepositPenalty,
+  isQuoteWorse,
+  readDepositQuote,
+  type VaultQuote,
+} from './quote';
 
 describe('isQuoteWorse', () => {
   const shown = { amount: 100n, output: 90n };
@@ -96,33 +104,112 @@ describe('isQuoteWorse', () => {
   });
 });
 
-describe('selectDepositQueue', () => {
+describe('getDepositRoute', () => {
+  const syncQueue = {
+    address: '0x01',
+  } as unknown as SyncDepositQueueWritableContract;
   const asyncQueue = {
     address: '0x02',
   } as unknown as AsyncDepositQueueWritableContract;
-  const syncQueueWithPenalty = (penaltyD6: bigint) =>
-    ({
-      address: '0x01',
-      read: { syncDepositParams: async () => [penaltyD6, 3600] as const },
-    }) as unknown as SyncDepositQueueWritableContract;
 
-  it('takes the sync queue when it charges no penalty', async () => {
-    const syncQueue = syncQueueWithPenalty(0n);
-    await expect(
-      selectDepositQueue({ syncQueue, asyncQueue }),
-    ).resolves.toEqual({ depositQueue: syncQueue, isSyncQueue: true });
+  it('takes the sync queue whenever the token has one', () => {
+    expect(getDepositRoute({ syncQueue, asyncQueue })).toEqual({
+      depositQueue: syncQueue,
+      isSyncQueue: true,
+    });
   });
 
-  it('takes the async queue while the sync queue charges a penalty', async () => {
-    await expect(
-      selectDepositQueue({ syncQueue: syncQueueWithPenalty(1n), asyncQueue }),
-    ).resolves.toEqual({ depositQueue: asyncQueue, isSyncQueue: false });
-  });
-
-  it('takes the async queue for a token without a sync queue', async () => {
-    await expect(selectDepositQueue({ asyncQueue })).resolves.toEqual({
+  it('takes the async queue for a token without a sync queue', () => {
+    expect(getDepositRoute({ asyncQueue })).toEqual({
       depositQueue: asyncQueue,
       isSyncQueue: false,
     });
+  });
+
+  it('refuses a token with neither queue', () => {
+    expect(() => getDepositRoute({})).toThrow();
+  });
+});
+
+describe('applySyncDepositPenalty', () => {
+  it('leaves the amount whole without a penalty', () => {
+    expect(applySyncDepositPenalty(10n ** 18n, 0n)).toBe(10n ** 18n);
+  });
+
+  it('takes the penalty share of the amount', () => {
+    expect(applySyncDepositPenalty(10n ** 18n, 1_000n)).toBe(999n * 10n ** 15n);
+    // the queue caps the penalty at 50%
+    expect(applySyncDepositPenalty(10n ** 18n, 500_000n)).toBe(5n * 10n ** 17n);
+  });
+
+  // SyncDepositQueue.deposit: shares = assets * (priceD18 * (1e6 - penaltyD6) / 1e6) / 1e18;
+  // the Collector for the penalised amount: (assets * (1e6 - penaltyD6) / 1e6) * priceD18 / 1e18
+  it.each([
+    [10n ** 18n, 979_123_456_789_012_345n, 1_000n],
+    [123_456_789_012_345_678n, 1_023_456_789_000_000_001n, 250_000n],
+    [7n * 10n ** 6n, 999_999_999_999_999_999n, 500_000n],
+  ])(
+    'matches the sync queue mint within rounding (%s at %s, penalty %s)',
+    (assets, priceD18, penaltyD6) => {
+      const minted =
+        (assets * ((priceD18 * (1_000_000n - penaltyD6)) / 1_000_000n)) /
+        10n ** 18n;
+      const quoted =
+        (applySyncDepositPenalty(assets, penaltyD6) * priceD18) / 10n ** 18n;
+      const diff = minted > quoted ? minted - quoted : quoted - minted;
+      expect(diff <= 2n).toBe(true);
+    },
+  );
+});
+
+describe('readDepositQuote', () => {
+  const ACCOUNT = '0x0000000000000000000000000000000000000001';
+  const collectorQuoting = () =>
+    ({
+      read: {
+        getDepositParams: vi.fn(
+          async ([, amount]: readonly [unknown, bigint]) => ({
+            shares: amount * 2n,
+          }),
+        ),
+      },
+    }) as unknown as CollectorContract & {
+      read: { getDepositParams: ReturnType<typeof vi.fn> };
+    };
+
+  it('quotes the sync queue for the amount its current penalty leaves', async () => {
+    const collector = collectorQuoting();
+    const depositQueue = {
+      address: '0x01',
+      abi: SYNC_DEPOSIT_QUEUE_ABI,
+      read: { syncDepositParams: vi.fn(async () => [100_000n, 3600] as const) },
+    } as unknown as DepositQueueContract;
+
+    await expect(
+      readDepositQuote({
+        collector,
+        depositQueue,
+        amount: 1_000n,
+        account: ACCOUNT,
+      }),
+    ).resolves.toEqual({ amount: 1_000n, output: 1_800n });
+    expect(collector.read.getDepositParams.mock.calls[0][0][1]).toBe(900n);
+  });
+
+  it('quotes the async queue for the full amount, with no penalty read', async () => {
+    const collector = collectorQuoting();
+    const depositQueue = {
+      address: '0x02',
+      abi: DEPOSIT_QUEUE_ABI,
+    } as unknown as DepositQueueContract;
+
+    await expect(
+      readDepositQuote({
+        collector,
+        depositQueue,
+        amount: 1_000n,
+        account: ACCOUNT,
+      }),
+    ).resolves.toEqual({ amount: 1_000n, output: 2_000n });
   });
 });

@@ -554,6 +554,35 @@ describe('useWithdraw', () => {
         1,
       );
     });
+
+    // the penalty is read once to pick the route and again right before sending
+    const penaltySetAfterRouting = (queues: ReturnType<typeof createQueues>) =>
+      queues.syncRedeemQueue.read.syncRedeemParams
+        .mockResolvedValueOnce([0n, MAX_AGE])
+        .mockResolvedValueOnce([1_000n, MAX_AGE]);
+
+    it('stops an instant redemption when a penalty was set after the route was chosen', async () => {
+      const queues = createQueues(ample);
+      penaltySetAfterRouting(queues);
+
+      await expect(withdraw(queues, { shownQuote })).resolves.toBe(false);
+
+      expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
+      expect(state.performTransaction).not.toHaveBeenCalled();
+      expect(refetchQuote).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+      );
+    });
+
+    it('checks the penalty before an instant redemption even where no quote is displayed', async () => {
+      const queues = createQueues(ample);
+      penaltySetAfterRouting(queues);
+
+      await expect(withdraw(queues)).resolves.toBe(false);
+
+      expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
+    });
   });
 
   describe('EIP-5792 signing', () => {

@@ -26,8 +26,8 @@ import {
 import {
   getVaultRefetchScope,
   isQuoteWorse,
+  getDepositRoute,
   readDepositQuote,
-  selectDepositQueue,
   type CollectorContract,
   type DepositQueueWritableContract,
   type DepositTxModalStages,
@@ -42,10 +42,7 @@ import { ErrorMessage } from 'utils/getErrorMessage';
 import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
-import {
-  getLegacyAsyncDepositQueueWritableContract,
-  getSyncDepositQueueWritableContract,
-} from '../../contracts';
+import { getSyncDepositQueueWritableContract } from '../../contracts';
 import { ETH_VAULT_QUERY_SCOPE } from '../../consts';
 import type { TxRetryHandler } from 'shared/transaction-modal';
 
@@ -145,20 +142,15 @@ export const useEthVaultDepositSteth = ({
             walletClient: core.walletClient as WalletClient,
             token: TOKENS.wsteth,
           };
-          const [
-            { depositQueue, isSyncQueue },
-            referralAddress,
-            wstethAmount,
-            stethAllowance,
-          ] = await Promise.all([
-            selectDepositQueue({
-              syncQueue: getSyncDepositQueueWritableContract(queueArgs),
-              asyncQueue: getLegacyAsyncDepositQueueWritableContract(queueArgs),
-            }),
-            getReferralAddress(referral, core.publicClient),
-            wrap.convertStethToWsteth(amount),
-            wrap.getStethForWrapAllowance(address),
-          ]);
+          const { depositQueue, isSyncQueue } = getDepositRoute({
+            syncQueue: getSyncDepositQueueWritableContract(queueArgs),
+          });
+          const [referralAddress, wstethAmount, stethAllowance] =
+            await Promise.all([
+              getReferralAddress(referral, core.publicClient),
+              wrap.convertStethToWsteth(amount),
+              wrap.getStethForWrapAllowance(address),
+            ]);
           const wstethAllowance = await getWstethContract(
             wstethAddress,
           ).read.allowance([address, depositQueue.address]);

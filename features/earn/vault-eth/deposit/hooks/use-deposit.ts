@@ -10,7 +10,6 @@ import {
 import { useMainnetOnlyWagmi } from 'modules/web3';
 import {
   getCollectorContract,
-  getLegacyAsyncDepositQueueWritableContract,
   getSyncDepositQueueWritableContract,
 } from '../../contracts';
 import { ETH_VAULT_QUERY_SCOPE, ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
@@ -59,8 +58,8 @@ export const useEthVaultDeposit = ({
   );
 
   const { deposit: depositNormal } = useDeposit<EthDepositToken>({
+    // every ETH vault token deposits through its sync queue
     syncDepositQueueGetter: getSyncDepositQueueWritableContract,
-    asyncDepositQueueGetter: getLegacyAsyncDepositQueueWritableContract,
     collector,
     shownQuote,
     refetchQuote,
