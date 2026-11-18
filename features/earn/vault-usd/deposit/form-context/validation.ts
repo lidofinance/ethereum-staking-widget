@@ -56,12 +56,7 @@ export const UsdVaultDepositFormValidationResolver: Resolver<
     );
 
     // prevents problems with stablecoin precision
-    validateBigintMin(
-      'amount',
-      amount,
-      100n,
-      `Enter amount larger than 100 units`,
-    );
+    validateBigintMin('amount', amount, 100n, `Amount too small`);
 
     const { balance } = awaitedContext[token];
 
