@@ -1,0 +1,48 @@
+name: "[K8S] Build and push staking-widget to critical"
+
+run-name: "[K8S] Build and push staking-widget:${{ inputs.tag }} to critical"
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Stable release tag
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  release-tag:
+    runs-on: ubuntu-22.04
+    outputs:
+      tag: ${{ steps.release.outputs.tag }}
+
+    steps:
+      - name: Validate release tag
+        id: release
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$RELEASE_TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Release tag must use stable SemVer such as v1.2.3 or 1.2.3"
+            exit 1
+          fi
+
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
+  build-and-push:
+    needs: release-tag
+    permissions:
+      contents: read
+    uses: lidofinance/actions/.github/workflows/k8s-build-push-harbor.yml@main
+    with:
+      target: critical
+      tag: ${{ needs.release-tag.outputs.tag }}
+      harbor_project: team-si
+      image: staking-widget
+      # dockerfile: path/to/Dockerfile
+    secrets: inherit
