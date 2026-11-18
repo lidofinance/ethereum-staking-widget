@@ -75,7 +75,16 @@ const deferred = <T>() => {
   return { promise, resolve: settle };
 };
 
-const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
+type SessionChecks = Pick<
+  CreateCowSwapProviderParams['session'],
+  'consumeSignedOrder' | 'verifyApproval'
+>;
+
+const setup = ({
+  consumeSignedOrder = vi.fn().mockReturnValue(null),
+  verifyApproval = vi.fn().mockReturnValue(null),
+  ...overrides
+}: Partial<CreateCowSwapProviderParams & SessionChecks> = {}) => {
   // stands in for the session the hook starts and cleanup ends
   const session = {
     active: true,
@@ -98,10 +107,12 @@ const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
     isLedgerLive: false,
     networkTxConfig: MAINNET_TX_CONFIG,
     appCode: 'Test App',
-    isSessionActive: () => session.active,
-    validateSigner: vi.fn().mockResolvedValue(true),
-    consumeSignedOrder: vi.fn().mockReturnValue(null),
-    verifyApproval: vi.fn().mockReturnValue(null),
+    session: {
+      isActive: () => session.active,
+      consumeSignedOrder,
+      verifyApproval,
+    },
+    validateAddress: vi.fn().mockResolvedValue(true),
     openTransactionGuardModal: vi.fn().mockResolvedValue(undefined),
     openSigningErrorModal: vi.fn().mockResolvedValue(undefined),
     addCleanup: (fn: () => void) => cleanups.push(fn),
@@ -268,9 +279,9 @@ describe('request — validation', () => {
 
     // verifying an ETH order consumes the trade snapshot the approve needs
     expect(
-      vi.mocked(params.verifyApproval).mock.invocationCallOrder[0],
+      vi.mocked(params.session.verifyApproval).mock.invocationCallOrder[0],
     ).toBeLessThan(
-      vi.mocked(params.consumeSignedOrder).mock.invocationCallOrder[0],
+      vi.mocked(params.session.consumeSignedOrder).mock.invocationCallOrder[0],
     );
   });
 
@@ -284,7 +295,7 @@ describe('request — validation', () => {
     const { provider, params, walletClient } = setup();
 
     await provider.request(SIGN_REQUEST);
-    expect(params.verifyApproval).toHaveBeenCalledWith(approval);
+    expect(params.session.verifyApproval).toHaveBeenCalledWith(approval);
     expect(walletClient.request).toHaveBeenCalledTimes(1);
   });
 
@@ -384,7 +395,7 @@ describe('request — session', () => {
     } as never);
 
     await expect(pending).rejects.toMatchObject(SESSION_ENDED);
-    expect(params.consumeSignedOrder).not.toHaveBeenCalled();
+    expect(params.session.consumeSignedOrder).not.toHaveBeenCalled();
     expect(params.openTransactionGuardModal).not.toHaveBeenCalled();
     expect(walletClient.request).not.toHaveBeenCalled();
   });
@@ -392,7 +403,7 @@ describe('request — session', () => {
   it('a session ending during the signer and account checks stops the request', async () => {
     const signerCheck = deferred<boolean>();
     const { provider, params, session, walletClient } = setup({
-      validateSigner: () => signerCheck.promise,
+      validateAddress: () => signerCheck.promise,
     });
 
     const pending = provider.request(SIGN_REQUEST);
@@ -447,13 +458,13 @@ describe('request — signer check', () => {
   ])(
     'rejects %s at the provider when the signer is not allowed',
     async (method, rpcParams) => {
-      const validateSigner = vi.fn().mockResolvedValue(false);
-      const { provider, params, walletClient } = setup({ validateSigner });
+      const validateAddress = vi.fn().mockResolvedValue(false);
+      const { provider, params, walletClient } = setup({ validateAddress });
 
       await expect(provider.request(rpc(method, rpcParams))).rejects.toEqual(
         SIGNER_NOT_ALLOWED_ERROR,
       );
-      expect(validateSigner).toHaveBeenCalledTimes(1);
+      expect(validateAddress).toHaveBeenCalledWith(SIGNER);
       expect(params.openTransactionGuardModal).not.toHaveBeenCalled();
       expect(walletClient.request).not.toHaveBeenCalled();
     },
@@ -470,13 +481,13 @@ describe('request — signer check', () => {
       approvals: [],
       sanitizedRequest: cancellation,
     });
-    const validateSigner = vi.fn().mockResolvedValue(false);
-    const { provider, params, walletClient } = setup({ validateSigner });
+    const validateAddress = vi.fn().mockResolvedValue(false);
+    const { provider, params, walletClient } = setup({ validateAddress });
 
     await expect(provider.request(cancellation)).rejects.toMatchObject({
       code: UnauthorizedProviderError.code,
     });
-    expect(params.consumeSignedOrder).not.toHaveBeenCalled();
+    expect(params.session.consumeSignedOrder).not.toHaveBeenCalled();
     expect(walletClient.request).not.toHaveBeenCalled();
   });
 
@@ -484,7 +495,8 @@ describe('request — signer check', () => {
     const { provider, params, walletClient } = setup();
 
     await expect(provider.request(SIGN_REQUEST)).resolves.toBe('0xresult');
-    expect(params.validateSigner).toHaveBeenCalledTimes(1);
+    expect(params.validateAddress).toHaveBeenCalledTimes(1);
+    expect(params.validateAddress).toHaveBeenCalledWith(SIGNER);
     expect(walletClient.request).toHaveBeenCalledTimes(1);
   });
 
@@ -492,7 +504,7 @@ describe('request — signer check', () => {
     const { provider, params, walletClient } = setup();
 
     await provider.request(rpc('eth_chainId'));
-    expect(params.validateSigner).not.toHaveBeenCalled();
+    expect(params.validateAddress).not.toHaveBeenCalled();
     expect(walletClient.request).toHaveBeenCalledTimes(1);
   });
 });

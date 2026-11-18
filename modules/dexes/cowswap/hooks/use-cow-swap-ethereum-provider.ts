@@ -4,8 +4,9 @@ import { isAddressEqual } from 'viem';
 import { useConnection, useWalletClient } from 'wagmi';
 
 import { useDappStatus, useIsLedgerLive } from 'modules/web3';
+import { useAddressValidation } from 'providers/address-validation-provider';
 
-import type { ApprovalData, OrderData, NetworkTxConfig } from '../guards/tx';
+import type { NetworkTxConfig } from '../guards/tx';
 import type { CowSwapSession, SigningHelpTip } from '../guards/trade';
 import { createCowSwapProvider } from '../utils';
 
@@ -29,10 +30,6 @@ const cleanup = () => {
 type UseCowSwapEthereumProviderArgs = {
   // starts the provider's session; cleanup revokes it
   startSession: () => CowSwapSession;
-  // address check of the connected signer, run before every wallet signature
-  validateSigner: () => Promise<boolean>;
-  consumeSignedOrder: (order: OrderData) => string | null;
-  verifyApproval: (approval: ApprovalData) => string | null;
   openTransactionGuardModal: (reason: string) => Promise<void>;
   openSigningErrorModal: (
     reason: string,
@@ -44,9 +41,6 @@ type UseCowSwapEthereumProviderArgs = {
 
 export const useCowSwapEthereumProvider = ({
   startSession,
-  validateSigner,
-  consumeSignedOrder,
-  verifyApproval,
   openTransactionGuardModal,
   openSigningErrorModal,
   getNetworkTxConfig,
@@ -61,6 +55,7 @@ export const useCowSwapEthereumProvider = ({
   const { data: walletClient } = useWalletClient({ account: address });
   const { connector } = useConnection();
   const isLedgerLive = useIsLedgerLive();
+  const { validateAddress } = useAddressValidation();
 
   // clean up on unmount
   useEffect(() => {
@@ -98,10 +93,8 @@ export const useCowSwapEthereumProvider = ({
       isLedgerLive,
       networkTxConfig,
       appCode,
-      isSessionActive: session.isActive,
-      validateSigner,
-      consumeSignedOrder,
-      verifyApproval,
+      session,
+      validateAddress,
       openTransactionGuardModal,
       openSigningErrorModal,
       addCleanup,
@@ -116,9 +109,7 @@ export const useCowSwapEthereumProvider = ({
     getNetworkTxConfig,
     appCode,
     startSession,
-    validateSigner,
-    consumeSignedOrder,
-    verifyApproval,
+    validateAddress,
     openTransactionGuardModal,
     isLedgerLive,
     openSigningErrorModal,

@@ -15,6 +15,11 @@ vi.mock('modules/web3', () => ({
   useIsLedgerLive: () => false,
 }));
 
+const validateAddress = vi.fn();
+vi.mock('providers/address-validation-provider', () => ({
+  useAddressValidation: () => ({ validateAddress }),
+}));
+
 vi.mock('../../guards/tx', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../guards/tx')>()),
   validateRpcRequest: vi.fn(),
@@ -26,6 +31,7 @@ import { useDappStatus } from 'modules/web3';
 import { validateRpcRequest } from '../../guards/tx';
 import { MAINNET_TX_CONFIG } from '../../guards/tx/__tests__/fixtures';
 import type { CowSwapSession } from '../../guards/trade';
+import { createCowSwapSession } from '../../guards/trade/utils';
 import { useCowSwapEthereumProvider } from '../use-cow-swap-ethereum-provider';
 
 const ACCOUNT_A = '0x00000000000000000000000000000000000000a1' as Address;
@@ -42,22 +48,15 @@ const makeWalletClient = (address: Address) => ({
 const CONNECTOR = { emitter: { on: vi.fn(), off: vi.fn() } };
 
 // one live session at a time, like the trade guard's
-let generation = 0;
+let currentSession: CowSwapSession | undefined;
 const startSession = vi.fn((): CowSwapSession => {
-  const id = ++generation;
-  return {
-    isActive: () => generation === id,
-    revoke: () => {
-      if (generation === id) generation++;
-    },
-  };
+  currentSession?.revoke();
+  currentSession = createCowSwapSession({});
+  return currentSession;
 });
 
 const OPTIONS = {
   startSession,
-  validateSigner: () => Promise.resolve(true),
-  consumeSignedOrder: () => null,
-  verifyApproval: () => null,
   openTransactionGuardModal: () => Promise.resolve(),
   openSigningErrorModal: () => Promise.resolve(),
   getNetworkTxConfig: () => MAINNET_TX_CONFIG,
@@ -90,6 +89,7 @@ const SIGN_REQUEST = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  validateAddress.mockResolvedValue(true);
   vi.mocked(validateRpcRequest).mockImplementation(
     async (payload) =>
       ({ order: undefined, approvals: [], sanitizedRequest: payload }) as never,
@@ -168,6 +168,15 @@ describe('useCowSwapEthereumProvider: session', () => {
       code: ProviderDisconnectedError.code,
     });
     expect(client.request).not.toHaveBeenCalled();
+  });
+
+  it('a signature is checked once, for the account the client signs with', async () => {
+    const client = makeWalletClient(ACCOUNT_A);
+    const { provider } = render({ address: ACCOUNT_A, walletClient: client });
+
+    await expect(provider?.request(SIGN_REQUEST)).resolves.toBe('0xsigned');
+    expect(validateAddress).toHaveBeenCalledTimes(1);
+    expect(validateAddress).toHaveBeenCalledWith(ACCOUNT_A);
   });
 
   it('starts one session per provider', () => {

@@ -4,7 +4,7 @@ import {
   CowSwapWidgetProps,
   TradeType,
 } from '@cowprotocol/widget-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { mainnet, sepolia } from 'viem/chains';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
@@ -13,7 +13,6 @@ import { useTheme } from 'styled-components';
 
 import { useDappStatus } from 'modules/web3';
 import { LOCALE } from 'config/groups/locale';
-import { useAddressValidation } from 'providers/address-validation-provider';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
@@ -85,17 +84,11 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
   if (!networkTxConfig || !defaultPair)
     throw new Error('CoW Swap is not enabled on this network');
   const { sellTokens, feeRecipient, weth } = networkTxConfig;
-  const { validateAddress } = useAddressValidation();
   const { name: themeName } = useTheme();
   // Fall back to self-hosted token lists if GitHub is unavailable
   const isGithubAvailable = useIsGhAvailable(tokenLists.sell.url);
   // throw on CSP violation
   useCspBlocked();
-
-  const validate = useCallback(
-    () => validateAddress(address),
-    [validateAddress, address],
-  );
 
   const {
     modalState,
@@ -105,8 +98,6 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     reportTradeParams,
     openTransactionGuardModal,
     openSigningErrorModal,
-    consumeSignedOrder,
-    verifyApproval,
     rejectWrapOrUnwrap,
     startSession,
   } = useTradeGuard({
@@ -116,7 +107,6 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
     oracleFeeds,
     quoteErrorEvent: analytics.quoteError,
     weth,
-    validateSigner: validate,
   });
 
   // token pairs for the Matomo token dimension, kept for the order lifecycle events
@@ -136,9 +126,6 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
 
   const { provider, isProviderPending } = useCowSwapEthereumProvider({
     startSession,
-    validateSigner: validate,
-    consumeSignedOrder,
-    verifyApproval,
     openTransactionGuardModal,
     openSigningErrorModal,
     getNetworkTxConfig,
@@ -249,7 +236,7 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       locale: LOCALE,
 
       hooks: {
-        // trade and approval gates check the signer first and drop stored snapshots on rejection
+        // the signer address is checked by the provider, right before each signature
         onBeforeApproval: validateApproval,
         // ETH ↔ WETH wrap/unwrap is not allowed; explain instead of failing silently
         onBeforeWrapOrUnwrap: rejectWrapOrUnwrap,
@@ -260,12 +247,6 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
             token: tokenPairs.pair(payload.sellToken, payload.buyToken),
           });
           return true;
-        },
-        onBeforeOrderCancel: async () => {
-          return await validate();
-        },
-        onBeforeOrdersCancel: async () => {
-          return await validate();
         },
       },
       //ignored by widget but triggers refresh
@@ -285,7 +266,6 @@ export const CowswapFrame: React.FC<CowswapFrameProps> = ({
       cardShadow,
       refreshId,
       validateApproval,
-      validate,
       validateTrade,
       rejectWrapOrUnwrap,
     ],
