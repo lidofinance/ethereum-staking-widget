@@ -10,6 +10,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { VaultWritableContract } from '../types/contracts';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 export const useDepositClaim = ({
   vault,
@@ -21,7 +22,7 @@ export const useDepositClaim = ({
 }: {
   vault: VaultWritableContract;
   txModalStages: TxModalStages;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
   additionalQueryScopes?: string[];

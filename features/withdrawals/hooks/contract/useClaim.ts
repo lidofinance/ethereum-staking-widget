@@ -4,13 +4,14 @@ import invariant from 'tiny-invariant';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
 import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 import { useAA, useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 
-type Args = {
-  onRetry?: () => void;
+type UseClaimArgs = {
+  onRetry?: TxRetryHandler;
 };
 
-export const useClaim = ({ onRetry }: Args) => {
+export const useClaim = ({ onRetry }: UseClaimArgs) => {
   const { address } = useDappStatus();
   const { withdraw } = useLidoSDK();
   const { isAA } = useAA();

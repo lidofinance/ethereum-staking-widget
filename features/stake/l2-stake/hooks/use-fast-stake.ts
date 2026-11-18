@@ -34,6 +34,7 @@ import { useFastStakeConversion } from './use-conversion';
 import { useFastStakeLiquidity } from './use-fast-liquidity';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
 import { useTrackStakeEvent } from './use-track-event';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -43,7 +44,7 @@ type StakeArguments = {
 
 type UseL2FastStakeArgs = {
   onConfirm?: () => Promise<void> | void;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
 };
 
 // the steps of a stake, the first one only for WETH short of allowance

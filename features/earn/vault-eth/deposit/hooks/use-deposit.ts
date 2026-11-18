@@ -18,9 +18,10 @@ import type { EthDepositToken } from '../../types';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { TOKENS } from 'consts/tokens';
 import { useEthVaultDepositSteth } from './use-deposit-steth';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type UseEthVaultDepositArgs = {
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   // The quote the form displays for the selected token and its refetch: the
   // deposit is held to it. Required, so a caller states it: undefined only
   // where no quote is displayed

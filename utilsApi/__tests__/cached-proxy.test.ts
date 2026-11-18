@@ -304,4 +304,38 @@ describe('createCachedProxy concurrent requests', () => {
     expect(standardFetcher).toHaveBeenCalledTimes(2);
     expect(later.send).toHaveBeenCalledWith('{"ok":true}');
   });
+
+  it('with forwarded client headers, a request joining a failed fetch retries with its own headers', async () => {
+    const first = Promise.withResolvers<unknown>();
+    vi.mocked(standardFetcher)
+      .mockReturnValueOnce(first.promise)
+      .mockResolvedValueOnce({ isValid: true });
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/',
+      cacheTTL: 1000,
+      forwardHeaders: (r) => ({ 'X-Client-IP': String(r.headers['x-ip']) }),
+    });
+    const reqFor = (ip: string) =>
+      ({
+        query: { address: '0xabc' },
+        headers: { 'x-ip': ip },
+      }) as unknown as NextApiRequest;
+    const limited = makeRes();
+    const joined = makeRes();
+
+    const calls = [
+      proxy(reqFor('1.1.1.1'), limited),
+      proxy(reqFor('2.2.2.2'), joined),
+    ];
+    // the upstream limits the first caller's IP only
+    first.reject(new FetcherError('too many requests', 429));
+    await Promise.all(calls);
+
+    expect(limited.status).toHaveBeenCalledWith(429);
+    expect(joined.send).toHaveBeenCalledWith('{"isValid":true}');
+    expect(standardFetcher).toHaveBeenCalledTimes(2);
+    const retryHeaders = vi.mocked(standardFetcher).mock.calls[1][1]
+      ?.headers as Headers;
+    expect(retryHeaders.get('X-Client-IP')).toBe('2.2.2.2');
+  });
 });

@@ -28,11 +28,12 @@ import { withFallback } from 'utils/with-fallback';
 import type { WrapFormInputType } from '../wrap-form-context';
 import { TOKENS_TO_WRAP } from '../../shared/types';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type UseWrapFormProcessorArgs = {
   // refreshes the form data and the allowance; never rejects
   onConfirm: () => Promise<void>;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
 };
 
 // the steps of a wrap, the first one only for stETH on L1 short of allowance

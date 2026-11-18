@@ -34,6 +34,7 @@ import {
   readWithdrawQuote,
   type VaultQuote,
 } from '../utils/quote';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 const QA_REMAINING_DAILY_LIMIT_KEY =
   'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit';
@@ -76,7 +77,7 @@ type UseWithdrawArgs = {
   shownQuote: VaultQuote | undefined;
   refetchQuote: (() => unknown) | undefined;
   txModalStages: TxModalStages;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
   // the vault's query scopes, refetched after a withdrawal whose outcome
@@ -326,10 +327,10 @@ export const useWithdraw = ({
             return;
           }
 
-          // the quote changed before anything was sent: the preview shows
-          // the new one and a retry is held to it
+          // the quote changed before anything was sent: no retry, the form
+          // shows the new quote before the user submits again
           if (error instanceof QuoteMismatchError) {
-            txModalStages.failed(error, onRetry);
+            txModalStages.failed(error);
             return;
           }
 

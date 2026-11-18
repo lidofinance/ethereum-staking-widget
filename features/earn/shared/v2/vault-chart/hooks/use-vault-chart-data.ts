@@ -108,7 +108,7 @@ export const useMetavaultChartData = ({
   const data = useMemo((): NormalizedVaultChartPoint[] | null => {
     if (!rawData) return null;
 
-    return rawData.flatMap((item) => {
+    const points = rawData.flatMap((item) => {
       const timestampMs = unixTimestampToMs(Number(item.timestamp));
       // drop points that cannot be placed on the time axis
       if (!isChartTimestampMs(timestampMs)) return [];
@@ -135,6 +135,14 @@ export const useMetavaultChartData = ({
         },
       ];
     });
+
+    const droppedCount = rawData.length - points.length;
+    if (droppedCount > 0) {
+      console.warn(
+        `[useMetavaultChartData] dropped ${droppedCount} point(s) with an invalid timestamp`,
+      );
+    }
+    return points;
   }, [rawData, isETHVault, ethPrice]);
 
   return {

@@ -24,6 +24,7 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   DEPOSIT_INTERRUPTED = 'DEPOSIT_INTERRUPTED',
   DEPOSIT_RESET_INTERRUPTED = 'DEPOSIT_RESET_INTERRUPTED',
   DEPOSIT_WRAPPED_INTERRUPTED = 'DEPOSIT_WRAPPED_INTERRUPTED',
+  WITHDRAWAL_REQUEST_INTERRUPTED = 'WITHDRAWAL_REQUEST_INTERRUPTED',
   SOMETHING_WRONG = 'SOMETHING_WRONG',
 }
 
@@ -145,6 +146,11 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'stETH wrapped but the vault deposit was not sent',
     'eth_widget_errors_deposit_wrapped_interrupted',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.WITHDRAWAL_REQUEST_INTERRUPTED]: [
+    'Ethereum_Staking_Widget_Errors',
+    'Tokens approved but the withdrawal request was not sent',
+    'eth_widget_errors_withdrawal_request_interrupted',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG]: [
     'Ethereum_Staking_Widget_Errors',

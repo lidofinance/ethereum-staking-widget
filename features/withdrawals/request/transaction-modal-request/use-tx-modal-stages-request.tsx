@@ -5,6 +5,7 @@ import {
   useTransactionModalStage,
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 import {
   TxStageBunker,
@@ -101,7 +102,7 @@ const getTxModalStagesRequest = (
 
   failed: (
     error: unknown,
-    onRetry?: () => void,
+    onRetry?: TxRetryHandler,
     suggestTryAllowance?: boolean,
     onTryAllowance?: () => void,
   ) => {

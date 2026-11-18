@@ -46,6 +46,7 @@ import {
   readDepositQuote,
   type VaultQuote,
 } from '../utils/quote';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type DepositArgs = {
   amount: bigint;
@@ -87,7 +88,7 @@ type UseDepositArgs<DepositQueueToken extends string> = {
   shownQuote: VaultQuote | undefined;
   refetchQuote: (() => unknown) | undefined;
   txModalStages: TxModalStages;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
   // the vault's query scopes, refetched after a deposit whose outcome could

@@ -19,9 +19,10 @@ import {
 } from '../../contracts';
 import { USD_VAULT_QUERY_SCOPE } from '../../consts';
 import type { UsdWithdrawToken } from '../../types';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type UseUsdVaultWithdrawArgs = {
-  onRetry: () => void;
+  onRetry: TxRetryHandler;
   // the payout token, which decides the redeem queues
   token: UsdWithdrawToken;
   // the quote the form displays and its refetch: the withdrawal is held to it

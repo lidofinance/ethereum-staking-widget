@@ -100,12 +100,20 @@ export const createCachedProxy = ({
     };
 
     try {
-      let pending = inFlight.get(cacheKey);
-      if (!pending) {
-        pending = fetchBody().finally(() => inFlight.delete(cacheKey));
+      const shared = inFlight.get(cacheKey);
+      let body: string;
+      if (!shared) {
+        const pending = fetchBody().finally(() => inFlight.delete(cacheKey));
         inFlight.set(cacheKey, pending);
+        body = await pending;
+      } else if (forwardHeaders) {
+        // the shared fetch carries the first caller's client headers, so only
+        // its success is shared: a failure (a 429 for that caller's IP, say)
+        // is retried with this request's own headers
+        body = await shared.catch(() => fetchBody());
+      } else {
+        body = await shared;
       }
-      const body = await pending;
 
       sendJson(body);
     } catch (e) {

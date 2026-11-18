@@ -125,64 +125,60 @@ describe('createContentSecurityPolicy', () => {
 });
 
 describe('createContentSecurityPolicy with an invalid value', () => {
-  beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
-  });
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it.each([
     ['a control character', 'https://a.example\r\nX: 1'],
     ['NUL', 'https://a.example\u0000'],
     ['a directive separator', 'https://a.example; script-src *'],
-  ])('drops only a trusted host with %s', (_name, bad) => {
-    const directives = directivesOf({
-      ...serverInputs,
-      trustedHosts: ['https://ok.example', bad],
-    });
-
-    expect(directives.scriptSrc).toContain('https://ok.example');
-    expect(directives.scriptSrc).not.toContain(bad);
-    expect(directives.frameSrc).toContain(COWSWAP);
-    expect(directives.reportURI).toBe(REPORT_URI);
-    expect(console.error).toHaveBeenCalledTimes(1);
+  ])('throws on a trusted host with %s', (_name, bad) => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        trustedHosts: ['https://ok.example', bad],
+      }),
+    ).toThrow(/\[csp\] invalid configuration: trusted host/);
   });
 
-  it('drops only a relative report URI', () => {
+  it('throws on a relative report URI', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        reportUri: '/api/csp-report',
+      }),
+    ).toThrow(/report URI "\/api\/csp-report"/);
+  });
+
+  it('throws on an invalid CoW base URL instead of using the default', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        cowswapBaseUrl: 'not a url',
+      }),
+    ).toThrow(/CoW base URL "not a url"/);
+  });
+
+  it('names every invalid value in one error', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        trustedHosts: ['bad host'],
+        reportUri: 'relative',
+      }),
+    ).toThrow(/trusted host "bad host", report URI "relative"/);
+  });
+
+  it('skips blank trusted host entries left by the separator', () => {
     const directives = directivesOf({
       ...serverInputs,
-      reportUri: '/api/csp-report',
+      trustedHosts: ['https://trusted.example', ' ', ''],
     });
 
-    expect(directives.reportURI).toBeUndefined();
     expect(directives.scriptSrc).toContain('https://trusted.example');
-    expect(directives.frameSrc).toContain(COWSWAP);
-    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(directives.scriptSrc).not.toContain('');
   });
 
-  it('uses the default CoW base URL when the configured one is invalid', () => {
-    const directives = directivesOf({
-      ...serverInputs,
-      cowswapBaseUrl: 'not a url',
-    });
-
-    expect(directives.frameSrc).toContain(DEFAULT_COWSWAP_WIDGET_BASE_URL);
-    expect(directives.scriptSrc).toContain('https://trusted.example');
-    expect(directives.reportURI).toBe(REPORT_URI);
-    expect(console.error).toHaveBeenCalledTimes(1);
-  });
-
-  it('keeps the policy and logs nothing when the inputs are valid', () => {
-    expect(directivesOf(serverInputs).scriptSrc).toContain(
-      'https://trusted.example',
-    );
-    expect(console.error).not.toHaveBeenCalled();
-  });
-
-  it('renders a header Node accepts after the fallback', () => {
+  it('renders a header Node accepts for valid inputs', () => {
     const [name, value] = createCspHeader(
-      createContentSecurityPolicy({ ...serverInputs, reportUri: 'relative' }),
+      createContentSecurityPolicy(serverInputs),
     );
     expect(() => validateHeaderValue(name, value)).not.toThrow();
   });

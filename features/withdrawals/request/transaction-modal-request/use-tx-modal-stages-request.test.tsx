@@ -1,4 +1,7 @@
-import { TxStaleError } from 'modules/web3/utils/errors';
+import {
+  TxFlowInterruptedError,
+  TxStaleError,
+} from 'modules/web3/utils/errors';
 
 const transitStage = vi.hoisted(() => vi.fn());
 
@@ -8,6 +11,9 @@ vi.mock('shared/transaction-modal/hooks/use-transaction-modal-stage', () => ({
   ) => ({ txModalStages: getStages(transitStage) }),
 }));
 
+vi.mock('utils/track-matomo-event', () => ({ trackMatomoEvent: vi.fn() }));
+
+import { ErrorMessage } from 'utils/getErrorMessage';
 import { useTxModalStagesRequest } from './use-tx-modal-stages-request';
 
 describe('request modal failed stage', () => {
@@ -30,5 +36,26 @@ describe('request modal failed stage', () => {
     txModalStages.failed(new Error('boom'));
 
     expect(transitStage).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers to continue an interrupted request with the given retry handler', () => {
+    const { txModalStages } = useTxModalStagesRequest();
+    const onRetry = vi.fn(() => false);
+
+    txModalStages.failed(
+      new TxFlowInterruptedError(
+        ErrorMessage.WITHDRAWAL_REQUEST_INTERRUPTED,
+        new Error('boom'),
+      ),
+      onRetry,
+    );
+
+    expect(transitStage).toHaveBeenCalledTimes(1);
+    const [stage] = transitStage.mock.calls[0];
+    expect(stage.props.failedText).toBe(
+      ErrorMessage.WITHDRAWAL_REQUEST_INTERRUPTED,
+    );
+    // passed as is, so a declined retry keeps its return value
+    expect(stage.props.onRetry).toBe(onRetry);
   });
 });

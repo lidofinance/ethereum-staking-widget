@@ -29,6 +29,7 @@ import { MockLimitReachedError } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 import { useBells } from './hooks/use-bells';
 import { useWethUnwrap } from './hooks/use-weth-unwrap';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -38,7 +39,7 @@ type StakeArguments = {
 
 type StakeOptions = {
   onConfirm?: () => Promise<void> | void;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   // the WETH was unwrapped but the stake did not go through
   onUnwrapped?: () => void;
 };

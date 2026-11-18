@@ -9,7 +9,11 @@ describe('VaultChartErrorBoundary', () => {
   const chart = <div>chart</div>;
   const boundary = VaultChartErrorBoundary({
     children: chart,
-  }) as ReactElement<{ fallback: unknown; children: unknown }>;
+  }) as ReactElement<{
+    fallback: unknown;
+    children: unknown;
+    onError: (error: unknown) => void;
+  }>;
 
   it('catches errors of the chart with an error boundary', () => {
     expect(boundary.type).toBe(ErrorBoundary);
@@ -25,5 +29,16 @@ describe('VaultChartErrorBoundary', () => {
       new RangeError('Invalid time value'),
     );
     expect(state.didCatch).toBe(true);
+  });
+
+  it('logs a caught error with its scope', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    boundary.props.onError(new RangeError('Invalid time value'));
+
+    expect(warn).toHaveBeenCalledWith(
+      '[VaultChartErrorBoundary] RangeError: Invalid time value',
+    );
+    warn.mockRestore();
   });
 });

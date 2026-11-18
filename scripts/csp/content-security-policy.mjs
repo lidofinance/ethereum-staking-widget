@@ -152,63 +152,41 @@ const isSafeToken = (value) =>
 const isSafeUrl = (value) => isSafeToken(value) && isAbsoluteUrl(value);
 
 /**
- * Keeps the valid env-derived inputs and drops the rest
+ * What is wrong with the env-derived inputs, one entry per invalid value
  * @param {Parameters<typeof buildContentSecurityPolicy>[0]} inputs
- * @returns {{ inputs: typeof inputs, dropped: string[] }}
+ * @returns {string[]}
  */
-const sanitizeInputs = (inputs) => {
-  const dropped = [];
-  const trustedHosts = [];
-  for (const host of inputs.trustedHosts) {
-    const value = typeof host === 'string' ? host.trim() : host;
-    if (value === '') continue;
-    if (isSafeToken(value)) trustedHosts.push(value);
-    else dropped.push(`trusted host ${JSON.stringify(host)}`);
-  }
-
-  let { reportUri, cowswapBaseUrl } = inputs;
-  if (reportUri && !isSafeUrl(reportUri)) {
-    dropped.push(`report URI ${JSON.stringify(reportUri)}`);
-    reportUri = undefined;
-  }
-  if (!isSafeUrl(cowswapBaseUrl)) {
-    dropped.push(
-      `CoW base URL ${JSON.stringify(cowswapBaseUrl)} (using the default)`,
-    );
-    cowswapBaseUrl = DEFAULT_COWSWAP_WIDGET_BASE_URL;
-  }
-  return {
-    inputs: { ...inputs, trustedHosts, reportUri, cowswapBaseUrl },
-    dropped,
-  };
-};
+const inputProblems = ({ trustedHosts, reportUri, cowswapBaseUrl }) => [
+  ...trustedHosts
+    .filter((host) => !isSafeToken(host))
+    .map((host) => `trusted host ${JSON.stringify(host)}`),
+  ...(reportUri && !isSafeUrl(reportUri)
+    ? [`report URI ${JSON.stringify(reportUri)}`]
+    : []),
+  ...(!isSafeUrl(cowswapBaseUrl)
+    ? [`CoW base URL ${JSON.stringify(cowswapBaseUrl)}`]
+    : []),
+];
 
 /**
- * The policy for the inputs. Each env-derived input (CSP_TRUSTED_HOSTS sources,
- * CSP_REPORT_URI, the CoW base URL) is checked on its own: an invalid one is
- * logged and left out, the valid ones are kept. A broken env costs only its
- * own contribution, not every page.
+ * The policy for the inputs. Fails closed: an invalid env-derived input
+ * (a CSP_TRUSTED_HOSTS source, CSP_REPORT_URI, the CoW base URL) throws, so the
+ * server does not start and the IPFS build does not complete with a policy
+ * nobody configured.
  * @param {Parameters<typeof buildContentSecurityPolicy>[0]} inputs see above
  */
 export const createContentSecurityPolicy = (inputs) => {
-  const { inputs: valid, dropped } = sanitizeInputs(inputs);
-  if (dropped.length > 0) {
-    console.error(
-      `[csp] ignoring invalid configuration: ${dropped.join(', ')}`,
-    );
+  // a blank entry is a separator artifact of CSP_TRUSTED_HOSTS ("a,,b", "a, b")
+  const trustedHosts = inputs.trustedHosts
+    .map((host) => (typeof host === 'string' ? host.trim() : host))
+    .filter((host) => host !== '');
+  const problems = inputProblems({ ...inputs, trustedHosts });
+  if (problems.length > 0) {
+    throw new Error(`[csp] invalid configuration: ${problems.join(', ')}`);
   }
-  const policy = buildContentSecurityPolicy(valid);
-  const problem = policyProblem(policy);
-  if (!problem) return policy;
 
-  // last safety net: a problem the per-input checks did not catch
-  console.error(
-    `[csp] the policy is not valid (${problem}), using the default policy`,
-  );
-  return buildContentSecurityPolicy({
-    ...valid,
-    trustedHosts: [],
-    reportUri: undefined,
-    cowswapBaseUrl: DEFAULT_COWSWAP_WIDGET_BASE_URL,
-  });
+  const policy = buildContentSecurityPolicy({ ...inputs, trustedHosts });
+  const problem = policyProblem(policy);
+  if (problem) throw new Error(`[csp] the policy is not valid: ${problem}`);
+  return policy;
 };

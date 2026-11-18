@@ -11,8 +11,9 @@ import { warnError } from 'utils/warn-error';
 
 import { getDVVaultWritableContract } from '../../contracts';
 import { useTxModalStagesDVVWithdraw } from './use-dvv-withdraw-tx-modal';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useDVVWithdraw = (onRetry?: () => void) => {
+export const useDVVWithdraw = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core, wstETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesDVVWithdraw();

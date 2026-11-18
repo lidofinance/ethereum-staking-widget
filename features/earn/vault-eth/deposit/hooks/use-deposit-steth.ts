@@ -47,6 +47,7 @@ import {
   getSyncDepositQueueWritableContract,
 } from '../../contracts';
 import { ETH_VAULT_QUERY_SCOPE } from '../../consts';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 // The steps of a stETH deposit: the queue takes wstETH, so the stETH is
 // wrapped first. The approvals only for an allowance short of the amount
@@ -85,7 +86,7 @@ type UseEthVaultDepositStethArgs = {
   shownQuote: VaultQuote | undefined;
   refetchQuote: (() => unknown) | undefined;
   txModalStages: DepositTxModalStages;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
 };
 
 export const useEthVaultDepositSteth = ({
@@ -342,7 +343,11 @@ export const useEthVaultDepositSteth = ({
           // retry of a stETH deposit would wrap again: whatever stopped the
           // deposit, the user must learn where the funds are. A deposit that
           // settled, or was sent and never read back and so may have landed,
-          // keeps its own error, which offers no retry
+          // keeps its own error, which offers no retry.
+          // A deposit that was sent and reverted gets the same copy ("…the
+          // deposit was not sent") and Matomo event. Accepted: what the user
+          // needs here is that the funds are wstETH and the deposit did not
+          // happen, and a separate revert copy would not change what they do
           const isDepositOutcomeUnknown =
             isStepSent(ctx, STEP.deposit) &&
             error instanceof TxSentDataUnavailableError;

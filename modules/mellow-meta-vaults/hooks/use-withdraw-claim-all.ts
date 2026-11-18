@@ -13,6 +13,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { AsyncRedeemQueueWritableContract } from '../types/contracts';
 import { WithdrawRequestData } from '../types/withdraw-request-data';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 export const useWithdrawClaimAll = <WithdrawToken extends string>({
   redeemQueue,
@@ -29,7 +30,7 @@ export const useWithdrawClaimAll = <WithdrawToken extends string>({
   txModalStages: TxModalStages;
   claimableRequests: WithdrawRequestData[];
   refetchTokenBalance: (token: WithdrawToken) => unknown;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
 }) => {

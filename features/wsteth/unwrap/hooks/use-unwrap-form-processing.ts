@@ -19,11 +19,12 @@ import { withFallback } from 'utils/with-fallback';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type UseUnwrapFormProcessorArgs = {
   // refreshes the form data and the allowance; never rejects
   onConfirm: () => Promise<void>;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
 };
 
 // the steps of an unwrap, the first one only on L2 short of allowance

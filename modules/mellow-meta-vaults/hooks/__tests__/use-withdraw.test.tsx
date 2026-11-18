@@ -537,7 +537,6 @@ describe('useWithdraw', () => {
       expect(refetchQuote).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.any(QuoteMismatchError),
-        onRetry,
       );
       // a changed quote says nothing about the instant route
       expect(
@@ -628,7 +627,6 @@ describe('useWithdraw', () => {
       expect(refetchQuote).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.any(QuoteMismatchError),
-        onRetry,
       );
     });
 

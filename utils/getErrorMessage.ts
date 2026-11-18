@@ -36,6 +36,7 @@ export enum ErrorMessage {
   DEPOSIT_INTERRUPTED = 'Your tokens were approved, but the deposit was not sent. Retry to deposit them.',
   DEPOSIT_RESET_INTERRUPTED = 'Your token approval was reset, but the deposit was not sent. Retry to approve and deposit them.',
   DEPOSIT_WRAPPED_INTERRUPTED = 'Your stETH was wrapped to wstETH, but the deposit was not sent. Select wstETH to deposit it.',
+  WITHDRAWAL_REQUEST_INTERRUPTED = 'Your tokens were approved, but the withdrawal request was not sent. Retry to request the withdrawal.',
 }
 
 export const getError = (error: unknown): ErrorMessage | string => {
@@ -99,7 +100,10 @@ export const isRetryableTxError = (error: unknown): boolean => {
   if (
     error instanceof TxSettledError ||
     error instanceof TxSentDataUnavailableError ||
-    error instanceof TxStaleError
+    error instanceof TxStaleError ||
+    // a retry would be checked against the new quote, which the modal does not
+    // show: the user goes back to the form and sees it before submitting again
+    error instanceof QuoteMismatchError
   )
     return false;
   return getError(error) !== ErrorMessage.NOT_ENOUGH_ETHER;
@@ -402,6 +406,8 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
     MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_WRAPPED_INTERRUPTED,
   [ErrorMessage.DEPOSIT_INTERRUPTED]:
     MATOMO_ERROR_EVENTS_TYPES.DEPOSIT_INTERRUPTED,
+  [ErrorMessage.WITHDRAWAL_REQUEST_INTERRUPTED]:
+    MATOMO_ERROR_EVENTS_TYPES.WITHDRAWAL_REQUEST_INTERRUPTED,
 };
 
 const trackErrorDebounced = debounce((errorMessage: string) => {

@@ -18,9 +18,10 @@ import {
   getSyncRedeemQueueWritableContractWSTETH,
 } from '../../contracts';
 import { ETH_VAULT_QUERY_SCOPE } from '../../consts';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type UseEthVaultWithdrawArgs = {
-  onRetry: () => void;
+  onRetry: TxRetryHandler;
   // the quote the form displays and its refetch: the withdrawal is held to it
   shownQuote: VaultQuote | undefined;
   refetchQuote: (() => unknown) | undefined;

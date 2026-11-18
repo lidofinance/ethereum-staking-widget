@@ -17,6 +17,7 @@ import {
 } from '../../contracts';
 import { USD_VAULT_QUERY_SCOPE, USD_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { UsdDepositToken } from '../../types';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type SyncDepositQueueGetterArgs = Parameters<
   typeof getSyncDepositQueueWritableContract
@@ -29,7 +30,7 @@ const getSyncDepositQueue = (args: SyncDepositQueueGetterArgs) =>
     : getSyncDepositQueueWritableContract(args);
 
 type UseUsdVaultDepositArgs = {
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   // the quote the form displays and its refetch: the deposit is held to it
   shownQuote: VaultQuote | undefined;
   refetchQuote: (() => unknown) | undefined;
