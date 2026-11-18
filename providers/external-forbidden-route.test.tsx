@@ -4,10 +4,19 @@ const state = vi.hoisted(() => ({
   path: '/withdrawals/request',
   pages: undefined as Record<string, unknown> | undefined,
   push: vi.fn(),
+  query: {},
+  productQuery: {},
+  // the effect and deps the provider hands to LayoutEffectSsrDelayed
+  effect: undefined as (() => void) | undefined,
+  waitForNextRouter: undefined as boolean | undefined,
 }));
 
 vi.mock('next/router', () => ({
-  useRouter: () => ({ push: state.push, pathname: state.path, query: {} }),
+  useRouter: () => ({
+    push: state.push,
+    pathname: state.path,
+    query: state.query,
+  }),
 }));
 vi.mock('shared/hooks/use-router-path', () => ({
   useRouterPath: () => state.path,
@@ -21,14 +30,29 @@ vi.mock('config/external-config', () => ({
 }));
 vi.mock('config/external-config/products', () => ({
   getHomePath: () => '/',
-  getRedirectQuery: () => ({}),
+  // the router query with the product params, as the real helper builds it
+  getRedirectQuery: (
+    _pathname: string,
+    query: Record<string, string>,
+    productQuery: Record<string, string>,
+  ) => ({ ...query, ...productQuery }),
 }));
 vi.mock('config/external-config/use-products-url-state', () => ({
-  useProductQuery: () => undefined,
+  useProductQuery: () => state.productQuery,
   useProductsUrlState: () => ({}),
 }));
 vi.mock('shared/components/layout-effect-ssr-delayed', () => ({
-  LayoutEffectSsrDelayed: () => null,
+  LayoutEffectSsrDelayed: ({
+    effect,
+    waitForNextRouter,
+  }: {
+    effect: () => void;
+    waitForNextRouter?: boolean;
+  }) => {
+    state.effect = effect;
+    state.waitForNextRouter = waitForNextRouter;
+    return null;
+  },
 }));
 
 import { ExternalForbiddenRouteProvider } from './external-forbidden-route';
@@ -44,6 +68,11 @@ describe('ExternalForbiddenRouteProvider', () => {
   beforeEach(() => {
     state.path = '/withdrawals/request';
     state.pages = undefined;
+    state.query = {};
+    state.productQuery = {};
+    state.effect = undefined;
+    state.waitForNextRouter = undefined;
+    state.push.mockClear();
   });
 
   it('renders the page when the path is enabled', () => {
@@ -60,5 +89,37 @@ describe('ExternalForbiddenRouteProvider', () => {
     state.pages = { '/withdrawals': {} };
     expect(render()).not.toContain('withdrawal form');
     expect(state.push).not.toHaveBeenCalled();
+  });
+
+  describe('redirect from a disabled path', () => {
+    // on a direct load the router query and the URL product params are empty
+    // until the router is ready
+    it('runs the redirect only once the Next router is ready', () => {
+      state.pages = { '/withdrawals': {} };
+      render();
+
+      expect(state.waitForNextRouter).toBe(true);
+    });
+
+    it('redirects home keeping the query and the product params', () => {
+      state.pages = { '/withdrawals': {} };
+      state.query = { ref: '0xabc' };
+      state.productQuery = { swap: 'disabled' };
+      render();
+      state.effect?.();
+
+      expect(state.push).toHaveBeenCalledWith({
+        pathname: '/',
+        query: { ref: '0xabc', swap: 'disabled' },
+      });
+    });
+
+    it('does not redirect from an enabled path', () => {
+      state.pages = { '/wrap': {} };
+      render();
+      state.effect?.();
+
+      expect(state.push).not.toHaveBeenCalled();
+    });
   });
 });

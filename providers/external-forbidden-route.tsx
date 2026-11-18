@@ -45,7 +45,13 @@ export const ExternalForbiddenRouteProvider = ({
 
   return (
     <>
-      <LayoutEffectSsrDelayed effect={checkPathEffect} deps={effectDeps} />
+      <LayoutEffectSsrDelayed
+        effect={checkPathEffect}
+        deps={effectDeps}
+        // NextJS router is not guaranteed to be isReady:true on the first render
+        // and this will cause query params to be empty
+        waitForNextRouter
+      />
       {!isDisabled && children}
     </>
   );
