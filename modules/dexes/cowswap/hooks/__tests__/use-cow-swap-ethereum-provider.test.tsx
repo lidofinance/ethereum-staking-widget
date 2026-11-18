@@ -3,6 +3,20 @@ import { ProviderDisconnectedError, type Address } from 'viem';
 
 import { renderHook } from 'features/stake/shared/__tests__/stake-test-utils';
 
+// the server render runs no effects: each instance's unmount cleanup is kept
+// here, so a test can unmount a frame at the point React would
+const unmountCleanups: (() => void)[] = [];
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>();
+  return {
+    ...actual,
+    useEffect: (effect: () => void | (() => void)) => {
+      const dispose = effect();
+      if (dispose) unmountCleanups.push(dispose);
+    },
+  };
+});
+
 vi.mock('utils/track-matomo-event', () => ({ trackMatomoEvent: vi.fn() }));
 
 vi.mock('wagmi', () => ({
@@ -185,5 +199,67 @@ describe('useCowSwapEthereumProvider: session', () => {
     render({ address: ACCOUNT_B, walletClient: client });
 
     expect(startSession).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('useCowSwapEthereumProvider: route switch between integrations', () => {
+  // each integration's frame has its own trade guard and appCode
+  const frameOptions = (appCode: string) => {
+    let current: CowSwapSession | undefined;
+    return {
+      ...OPTIONS,
+      appCode,
+      startSession: () => {
+        current?.revoke();
+        current = createCowSwapSession({});
+        return current;
+      },
+    };
+  };
+
+  const renderFrame = (
+    appCode: string,
+    walletClient: ReturnType<typeof makeWalletClient>,
+  ) => {
+    vi.mocked(useDappStatus).mockReturnValue({
+      address: ACCOUNT_A,
+      chainId: 1,
+      walletChainId: 1,
+    } as never);
+    vi.mocked(useWalletClient).mockReturnValue({ data: walletClient } as never);
+    vi.mocked(useConnection).mockReturnValue({ connector: CONNECTOR } as never);
+    const before = unmountCleanups.length;
+    const result = renderHook(() =>
+      useCowSwapEthereumProvider(frameOptions(appCode)),
+    );
+    return { ...result, unmount: unmountCleanups[before] };
+  };
+
+  it('the frame of the next route keeps signing after the previous route unmounts its frame', async () => {
+    const client = makeWalletClient(ACCOUNT_A);
+    const withdrawals = renderFrame('Withdrawals App', client);
+    // React renders the next page's frame first, then unmounts the previous one
+    const swap = renderFrame('Swap App', client);
+    withdrawals.unmount();
+
+    await expect(swap.provider?.request(SIGN_REQUEST)).resolves.toBe(
+      '0xsigned',
+    );
+    await expect(
+      withdrawals.provider?.request(SIGN_REQUEST),
+    ).rejects.toMatchObject({
+      code: ProviderDisconnectedError.code,
+    });
+  });
+
+  it('unmounting a frame ends its own provider', async () => {
+    const client = makeWalletClient(ACCOUNT_A);
+    const frame = renderFrame('Swap App', client);
+    frame.unmount();
+
+    await expect(frame.provider?.request(SIGN_REQUEST)).rejects.toMatchObject({
+      code: ProviderDisconnectedError.code,
+    });
+    expect(client.request).not.toHaveBeenCalled();
   });
 });

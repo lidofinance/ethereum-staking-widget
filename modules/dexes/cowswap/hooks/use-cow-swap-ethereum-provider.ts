@@ -10,21 +10,28 @@ import type { NetworkTxConfig } from '../guards/tx';
 import type { CowSwapSession, SigningHelpTip } from '../guards/trade';
 import { createCowSwapProvider } from '../utils';
 
-const CLEANUP_SET = new Set<() => void>();
+// Keyed by the widget's appCode, one per integration (swap, withdrawals). On a
+// route change React renders the new page's frame before it unmounts the old
+// one: with a shared set, the old frame's unmount would end the new frame's
+// session.
+const CLEANUP_SETS = new Map<string, Set<() => void>>();
 
-const addCleanup = (fn: () => void) => {
-  CLEANUP_SET.add(fn);
+const addCleanup = (appCode: string, fn: () => void) => {
+  const cleanups = CLEANUP_SETS.get(appCode) ?? new Set<() => void>();
+  cleanups.add(fn);
+  CLEANUP_SETS.set(appCode, cleanups);
 };
 
-const cleanup = () => {
-  for (const fn of CLEANUP_SET) {
+const cleanup = (appCode: string) => {
+  const cleanups = CLEANUP_SETS.get(appCode);
+  CLEANUP_SETS.delete(appCode);
+  for (const fn of cleanups ?? []) {
     try {
       fn();
     } catch (error) {
       console.error('[useCowSwapEthereumProvider] Cleanup error:', error);
     }
   }
-  CLEANUP_SET.clear();
 };
 
 type UseCowSwapEthereumProviderArgs = {
@@ -60,13 +67,13 @@ export const useCowSwapEthereumProvider = ({
   // clean up on unmount
   useEffect(() => {
     return () => {
-      cleanup();
+      cleanup(appCode);
     };
-  }, []);
+  }, [appCode]);
 
   return useMemo(() => {
     // any change ends the previous provider's session, also when no new provider follows
-    cleanup();
+    cleanup(appCode);
 
     // resolved from the same chainId the validators receive
     const networkTxConfig = getNetworkTxConfig(chainId);
@@ -83,8 +90,9 @@ export const useCowSwapEthereumProvider = ({
       return { provider: undefined, isProviderPending: true };
     }
 
+    const addFrameCleanup = (fn: () => void) => addCleanup(appCode, fn);
     const session = startSession();
-    addCleanup(session.revoke);
+    addFrameCleanup(session.revoke);
 
     const provider = createCowSwapProvider({
       walletClient,
@@ -97,7 +105,7 @@ export const useCowSwapEthereumProvider = ({
       validateAddress,
       openTransactionGuardModal,
       openSigningErrorModal,
-      addCleanup,
+      addCleanup: addFrameCleanup,
     });
     return { provider, isProviderPending: false };
   }, [
