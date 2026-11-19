@@ -69,4 +69,52 @@ describe('createCachedProxy upstream timeout', () => {
     });
     expect(res.status).toHaveBeenCalledWith(500);
   });
+
+  it('finishes joined client requests at the original timeout without starting more fetches', async () => {
+    const proxy = createCachedProxy({
+      proxyUrl: 'https://upstream/check',
+      cacheTTL: 1,
+      timeout: 10_000,
+      forwardHeaders: (request) => ({
+        'X-Client-IP': String(request.headers['x-ip']),
+      }),
+    });
+    const responses = [1, 2, 3].map(() => ({
+      setHeader: vi.fn(),
+      status: vi.fn().mockReturnThis(),
+      end: vi.fn(),
+      send: vi.fn(),
+      json: vi.fn(),
+    }));
+    let finished = false;
+    const pending = Promise.allSettled(
+      responses.map((response, index) =>
+        proxy(
+          {
+            query: {},
+            headers: { 'x-ip': `192.0.2.${index + 1}` },
+          } as unknown as NextApiRequest,
+          response as any,
+        ),
+      ),
+    ).then((results) => {
+      finished = true;
+      return results;
+    });
+
+    await vi.advanceTimersByTimeAsync(9_999);
+    expect(finished).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(finished).toBe(true);
+    expect((await pending).map((result) => result.status)).toEqual([
+      'rejected',
+      'rejected',
+      'rejected',
+    ]);
+    responses.forEach((response) =>
+      expect(response.status).toHaveBeenCalledWith(500),
+    );
+  });
 });

@@ -107,10 +107,14 @@ export const createCachedProxy = ({
         inFlight.set(cacheKey, pending);
         body = await pending;
       } else if (forwardHeaders) {
-        // the shared fetch carries the first caller's client headers, so only
-        // its success is shared: a failure (a 429 for that caller's IP, say)
-        // is retried with this request's own headers
-        body = await shared.catch(() => fetchBody());
+        // A shared 429 may belong to the first caller's IP. Other failures
+        // are shared without retrying against an unavailable upstream.
+        body = await shared.catch((error: unknown) => {
+          if (error instanceof FetcherError && error.status === 429) {
+            return fetchBody();
+          }
+          throw error;
+        });
       } else {
         body = await shared;
       }

@@ -282,6 +282,95 @@ describe('createCachedProxy concurrent requests', () => {
     );
   });
 
+  it.each([
+    {
+      label: 'HTTP 500',
+      error: new FetcherError('server error', 500),
+      status: 500,
+      outcome: 'rejected',
+    },
+    {
+      label: 'HTTP 502',
+      error: new FetcherError('bad gateway', 502),
+      status: 500,
+      outcome: 'rejected',
+    },
+    {
+      label: 'HTTP 503',
+      error: new FetcherError('unavailable', 503),
+      status: 500,
+      outcome: 'rejected',
+    },
+    {
+      label: 'timeout',
+      error: new DOMException('timeout', 'TimeoutError'),
+      status: 500,
+      outcome: 'rejected',
+    },
+    {
+      label: 'network error',
+      error: new TypeError('Failed to fetch'),
+      status: 500,
+      outcome: 'rejected',
+    },
+    {
+      label: 'HTTP 403',
+      error: new FetcherError('forbidden', 403),
+      status: 403,
+      outcome: 'fulfilled',
+    },
+    {
+      label: 'HTTP 404',
+      error: new FetcherError('not found', 404),
+      status: 404,
+      outcome: 'fulfilled',
+    },
+  ])(
+    'shares $label without retrying for each waiting client',
+    async ({ error, status, outcome }) => {
+      const upstream = Promise.withResolvers<unknown>();
+      vi.mocked(standardFetcher)
+        .mockRejectedValue(error)
+        .mockReturnValueOnce(upstream.promise);
+      const proxy = createCachedProxy({
+        proxyUrl: 'https://upstream/',
+        cacheTTL: 1000,
+        forwardHeaders: (request) => ({
+          'X-Client-IP': String(request.headers['x-ip']),
+        }),
+      });
+      const responses = [makeRes(), makeRes(), makeRes()];
+      const pending = Promise.allSettled(
+        responses.map((response, index) =>
+          proxy(
+            {
+              query: {},
+              headers: { 'x-ip': `192.0.2.${index + 1}` },
+            } as unknown as NextApiRequest,
+            response,
+          ),
+        ),
+      );
+
+      upstream.reject(error);
+      const results = await pending;
+
+      expect(standardFetcher).toHaveBeenCalledTimes(1);
+      expect(results.map((result) => result.status)).toEqual([
+        outcome,
+        outcome,
+        outcome,
+      ]);
+      responses.forEach((response) => {
+        expect(response.status).toHaveBeenCalledWith(status);
+        expect(response.setHeader).toHaveBeenCalledWith(
+          'Cache-Control',
+          CACHE_DEFAULT_ERROR_HEADERS,
+        );
+      });
+    },
+  );
+
   it('does not share a failed fetch with later requests', async () => {
     vi.mocked(standardFetcher)
       .mockRejectedValueOnce(new FetcherError('bad gateway', 502))
