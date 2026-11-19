@@ -1,4 +1,4 @@
-import { Tooltip } from '@lidofinance/lido-ui';
+import { Tooltip, TooltipProps } from '@lidofinance/lido-ui';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { Component } from 'types';
@@ -11,6 +11,7 @@ export type FormatTokenProps = FormatBalanceArgs & {
   amount?: bigint | null;
   approx?: boolean;
   showAmountTip?: boolean;
+  tooltipPlacement?: TooltipProps['placement'];
   fallback?: string;
   decimals?: number;
   shortened?: boolean;
@@ -24,6 +25,7 @@ export const FormatToken: FormatTokenComponent = ({
   maxDecimalDigits = 4,
   maxTotalLength = 15,
   showAmountTip = true,
+  tooltipPlacement = 'topRight',
   trimEllipsis,
   fallback = DATA_UNAVAILABLE,
   adaptiveDecimals,
@@ -61,7 +63,7 @@ export const FormatToken: FormatTokenComponent = ({
   if (showTooltip) {
     return (
       <Tooltip
-        placement="topRight"
+        placement={tooltipPlacement}
         title={
           <span>
             {actual}&nbsp;{symbol}

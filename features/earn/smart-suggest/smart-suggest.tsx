@@ -69,16 +69,18 @@ const SmartSuggestRowItem: FC<SmartSuggestRowItemProps> = ({ row }) => (
         amount={row.balance}
         decimals={row.decimals}
         symbol={TOKEN_SYMBOLS[row.token]}
+        tooltipPlacement="bottomLeft"
       />
     </TokenCell>
     <ApyCell>
-      <FormatPercent value={row.apy} decimals="percent" /> APY
+      <FormatPercent value={row.apy} decimals="percent" /> APY*
     </ApyCell>
     <YieldCell>
       <FormatToken
         amount={row.yearlyYield}
         decimals={row.yieldDecimals}
         symbol={TOKEN_SYMBOLS[row.yieldToken]}
+        tooltipPlacement="bottomLeft"
       />{' '}
       / year
     </YieldCell>
@@ -135,7 +137,9 @@ export const SmartSuggestView: FC<SmartSuggestViewProps> = ({
           <Content>
             <TotalRow>
               <TotalLarge data-testid="smart-suggest-total">{total}</TotalLarge>
-              <VaultTip>{SMART_SUGGEST_APY_HINT}</VaultTip>
+              <VaultTip placement="bottomLeft">
+                {SMART_SUGGEST_APY_HINT}
+              </VaultTip>
             </TotalRow>
             <Divider />
             <Rows>

@@ -170,6 +170,7 @@ export const YieldCell = styled.div`
   grid-area: yield;
   text-align: right;
   white-space: nowrap;
+  font-weight: 400;
 
   ${({ theme }) => theme.mediaQueries.lg} {
     text-align: left;
