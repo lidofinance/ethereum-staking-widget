@@ -1,6 +1,6 @@
 import { decodeFunctionData, getAddress, type Address, type Hash } from 'viem';
 
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type { TxFlowArgs } from 'modules/web3/tx-flow/types';
 import {
   QuoteMismatchError,
   TxSettledError,
@@ -82,9 +82,9 @@ const oracle = {
 };
 
 vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   return {
     ...errors,
     ...context,

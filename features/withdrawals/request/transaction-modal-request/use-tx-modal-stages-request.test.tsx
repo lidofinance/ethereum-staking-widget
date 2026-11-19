@@ -59,3 +59,44 @@ describe('request modal failed stage', () => {
     expect(stage.props.onRetry).toBe(onRetry);
   });
 });
+
+describe('Bunker confirmation', () => {
+  const close = vi.fn();
+  beforeEach(() => {
+    vi.clearAllMocks();
+    transitStage.mockImplementation((_stage, props) => props.onOpen?.(close));
+  });
+
+  it('cancels when the outer modal is dismissed', async () => {
+    const { txModalStages } = useTxModalStagesRequest();
+    const result = txModalStages.dialogBunker();
+    const [, props] = transitStage.mock.calls[0];
+    props.onDismiss?.();
+    await expect(result).resolves.toBe(false);
+  });
+
+  it('closes its own session when Cancel is clicked', async () => {
+    const { txModalStages } = useTxModalStagesRequest();
+    const result = txModalStages.dialogBunker();
+    const [stage] = transitStage.mock.calls[0];
+    stage.props.onClose();
+    await expect(result).resolves.toBe(false);
+    expect(close).toHaveBeenCalledTimes(1);
+  });
+
+  it('continues when confirmed and ignores a later dismissal', async () => {
+    const { txModalStages } = useTxModalStagesRequest();
+    const result = txModalStages.dialogBunker();
+    const [stage, props] = transitStage.mock.calls[0];
+    stage.props.onClick();
+    props.onDismiss?.();
+    await expect(result).resolves.toBe(true);
+    expect(close).not.toHaveBeenCalled();
+  });
+
+  it('cancels immediately if its stage can no longer be shown', async () => {
+    transitStage.mockImplementationOnce(() => undefined);
+    const { txModalStages } = useTxModalStagesRequest();
+    await expect(txModalStages.dialogBunker()).resolves.toBe(false);
+  });
+});

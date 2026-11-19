@@ -10,7 +10,7 @@ import {
   TxSentDataUnavailableError,
   TxSettledError,
   TxStaleError,
-} from '../../utils/errors';
+} from '../utils/errors';
 import type { AACall, TxCallbackProps } from './types';
 
 const ADDRESS: Address = '0x00000000000000000000000000000000000000aa';
@@ -30,7 +30,7 @@ vi.mock('providers/address-validation-provider', () => ({
 vi.mock('modules/web3', () => ({
   useDappStatus: () => ({ address: ADDRESS }),
 }));
-vi.mock('../use-aa', () => ({
+vi.mock('../hooks/use-aa', () => ({
   useAA: () => ({ isAA: state.isAA }),
 }));
 vi.mock('./use-send-aa-calls', () => ({

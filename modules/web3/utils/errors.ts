@@ -89,7 +89,7 @@ export class TxSettledError extends Error {
 /**
  * Thrown by a chained flow (unwrap, then stake; approve, then stake) when the
  * preparation transaction settled on-chain but the main one was never sent:
- * the SDK's follow-up read failed in between and the flow stopped there.
+ * an estimate, signature or follow-up read failed between the steps.
  * Unlike TxSettledError the flow is not complete, so the message (an
  * `ErrorMessage` value) says what landed and a Retry continues with the main
  * transaction. Shown as is by `getErrorMessage`.

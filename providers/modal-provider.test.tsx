@@ -1,5 +1,17 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 
+const lifecycle = vi.hoisted(() => ({ cleanups: [] as (() => void)[] }));
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>();
+  return {
+    ...actual,
+    useEffect: (setup: () => void | (() => void)) => {
+      const cleanup = setup();
+      if (cleanup) lifecycle.cleanups.push(cleanup);
+    },
+  };
+});
+
 import {
   ModalProvider,
   useModalActions,
@@ -28,6 +40,7 @@ const renderActions = () => {
 describe('ModalProvider open session', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    lifecycle.cleanups = [];
   });
   afterEach(() => {
     vi.useRealTimers();
@@ -76,5 +89,58 @@ describe('ModalProvider open session', () => {
     vi.runAllTimers();
 
     expect(getOpenSession()).toBe(second.modalSession);
+  });
+
+  it('resolves a waiting dialog when its session is closed', async () => {
+    const { openModal } = renderActions();
+    let finish!: (result: boolean) => void;
+    const result = new Promise<boolean>((resolve) => {
+      finish = resolve;
+    });
+    const session = openModal<{ onDismiss?: () => void }>(FirstModal, {
+      onDismiss: () => finish(false),
+    });
+    session.closeModal();
+    vi.runAllTimers();
+    await expect(result).resolves.toBe(false);
+  });
+
+  it('cancels a replaced dialog without closing its replacement', async () => {
+    const { openModal, getOpenSession } = renderActions();
+    let finish!: (result: boolean) => void;
+    const result = new Promise<boolean>((resolve) => {
+      finish = resolve;
+    });
+    const previous = openModal(FirstModal, { onDismiss: () => finish(false) });
+    const next = openModal(SecondModal, {});
+    await expect(result).resolves.toBe(false);
+    previous.closeModal();
+    vi.runAllTimers();
+    expect(getOpenSession()).toBe(next.modalSession);
+  });
+
+  it('cancels a dialog when another stage replaces it in the same session', async () => {
+    const { openModal } = renderActions();
+    let finish!: (result: boolean) => void;
+    const result = new Promise<boolean>((resolve) => {
+      finish = resolve;
+    });
+    const session = openModal<{ onDismiss?: () => void }>(FirstModal, {
+      onDismiss: () => finish(false),
+    });
+    session.updateProps({});
+    await expect(result).resolves.toBe(false);
+  });
+
+  it('cancels a waiting dialog when its provider unmounts', async () => {
+    const { openModal, getOpenSession } = renderActions();
+    let finish!: (result: boolean) => void;
+    const result = new Promise<boolean>((resolve) => {
+      finish = resolve;
+    });
+    openModal(FirstModal, { onDismiss: () => finish(false) });
+    lifecycle.cleanups.forEach((cleanup) => cleanup());
+    await expect(result).resolves.toBe(false);
+    expect(getOpenSession()).toBeNull();
   });
 });

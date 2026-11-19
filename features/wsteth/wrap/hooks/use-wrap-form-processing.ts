@@ -13,8 +13,7 @@ import {
   useLidoSDK,
   useLidoSDKL2,
   useTxFlow,
-  TxSettledError,
-  TxFlowInterruptedError,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
@@ -213,22 +212,12 @@ export const useWrapFormProcessor = ({
           console.warn(error);
           // the allowance changed under the form: refresh it before a retry
           if (isStepSettled(ctx, STEP.approve)) await onConfirm();
-          // The approval settled but its confirmation read failed, so the
-          // SDK never got to the wrap. Not a completed wrap: keep the amount
-          // and offer to continue. Any other failure after the approval
-          // shows as is: a retry reads the allowance and goes straight to
-          // the wrap
-          if (ctx.stepId === STEP.approve && error instanceof TxSettledError) {
-            txModalStages.failed(
-              new TxFlowInterruptedError(
-                ErrorMessage.WRAP_INTERRUPTED,
-                error.cause,
-              ),
-              onRetry,
-            );
-            return;
-          }
-          txModalStages.failed(error, onRetry);
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.wrap, [
+              { stepId: STEP.approve, message: ErrorMessage.WRAP_INTERRUPTED },
+            ]),
+            onRetry,
+          );
         },
       });
 

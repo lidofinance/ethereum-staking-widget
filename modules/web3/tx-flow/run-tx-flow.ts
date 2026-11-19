@@ -7,7 +7,7 @@ import {
   TxSentDataUnavailableError,
   TxSettledError,
   TxStaleError,
-} from '../../utils/errors';
+} from '../utils/errors';
 import { isStepProposed, isStepSent, isStepSettled } from './context';
 import type {
   LegacyTxFlowArgs,

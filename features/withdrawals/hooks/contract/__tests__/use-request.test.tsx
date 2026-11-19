@@ -11,7 +11,7 @@ import {
   type TransactionCallback,
 } from '@lidofinance/lido-ethereum-sdk/core';
 
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type { TxFlowArgs } from 'modules/web3/tx-flow/types';
 import { TxSentDataUnavailableError } from 'modules/web3';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import { ErrorMessage } from 'utils/getErrorMessage';
@@ -71,11 +71,13 @@ const state = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+vi.mock('modules/web3', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('modules/web3')>();
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   return {
+    ...actual,
     ...errors,
     ...context,
     useDappStatus: () => ({ address: ACCOUNT }),
@@ -360,7 +362,7 @@ describe('useWithdrawalRequest', () => {
       );
     });
 
-    it('reports an interrupted request when the approval landed but the request was not sent, and a retry does not approve again', async () => {
+    it('preserves the funding error after approval and skips approval on the next attempt', async () => {
       state.hasBytecode = true;
       const { walletClient, getAllowance } = createSdk(
         legacyPerformTransaction('success', 'unestimated'),
@@ -377,11 +379,7 @@ describe('useWithdrawalRequest', () => {
       expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: 'TxFlowInterruptedError',
-          message: ErrorMessage.WITHDRAWAL_REQUEST_INTERRUPTED,
-          cause: expect.objectContaining({
-            message: 'Not enough ether for gas',
-          }),
+          message: 'Not enough ether for gas',
         }),
         onRetry,
         false,
@@ -596,7 +594,8 @@ describe('useWithdrawalRequest', () => {
 
       await expect(submit()).resolves.toBe(false);
 
-      expect(state.closeModal).toHaveBeenCalled();
+      // The dialog owns its close; an old cancellation must not close a newer modal.
+      expect(state.closeModal).not.toHaveBeenCalled();
       expect(getAllowance).not.toHaveBeenCalled();
       expect(walletClient.writeContract).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).not.toHaveBeenCalled();

@@ -9,15 +9,12 @@ import { useTransactionModal } from 'shared/transaction-modal/transaction-modal'
 import type { TxRetryHandler } from 'shared/transaction-modal';
 import {
   applyRoundUpTxParameter,
-  isStepSent,
   isStepSettled,
   useDappStatus,
   useIsSmartAccount,
   useLidoSDK,
   useTxFlow,
-  TxFlowInterruptedError,
-  TxSettledError,
-  type TxFlowContext,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 import { config } from 'config';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
@@ -101,7 +98,6 @@ export const useWithdrawalRequest = ({
       if (isBunker) {
         const bunkerDialogResult = await txModalStages.dialogBunker();
         if (!bunkerDialogResult) {
-          closeModal();
           return false;
         }
       }
@@ -226,7 +222,12 @@ export const useWithdrawalRequest = ({
           // the allowance changed under the form: refresh it before a retry
           if (isStepSettled(ctx, STEP.approve)) await refetchAllowance();
           txModalStages.failed(
-            describeRequestFailure(error, ctx),
+            detectTxFlowInterruption(error, ctx, STEP.request, [
+              {
+                stepId: STEP.approve,
+                message: ErrorMessage.WITHDRAWAL_REQUEST_INTERRUPTED,
+              },
+            ]),
             onRetry,
             isSigningPermit,
             onTryAllowance,
@@ -262,24 +263,4 @@ export const useWithdrawalRequest = ({
     isApprovalFlowLoading,
     request,
   };
-};
-
-/**
- * The approval landed but the request was never sent (its estimate or
- * signature failed, or the approval's follow-up read did). Not a completed
- * request, whatever the error says: the user learns the approval is in place
- * and that a retry continues from there, it re-reads the allowance and skips
- * the approval.
- */
-const describeRequestFailure = (
-  error: unknown,
-  ctx: TxFlowContext<RequestData | undefined>,
-) => {
-  if (isStepSent(ctx, STEP.request) || !isStepSettled(ctx, STEP.approve)) {
-    return error;
-  }
-  return new TxFlowInterruptedError(
-    ErrorMessage.WITHDRAWAL_REQUEST_INTERRUPTED,
-    error instanceof TxSettledError ? error.cause : error,
-  );
 };

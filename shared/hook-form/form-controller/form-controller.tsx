@@ -1,4 +1,10 @@
-import { FC, useCallback, useEffect, useMemo } from 'react';
+import {
+  FC,
+  useCallback,
+  useEffect,
+  useRef,
+  type BaseSyntheticEvent,
+} from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useFormControllerContext } from './form-controller-context';
@@ -10,66 +16,66 @@ export const FormController: FC<React.ComponentProps<'form'>> = ({
 }) => {
   const {
     handleSubmit,
-    reset: resetHookForm,
+    reset,
     getValues,
     formState: { disabled },
   } = useFormContext();
   const {
     onSubmit,
-    onReset: resetCustom,
+    onReset,
     retryEvent,
     resetFormOn = 'all',
   } = useFormControllerContext();
+  // Keep lifecycle and disabled state current while asynchronous validation runs.
+  const submissionState = useRef({ mounted: true, disabled });
+  submissionState.current.disabled = disabled;
 
-  const reset = useMemo(() => {
-    return resetCustom
-      ? // for custom callback we provide current form values so that they can be used to build reset form state
-        // e.g. leave selected token but reset amount
-        resetCustom
-      : // for default hook-form reset we shim the argument, because hook-form reset expects the new form values as argument
-        // this resets form to default values provided to useForm
-        () => resetHookForm();
-  }, [resetCustom, resetHookForm]);
-
-  // Bind submit action
-  const doSubmit = useMemo(() => {
-    const submit = handleSubmit(async (args) => {
-      const success = await onSubmit(args);
-      // Reset from the live state, not the submitted snapshot: the form can
-      // move while the tx is pending (an account switch resets it, a chain
-      // switch may normalize a field) and the submission must not undo that
-      if (success) reset(getValues());
-    });
-    // handleSubmit does not look at the form-level `disabled`, so a disabled
-    // form (and a retry of an earlier attempt) is stopped here
-    return async (event?: React.BaseSyntheticEvent) => {
-      if (disabled) {
-        event?.preventDefault?.();
-        return;
-      }
-      return submit(event);
-    };
-  }, [handleSubmit, onSubmit, reset, getValues, disabled]);
-
-  // Bind retry callback
   useEffect(() => {
-    // a retry dropped by a disabled form reports it, so the modal that
-    // asked keeps showing the failure instead of waiting for a new attempt
-    return retryEvent.subscribe(() => {
-      if (disabled) return false;
-      void doSubmit();
-    });
-  }, [retryEvent, doSubmit, disabled]);
+    const state = submissionState.current;
+    state.mounted = true;
+    return () => {
+      state.mounted = false;
+    };
+  }, []);
 
-  const resetWithValues = useCallback(() => {
-    reset(getValues());
-  }, [reset, getValues]);
+  const resetForm = useCallback(() => {
+    // Read current values: the form may change while a transaction is pending.
+    if (onReset) onReset(getValues());
+    else reset();
+  }, [onReset, getValues, reset]);
 
-  // Reset the form when chain id or wallet address changed or disconnected
-  useWagmiConnectionChangedCallback(resetWithValues, resetFormOn);
+  const submit = useCallback(
+    async (event?: BaseSyntheticEvent): Promise<boolean> => {
+      if (
+        !submissionState.current.mounted ||
+        submissionState.current.disabled
+      ) {
+        event?.preventDefault?.();
+        return false;
+      }
+
+      return (
+        (await handleSubmit(async (values) => {
+          // Validation may await network data; the form can disappear or be disabled.
+          if (
+            !submissionState.current.mounted ||
+            submissionState.current.disabled
+          )
+            return false;
+          const success = await onSubmit(values);
+          if (success) resetForm();
+          return success;
+        })(event)) ?? false
+      );
+    },
+    [handleSubmit, onSubmit, resetForm],
+  );
+
+  useEffect(() => retryEvent.subscribe(submit), [retryEvent, submit]);
+  useWagmiConnectionChangedCallback(resetForm, resetFormOn);
 
   return (
-    <form autoComplete="off" onSubmit={doSubmit} {...props}>
+    <form autoComplete="off" onSubmit={submit} {...props}>
       {children}
     </form>
   );

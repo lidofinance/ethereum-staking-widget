@@ -10,7 +10,12 @@ import { createTxModalRun } from './tx-modal-run';
 
 export type TransactionModalTransitStage = (
   TxStageEl: React.ReactNode,
-  modalProps?: Omit<React.ComponentProps<typeof TransactionModal>, 'children'>,
+  modalProps?: Omit<
+    React.ComponentProps<typeof TransactionModal>,
+    'children'
+  > & {
+    onOpen?: (close: () => void) => void;
+  },
 ) => void;
 
 /**
@@ -39,7 +44,7 @@ export const useTransactionModalStage = <S extends Record<string, Function>>(
     const slot = { openModal, getOpenSession };
     const transitStage: TransactionModalTransitStage = (
       TxStageEl,
-      modalProps = {},
+      { onOpen, ...modalProps } = {},
     ) => {
       if (!isMountedRef.current) return;
       const isFirstStage = !run.isStarted;
@@ -47,12 +52,14 @@ export const useTransactionModalStage = <S extends Record<string, Function>>(
       if (!session) return;
       closeSessionRef.current = session.closeModal;
       if (isFirstStage) setRun(createTxModalRun<TransactionModalProps>());
+      onOpen?.(session.closeModal);
     };
 
     return getStages(transitStage);
   }, [getStages, openModal, getOpenSession, run]);
 
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
       closeSessionRef.current?.();

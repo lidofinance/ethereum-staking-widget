@@ -9,8 +9,7 @@ import {
   useLidoSDK,
   useLidoSDKL2,
   useTxFlow,
-  TxSettledError,
-  TxFlowInterruptedError,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 
 import { ErrorMessage } from 'utils/getErrorMessage';
@@ -148,22 +147,15 @@ export const useUnwrapFormProcessor = ({
           console.warn(error);
           // the allowance changed under the form: refresh it before a retry
           if (isStepSettled(ctx, STEP.approve)) await onConfirm();
-          // The approval settled but its confirmation read failed, so the
-          // SDK never got to the unwrap. Not a completed unwrap: keep the
-          // amount and offer to continue. Any other failure after the
-          // approval shows as is: a retry reads the allowance and goes
-          // straight to the unwrap
-          if (ctx.stepId === STEP.approve && error instanceof TxSettledError) {
-            txModalStages.failed(
-              new TxFlowInterruptedError(
-                ErrorMessage.UNWRAP_INTERRUPTED,
-                error.cause,
-              ),
-              onRetry,
-            );
-            return;
-          }
-          txModalStages.failed(error, onRetry);
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.unwrap, [
+              {
+                stepId: STEP.approve,
+                message: ErrorMessage.UNWRAP_INTERRUPTED,
+              },
+            ]),
+            onRetry,
+          );
         },
       });
 

@@ -25,7 +25,7 @@ export type TxModalSlot<P> = {
 export type TxModalRun<P> = {
   // whether the run has shown a stage yet
   readonly isStarted: boolean;
-  // Shows a stage. Returns the session when it opened a new one
+  // Shows a stage and returns its session; undefined when a newer modal owns it.
   show: (slot: TxModalSlot<P>, props: P) => TxModalSession<P> | undefined;
 };
 
@@ -53,7 +53,7 @@ export const createTxModalRun = <P>(): TxModalRun<P> => {
       const openSession = slot.getOpenSession();
       if (session && session.modalSession === openSession) {
         session.updateProps(props);
-        return undefined;
+        return session;
       }
       if (session && latestRun !== run && openSession !== null) {
         return undefined;

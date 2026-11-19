@@ -10,7 +10,7 @@ import {
   TxSentDataUnavailableError,
   TxSettledError,
   TxStaleError,
-} from '../../utils/errors';
+} from '../utils/errors';
 import { runTxFlow } from './run-tx-flow';
 import { isStepDone, isStepSent, isStepSettled } from './context';
 import type {

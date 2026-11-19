@@ -17,6 +17,7 @@ import {
 // the hook's own state, replaceable to follow the run it keeps there
 const hookState = vi.hoisted(() => ({
   useState: undefined as undefined | ((init: () => unknown) => unknown),
+  effects: [] as (() => void | (() => void))[],
 }));
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();
@@ -24,6 +25,9 @@ vi.mock('react', async (importOriginal) => {
     ...actual,
     useState: (init: () => unknown) =>
       (hookState.useState ?? actual.useState)(init),
+    useEffect: (effect: () => void | (() => void)) => {
+      hookState.effects.push(effect);
+    },
   };
 });
 vi.mock('modules/web3', async () => ({
@@ -146,6 +150,26 @@ const describeShown = (slot: ModalSlot) => {
 };
 
 describe('useTransactionModalStage', () => {
+  beforeEach(() => {
+    hookState.effects = [];
+  });
+
+  it('keeps showing stages after React replays the mount effect', () => {
+    const slot = createModalSlot();
+    const run = startRun(slot);
+    const setup = hookState.effects[0];
+    const cleanup = setup();
+    cleanup?.();
+    setup();
+
+    run.sign('after replay');
+
+    expect(describeShown(slot)).toMatchObject({
+      name: 'sign',
+      label: 'after replay',
+    });
+  });
+
   it('moves the current run through its stages in one modal session', () => {
     const slot = createModalSlot();
     const run = startRun(slot);

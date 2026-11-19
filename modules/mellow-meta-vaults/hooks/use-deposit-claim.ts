@@ -43,7 +43,7 @@ export const useDepositClaim = ({
 
       try {
         setIsClaiming(true);
-        await txFlow({
+        const { isSuccess } = await txFlow({
           callsFn: async () => [
             {
               to: vault.address,
@@ -74,6 +74,9 @@ export const useDepositClaim = ({
           onReceipt: async ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, txHashOrCallId, isAA);
           },
+          onFailure: ({ error }) => {
+            txModalStages.failed(error, onRetry);
+          },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
             if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
@@ -92,7 +95,7 @@ export const useDepositClaim = ({
           },
         });
 
-        return true;
+        return isSuccess;
       } catch (error) {
         console.error(error);
         txModalStages.failed(error, onRetry);

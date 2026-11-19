@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   createContext,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -14,6 +15,7 @@ import { uniqueId } from 'lodash';
  * Utility types
  */
 type EmptyObj = Record<string, never>;
+type ModalLifecycle = { onDismiss?: () => void };
 
 export type ModalProps<P extends object = EmptyObj> = LidoModalProps & P;
 
@@ -27,10 +29,10 @@ export type ModalComponentType<P extends object = EmptyObj> = React.FC<
 export type ModalContextValue = {
   openModal: <P extends object>(
     modal: ModalComponentType<P>,
-    props: P,
+    props: P & ModalLifecycle,
   ) => {
     modalSession: string;
-    updateProps: (nextProps: P) => void;
+    updateProps: (nextProps: P & ModalLifecycle) => void;
     closeModal: () => void;
   };
   closeModal: <P extends object>(modal?: ModalComponentType<P>) => void;
@@ -77,37 +79,48 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
   const openRef = useRef<{
     modalSession: string;
     modal: React.ComponentType<any>;
+    onDismiss?: () => void;
   } | null>(null);
   const [modalState, setModalState] = useState<{
     modal: React.ComponentType<any>;
     props: any;
+    closeModal: () => void;
   } | null>(null);
 
   const openModal: ModalContextValue['openModal'] = useCallback(
     (modal, props) => {
       const modalSession = uniqueId('modal-session-');
-      openRef.current = { modalSession, modal };
-      setModalState({ modal, props });
+      const { onDismiss, ...componentProps } = props;
+      const previous = openRef.current;
+      openRef.current = { modalSession, modal, onDismiss };
 
       /**
-       * Sessin-based handlers
+       * Session-based handlers
        */
       const updateProps = (nextProps: typeof props) => {
         if (openRef.current?.modalSession === modalSession) {
+          const previousDismiss = openRef.current.onDismiss;
+          const { onDismiss, ...componentProps } = nextProps;
+          openRef.current.onDismiss = onDismiss;
           setModalState(
-            (prevState) =>
-              prevState && { modal: prevState.modal, props: nextProps },
+            (prevState) => prevState && { ...prevState, props: componentProps },
           );
+          if (previousDismiss !== onDismiss) previousDismiss?.();
         }
       };
 
       const closeModal = () => {
         setTimeout(() => {
           if (openRef.current?.modalSession !== modalSession) return;
+          const dismissed = openRef.current;
           openRef.current = null;
           setModalState(null);
+          dismissed.onDismiss?.();
         }, 0);
       };
+
+      setModalState({ modal, props: componentProps, closeModal });
+      previous?.onDismiss?.();
 
       return {
         modalSession,
@@ -130,8 +143,18 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
       if (modal && modal !== open.modal) return;
       openRef.current = null;
       setModalState(null);
+      open.onDismiss?.();
     }, 0);
   }, []);
+
+  useEffect(
+    () => () => {
+      const dismissed = openRef.current;
+      openRef.current = null;
+      dismissed?.onDismiss?.();
+    },
+    [],
+  );
 
   const getOpenSession = useCallback(
     () => openRef.current?.modalSession ?? null,
@@ -147,13 +170,15 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
     [openModal, closeModal, getOpenSession],
   );
 
-  const handleClose = useCallback(() => closeModal(), [closeModal]);
-
   return (
     <modalContext.Provider value={context}>
       {children}
       {modalState && (
-        <modalState.modal open onClose={handleClose} {...modalState.props} />
+        <modalState.modal
+          open
+          onClose={modalState.closeModal}
+          {...modalState.props}
+        />
       )}
     </modalContext.Provider>
   );

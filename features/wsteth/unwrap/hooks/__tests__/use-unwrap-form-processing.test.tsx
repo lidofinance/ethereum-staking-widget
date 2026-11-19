@@ -11,10 +11,7 @@ import {
   type TransactionCallback,
 } from '@lidofinance/lido-ethereum-sdk/core';
 
-import type {
-  TxCallbackProps,
-  TxFlowArgs,
-} from 'modules/web3/hooks/tx-flow/types';
+import type { TxCallbackProps, TxFlowArgs } from 'modules/web3/tx-flow/types';
 import { TxSettledError, TxSentDataUnavailableError } from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import {
@@ -67,11 +64,13 @@ const state = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+vi.mock('modules/web3', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('modules/web3')>();
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   return {
+    ...actual,
     ...errors,
     ...context,
     useDappStatus: () => ({ address: ACCOUNT }),
@@ -370,7 +369,7 @@ describe('useUnwrapFormProcessor', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });
 
-    it('shows a rejected unwrap after a confirmed approval as is', async () => {
+    it('reports the completed approval when the unwrap signature is rejected', async () => {
       const { walletClient } = createSdk(
         legacyPerformTransaction('success', 'rejected'),
       );
@@ -380,7 +379,7 @@ describe('useUnwrapFormProcessor', () => {
       expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
-        expect.objectContaining({ message: 'User rejected the request' }),
+        expect.objectContaining({ message: ErrorMessage.UNWRAP_INTERRUPTED }),
         onRetry,
       );
     });

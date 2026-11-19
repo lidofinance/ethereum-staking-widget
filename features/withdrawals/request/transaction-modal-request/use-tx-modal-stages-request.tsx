@@ -36,16 +36,25 @@ const getTxModalStagesRequest = (
   ...getGeneralTransactionModalStages(transitStage),
 
   dialogBunker: (): Promise<boolean> =>
-    new Promise((resolve, _) => {
+    new Promise((resolve) => {
+      let close: (() => void) | undefined;
       transitStage(
         <TxStageBunker
           onClick={() => resolve(true)}
-          onClose={() => resolve(false)}
+          onClose={() => {
+            resolve(false);
+            close?.();
+          }}
         />,
         {
           isClosableOnLedger: true,
+          onOpen: (closeSession) => {
+            close = closeSession;
+          },
+          onDismiss: () => resolve(false),
         },
       );
+      if (!close) resolve(false);
     }),
 
   signPermit: () => transitStage(<TxStagePermit />),

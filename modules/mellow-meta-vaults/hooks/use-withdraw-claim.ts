@@ -47,7 +47,7 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
 
         const claimArgs = [address, [timestamp]] as const;
 
-        await txFlow({
+        const { isSuccess } = await txFlow({
           callsFn: async () => [
             {
               to: redeemQueue.address,
@@ -80,13 +80,16 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
           onReceipt: ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, txHashOrCallId, isAA);
           },
+          onFailure: ({ error }) => {
+            txModalStages.failed(error, onRetry);
+          },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
             await refetchTokenBalance(token);
             if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
           },
         });
-        return true;
+        return isSuccess;
       } catch (error) {
         console.error(error);
         txModalStages.failed(error, onRetry);

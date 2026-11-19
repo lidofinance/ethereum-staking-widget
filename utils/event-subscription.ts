@@ -1,19 +1,20 @@
-export class EventSubscription {
-  private subscribers: (() => void | boolean)[] = [];
+type Subscriber = () => void | boolean | Promise<void | boolean>;
 
-  // false when a subscriber declined the event (returned false)
-  fire = (): boolean => {
-    let handled = true;
-    for (const subscriber of this.subscribers) {
-      if (subscriber() === false) handled = false;
-    }
-    return handled;
+export class EventSubscription {
+  private subscribers: Subscriber[] = [];
+
+  // Wait for the attempts, including asynchronous validation. With no form
+  // subscribed there is nothing to retry.
+  fire = async (): Promise<boolean> => {
+    const results = await Promise.all(this.subscribers.map(async (fn) => fn()));
+    return results.length > 0 && results.every((result) => result !== false);
   };
 
-  subscribe = (fn: () => void | boolean) => {
+  subscribe = (fn: Subscriber) => {
     this.subscribers.push(fn);
     return () => {
-      this.subscribers.splice(this.subscribers.indexOf(fn), 1);
+      const index = this.subscribers.indexOf(fn);
+      if (index !== -1) this.subscribers.splice(index, 1);
     };
   };
 }

@@ -163,10 +163,16 @@ export type TxFlowOptions = {
  *
  * @property callsFn - A function returning a list of calls for EIP-5792 sendCalls. Gets called only in case of EIP-5792.
  * @property sendTransaction - Fallback function to send a transaction if EIP-5792 is not supported.
+ * @deprecated Use {@link StepTxFlowArgs}: read shared data in `prepare`, build
+ * named steps in `callsFn`, and send each step through `sendStep`.
  */
 export type LegacyTxFlowArgs = StageCallbacks &
   TxFlowOptions & {
     callsFn?: CallsFn<AACall, undefined>;
+    /**
+     * @deprecated Use `prepare`, `callsFn` and `sendStep` instead of managing
+     * the transaction sequence inside `sendTransaction`.
+     */
     sendTransaction: (txStagesCallback: TransactionCallback) => Promise<void>;
     prepare?: never;
     sendStep?: never;
@@ -204,6 +210,18 @@ export type StepTxFlowArgs<TData = undefined> = StageCallbacks<TData> &
  */
 export type TxFlowArgs<TData = undefined> =
   LegacyTxFlowArgs | StepTxFlowArgs<TData>;
+
+/** The transaction runner returned by {@link useTxFlow}. */
+export type TxFlow = {
+  <TData = undefined>(
+    args: StepTxFlowArgs<TData>,
+  ): Promise<TxFlowResult<TData>>;
+  /**
+   * @deprecated Use `prepare` for shared reads, `callsFn` for named steps and
+   * `sendStep` to send each step. This gives every callback the flow context.
+   */
+  (args: LegacyTxFlowArgs): Promise<TxFlowResult>;
+};
 
 export type TxFlowDeps = {
   isAA: boolean;

@@ -8,7 +8,7 @@ import {
 } from 'viem';
 import type { TransactionCallback } from '@lidofinance/lido-ethereum-sdk/core';
 
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type { TxFlowArgs } from 'modules/web3/tx-flow/types';
 import { TxSettledError, TxSentDataUnavailableError } from 'modules/web3';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import { ErrorMessage } from 'utils/getErrorMessage';
@@ -73,11 +73,13 @@ const state = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+vi.mock('modules/web3', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('modules/web3')>();
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   return {
+    ...actual,
     ...errors,
     ...context,
     useDappStatus: () => ({ address: ACCOUNT }),
@@ -355,7 +357,7 @@ describe('useWrapFormProcessor', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });
 
-    it('shows a rejected wrap after a confirmed approval as is', async () => {
+    it('reports the completed approval when the wrap signature is rejected', async () => {
       const { walletClient } = createSdk(
         legacyPerformTransaction('success', 'rejected'),
       );
@@ -365,7 +367,7 @@ describe('useWrapFormProcessor', () => {
       expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
       expect(onConfirm).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
-        expect.objectContaining({ message: 'User rejected the request' }),
+        expect.objectContaining({ message: ErrorMessage.WRAP_INTERRUPTED }),
         onRetry,
       );
     });

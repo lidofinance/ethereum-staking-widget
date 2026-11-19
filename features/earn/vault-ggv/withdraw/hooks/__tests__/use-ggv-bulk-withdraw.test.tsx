@@ -1,6 +1,6 @@
 import { decodeFunctionData, getAddress, type Hash } from 'viem';
 
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type { TxFlowArgs } from 'modules/web3/tx-flow/types';
 import {
   aaSendCalls,
   legacyPerformTransaction,
@@ -48,9 +48,9 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   return {
     ...errors,
     ...context,

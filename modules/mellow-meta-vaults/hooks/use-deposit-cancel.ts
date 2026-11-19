@@ -45,7 +45,7 @@ export const useDepositCancel = <DepositQueueToken extends string>({
         });
 
         setIsCanceling(true);
-        await txFlow({
+        const { isSuccess } = await txFlow({
           callsFn: async () => [
             {
               to: depositQueue.address,
@@ -70,6 +70,9 @@ export const useDepositCancel = <DepositQueueToken extends string>({
           onReceipt: ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, token, txHashOrCallId, isAA);
           },
+          onFailure: ({ error }) => {
+            txModalStages.failed(error, onRetry);
+          },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, token, txHash);
             await refetchTokenBalance(token as DepositQueueToken);
@@ -77,7 +80,7 @@ export const useDepositCancel = <DepositQueueToken extends string>({
           },
         });
 
-        return true;
+        return isSuccess;
       } catch (error) {
         console.error(error);
         txModalStages.failed(error, onRetry);

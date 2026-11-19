@@ -22,6 +22,7 @@ import {
   useDappStatus,
   useLidoSDK,
   useTxFlow,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 import {
   getVaultRefetchScope,
@@ -356,19 +357,13 @@ export const useEthVaultDepositSteth = ({
             );
             return;
           }
-          // The stETH approval landed but the wrap was never sent: a retry
-          // reads the allowance and goes on with the wrap
-          const isInterruptedAfterApprove =
-            isStepSettled(ctx, STEP.stethApprove) &&
-            !isStepSent(ctx, STEP.wrap) &&
-            !(error instanceof QuoteMismatchError);
           txModalStages.failed(
-            isInterruptedAfterApprove
-              ? new TxFlowInterruptedError(
-                  ErrorMessage.DEPOSIT_INTERRUPTED,
-                  cause,
-                )
-              : error,
+            detectTxFlowInterruption(error, ctx, STEP.wrap, [
+              {
+                stepId: STEP.stethApprove,
+                message: ErrorMessage.DEPOSIT_INTERRUPTED,
+              },
+            ]),
             onRetry,
           );
         },

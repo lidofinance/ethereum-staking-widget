@@ -31,7 +31,7 @@ export const useClaim = ({ onRetry }: UseClaimArgs) => {
         const requestsIds = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);
 
-        await txFlow({
+        const { isSuccess } = await txFlow({
           callsFn: async () => {
             return [
               await withdraw.claim.claimRequestsPopulateTx({
@@ -65,7 +65,7 @@ export const useClaim = ({ onRetry }: UseClaimArgs) => {
           },
         });
 
-        return true;
+        return isSuccess;
       } catch (error) {
         console.error(error);
         txModalStages.failed(error, onRetry);

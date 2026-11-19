@@ -4,9 +4,9 @@ import { useConnection } from 'wagmi';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { config } from 'config';
 // the concrete files, not the provider barrel: that one leads back here
-import { useLidoSDK } from '../../web3-provider/lido-sdk';
-import { useLidoSDKL2 } from '../../web3-provider/lido-sdk-l2';
-import { SendCallsError, TxSentDataUnavailableError } from '../../utils/errors';
+import { useLidoSDK } from '../web3-provider/lido-sdk';
+import { useLidoSDKL2 } from '../web3-provider/lido-sdk-l2';
+import { SendCallsError, TxSentDataUnavailableError } from '../utils/errors';
 import { AACall, TxCallbackProps } from './types';
 
 export const useSendAACalls = () => {

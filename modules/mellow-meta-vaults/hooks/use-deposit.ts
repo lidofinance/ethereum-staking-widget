@@ -12,16 +12,12 @@ import invariant from 'tiny-invariant';
 import {
   applyRoundUpTxParameter,
   Erc20AllowanceAbi,
-  isStepSent,
-  isStepSettled,
   QuoteMismatchError,
-  TxFlowInterruptedError,
-  TxSettledError,
-  type TxFlowContext,
   type TxFlowOptions,
   useDappStatus,
   useLidoSDK,
   useTxFlow,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
 import { getReferralAddress } from 'utils/get-referral-address';
@@ -310,7 +306,19 @@ export const useDeposit = <DepositQueueToken extends string>({
         },
         onFailure: async ({ error, ctx }) => {
           console.error(error);
-          txModalStages.failed(describeDepositFailure(error, ctx), onRetry);
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.deposit, [
+              {
+                stepId: STEP.approve,
+                message: ErrorMessage.DEPOSIT_INTERRUPTED,
+              },
+              {
+                stepId: STEP.resetApprove,
+                message: ErrorMessage.DEPOSIT_RESET_INTERRUPTED,
+              },
+            ]),
+            onRetry,
+          );
         },
       });
 
@@ -335,34 +343,4 @@ export const useDeposit = <DepositQueueToken extends string>({
   );
 
   return { deposit };
-};
-
-/**
- * An approval step landed but the deposit was never sent (its estimate or
- * signature failed, a follow-up read did, or the deposit was stopped right
- * before sending). Not a completed deposit, whatever the error says. A stop
- * the user acts on (a changed quote) shows as is; otherwise
- * the user learns what landed and that a retry continues from there: it
- * re-reads the allowance and skips what is in place.
- */
-const describeDepositFailure = (
-  error: unknown,
-  ctx: TxFlowContext<DepositData | undefined>,
-) => {
-  if (isStepSent(ctx, STEP.deposit) || error instanceof QuoteMismatchError) {
-    return error;
-  }
-  const cause = error instanceof TxSettledError ? error.cause : error;
-  if (isStepSettled(ctx, STEP.approve)) {
-    return new TxFlowInterruptedError(ErrorMessage.DEPOSIT_INTERRUPTED, cause);
-  }
-  // a settled reset alone leaves the allowance at zero: the approval and the
-  // deposit are both still to come
-  if (isStepSettled(ctx, STEP.resetApprove)) {
-    return new TxFlowInterruptedError(
-      ErrorMessage.DEPOSIT_RESET_INTERRUPTED,
-      cause,
-    );
-  }
-  return error;
 };

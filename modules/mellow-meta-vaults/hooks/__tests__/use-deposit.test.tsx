@@ -1,6 +1,6 @@
 import { decodeFunctionData, getAddress, type Address, type Hash } from 'viem';
 
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type { TxFlowArgs } from 'modules/web3/tx-flow/types';
 import {
   QuoteMismatchError,
   TxSettledError,
@@ -93,10 +93,11 @@ const state = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+vi.mock('modules/web3', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('modules/web3')>();
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   const publicClient = {
     readContract: async ({ functionName }: { functionName: string }) => {
       if (functionName === 'allowance') return state.allowance;
@@ -106,6 +107,7 @@ vi.mock('modules/web3', async () => {
     getTransactionReceipt: async () => ({ logs: [] }),
   };
   return {
+    ...actual,
     ...errors,
     ...context,
     Erc20AllowanceAbi: ERC20_ABI,
@@ -346,7 +348,7 @@ describe('useDeposit', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });
 
-    it('reports an unfinished deposit when the approval lands and the deposit estimate fails', async () => {
+    it('preserves insufficient-gas guidance when the deposit estimate fails after approval', async () => {
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('success', 'unestimated'),
       );
@@ -357,8 +359,7 @@ describe('useDeposit', () => {
       expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: 'TxFlowInterruptedError',
-          message: ErrorMessage.DEPOSIT_INTERRUPTED,
+          message: 'Not enough ether for gas',
         }),
         onRetry,
       );

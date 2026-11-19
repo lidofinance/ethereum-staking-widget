@@ -5,6 +5,7 @@ import { getUseModal, ModalComponentType } from 'providers/modal-provider';
 export type TransactionModalProps = {
   isClosableOnLedger?: boolean;
   children?: React.ReactNode;
+  onDismiss?: () => void;
 };
 
 export const TransactionModal: ModalComponentType<TransactionModalProps> = ({

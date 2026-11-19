@@ -11,9 +11,9 @@ import {
   useAA,
   useTxFlow,
   useLidoSDKL2,
-  TxSettledError,
-  TxFlowInterruptedError,
+  isStepSettled,
   QuoteMismatchError,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 import {
   calcFastStakeWstethByEth,
@@ -206,23 +206,17 @@ export const useL2FastStake = ({ onConfirm, onRetry }: UseL2FastStakeArgs) => {
           // or paused since the last read): refresh the cap the amount is
           // validated against, so the field shows why before any retry
           void refetchLiquidity({ throwOnError: false });
-          // The approval settled but its confirmation read failed, so the
-          // SDK never got to the stake. Not a completed stake: keep the
-          // amount, refresh the allowance and offer to continue. Any other
-          // failure after the approval shows as is: a retry reads the
-          // allowance and goes straight to the stake
-          if (ctx.stepId === STEP.approve && error instanceof TxSettledError) {
-            await onConfirm?.();
-            txModalStages.failed(
-              new TxFlowInterruptedError(
-                ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
-                error.cause,
-              ),
-              onRetry,
-            );
-            return;
-          }
-          txModalStages.failed(error, onRetry);
+          // Refresh the landed approval even when the stake was declined.
+          if (isStepSettled(ctx, STEP.approve)) await onConfirm?.();
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.stake, [
+              {
+                stepId: STEP.approve,
+                message: ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
+              },
+            ]),
+            onRetry,
+          );
         },
       });
 
