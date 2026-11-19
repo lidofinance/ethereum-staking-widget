@@ -131,6 +131,11 @@ export const useTradeGuard = ({
       });
 
       if (!decision.ok) {
+        // prevents showing modal on expired session
+        // if session is no longer active, we can skip any UI as user flow restarts
+        if (!session.isActive()) {
+          return false;
+        }
         await showModal(
           decision.level,
           decision.messages,

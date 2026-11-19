@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { EthereumProvider } from '@cowprotocol/widget-react';
 import { isAddressEqual } from 'viem';
 import { useConnection, useWalletClient } from 'wagmi';
@@ -9,30 +9,6 @@ import { useAddressValidation } from 'providers/address-validation-provider';
 import type { NetworkTxConfig } from '../guards/tx';
 import type { CowSwapSession, SigningHelpTip } from '../guards/trade';
 import { createCowSwapProvider } from '../utils';
-
-// Keyed by the widget's appCode, one per integration (swap, withdrawals). On a
-// route change React renders the new page's frame before it unmounts the old
-// one: with a shared set, the old frame's unmount would end the new frame's
-// session.
-const CLEANUP_SETS = new Map<string, Set<() => void>>();
-
-const addCleanup = (appCode: string, fn: () => void) => {
-  const cleanups = CLEANUP_SETS.get(appCode) ?? new Set<() => void>();
-  cleanups.add(fn);
-  CLEANUP_SETS.set(appCode, cleanups);
-};
-
-const cleanup = (appCode: string) => {
-  const cleanups = CLEANUP_SETS.get(appCode);
-  CLEANUP_SETS.delete(appCode);
-  for (const fn of cleanups ?? []) {
-    try {
-      fn();
-    } catch (error) {
-      console.error('[useCowSwapEthereumProvider] Cleanup error:', error);
-    }
-  }
-};
 
 type UseCowSwapEthereumProviderArgs = {
   // starts the provider's session; cleanup revokes it
@@ -64,22 +40,39 @@ export const useCowSwapEthereumProvider = ({
   const isLedgerLive = useIsLedgerLive();
   const { validateAddress } = useAddressValidation();
 
+  // Per-instance cleanup functions
+  const cleanupFnsRef = useRef<Set<() => void>>(new Set());
+
+  const runCleanup = useCallback(() => {
+    for (const fn of cleanupFnsRef.current) {
+      try {
+        fn();
+      } catch (error) {
+        console.error('[useCowSwapEthereumProvider] Cleanup error:', error);
+      }
+    }
+    cleanupFnsRef.current.clear();
+  }, []);
+
   // clean up on unmount
   useEffect(() => {
     return () => {
-      cleanup(appCode);
+      runCleanup();
     };
-  }, [appCode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return useMemo(() => {
-    // any change ends the previous provider's session, also when no new provider follows
-    cleanup(appCode);
+    // Clear previous cleanups when dependencies change
+    runCleanup();
 
     // resolved from the same chainId the validators receive
     const networkTxConfig = getNetworkTxConfig(chainId);
+    // no wallet, another chain or no config: the widget renders without a provider
     if (walletChainId !== chainId || !networkTxConfig) {
       return { provider: undefined, isProviderPending: false };
     }
+    // the client is still loading or belongs to the previous account or chain
     if (
       !walletClient ||
       !connector ||
@@ -90,7 +83,9 @@ export const useCowSwapEthereumProvider = ({
       return { provider: undefined, isProviderPending: true };
     }
 
-    const addFrameCleanup = (fn: () => void) => addCleanup(appCode, fn);
+    const addFrameCleanup = (fn: () => void) => {
+      cleanupFnsRef.current.add(fn);
+    };
     const session = startSession();
     addFrameCleanup(session.revoke);
 
@@ -109,17 +104,18 @@ export const useCowSwapEthereumProvider = ({
     });
     return { provider, isProviderPending: false };
   }, [
+    runCleanup,
+    getNetworkTxConfig,
+    chainId,
+    walletChainId,
     walletClient,
     connector,
     address,
-    chainId,
-    walletChainId,
-    getNetworkTxConfig,
-    appCode,
     startSession,
+    isLedgerLive,
+    appCode,
     validateAddress,
     openTransactionGuardModal,
-    isLedgerLive,
     openSigningErrorModal,
   ]);
 };

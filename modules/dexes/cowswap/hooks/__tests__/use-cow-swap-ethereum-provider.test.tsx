@@ -6,6 +6,14 @@ import { renderHook } from 'features/stake/shared/__tests__/stake-test-utils';
 // the server render runs no effects: each instance's unmount cleanup is kept
 // here, so a test can unmount a frame at the point React would
 const unmountCleanups: (() => void)[] = [];
+// the server render keeps no state either: refs are kept per frame here, so
+// consecutive renders of one frame act as its re-renders
+let frameRefs: { current: unknown }[] = [];
+let refIndex = 0;
+const startFrame = () => {
+  frameRefs = [];
+  refIndex = 0;
+};
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();
   return {
@@ -14,6 +22,8 @@ vi.mock('react', async (importOriginal) => {
       const dispose = effect();
       if (dispose) unmountCleanups.push(dispose);
     },
+    useRef: (initial: unknown) =>
+      (frameRefs[refIndex++] ??= { current: initial }),
   };
 });
 
@@ -83,8 +93,12 @@ type WalletState = {
   walletClient?: ReturnType<typeof makeWalletClient>;
 };
 
-// a render with the given wallet state; the module keeps the cleanup set between renders
-const render = ({ address, walletChainId = 1, walletClient }: WalletState) => {
+// a re-render of the test's frame with the given wallet state
+const render = (state: WalletState) => {
+  const { address, walletClient } = state;
+  // undefined when given means a disconnected wallet
+  const walletChainId = 'walletChainId' in state ? state.walletChainId : 1;
+  refIndex = 0;
   vi.mocked(useDappStatus).mockReturnValue({
     address,
     chainId: 1,
@@ -103,6 +117,7 @@ const SIGN_REQUEST = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  startFrame();
   validateAddress.mockResolvedValue(true);
   vi.mocked(validateRpcRequest).mockImplementation(
     async (payload) =>
@@ -115,6 +130,13 @@ describe('useCowSwapEthereumProvider: wallet client account', () => {
     render({ address: ACCOUNT_A, walletClient: makeWalletClient(ACCOUNT_A) });
 
     expect(useWalletClient).toHaveBeenCalledWith({ account: ACCOUNT_A });
+  });
+
+  it('does not wait without a connected wallet, so the widget still renders', () => {
+    const result = render({ address: undefined, walletChainId: undefined });
+
+    expect(result).toEqual({ provider: undefined, isProviderPending: false });
+    expect(startSession).not.toHaveBeenCalled();
   });
 
   it('waits while the client belongs to another account', () => {
@@ -228,6 +250,7 @@ describe('useCowSwapEthereumProvider: route switch between integrations', () => 
     } as never);
     vi.mocked(useWalletClient).mockReturnValue({ data: walletClient } as never);
     vi.mocked(useConnection).mockReturnValue({ connector: CONNECTOR } as never);
+    startFrame();
     const before = unmountCleanups.length;
     const result = renderHook(() =>
       useCowSwapEthereumProvider(frameOptions(appCode)),
