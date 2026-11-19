@@ -28,8 +28,10 @@ import { maskedError } from '../utils/masked-error.js';
  *
  * Dropped vs legacy: `ssr_count` — there is no SSR/ISR in the SPA build,
  * the counter could never increment.
+ *
+ * TODO: change to 'eth_stake_widget_' after migration
  */
-export const METRICS_PREFIX = 'eth_stake_widget_ui_';
+export const METRICS_PREFIX = 'simple_eth_stake_widget_';
 
 const enum METRIC_NAMES {
   REQUESTS_TOTAL = 'requests_total',
