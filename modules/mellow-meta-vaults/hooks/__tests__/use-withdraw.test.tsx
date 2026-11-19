@@ -495,7 +495,10 @@ describe('useWithdraw', () => {
 
   describe('quote check', () => {
     // the form quotes the async queue; the Collector prices both alike
-    const shownQuote: VaultQuote = { amount: AMOUNT, output: ample.assets };
+    const shownQuote: VaultQuote = {
+      amountIn: AMOUNT,
+      amountOut: ample.assets,
+    };
 
     it('re-reads the quote on the queue the redemption goes to, right before sending', async () => {
       const queues = createQueues(ample);
@@ -529,7 +532,7 @@ describe('useWithdraw', () => {
 
       await expect(
         withdraw(queues, {
-          shownQuote: { amount: AMOUNT, output: ample.assets + 1n },
+          shownQuote: { amountIn: AMOUNT, amountOut: ample.assets + 1n },
         }),
       ).resolves.toBe(false);
 
@@ -648,7 +651,7 @@ describe('useWithdraw', () => {
 
       await expect(
         withdraw(queues, {
-          shownQuote: { amount: AMOUNT, output: ample.assets + 1n },
+          shownQuote: { amountIn: AMOUNT, amountOut: ample.assets + 1n },
         }),
       ).resolves.toBe(false);
 
@@ -666,7 +669,7 @@ describe('useWithdraw', () => {
 
       await expect(
         withdraw(queues, {
-          shownQuote: { amount: AMOUNT, output: ample.assets },
+          shownQuote: { amountIn: AMOUNT, amountOut: ample.assets },
         }),
       ).resolves.toBe(true);
 

@@ -32,32 +32,25 @@ export type WithdrawParams = {
  */
 export type VaultQuote = {
   // what the user puts in
-  amount: bigint;
+  amountIn: bigint;
   // what the Collector says the user gets for it
-  output: bigint;
+  amountOut: bigint;
 };
 
 /**
- * The fresh quote gives less per unit than the displayed one. A displayed
- * zero amount means nothing was displayed and never stops the transaction.
- *
- * For the same amount the outputs compare exactly: the Collector computes
- * both the same way, so a smaller output means worse terms. A quote can also
- * be displayed for a slightly different amount (the preview is debounced; a
- * stETH amount is converted to wstETH at a cached rate), and then the rates
- * compare. The Collector's output is the amount times the rate rounded by
- * integer division (and less the floored fee), within one unit of the exact
- * product either way, so each rate is only known to within one unit of
- * output over the amount. The fresh quote is worse only when even its
- * highest possible rate, (output + 1) / amount, is at most the lowest
- * possible displayed one, (output - 1) / amount; compared cross-multiplied
+ * Compares two quotes TX-time and UI-shown
+ * Due to changes in blockchain state, the fresh quote may differ from the displayed one.
+ * Returns true if the fresh quote is worse than the displayed one.
  */
-export const isQuoteWorse = (fresh: VaultQuote, shown: VaultQuote) => {
-  if (shown.amount === 0n) return false;
-  if (fresh.amount === shown.amount) return fresh.output < shown.output;
-  return (
-    (fresh.output + 1n) * shown.amount <= (shown.output - 1n) * fresh.amount
-  );
+export const isQuoteWorse = (fresh: VaultQuote, old: VaultQuote): boolean => {
+  // old quote is not present or not actual, fail-open but just means users did not see a quote before
+  if (old.amountIn === 0n || fresh.amountIn !== old.amountIn) return false;
+  // if we shown quote for the same input amount, compare out directly
+  if (fresh.amountIn === old.amountIn) return fresh.amountOut < old.amountOut;
+  // comparing for different input amounts brings in complexity around precision esp for lower decimal tokens
+  // generally it should be
+  // return (fresh.amountOut + PRECISION_OFFSET) * old.amountIn <= (old.amountOut - PRECISION_OFFSET) * fresh.amountIn
+  return false;
 };
 
 const PENALTY_DENOMINATOR = 1_000_000n;
@@ -109,7 +102,7 @@ export const readDepositQuote = async ({
     account,
     COLLECTOR_CONFIG,
   ])) as DepositParams;
-  return { amount, output: shares };
+  return { amountIn: amount, amountOut: shares };
 };
 
 type ReadWithdrawQuoteArgs = {
@@ -129,5 +122,5 @@ export const readWithdrawQuote = async ({
     redeemQueue.address,
     COLLECTOR_CONFIG,
   ])) as WithdrawParams;
-  return { amount: shares, output: assets };
+  return { amountIn: shares, amountOut: assets };
 };

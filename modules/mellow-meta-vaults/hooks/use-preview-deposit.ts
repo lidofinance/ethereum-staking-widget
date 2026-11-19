@@ -46,7 +46,7 @@ export const usePreviewDeposit = <DepositToken extends string>({
     queryFn: async (): Promise<VaultQuote> => {
       invariant(userAddress, 'User address is not available');
 
-      if (!debouncedAmount) return { amount: 0n, output: 0n };
+      if (!debouncedAmount) return { amountIn: 0n, amountOut: 0n };
 
       return readDepositQuote({
         collector,
@@ -71,7 +71,7 @@ export const usePreviewDeposit = <DepositToken extends string>({
   return {
     isLoading: isDebounced || query.isLoading || usdQuery?.isLoading,
     data: {
-      shares: query.data?.output,
+      shares: query.data?.amountOut,
       eth,
       usd: usdQuery.usdAmount,
     },

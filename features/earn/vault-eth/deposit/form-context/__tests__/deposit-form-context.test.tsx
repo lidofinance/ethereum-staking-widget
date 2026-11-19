@@ -8,7 +8,7 @@ type DepositHookArgs = { shownQuote: unknown; refetchQuote: unknown };
 
 // the quote the preview hook hands out, and its refetch
 const { SHOWN_QUOTE, refetchQuote, useEthVaultDeposit } = vi.hoisted(() => ({
-  SHOWN_QUOTE: { amount: 10n, output: 9n } satisfies VaultQuote,
+  SHOWN_QUOTE: { amountIn: 10n, amountOut: 9n } satisfies VaultQuote,
   refetchQuote: vi.fn(),
   useEthVaultDeposit: vi.fn((_args: DepositHookArgs) => ({ deposit: vi.fn() })),
 }));

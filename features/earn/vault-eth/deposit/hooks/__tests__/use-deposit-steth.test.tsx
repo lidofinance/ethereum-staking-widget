@@ -65,7 +65,7 @@ const AMOUNT = 10n * 10n ** 18n;
 const WSTETH_AMOUNT = 8n * 10n ** 18n;
 const SHARES = 9n * 10n ** 18n;
 // the quote the form displays for WSTETH_AMOUNT
-const SHOWN_QUOTE: VaultQuote = { amount: WSTETH_AMOUNT, output: SHARES };
+const SHOWN_QUOTE: VaultQuote = { amountIn: WSTETH_AMOUNT, amountOut: SHARES };
 
 const state = vi.hoisted(() => ({
   isAA: false,

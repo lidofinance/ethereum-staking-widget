@@ -46,7 +46,7 @@ export const usePreviewWithdraw = ({
     queryFn: async (): Promise<VaultQuote> => {
       invariant(userAddress, 'User address is not available');
 
-      if (!debouncedStrethShares) return { amount: 0n, output: 0n };
+      if (!debouncedStrethShares) return { amountIn: 0n, amountOut: 0n };
 
       return readWithdrawQuote({
         collector,
@@ -57,7 +57,7 @@ export const usePreviewWithdraw = ({
   });
 
   // Actual if redeeming wstETH
-  const wstethUsdQuery = useWstethUsd(query.data?.output ?? 0n);
+  const wstethUsdQuery = useWstethUsd(query.data?.amountOut ?? 0n);
 
   const usd =
     redeemQueueToken === TOKENS.wsteth ? wstethUsdQuery.usdAmount : undefined;
@@ -65,7 +65,7 @@ export const usePreviewWithdraw = ({
   return {
     isLoading: isDebounced || query.isLoading || wstethUsdQuery.isLoading,
     data: {
-      assets: query.data?.output,
+      assets: query.data?.amountOut,
       usd,
     },
     // the displayed quote and its refetch: a withdrawal is held to it

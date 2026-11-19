@@ -73,7 +73,7 @@ const CALL_ID = '0xcall';
 const AMOUNT = 2n * 10n ** 18n;
 const SHARES = 19n * 10n ** 17n;
 // the quote the form displays for AMOUNT
-const SHOWN_QUOTE: VaultQuote = { amount: AMOUNT, output: SHARES };
+const SHOWN_QUOTE: VaultQuote = { amountIn: AMOUNT, amountOut: SHARES };
 
 const state = vi.hoisted(() => ({
   isAA: false,
