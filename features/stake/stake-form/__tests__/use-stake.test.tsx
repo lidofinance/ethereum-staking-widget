@@ -8,7 +8,7 @@ import {
 import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 import type { TransactionCallback } from '@lidofinance/lido-ethereum-sdk/core';
 
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type { TxFlowArgs } from 'modules/web3/tx-flow/types';
 import { TxSettledError, TxSentDataUnavailableError } from 'modules/web3';
 import { ErrorMessage } from 'utils/getErrorMessage';
 import { wethABI } from 'abi/weth-abi';
@@ -62,11 +62,13 @@ const state = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+vi.mock('modules/web3', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('modules/web3')>();
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   return {
+    ...actual,
     ...errors,
     ...context,
     useDappStatus: () => ({ address: ACCOUNT }),
@@ -393,7 +395,7 @@ describe('useStake', () => {
       expect(state.txModalStages.success).not.toHaveBeenCalled();
     });
 
-    it('recovers to ETH and offers to continue when the stake cannot be estimated after a confirmed unwrap', async () => {
+    it('recovers to ETH and preserves the funding error after a confirmed unwrap', async () => {
       const { walletClient } = createSdk(
         legacyPerformTransaction('success', 'unestimated'),
       );
@@ -410,11 +412,7 @@ describe('useStake', () => {
       expect(state.txModalStages.failed).toHaveBeenCalledTimes(1);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: 'TxFlowInterruptedError',
-          message: ErrorMessage.STAKE_WETH_INTERRUPTED,
-          cause: expect.objectContaining({
-            message: 'Not enough ether for gas',
-          }),
+          message: 'Not enough ether for gas',
         }),
         onRetry,
       );

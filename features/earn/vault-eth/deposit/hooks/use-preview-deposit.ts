@@ -10,13 +10,15 @@ import {
 } from '../../contracts';
 import { EthDepositToken } from '../../types';
 
+type UseEthVaultPreviewDepositArgs = {
+  amount?: bigint | null;
+  token: EthDepositToken;
+};
+
 export const useEthVaultPreviewDeposit = ({
   amount,
   token,
-}: {
-  amount?: bigint | null;
-  token: EthDepositToken;
-}) => {
+}: UseEthVaultPreviewDepositArgs) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');
 
@@ -27,7 +29,7 @@ export const useEthVaultPreviewDeposit = ({
   const { data: wstethAmount } = useWstethBySteth(isSteth ? amount : undefined);
 
   const previewAmount = isSteth
-    ? wstethAmount ?? null // null while converting keeps the preview disabled
+    ? (wstethAmount ?? null) // null while converting keeps the preview disabled
     : amount;
   const previewToken: EthDepositToken = isSteth ? TOKENS.wsteth : token;
 

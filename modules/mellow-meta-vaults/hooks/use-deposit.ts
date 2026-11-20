@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import {
   encodeFunctionData,
   getContract,
+  isAddressEqual,
   parseEventLogs,
   type Address,
   type WalletClient,
@@ -11,14 +12,12 @@ import invariant from 'tiny-invariant';
 import {
   applyRoundUpTxParameter,
   Erc20AllowanceAbi,
-  isStepSent,
-  isStepSettled,
-  TxFlowInterruptedError,
-  TxSettledError,
+  QuoteMismatchError,
   type TxFlowOptions,
   useDappStatus,
   useLidoSDK,
   useTxFlow,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
 import { getReferralAddress } from 'utils/get-referral-address';
@@ -28,11 +27,22 @@ import { type Token, TOKENS } from 'consts/tokens';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { SYNC_DEPOSIT_QUEUE_ABI } from '../abi';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { DepositQueueGetter } from '../types/deposit-queue-getter';
 import {
+  AsyncDepositQueueGetter,
+  SyncDepositQueueGetter,
+} from '../types/deposit-queue-getter';
+import {
+  CollectorContract,
   DepositQueueWritableContract,
   SyncDepositQueueWritableContract,
 } from '../types/contracts';
+import { getDepositRoute } from '../utils/deposit-route';
+import {
+  isQuoteWorse,
+  readDepositQuote,
+  type VaultQuote,
+} from '../utils/quote';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type DepositArgs = {
   amount: bigint;
@@ -50,8 +60,10 @@ const STEP = {
 
 // what every stage needs, read once before the first step
 type DepositData = {
+  address: Address;
   tokenAddress: Address;
   depositQueue: DepositQueueWritableContract;
+  isSyncQueue: boolean;
   referralAddress: Address;
   // Read here rather than taken from the form, so a retry after a confirmed
   // approval never approves again
@@ -60,9 +72,19 @@ type DepositData = {
 };
 
 type UseDepositArgs<DepositQueueToken extends string> = {
-  depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
+  // the token's sync queue, which every token that has one deposits through,
+  // and the async queue of a token without one, see getDepositRoute
+  syncDepositQueueGetter: SyncDepositQueueGetter<DepositQueueToken>;
+  asyncDepositQueueGetter?: AsyncDepositQueueGetter<DepositQueueToken>;
+  // quotes the deposit right before it is sent
+  collector: CollectorContract;
+  // The quote the form displays and its refetch: the deposit is held to it.
+  // Required, so a caller states it: undefined only where no quote is
+  // displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
   txModalStages: TxModalStages;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
   // the vault's query scopes, refetched after a deposit whose outcome could
@@ -71,7 +93,11 @@ type UseDepositArgs<DepositQueueToken extends string> = {
 };
 
 export const useDeposit = <DepositQueueToken extends string>({
-  depositQueueGetter,
+  syncDepositQueueGetter,
+  asyncDepositQueueGetter,
+  collector,
+  shownQuote,
+  refetchQuote,
   txModalStages,
   onRetry,
   matomoEventStart,
@@ -85,7 +111,6 @@ export const useDeposit = <DepositQueueToken extends string>({
   const deposit = useCallback(
     async ({ amount, token, referral }: DepositArgs) => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
-      invariant(address, 'needs address');
 
       const msgValue = token === TOKENS.eth ? amount : 0n;
       const getTokenContract = (tokenAddress: Address) =>
@@ -98,16 +123,41 @@ export const useDeposit = <DepositQueueToken extends string>({
           },
         });
 
+      // Run right before the deposit is sent, as the last step before the
+      // wallet is reached in both signing paths, after any approval: the quote
+      // re-read on the queue the deposit goes to must not be worse than the
+      // displayed one. A better quote passes. The quote includes the sync
+      // queue's current penalty, so a penalty set or raised since the form
+      // quoted stops the deposit here
+      const checkBeforeDeposit = async (data: DepositData) => {
+        if (!shownQuote) return;
+        const quote = await readDepositQuote({
+          collector,
+          depositQueue: data.depositQueue,
+          amount,
+          account: data.address,
+        });
+        if (isQuoteWorse(quote, shownQuote)) {
+          void refetchQuote?.();
+          throw new QuoteMismatchError();
+        }
+      };
+
       const { isSuccess } = await txFlow<DepositData>({
         refetchScope,
         prepare: async () => {
+          invariant(address, 'needs address');
           const tokenAddress = getTokenAddress(core.chainId, token);
           invariant(tokenAddress, 'Token address is not defined');
 
-          const depositQueue = depositQueueGetter({
+          const queueArgs = {
             publicClient: core.publicClient,
             walletClient: core.walletClient as WalletClient,
             token: token as DepositQueueToken,
+          };
+          const { depositQueue, isSyncQueue } = getDepositRoute({
+            syncQueue: syncDepositQueueGetter(queueArgs),
+            asyncQueue: asyncDepositQueueGetter?.(queueArgs),
           });
           const referralAddress = await getReferralAddress(
             referral,
@@ -126,21 +176,26 @@ export const useDeposit = <DepositQueueToken extends string>({
           }
 
           return {
+            address,
             tokenAddress,
             depositQueue,
+            isSyncQueue,
             referralAddress,
             needsApprove,
             needsApprovalReset,
           };
         },
-        callsFn: async ({ data }) => {
+        // the approvals join the batch for AA wallets and go as separate
+        // transactions otherwise. A batch is signed as built, so it is
+        // checked once built; a stepwise send checks right before the deposit
+        callsFn: async ({ isAA, data }) => {
           const approve = (value: bigint) =>
             encodeFunctionData({
               abi: Erc20AllowanceAbi,
               functionName: 'approve',
               args: [data.depositQueue.address, value],
             });
-          return [
+          const calls = [
             data.needsApprove &&
               data.needsApprovalReset && {
                 stepId: STEP.resetApprove,
@@ -163,6 +218,8 @@ export const useDeposit = <DepositQueueToken extends string>({
               value: msgValue,
             },
           ];
+          if (isAA) await checkBeforeDeposit(data);
+          return calls;
         },
         sendStep: async (step, txStagesCallback, { data }) => {
           if (step.stepId !== STEP.deposit) {
@@ -180,6 +237,7 @@ export const useDeposit = <DepositQueueToken extends string>({
             });
             return;
           }
+          await checkBeforeDeposit(data);
           // Both async and sync deposit queue ABIs expose an identical
           // `deposit(assets, referral, merkleProof)`. Casting to the sync
           // variant gives accurate call-site types while avoiding the
@@ -215,32 +273,32 @@ export const useDeposit = <DepositQueueToken extends string>({
           }
           txModalStages.pendingApproval(amount, token, txHashOrCallId);
         },
-        onSuccess: async ({ txHash, ctx: { stepId } }) => {
+        onSuccess: async ({ txHash, ctx: { stepId, data } }) => {
           if (stepId !== STEP.deposit) return;
           let receivedShares: bigint | undefined;
-          if (txHash) {
+          if (txHash && data.isSyncQueue) {
             try {
               const receipt = await core.publicClient.getTransactionReceipt({
                 hash: txHash,
               });
-              // `Deposited` is only emitted by sync deposits (USDC/USDT). For
-              // async deposits this returns an empty array and `receivedShares`
-              // stays undefined. Using SYNC_DEPOSIT_QUEUE_ABI directly gives
-              // typed `log.args` without casting
+              // only the sync queue mints at once and emits `Deposited`
               const claimedLog = parseEventLogs({
                 abi: SYNC_DEPOSIT_QUEUE_ABI,
                 logs: receipt.logs,
                 eventName: 'Deposited',
-              }).find(
-                (log) =>
-                  log.args.account.toLowerCase() === address.toLowerCase(),
-              );
+              }).find((log) => isAddressEqual(log.args.account, data.address));
               receivedShares = claimedLog?.args.shares;
             } catch {
               // ignore, show fallback title
             }
           }
-          txModalStages.success(amount, token, txHash, receivedShares);
+          txModalStages.success(
+            amount,
+            token,
+            txHash,
+            receivedShares,
+            !data.isSyncQueue,
+          );
           if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
         },
         onMultisigDone: ({ ctx }) => {
@@ -248,23 +306,17 @@ export const useDeposit = <DepositQueueToken extends string>({
         },
         onFailure: async ({ error, ctx }) => {
           console.error(error);
-          // An approval landed but the deposit was never sent (its estimate
-          // or signature failed, or the approval's follow-up read did). Not
-          // a completed deposit, whatever the error says: the user must learn
-          // the funds are safe and a retry continues with the deposit, which
-          // re-reads the allowance and skips the approval
-          // A settled reset alone is not an approval: the message would
-          // claim an allowance that is still zero; a retry reads it and
-          // approves from there
-          const isInterruptedAfterApprove =
-            isStepSettled(ctx, STEP.approve) && !isStepSent(ctx, STEP.deposit);
           txModalStages.failed(
-            isInterruptedAfterApprove
-              ? new TxFlowInterruptedError(
-                  ErrorMessage.DEPOSIT_INTERRUPTED,
-                  error instanceof TxSettledError ? error.cause : error,
-                )
-              : error,
+            detectTxFlowInterruption(error, ctx, STEP.deposit, [
+              {
+                stepId: STEP.approve,
+                message: ErrorMessage.DEPOSIT_INTERRUPTED,
+              },
+              {
+                stepId: STEP.resetApprove,
+                message: ErrorMessage.DEPOSIT_RESET_INTERRUPTED,
+              },
+            ]),
             onRetry,
           );
         },
@@ -276,7 +328,11 @@ export const useDeposit = <DepositQueueToken extends string>({
     [
       address,
       core,
-      depositQueueGetter,
+      syncDepositQueueGetter,
+      asyncDepositQueueGetter,
+      collector,
+      shownQuote,
+      refetchQuote,
       refetchScope,
       matomoEventStart,
       matomoEventSuccess,

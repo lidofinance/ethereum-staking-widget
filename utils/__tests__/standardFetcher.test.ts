@@ -69,3 +69,67 @@ describe('standardFetcher headers', () => {
     );
   });
 });
+
+describe('standardFetcher abort signals', () => {
+  // a fetch that never resolves until its signal aborts
+  const hangingFetch = () =>
+    vi.fn(
+      (_url: string, init: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          if (init.signal?.aborted) reject(init.signal.reason);
+          init.signal?.addEventListener('abort', () =>
+            reject(init.signal?.reason),
+          );
+        }),
+    );
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it('aborts the request when the caller signal aborts', async () => {
+    vi.stubGlobal('fetch', hangingFetch());
+    const caller = new AbortController();
+
+    const promise = standardFetcher('https://example.com/x', {
+      signal: caller.signal,
+      timeoutMs: 10_000,
+    });
+    const assertion = expect(promise).rejects.toBe('caller cancelled');
+    caller.abort('caller cancelled');
+
+    await assertion;
+  });
+
+  it('aborts immediately when the caller signal is already aborted', async () => {
+    vi.stubGlobal('fetch', hangingFetch());
+    const caller = new AbortController();
+    caller.abort('early');
+
+    await expect(
+      standardFetcher('https://example.com/x', { signal: caller.signal }),
+    ).rejects.toBe('early');
+  });
+
+  it('still times out when a caller signal is present', async () => {
+    vi.stubGlobal('fetch', hangingFetch());
+    const caller = new AbortController();
+
+    const promise = standardFetcher('https://example.com/x', {
+      signal: caller.signal,
+      timeoutMs: 1_000,
+    });
+    const assertion = expect(promise).rejects.toThrow(
+      'Request timed out after 1000 ms',
+    );
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    await assertion;
+    expect(caller.signal.aborted).toBe(false);
+  });
+});

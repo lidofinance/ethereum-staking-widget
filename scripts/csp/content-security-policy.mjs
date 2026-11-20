@@ -5,6 +5,24 @@
 
 export const DEFAULT_COWSWAP_WIDGET_BASE_URL = 'https://cow-ipfs.testnet.fi/';
 
+/**
+ * The CoW widget base URL in one form for the frame-src source and the widget:
+ * the widget library loads `<origin><path>/#/...`, so the path ends with one
+ * '/' whether or not the configured value has it, and a source with a final
+ * '/' admits that document by path prefix
+ * @param {string | undefined} value - COWSWAP_WIDGET_BASE_URL
+ */
+export const resolveCowswapBaseUrl = (value) => {
+  const baseUrl = value?.trim() || DEFAULT_COWSWAP_WIDGET_BASE_URL;
+  try {
+    const url = new URL(baseUrl);
+    return `${url.origin}${url.pathname.replace(/\/+$/, '')}/`;
+  } catch {
+    // not a URL: the widget library refuses it as well
+    return baseUrl;
+  }
+};
+
 // light/dark theme on pageload apply script
 // if script changes, new hash must be checked against CSP error and updated
 const THEME_BOOTSTRAP_SCRIPT_HASH =
@@ -31,8 +49,7 @@ export const cspInputsFromEnv = (env = process.env) => ({
   // empty means "no reporting": next-secure-headers rejects '' as an invalid URL
   reportUri: env.CSP_REPORT_URI || undefined,
   reportOnly: toBoolean(env.CSP_REPORT_ONLY),
-  cowswapBaseUrl:
-    env.COWSWAP_WIDGET_BASE_URL || DEFAULT_COWSWAP_WIDGET_BASE_URL,
+  cowswapBaseUrl: resolveCowswapBaseUrl(env.COWSWAP_WIDGET_BASE_URL),
 });
 
 /**
@@ -40,12 +57,12 @@ export const cspInputsFromEnv = (env = process.env) => ({
  * @param {string[]} inputs.trustedHosts - extra script sources (CSP_TRUSTED_HOSTS)
  * @param {string | undefined} inputs.reportUri - violation report endpoint (CSP_REPORT_URI)
  * @param {boolean} inputs.reportOnly - report-only delivery (CSP_REPORT_ONLY)
- * @param {string} inputs.cowswapBaseUrl - the CoW swap widget origin the DEX withdrawals frame
+ * @param {string} inputs.cowswapBaseUrl - the CoW swap widget base URL the DEX frame loads, from resolveCowswapBaseUrl
  * @param {boolean} inputs.developmentMode - allows HMR: 'unsafe-eval' and ws:
  * @param {boolean} inputs.ipfsMode - <meta> delivery, which ignores the header-only directives
  * @param {string} [inputs.ipfsBaseScriptHash] - hash of the IPFS bootstrap inline script
  */
-export const createContentSecurityPolicy = ({
+const buildContentSecurityPolicy = ({
   trustedHosts,
   reportUri,
   reportOnly,
@@ -99,3 +116,77 @@ export const createContentSecurityPolicy = ({
   },
   reportOnly,
 });
+
+// What Node's http.validateHeaderValue rejects (no node:http import: this
+// module also runs in the browser bundle and the IPFS build)
+const INVALID_HEADER_CHAR = /[^\t\u0020-\u007E\u0080-\u00FF]/;
+
+const isAbsoluteUrl = (value) => {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const policyProblem = (policy) => {
+  const { directives } = policy;
+  const values = Object.values(directives).flat().filter(Boolean);
+  if (values.some((value) => INVALID_HEADER_CHAR.test(String(value)))) {
+    return 'a source has a character that is not allowed in a header value';
+  }
+  if (directives.reportURI && !isAbsoluteUrl(directives.reportURI)) {
+    return 'the report URI is not an absolute URL';
+  }
+  return undefined;
+};
+
+// A source or URL that stays one token of one directive in the header
+const isSafeToken = (value) =>
+  typeof value === 'string' &&
+  value !== '' &&
+  !INVALID_HEADER_CHAR.test(value) &&
+  !/[\s;,]/.test(value);
+
+const isSafeUrl = (value) => isSafeToken(value) && isAbsoluteUrl(value);
+
+/**
+ * What is wrong with the env-derived inputs, one entry per invalid value
+ * @param {Parameters<typeof buildContentSecurityPolicy>[0]} inputs
+ * @returns {string[]}
+ */
+const inputProblems = ({ trustedHosts, reportUri, cowswapBaseUrl }) => [
+  ...trustedHosts
+    .filter((host) => !isSafeToken(host))
+    .map((host) => `trusted host ${JSON.stringify(host)}`),
+  ...(reportUri && !isSafeUrl(reportUri)
+    ? [`report URI ${JSON.stringify(reportUri)}`]
+    : []),
+  ...(!isSafeUrl(cowswapBaseUrl)
+    ? [`CoW base URL ${JSON.stringify(cowswapBaseUrl)}`]
+    : []),
+];
+
+/**
+ * The policy for the inputs. Fails closed: an invalid env-derived input
+ * (a CSP_TRUSTED_HOSTS source, CSP_REPORT_URI, the CoW base URL) throws, so the
+ * server does not start and the IPFS build does not complete with a policy
+ * nobody configured.
+ * @param {Parameters<typeof buildContentSecurityPolicy>[0]} inputs see above
+ */
+export const createContentSecurityPolicy = (inputs) => {
+  // a blank entry is a separator artifact of CSP_TRUSTED_HOSTS ("a,,b", "a, b")
+  const trustedHosts = inputs.trustedHosts
+    .map((host) => (typeof host === 'string' ? host.trim() : host))
+    .filter((host) => host !== '');
+  const problems = inputProblems({ ...inputs, trustedHosts });
+  if (problems.length > 0) {
+    throw new Error(`[csp] invalid configuration: ${problems.join(', ')}`);
+  }
+
+  const policy = buildContentSecurityPolicy({ ...inputs, trustedHosts });
+  const problem = policyProblem(policy);
+  if (problem) throw new Error(`[csp] the policy is not valid: ${problem}`);
+  return policy;
+};

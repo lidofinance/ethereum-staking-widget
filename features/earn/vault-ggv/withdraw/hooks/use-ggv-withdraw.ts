@@ -13,8 +13,9 @@ import {
 import { MAX_REQUEST_DEADLINE } from '../../consts';
 import { useTxModalStagesGGVWithdrawalRequest } from './use-ggv-withdraw-request-modal';
 import type { GGVWithdrawalFormValidatedValues } from '../types';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useGGVWithdraw = (onRetry?: () => void) => {
+export const useGGVWithdraw = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core, wstETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesGGVWithdrawalRequest();

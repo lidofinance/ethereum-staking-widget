@@ -163,6 +163,7 @@ const GeoCountryListSchema = z.preprocess(
     ]),
 );
 
+// missing geo → no restrictions (fail-open by design, see geo-handler)
 const GeoSchema = z
   .object({
     limited: GeoCountryListSchema.optional().default([]),
@@ -177,7 +178,6 @@ const GeoSchema = z
 const FeatureFlagsSchema = z
   .object({
     ledgerLiveL2: z.boolean(),
-    disableSendCalls: z.boolean(),
     dgBannerEnabled: z.boolean(),
     dgWarningState: z.boolean(),
     rewardsMaintenance: z.boolean(),

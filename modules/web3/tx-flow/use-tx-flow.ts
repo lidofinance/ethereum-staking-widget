@@ -3,11 +3,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAddressValidation } from 'providers/address-validation-provider';
 import { useDappStatus } from 'modules/web3';
 
-import { useAA } from '../use-aa';
+import { useAA } from '../hooks/use-aa';
 import { useSendAACalls } from './use-send-aa-calls';
-import { TxSentDataUnavailableError } from '../../utils/errors';
+import { TxSentDataUnavailableError } from '../utils/errors';
 import { runTxFlow } from './run-tx-flow';
-import { TxCallbackProps, TxFlowArgs } from './types';
+import { TxCallbackProps, TxFlowArgs, type TxFlow } from './types';
 
 export type TxStagesCallback = (args: TxCallbackProps) => Promise<void>;
 
@@ -19,7 +19,7 @@ export type TxStagesCallback = (args: TxCallbackProps) => Promise<void>;
  * @returns A function that initiates the transaction flow with the provided arguments and stage callbacks.
  *
  */
-export const useTxFlow = () => {
+export const useTxFlow = (): TxFlow => {
   const { isAA } = useAA();
   const sendAACalls = useSendAACalls();
   const { validateAddress } = useAddressValidation();

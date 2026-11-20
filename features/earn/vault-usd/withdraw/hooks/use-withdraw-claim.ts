@@ -9,10 +9,11 @@ import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
 import { getRedeemQueueWritableContract } from '../../contracts';
 import type { UsdWithdrawToken } from '../../types';
 import { useUsdVaultWithdrawFormData } from './use-withdraw-form-data';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 const useUsdVaultWithdrawClaimForToken = (
   token: UsdWithdrawToken,
-  onRetry?: () => void,
+  onRetry?: TxRetryHandler,
 ) => {
   const { core } = useLidoSDK();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -48,7 +49,7 @@ const useUsdVaultWithdrawClaimForToken = (
   });
 };
 
-export const useUsdVaultWithdrawClaim = (onRetry?: () => void) => {
+export const useUsdVaultWithdrawClaim = (onRetry?: TxRetryHandler) => {
   const usdc = useUsdVaultWithdrawClaimForToken(TOKENS.usdc, onRetry);
   const usdt = useUsdVaultWithdrawClaimForToken(TOKENS.usdt, onRetry);
 

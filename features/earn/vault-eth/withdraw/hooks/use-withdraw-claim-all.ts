@@ -9,8 +9,9 @@ import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { getRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { useEthVaultWithdrawFormData } from './use-withdraw-form-data';
 import { useEthVaultWithdrawRequests } from './use-withdraw-requests';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useEthVaultWithdrawClaimAll = (onRetry?: () => void) => {
+export const useEthVaultWithdrawClaimAll = (onRetry?: TxRetryHandler) => {
   const { core } = useLidoSDK();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');

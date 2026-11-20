@@ -10,7 +10,7 @@ import {
   TxSentDataUnavailableError,
   TxSettledError,
   TxStaleError,
-} from '../../utils/errors';
+} from '../utils/errors';
 import type { AACall, TxCallbackProps } from './types';
 
 const ADDRESS: Address = '0x00000000000000000000000000000000000000aa';
@@ -30,7 +30,7 @@ vi.mock('providers/address-validation-provider', () => ({
 vi.mock('modules/web3', () => ({
   useDappStatus: () => ({ address: ADDRESS }),
 }));
-vi.mock('../use-aa', () => ({
+vi.mock('../hooks/use-aa', () => ({
   useAA: () => ({ isAA: state.isAA }),
 }));
 vi.mock('./use-send-aa-calls', () => ({
@@ -311,5 +311,36 @@ describe('useTxFlow with a legacy flow', () => {
     await expect(firstRun).rejects.toBeInstanceOf(TxStaleError);
     expect(first.onSign).not.toHaveBeenCalled();
     expect(second.onSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it('refetches after a superseded flow whose tx was sent but never read back', async () => {
+    const txFlow = renderHook(useTxFlow);
+    let releaseFirst = () => {};
+    const gate = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    const first = createLegacyArgs(
+      vi.fn(async (callback: TransactionCallback) => {
+        await legacySdk(
+          { stage: TransactionCallbackStage.SIGN },
+          { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+        )(callback);
+        await gate;
+        throw new Error('Timed out while waiting for transaction');
+      }),
+    );
+    const second = createLegacyArgs();
+
+    const firstRun = txFlow(first);
+    // let the first reach the network before the second takes over
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(first.onReceipt).toHaveBeenCalledTimes(1);
+    await expect(txFlow(second)).resolves.toMatchObject({ isSuccess: true });
+    releaseFirst();
+
+    // it may have landed: no Retry, and the data under the forms is refetched
+    await expect(firstRun).rejects.toBeInstanceOf(TxSentDataUnavailableError);
+    expect(first.onFailure).not.toHaveBeenCalled();
+    expect(invalidateQueries).toHaveBeenCalledTimes(1);
   });
 });
