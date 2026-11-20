@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForceDisconnect } from 'reef-knot/core-react';
+import { useForceDisconnect } from 'reef-knot';
 import { useQuery } from '@tanstack/react-query';
 
 import buildInfo from 'build-info.json';
@@ -56,10 +56,10 @@ export const useVersionStatus = () => {
   // for IPFS - ^this and current cid doesn't match
   const realIsUpdateAvailable = Boolean(
     remoteVersionQueryResult.data &&
-      ((currentCidQueryResult.data &&
-        remoteVersionQueryResult.data.cid !== currentCidQueryResult.data) ||
-        !config.ipfsMode) &&
-      remoteVersionQueryResult.data.leastSafeVersion !== NO_SAFE_VERSION,
+    ((currentCidQueryResult.data &&
+      remoteVersionQueryResult.data.cid !== currentCidQueryResult.data) ||
+      !config.ipfsMode) &&
+    remoteVersionQueryResult.data.leastSafeVersion !== NO_SAFE_VERSION,
   );
   const isUpdateAvailable =
     realIsUpdateAvailable ||
@@ -70,11 +70,11 @@ export const useVersionStatus = () => {
 
   const realIsVersionUnsafe = Boolean(
     remoteVersionQueryResult.data?.leastSafeVersion &&
-      (remoteVersionQueryResult.data.leastSafeVersion === NO_SAFE_VERSION ||
-        isVersionLess(
-          buildInfo.version,
-          remoteVersionQueryResult.data.leastSafeVersion,
-        )),
+    (remoteVersionQueryResult.data.leastSafeVersion === NO_SAFE_VERSION ||
+      isVersionLess(
+        buildInfo.version,
+        remoteVersionQueryResult.data.leastSafeVersion,
+      )),
   );
   const isVersionUnsafe =
     realIsVersionUnsafe ||

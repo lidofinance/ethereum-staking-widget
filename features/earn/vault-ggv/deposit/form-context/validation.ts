@@ -53,12 +53,7 @@ export const GGVDepositFormValidationResolver: Resolver<
     );
 
     // prevents problems with eth/stETH/wstETH onchain conversion
-    validateBigintMin(
-      'amount',
-      amount,
-      100n,
-      `Enter amount larger than 100 wei`,
-    );
+    validateBigintMin('amount', amount, 100n, `Amount too small`);
 
     const { balance, maxDeposit } = awaitedContext[token];
 

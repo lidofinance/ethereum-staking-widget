@@ -1,0 +1,54 @@
+name: Run_on_release
+
+on:
+  release:
+    types:
+      - released
+
+permissions: {}
+
+jobs:
+  trigger-release-build:
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: write
+    env:
+      RELEASE_BRANCH: main
+      BUILD_WORKFLOW: ci-critical-k8s.yml
+
+    steps:
+      - name: Validate stable release tag
+        id: release
+        shell: bash
+        env:
+          RELEASE_DRAFT: ${{ github.event.release.draft }}
+          RELEASE_PRERELEASE: ${{ github.event.release.prerelease }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$RELEASE_DRAFT" != "false" || "$RELEASE_PRERELEASE" != "false" ]]; then
+            echo "::error::Only published stable releases can start a release build"
+            exit 1
+          fi
+
+          if [[ ! "$RELEASE_TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Release tag must use stable SemVer such as v1.2.3 or 1.2.3"
+            exit 1
+          fi
+
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch release build from production branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          gh workflow run "$BUILD_WORKFLOW" \
+            --repo "$GH_REPO" \
+            --ref "$RELEASE_BRANCH" \
+            -f tag="$RELEASE_TAG"

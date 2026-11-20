@@ -1,5 +1,5 @@
 import { FC, useCallback } from 'react';
-import { useConnect } from 'reef-knot/core-react';
+import { useConnectionFlow } from 'reef-knot';
 import { Button, ButtonProps } from '@lidofinance/lido-ui';
 import { wrapWithEventTrack } from '@lidofinance/analytics-matomo';
 
@@ -9,14 +9,14 @@ import { useUserConfig } from 'config/user-config';
 export const Connect: FC<ButtonProps> = (props) => {
   const { isWalletConnectionAllowed } = useUserConfig();
   const { onClick, ...rest } = props;
-  const { connect } = useConnect();
+  const { startConnection } = useConnectionFlow();
 
   const handleClick = wrapWithEventTrack(
     MATOMO_CLICK_EVENTS.connectWallet,
     useCallback(() => {
       if (!isWalletConnectionAllowed) return;
-      void connect();
-    }, [isWalletConnectionAllowed, connect]),
+      void startConnection();
+    }, [isWalletConnectionAllowed, startConnection]),
   );
 
   return (
