@@ -257,6 +257,8 @@ const STETH_WITHDRAWAL_ACTIVITY_TYPES: PortfolioActivityType[] = [
 ];
 
 const CLAIMABLE_CATEGORY_SUFFIX = '-claimable';
+const STETH_CLAIMABLE_CATEGORY = 'lido-withdrawal-claimable';
+const CLAIMED_TOKEN_SYMBOL = 'ETH';
 
 // short enough to fit the asset column, where the token goes below the name
 const getWithdrawalStatusName = (category: string | null | undefined) =>
@@ -276,7 +278,11 @@ export const withdrawalRowToPortfolioTokens = (
     const legAmount = depositLeg.amount ?? 0;
     if (!(legAmount > 0)) return [];
     const legCategory = depositLeg.attributes?.category ?? attributes.category;
-    const symbol = toTrimmedText(depositLeg.token_symbol, MAX_SYMBOL_LENGTH);
+    // a finalized stETH request is claimed in ETH, at the amount upstream gives
+    const symbol =
+      legCategory === STETH_CLAIMABLE_CATEGORY
+        ? CLAIMED_TOKEN_SYMBOL
+        : toTrimmedText(depositLeg.token_symbol, MAX_SYMBOL_LENGTH);
     const name = getWithdrawalStatusName(legCategory);
     // a request of any size is shown: it is the user's own funds in a queue
     if (!isSafeText(symbol, name, false)) return [];

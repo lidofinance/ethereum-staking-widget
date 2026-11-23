@@ -382,7 +382,9 @@ describe('withdrawal positions', () => {
     expect(tokens).toHaveLength(2);
     expect(tokens[0]).toMatchObject({
       name: 'Ready to claim',
-      symbol: 'stETH',
+      // claimed in ETH; the row is not the native coin itself
+      symbol: 'ETH',
+      isNative: false,
       amountRaw: '1000000000000000',
       amount: 0.001,
       valueUsd: 2,
@@ -402,6 +404,27 @@ describe('withdrawal positions', () => {
       valueUsd: 0.2,
     });
     expect(tokens[0].id).not.toBe(tokens[1].id);
+  });
+
+  it('keeps the payout token of a claimable Earn request', () => {
+    const { tokens } = parsePositionsResponse({
+      positions: [
+        makePosition({
+          name: 'Lido redeem queue (claimable)',
+          attributes: {
+            category: 'lido-redeem-queue-claimable',
+            position_id: `${QUEUE}-claimable`,
+            deposits: [
+              makeWithdrawalLeg('lido-redeem-queue-claimable', '5000000', 5),
+            ],
+          },
+        }),
+      ],
+    });
+    expect(tokens[0]).toMatchObject({
+      name: 'Ready to claim',
+      symbol: 'stETH',
+    });
   });
 
   it('names an Earn redeem request by its status too', () => {
