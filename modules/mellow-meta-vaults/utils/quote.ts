@@ -71,6 +71,14 @@ export const isSyncDepositQueue = (
     (item) => item.type === 'function' && item.name === 'syncDepositParams',
   );
 
+// the queue's current `penaltyD6`: none for a queue without a penalty
+export const readSyncDepositPenalty = async (
+  depositQueue: DepositQueueContract,
+) =>
+  isSyncDepositQueue(depositQueue)
+    ? (await depositQueue.read.syncDepositParams())[0]
+    : 0n;
+
 type ReadDepositQuoteArgs = {
   collector: CollectorContract;
   depositQueue: DepositQueueContract;
@@ -93,9 +101,7 @@ export const readDepositQuote = async ({
   amount,
   account,
 }: ReadDepositQuoteArgs): Promise<VaultQuote> => {
-  const penaltyD6 = isSyncDepositQueue(depositQueue)
-    ? (await depositQueue.read.syncDepositParams())[0]
-    : 0n;
+  const penaltyD6 = await readSyncDepositPenalty(depositQueue);
   const { shares } = (await collector.read.getDepositParams([
     depositQueue.address,
     applySyncDepositPenalty(amount, penaltyD6),

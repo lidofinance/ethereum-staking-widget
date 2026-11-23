@@ -40,6 +40,7 @@ import { getDepositRoute } from '../utils/deposit-route';
 import {
   isQuoteWorse,
   readDepositQuote,
+  readSyncDepositPenalty,
   type VaultQuote,
 } from '../utils/quote';
 import type { TxRetryHandler } from 'shared/transaction-modal';
@@ -128,9 +129,16 @@ export const useDeposit = <DepositQueueToken extends string>({
       // re-read on the queue the deposit goes to must not be worse than the
       // displayed one. A better quote passes. The quote includes the sync
       // queue's current penalty, so a penalty set or raised since the form
-      // quoted stops the deposit here
+      // quoted stops the deposit here. With no quote displayed there is
+      // nothing to hold the deposit to: any penalty stops it, so a deposit
+      // nobody saw priced is never charged one
       const checkBeforeDeposit = async (data: DepositData) => {
-        if (!shownQuote) return;
+        if (!shownQuote) {
+          if ((await readSyncDepositPenalty(data.depositQueue)) > 0n) {
+            throw new QuoteMismatchError();
+          }
+          return;
+        }
         const quote = await readDepositQuote({
           collector,
           depositQueue: data.depositQueue,

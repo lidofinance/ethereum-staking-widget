@@ -74,6 +74,12 @@ const AMOUNT = 2n * 10n ** 18n;
 const SHARES = 19n * 10n ** 17n;
 // the quote the form displays for AMOUNT
 const SHOWN_QUOTE: VaultQuote = { amountIn: AMOUNT, amountOut: SHARES };
+// the quote the form shows while the sync queue charges `penaltyD6`
+const penalisedQuote = (penaltyD6: bigint): VaultQuote => ({
+  amountIn: AMOUNT,
+  amountOut:
+    (((AMOUNT * (1_000_000n - penaltyD6)) / 1_000_000n) * SHARES) / AMOUNT,
+});
 
 const state = vi.hoisted(() => ({
   isAA: false,
@@ -502,7 +508,9 @@ describe('useDeposit', () => {
     it('deposits through the sync queue while it charges a penalty: no async fallback', async () => {
       const queues = createQueues({ penaltyD6: 1_000n });
 
-      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
+      await expect(
+        deposit(queues, TOKENS.weth, { shownQuote: penalisedQuote(1_000n) }),
+      ).resolves.toBe(true);
 
       expect(state.walletClient.writeContract).toHaveBeenCalledWith(
         approveWrite(AMOUNT, TOKEN_ADDRESSES.weth, SYNC_QUEUE),
@@ -591,10 +599,7 @@ describe('useDeposit', () => {
     it('quotes the sync queue for the amount its penalty leaves', async () => {
       const queues = createQueues({ penaltyD6: 1_000n });
       // the form quoted the same penalty
-      const shownQuote = {
-        amountIn: AMOUNT,
-        amountOut: (((AMOUNT * 999_000n) / 1_000_000n) * SHARES) / AMOUNT,
-      };
+      const shownQuote = penalisedQuote(1_000n);
 
       await expect(deposit(queues, TOKENS.eth, { shownQuote })).resolves.toBe(
         true,
@@ -649,7 +654,37 @@ describe('useDeposit', () => {
       await expect(deposit(queues, TOKENS.eth)).resolves.toBe(true);
 
       expect(queues.collector.read.getDepositParams).not.toHaveBeenCalled();
+      expect(queues.syncQueue.read.syncDepositParams).toHaveBeenCalledTimes(1);
       expect(queues.syncQueue.write.deposit).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops a deposit with no quote displayed while the sync queue charges a penalty', async () => {
+      const queues = createQueues({ penaltyD6: 1n });
+
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(false);
+
+      // read right before the deposit, after the approval
+      expectOrdered(
+        state.walletClient.writeContract,
+        queues.syncQueue.read.syncDepositParams,
+      );
+      expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
+      expect(queues.asyncQueue.write.deposit).not.toHaveBeenCalled();
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+        onRetry,
+      );
+    });
+
+    it('reads no penalty for a token without a sync queue and no quote displayed', async () => {
+      const queues = createQueues({ penaltyD6: 1n });
+
+      await expect(
+        deposit(queues, TOKENS.weth, { isAsyncOnly: true }),
+      ).resolves.toBe(true);
+
+      expect(queues.syncQueue.read.syncDepositParams).not.toHaveBeenCalled();
+      expect(queues.asyncQueue.write.deposit).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -711,7 +746,9 @@ describe('useDeposit', () => {
       state.sendAACalls.mockImplementation(sendCalls);
       const queues = createQueues({ penaltyD6: 1n });
 
-      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(true);
+      await expect(
+        deposit(queues, TOKENS.weth, { shownQuote: penalisedQuote(1n) }),
+      ).resolves.toBe(true);
 
       const calls = sentAACalls(sendCalls);
       expect(calls[1]?.to).toBe(SYNC_QUEUE);
@@ -734,6 +771,21 @@ describe('useDeposit', () => {
 
       expect(state.sendAACalls).not.toHaveBeenCalled();
       expect(refetchQuote).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+        onRetry,
+      );
+    });
+
+    it('sends no batch with no quote displayed while the sync queue charges a penalty', async () => {
+      state.sendAACalls.mockImplementation(
+        aaSendCalls({ callId: CALL_ID, txHash: TX_HASH }),
+      );
+      const queues = createQueues({ penaltyD6: 1n });
+
+      await expect(deposit(queues, TOKENS.weth)).resolves.toBe(false);
+
+      expect(state.sendAACalls).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
         expect.any(QuoteMismatchError),
         onRetry,
