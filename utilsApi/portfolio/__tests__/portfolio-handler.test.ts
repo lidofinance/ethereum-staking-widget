@@ -503,6 +503,62 @@ describe('snapshots', () => {
   });
 });
 
+describe('stETH rewards from the rewards backend', () => {
+  const stethRewards = {
+    address: LIDO_ADDRESS,
+    rewardsUsd: 500,
+    rewardsAmount: 0.25,
+    rewardsSymbol: 'stETH',
+  };
+  const pnlCalls = (client: ReturnType<typeof makeClient>) =>
+    client.post.mock.calls.filter(([path]) => path.includes('pnl'));
+
+  it('a wallet with stETH only makes no upstream rewards call', async () => {
+    const client = makeClient();
+    const fetchStethRewards = vi.fn().mockResolvedValue(stethRewards);
+    const service = createPortfolioService(client, client, client, {
+      fetchStethRewards,
+    });
+
+    const answer = await service.getRewards('0xa');
+    expect(answer.rewards).toEqual([stethRewards]);
+    expect(fetchStethRewards).toHaveBeenCalledWith('0xa');
+    expect(pnlCalls(client)).toHaveLength(0);
+  });
+
+  it('a failed backend is answered with the kept rewards, not the other source', async () => {
+    const clock = useClock();
+    const client = makeClient();
+    const fetchStethRewards = vi.fn().mockResolvedValue(stethRewards);
+    const service = createPortfolioService(client, client, client, {
+      fetchStethRewards,
+    });
+    const fresh = await service.getRewards('0xa');
+
+    // past the rewards cache, within the kept answer
+    clock.time += 7 * HOUR;
+    fetchStethRewards.mockRejectedValue(new Error('down'));
+    const stale = await service.getRewards('0xa');
+
+    expect(stale.stale).toBe(true);
+    expect(stale.rewards).toEqual([stethRewards]);
+    expect(stale.updatedAt).toBe(fresh.updatedAt);
+    expect(pnlCalls(client)).toHaveLength(0);
+  });
+
+  it('a failed backend with nothing kept falls back upstream', async () => {
+    const client = makeClient();
+    const service = createPortfolioService(client, client, client, {
+      fetchStethRewards: vi.fn().mockRejectedValue(new Error('down')),
+    });
+
+    const answer = await service.getRewards('0xa');
+    expect(answer.stale).toBeUndefined();
+    expect(answer.rewards[0].rewardsUsd).toBe(3);
+    expect(pnlCalls(client)).toHaveLength(1);
+  });
+});
+
 describe('stale history page', () => {
   it('is served as 200, uncached, without the internal flag', async () => {
     const clock = useClock();

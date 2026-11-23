@@ -270,7 +270,7 @@ describe('portfolio index wiring', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('402 on positions pauses history but not rewards', async () => {
+  it('402 on positions pauses every kind of call: the quota is one', async () => {
     const h = await load({ p2pLambdaAPIKey: KEY });
     const cached = addr(11);
     // positions for this address are cached before the quota runs out
@@ -278,8 +278,7 @@ describe('portfolio index wiring', () => {
       200,
     );
     failures = { '/portfolio/positions': 402 };
-    const other = addr(12);
-    expect((await call(h.portfolioPositionsHandler, other)).statusCode).toBe(
+    expect((await call(h.portfolioPositionsHandler, addr(12))).statusCode).toBe(
       503,
     );
     failures = {};
@@ -287,28 +286,30 @@ describe('portfolio index wiring', () => {
     expect(
       (await call(h.portfolioTransactionsHandler, cached)).statusCode,
     ).toBe(503);
-    expect(fetchMock).not.toHaveBeenCalled();
     expect((await call(h.portfolioRewardsHandler, cached)).statusCode).toBe(
-      200,
-    );
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(String(fetchMock.mock.calls[0][0])).toContain('aggregated-pnl');
-  });
-
-  it('402 on rewards pauses rewards only', async () => {
-    const h = await load({ p2pLambdaAPIKey: KEY });
-    const a = addr(13);
-    failures = { 'aggregated-pnl-history': 402 };
-    expect((await call(h.portfolioRewardsHandler, a)).statusCode).toBe(503);
-    failures = {};
-    expect((await call(h.portfolioRewardsHandler, addr(14))).statusCode).toBe(
       503,
     );
-    expect((await call(h.portfolioPositionsHandler, addr(15))).statusCode).toBe(
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('402 on rewards pauses positions and history too', async () => {
+    const h = await load({ p2pLambdaAPIKey: KEY });
+    const cached = addr(13);
+    expect((await call(h.portfolioPositionsHandler, cached)).statusCode).toBe(
       200,
+    );
+    failures = { 'aggregated-pnl-history': 402 };
+    expect((await call(h.portfolioRewardsHandler, cached)).statusCode).toBe(
+      503,
+    );
+    failures = {};
+    fetchMock.mockClear();
+    expect((await call(h.portfolioPositionsHandler, addr(15))).statusCode).toBe(
+      503,
     );
     expect(
       (await call(h.portfolioTransactionsHandler, addr(16))).statusCode,
-    ).toBe(200);
+    ).toBe(503);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

@@ -7,11 +7,8 @@ import { createClientLimiter, type ClientLimitScope } from './client-limit';
 import { parseDisabledScopes } from './kill-switch';
 import { createLambdaClient } from './lambda-client';
 import { CLIENT_LIMITS, UPSTREAM_BUDGETS } from './limits';
-import {
-  createQuotaBreaker,
-  createUpstreamGuard,
-  type QuotaBreaker,
-} from './upstream-guard';
+import { createStethRewardsFetcher } from './steth-rewards';
+import { createQuotaBreaker, createUpstreamGuard } from './upstream-guard';
 import {
   createPortfolioPositionsHandler,
   createPortfolioRewardsHandler,
@@ -49,17 +46,12 @@ if (!disabledScopes.isValid) {
 }
 
 const metrics = Metrics.request;
-// the rate is shared by the key; quotas are per category of the plan
+// the request rate and the quota are both shared by every kind of call
 const rateBreaker = createQuotaBreaker();
-const realtimeQuota = createQuotaBreaker();
-const historicalQuota = createQuotaBreaker();
+const quotaBreaker = createQuotaBreaker();
 
 // one service per process, so the routes share caches, budgets and pauses
-const createClient = (
-  validApiKey: string,
-  scope: ClientLimitScope,
-  quotaBreaker: QuotaBreaker,
-) =>
+const createClient = (validApiKey: string, scope: ClientLimitScope) =>
   createLambdaClient({
     apiKey: validApiKey,
     guard: createUpstreamGuard({
@@ -78,9 +70,16 @@ const createClient = (
 
 const service = isValidApiKey(apiKey)
   ? createPortfolioService(
-      createClient(apiKey, 'positions', realtimeQuota),
-      createClient(apiKey, 'history', realtimeQuota),
-      createClient(apiKey, 'rewards', historicalQuota),
+      createClient(apiKey, 'positions'),
+      createClient(apiKey, 'history'),
+      createClient(apiKey, 'rewards'),
+      {
+        fetchStethRewards: secretConfig.rewardsBackendAPI
+          ? createStethRewardsFetcher({
+              backendUrl: secretConfig.rewardsBackendAPI,
+            })
+          : undefined,
+      },
     )
   : null;
 

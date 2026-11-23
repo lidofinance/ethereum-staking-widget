@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 import type { LambdaClient } from './lambda-client';
 import type { PortfolioTokenWithPnl } from './positions';
+import {
+  STETH_MAINNET_ADDRESS,
+  type StethRewardsFetcher,
+} from './steth-rewards';
 import type { PortfolioTokenRewards } from './types';
 
 const PNL_CHAIN = 'ethereum';
@@ -85,13 +89,27 @@ export const parsePnlResponse = (
   });
 };
 
-export const fetchLidoRewards = async (
+// the stETH source failed and an earlier answer can be shown instead
+export class StethRewardsUnavailableError extends Error {
+  constructor() {
+    super('stETH rewards are unavailable');
+  }
+}
+
+export type LidoRewardsOptions = {
+  // stETH rewards come from here; without it every token goes upstream
+  fetchStethRewards?: StethRewardsFetcher;
+  // an earlier answer for this address is kept, so a failure can fall on it
+  hasSavedRewards?: boolean;
+};
+
+// one upstream call covers every token, so it is skipped only with no tokens
+const fetchUpstreamRewards = async (
   client: LambdaClient,
   address: string,
-  tokens: PortfolioTokenWithPnl[],
-  currentTime = Date.now(),
+  lidoTokens: PortfolioTokenWithPnl[],
+  currentTime: number,
 ): Promise<PortfolioTokenRewards[]> => {
-  const lidoTokens = tokens.filter((token) => token.isLido && token.pnl);
   if (lidoTokens.length === 0) return [];
 
   const responseBody = await client.post(
@@ -110,4 +128,38 @@ export const fetchLidoRewards = async (
     PNL_TIMEOUT_MS,
   );
   return parsePnlResponse(responseBody, lidoTokens);
+};
+
+export const fetchLidoRewards = async (
+  client: LambdaClient,
+  address: string,
+  tokens: PortfolioTokenWithPnl[],
+  currentTime = Date.now(),
+  { fetchStethRewards, hasSavedRewards = false }: LidoRewardsOptions = {},
+): Promise<PortfolioTokenRewards[]> => {
+  const lidoTokens = tokens.filter((token) => token.isLido && token.pnl);
+  const stethToken = fetchStethRewards
+    ? lidoTokens.find((token) => token.address === STETH_MAINNET_ADDRESS)
+    : undefined;
+  if (!fetchStethRewards || !stethToken) {
+    return fetchUpstreamRewards(client, address, lidoTokens, currentTime);
+  }
+
+  let stethRewards: PortfolioTokenRewards;
+  try {
+    stethRewards = await fetchStethRewards(address);
+  } catch {
+    // the two sources count differently, so a kept answer is shown first
+    if (hasSavedRewards) throw new StethRewardsUnavailableError();
+    return fetchUpstreamRewards(client, address, lidoTokens, currentTime);
+  }
+
+  const otherLidoTokens = lidoTokens.filter((token) => token !== stethToken);
+  const otherRewards = await fetchUpstreamRewards(
+    client,
+    address,
+    otherLidoTokens,
+    currentTime,
+  );
+  return [stethRewards, ...otherRewards];
 };

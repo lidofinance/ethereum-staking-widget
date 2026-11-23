@@ -7,24 +7,25 @@ export type UpstreamBudget = {
 };
 
 // upstream calls one pod may make; every pod counts on its own
+// one quota pays for all three, and a rewards call weighs ten of the others
 export const UPSTREAM_BUDGETS: Record<
   'positions' | 'history' | 'rewards',
   UpstreamBudget
 > = {
   positions: {
     maxCallsPerMinute: 300,
-    maxCallsPerHour: 1200,
-    maxCallsPerDay: 9500,
+    maxCallsPerHour: 650,
+    maxCallsPerDay: 5000,
   },
   history: {
     maxCallsPerMinute: 120,
-    maxCallsPerHour: 800,
-    maxCallsPerDay: 6400,
+    maxCallsPerHour: 400,
+    maxCallsPerDay: 3000,
   },
   rewards: {
     maxCallsPerMinute: 60,
-    maxCallsPerHour: 200,
-    maxCallsPerDay: 1600,
+    maxCallsPerHour: 100,
+    maxCallsPerDay: 800,
   },
 };
 

@@ -20,12 +20,14 @@ import {
 import * as wagmiChains from 'wagmi/chains';
 import { Chain } from 'wagmi/chains';
 
-import { ReefKnotProvider, getDefaultConfig } from 'reef-knot/core-react';
 import {
-  ReefKnotWalletsModal,
+  ReefKnotProvider,
+  getDefaultConfig,
   getDefaultWalletsModalConfig,
-} from 'reef-knot/connect-wallet-modal';
-import { WalletIdsEthereum, WalletsListEthereum } from 'reef-knot/wallets';
+  WalletIdsEthereum,
+  WalletsListEthereum,
+} from 'reef-knot';
+import { ReefKnotWalletsModal } from '@reef-knot/ui-lido-legacy';
 
 import { useThemeToggle } from '@lidofinance/lido-ui';
 

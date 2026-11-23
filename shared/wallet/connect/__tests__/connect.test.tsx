@@ -11,8 +11,8 @@ const state = vi.hoisted(() => ({
   trackEvent: vi.fn(),
 }));
 
-vi.mock('reef-knot/core-react', () => ({
-  useConnect: () => ({ connect: state.connect }),
+vi.mock('reef-knot', () => ({
+  useConnectionFlow: () => ({ startConnection: state.connect }),
 }));
 
 vi.mock('config/user-config', () => ({

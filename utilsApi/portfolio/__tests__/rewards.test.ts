@@ -3,7 +3,12 @@ import { ZodError } from 'zod';
 import type { LambdaClient } from '../lambda-client';
 import type { PortfolioTokenWithPnl } from '../positions';
 import { LIDO_TOKEN_ADDRESSES } from '../positions';
-import { fetchLidoRewards, parsePnlResponse } from '../rewards';
+import {
+  StethRewardsUnavailableError,
+  fetchLidoRewards,
+  parsePnlResponse,
+} from '../rewards';
+import { STETH_MAINNET_ADDRESS } from '../steth-rewards';
 
 const LIDO_ADDRESS = [...LIDO_TOKEN_ADDRESSES][0];
 
@@ -202,5 +207,121 @@ describe('fetchLidoRewards', () => {
         rewardsSymbol: 'stETH',
       },
     ]);
+  });
+});
+
+describe('fetchLidoRewards with the stETH rewards source', () => {
+  const WALLET = '0xabc';
+  const NOW = 1_700_000_000_000;
+  const OTHER_LIDO_ADDRESS = [...LIDO_TOKEN_ADDRESSES].find(
+    (address) => address !== STETH_MAINNET_ADDRESS,
+  );
+  const stethToken = makeToken({
+    address: STETH_MAINNET_ADDRESS,
+    pnl: { category: 'lido-steth-staking', positionId: 'Pos-Steth' },
+  });
+  const otherToken = makeToken({
+    id: 'other',
+    address: OTHER_LIDO_ADDRESS,
+    symbol: 'wstETH',
+    pnl: { category: 'lido-wsteth-holding', positionId: 'Pos-Other' },
+  });
+  const stethRewards = {
+    address: STETH_MAINNET_ADDRESS,
+    rewardsUsd: 500,
+    rewardsAmount: 0.25,
+    rewardsSymbol: 'stETH',
+  };
+  const upstreamRow = (category: string, positionId: string, usd: number) => ({
+    category,
+    position_id: positionId,
+    pnl_history: [{ reward_usd: usd }],
+    reward_history: [{ symbol: 'stETH', amount: 0.1 }],
+  });
+  const sentPositionIds = (post: ReturnType<typeof vi.fn>) =>
+    (
+      post.mock.calls[0][1] as { positions: { position_id: string }[] }
+    ).positions.map((position) => position.position_id);
+
+  it('takes stETH from the source and asks upstream for the rest only', async () => {
+    const post = vi.fn().mockResolvedValue({
+      data: [upstreamRow('lido-wsteth-holding', 'pos-other', 30)],
+    });
+    const fetchStethRewards = vi.fn().mockResolvedValue(stethRewards);
+
+    const result = await fetchLidoRewards(
+      { post, get: vi.fn() },
+      WALLET,
+      [stethToken, otherToken],
+      NOW,
+      { fetchStethRewards },
+    );
+
+    expect(fetchStethRewards).toHaveBeenCalledWith(WALLET);
+    expect(sentPositionIds(post)).toEqual(['Pos-Other']);
+    expect(result).toEqual([
+      stethRewards,
+      expect.objectContaining({ address: OTHER_LIDO_ADDRESS, rewardsUsd: 30 }),
+    ]);
+  });
+
+  it('makes no upstream call for a wallet with stETH only', async () => {
+    const post = vi.fn();
+    const result = await fetchLidoRewards(
+      { post, get: vi.fn() },
+      WALLET,
+      [stethToken],
+      NOW,
+      { fetchStethRewards: vi.fn().mockResolvedValue(stethRewards) },
+    );
+    expect(post).not.toHaveBeenCalled();
+    expect(result).toEqual([stethRewards]);
+  });
+
+  it('does not ask the source for a wallet without stETH', async () => {
+    const post = vi.fn().mockResolvedValue({
+      data: [upstreamRow('lido-wsteth-holding', 'pos-other', 30)],
+    });
+    const fetchStethRewards = vi.fn();
+    await fetchLidoRewards({ post, get: vi.fn() }, WALLET, [otherToken], NOW, {
+      fetchStethRewards,
+    });
+    expect(fetchStethRewards).not.toHaveBeenCalled();
+    expect(sentPositionIds(post)).toEqual(['Pos-Other']);
+  });
+
+  it('falls back upstream for stETH when the source fails and nothing is kept', async () => {
+    const post = vi.fn().mockResolvedValue({
+      data: [
+        upstreamRow('lido-steth-staking', 'pos-steth', 430),
+        upstreamRow('lido-wsteth-holding', 'pos-other', 30),
+      ],
+    });
+    const result = await fetchLidoRewards(
+      { post, get: vi.fn() },
+      WALLET,
+      [stethToken, otherToken],
+      NOW,
+      { fetchStethRewards: vi.fn().mockRejectedValue(new Error('down')) },
+    );
+    expect(sentPositionIds(post)).toEqual(['Pos-Steth', 'Pos-Other']);
+    expect(result.map((rewards) => rewards.rewardsUsd)).toEqual([430, 30]);
+  });
+
+  it('prefers a kept answer to the other source: no upstream call', async () => {
+    const post = vi.fn();
+    await expect(
+      fetchLidoRewards(
+        { post, get: vi.fn() },
+        WALLET,
+        [stethToken, otherToken],
+        NOW,
+        {
+          fetchStethRewards: vi.fn().mockRejectedValue(new Error('down')),
+          hasSavedRewards: true,
+        },
+      ),
+    ).rejects.toBeInstanceOf(StethRewardsUnavailableError);
+    expect(post).not.toHaveBeenCalled();
   });
 });

@@ -19,6 +19,7 @@ import {
 import { LambdaHttpError, type LambdaClient } from './lambda-client';
 import { fetchPositions, type PositionsResult } from './positions';
 import { fetchLidoRewards } from './rewards';
+import type { StethRewardsFetcher } from './steth-rewards';
 import { fetchTransactions, isValidCursor } from './transactions';
 import { UpstreamUnavailableError, isQuotaError } from './upstream-guard';
 import type {
@@ -37,6 +38,7 @@ const SNAPSHOT_MAX_ENTRIES = 3 * CACHE_MAX_ENTRIES;
 const SNAPSHOT_MAX_BYTES = 2 * CACHE_MAX_BYTES;
 // browsers send this on requests from other sites; scripts and SSR send none
 const CROSS_SITE = 'cross-site';
+const REWARDS_SNAPSHOT_SCOPE = 'rewards';
 
 // upstreamNotCalled: the older answer stands in for a call that was never made
 type UpstreamNotCalled = { upstreamNotCalled?: true };
@@ -87,10 +89,16 @@ const getTransactionsKey = (address: string, cursor?: string | null) =>
 
 // LRU fetch() joins concurrent requests for one address into one upstream call
 // history and rewards have their own clients, so their own upstream budgets
+export type PortfolioServiceOptions = {
+  // stETH rewards from the rewards backend; without it they come upstream
+  fetchStethRewards?: StethRewardsFetcher;
+};
+
 export const createPortfolioService = (
   client: LambdaClient,
   historyClient: LambdaClient = client,
   rewardsClient: LambdaClient = client,
+  { fetchStethRewards }: PortfolioServiceOptions = {},
 ): PortfolioService => {
   const recentFailures = new LRUCache<string, true>({
     max: CACHE_MAX_ENTRIES,
@@ -173,6 +181,13 @@ export const createPortfolioService = (
         rewardsClient,
         address,
         tokens,
+        Date.now(),
+        {
+          fetchStethRewards,
+          hasSavedRewards: snapshots.has(
+            `${REWARDS_SNAPSHOT_SCOPE}:${address}`,
+          ),
+        },
       );
       // a wallet that just staked should not wait hours for its rewards
       if (lidoRewards.length === 0) options.ttl = POSITIONS_TTL_MS;
@@ -206,7 +221,7 @@ export const createPortfolioService = (
 
   return {
     getPositions: withSnapshot('positions', getPositions),
-    getRewards: withSnapshot('rewards', getRewards),
+    getRewards: withSnapshot(REWARDS_SNAPSHOT_SCOPE, getRewards),
     getTransactions: (address, cursor) =>
       withSnapshot(
         'transactions',

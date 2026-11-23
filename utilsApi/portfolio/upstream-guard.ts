@@ -26,7 +26,7 @@ export type UpstreamGuardOptions = {
   // HTTP 429: the request rate, shared by the whole API key
   breakerMs: number;
   breaker?: QuotaBreaker;
-  // HTTP 402: the plan quota is used up, shared by one quota category
+  // HTTP 402: the quota is used up; shared by the guards given this breaker
   quotaBreakerMs?: number;
   quotaBreaker?: QuotaBreaker;
   // kill switch: no upstream calls at all
