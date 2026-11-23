@@ -1179,3 +1179,119 @@ describe('runTxFlow', () => {
     });
   });
 });
+
+describe('runTxFlow tx blocks', () => {
+  const mined = (status: 'success' | 'reverted', blockNumber: bigint) => ({
+    ...receipt(status),
+    blockNumber,
+  });
+
+  it('reports the block of every mined tx, a reverted one included', async () => {
+    const onTxBlock = vi.fn();
+    const sendTransaction = legacySdk(
+      { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+      {
+        stage: TransactionCallbackStage.CONFIRMATION,
+        payload: mined('success', 7n),
+      },
+      { stage: TransactionCallbackStage.DONE },
+      { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH_2 },
+      {
+        stage: TransactionCallbackStage.CONFIRMATION,
+        payload: mined('reverted', 9n),
+      },
+    );
+
+    await expect(
+      run({ sendTransaction }, { onTxBlock }),
+    ).rejects.toBeInstanceOf(TransactionRevertedError);
+    // DONE of a legacy tx carries no block: the receiver drops it
+    expect(onTxBlock.mock.calls).toEqual([[7n], [undefined], [9n]]);
+  });
+
+  it('reports the block an EIP-5792 batch gives at DONE', async () => {
+    const onTxBlock = vi.fn();
+    const sendAACalls = vi.fn(
+      async (
+        _calls: unknown,
+        callback: (props: TxCallbackProps) => Promise<void>,
+      ) => {
+        await callback({ stage: TransactionCallbackStage.SIGN });
+        await callback({
+          stage: TransactionCallbackStage.RECEIPT,
+          callId: CALL_ID,
+        });
+        await callback({
+          stage: TransactionCallbackStage.DONE,
+          txHash: TX_HASH,
+          blockNumber: 11n,
+        });
+      },
+    );
+
+    await runSteps(
+      {
+        callsFn: async () => [{ stepId: 'main', to: ADDRESS }],
+        sendStep: vi.fn(),
+      },
+      { isAA: true, sendAACalls, onTxBlock },
+    );
+    expect(onTxBlock).toHaveBeenCalledWith(11n);
+  });
+
+  it('waits for the previous tx after the address check, before reading', async () => {
+    const order: string[] = [];
+    const validateAddress = vi.fn(async () => {
+      order.push('validate');
+      return true;
+    });
+    const waitForPrevTx = vi.fn(async () => {
+      order.push('wait');
+    });
+
+    await runSteps(
+      {
+        prepare: async () => {
+          order.push('prepare');
+        },
+        callsFn: async () => [{ stepId: 'main', to: ADDRESS }],
+        sendStep: async () => {
+          order.push('send');
+        },
+      },
+      { validateAddress, waitForPrevTx },
+    );
+    expect(order).toEqual(['validate', 'wait', 'prepare', 'send']);
+  });
+
+  it('aborts a flow that went stale while waiting', async () => {
+    let isCurrent = true;
+    const prepare = vi.fn();
+    const onFailure = vi.fn();
+
+    const result = await runSteps(
+      {
+        prepare,
+        callsFn: async () => [{ stepId: 'main', to: ADDRESS }],
+        sendStep: vi.fn(),
+        onFailure,
+      },
+      {
+        isCurrent: () => isCurrent,
+        waitForPrevTx: async () => {
+          isCurrent = false;
+        },
+      },
+    );
+    expect(result.isAborted).toBe(true);
+    expect(prepare).not.toHaveBeenCalled();
+    expect(onFailure).not.toHaveBeenCalled();
+  });
+
+  it('does not wait for an address that fails validation', async () => {
+    const waitForPrevTx = vi.fn(async () => {});
+
+    await run({}, { validateAddress: vi.fn(async () => false), waitForPrevTx });
+    expect(waitForPrevTx).not.toHaveBeenCalled();
+  });
+});

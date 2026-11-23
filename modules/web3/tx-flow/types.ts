@@ -82,6 +82,8 @@ export type onSuccessCallbackProps = {
   stage: TransactionCallbackStage.DONE;
   payload?: bigint;
   txHash?: Hash;
+  // the block of an EIP-5792 batch, which reports no CONFIRMATION stage
+  blockNumber?: bigint;
 };
 export type onMultisigDoneCallbackProps = {
   stage: TransactionCallbackStage.MULTISIG_DONE;
@@ -234,4 +236,10 @@ export type TxFlowDeps = {
   // False once the owning UI unmounted or a newer flow started; a stale flow
   // must neither reach the wallet nor report stages
   isCurrent: () => boolean;
+  // Told the block of every transaction that made it into one, a reverted
+  // one included, and of a stale flow too. Gets whatever the sender reported:
+  // the number may be missing
+  onTxBlock?: (blockNumber: bigint | undefined) => void;
+  // Awaited before the flow reads or sends anything. Never rejects
+  waitForPrevTx?: () => Promise<void>;
 };

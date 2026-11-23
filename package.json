@@ -88,6 +88,7 @@
     "@types/node": "24.19.2",
     "@types/nprogress": "0.2.3",
     "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
     "@types/react-transition-group": "4.4.12",
     "@types/styled-components": "5.1.36",
     "@types/styled-system": "5.1.26",

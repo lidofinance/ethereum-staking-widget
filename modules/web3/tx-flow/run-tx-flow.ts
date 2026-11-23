@@ -37,7 +37,15 @@ const PRE_SEND_STAGES = new Set<TxCallbackProps['stage']>([
  */
 export const runTxFlow = async <TData = undefined>(
   args: TxFlowArgs<TData>,
-  { isAA, address, validateAddress, sendAACalls, isCurrent }: TxFlowDeps,
+  {
+    isAA,
+    address,
+    validateAddress,
+    sendAACalls,
+    isCurrent,
+    onTxBlock,
+    waitForPrevTx,
+  }: TxFlowDeps,
 ): Promise<TxFlowResult<TData>> => {
   const { callsFn } = args;
   // a legacy flow carries no data (TData is undefined there), so both shapes
@@ -127,6 +135,8 @@ export const runTxFlow = async <TData = undefined>(
       case TransactionCallbackStage.CONFIRMATION:
         // the outcome is known either way, a revert included
         isSent = false;
+        // a reverted tx is in a block too
+        onTxBlock?.(txArgs.payload?.blockNumber);
         // The SDK reports CONFIRMATION and DONE regardless of receipt status
         if (txArgs.payload?.status === 'reverted') {
           throw new TransactionRevertedError(txArgs.payload);
@@ -135,6 +145,8 @@ export const runTxFlow = async <TData = undefined>(
         isSettled = true;
         break;
       case TransactionCallbackStage.DONE:
+        // an AA batch reports its block here, a legacy tx at CONFIRMATION
+        onTxBlock?.('blockNumber' in txArgs ? txArgs.blockNumber : undefined);
         setStatus('done');
         isSent = false;
         isSettled = true;
@@ -199,6 +211,11 @@ export const runTxFlow = async <TData = undefined>(
   };
 
   if (!(await validateAddress(address)) || !isCurrent()) return aborted();
+  // a tx sent just before may not be visible to the reads below yet
+  if (waitForPrevTx) {
+    await waitForPrevTx();
+    if (!isCurrent()) return aborted();
+  }
 
   try {
     if (args.sendStep) {

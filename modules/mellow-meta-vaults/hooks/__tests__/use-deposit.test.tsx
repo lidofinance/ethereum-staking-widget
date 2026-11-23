@@ -580,7 +580,7 @@ describe('useDeposit', () => {
     it('holds a quote displayed for another amount to its rate', async () => {
       // the debounced preview showed half the amount at the same rate
       const queues = createQueues();
-      const shownQuote = { amount: AMOUNT / 2n, output: SHARES / 2n };
+      const shownQuote = { amountIn: AMOUNT / 2n, amountOut: SHARES / 2n };
 
       await expect(deposit(queues, TOKENS.eth, { shownQuote })).resolves.toBe(
         true,
@@ -592,8 +592,8 @@ describe('useDeposit', () => {
       const queues = createQueues({ penaltyD6: 1_000n });
       // the form quoted the same penalty
       const shownQuote = {
-        amount: AMOUNT,
-        output: (((AMOUNT * 999_000n) / 1_000_000n) * SHARES) / AMOUNT,
+        amountIn: AMOUNT,
+        amountOut: (((AMOUNT * 999_000n) / 1_000_000n) * SHARES) / AMOUNT,
       };
 
       await expect(deposit(queues, TOKENS.eth, { shownQuote })).resolves.toBe(
