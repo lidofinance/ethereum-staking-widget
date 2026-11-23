@@ -20,7 +20,6 @@ const getArgs = (
 ): CalculateSuggestionsArgs => ({
   balances: {},
   ethUsdPrice: ETH_USD_PRICE,
-  stethPerWsteth: parseEther('1.2'),
   vaults: VAULTS_ENABLED,
   ...overrides,
 });
@@ -64,9 +63,12 @@ describe('calculateSuggestions', () => {
     expect(rows.map((row) => row.token)).toEqual(['usdt']);
   });
 
-  it('converts wstETH to ETH with the wrap rate', () => {
+  it('uses the stETH amount of the wstETH balance', () => {
     const { rows, totalUsd } = calculateSuggestions(
-      getArgs({ balances: { wsteth: parseEther('1') } }),
+      getArgs({
+        balances: { wsteth: parseEther('1') },
+        stethByWsteth: parseEther('1.2'),
+      }),
     );
 
     expect(rows[0]).toMatchObject({
@@ -80,22 +82,22 @@ describe('calculateSuggestions', () => {
     expect(totalUsd).toBeCloseTo(252, 6);
   });
 
-  it('uses the wrap rate for the wstETH threshold', () => {
+  it('uses the stETH amount for the wstETH threshold', () => {
     const { rows } = calculateSuggestions(
       getArgs({
         // 0.03 wstETH = 0.036 ETH = $108
         balances: { wsteth: parseEther('0.03') },
+        stethByWsteth: parseEther('0.036'),
       }),
     );
 
     expect(rows.map((row) => row.token)).toEqual(['wsteth']);
   });
 
-  it('skips wstETH without the wrap rate', () => {
+  it('skips wstETH without its stETH amount', () => {
     const { rows } = calculateSuggestions(
       getArgs({
         balances: { eth: parseEther('1'), wsteth: parseEther('1') },
-        stethPerWsteth: undefined,
       }),
     );
 
@@ -166,6 +168,7 @@ describe('calculateSuggestions', () => {
           weth: parseEther('1'),
           eth: parseEther('1'),
         },
+        stethByWsteth: parseEther('1.2'),
       }),
     );
 

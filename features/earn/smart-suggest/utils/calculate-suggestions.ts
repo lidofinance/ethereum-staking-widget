@@ -1,5 +1,4 @@
 import { TOKENS, type Token } from 'consts/tokens';
-import { ONE_wstETH } from 'modules/web3/consts/units';
 import { bnAmountToNumber } from 'utils/bn';
 import { getTokenDecimals } from 'utils/token-decimals';
 
@@ -31,8 +30,8 @@ export type SmartSuggestVaultData = {
 export type CalculateSuggestionsArgs = {
   balances: Partial<Record<SmartSuggestToken, bigint>>;
   ethUsdPrice?: SmartSuggestEthUsdPrice;
-  // stETH amount for ONE_wstETH
-  stethPerWsteth?: bigint;
+  // stETH amount for the whole wstETH balance
+  stethByWsteth?: bigint;
   vaults: Record<SmartSuggestVault, SmartSuggestVaultData>;
   minUsd?: number;
 };
@@ -65,19 +64,16 @@ const getEthVaultRows = (
   apy: number,
   minUsd: number,
 ): SmartSuggestRow[] => {
-  const { balances, ethUsdPrice, stethPerWsteth } = args;
+  const { balances, ethUsdPrice, stethByWsteth } = args;
   if (!ethUsdPrice) return [];
 
   return SMART_SUGGEST_ETH_VAULT_TOKENS.flatMap<SmartSuggestRow>((token) => {
     const balance = balances[token];
     if (balance == null || balance <= 0n) return [];
 
-    // stETH is 1:1 to ETH. wstETH needs the wrap rate.
-    let ethAmount = balance;
-    if (token === TOKENS.wsteth) {
-      if (stethPerWsteth == null) return [];
-      ethAmount = (balance * stethPerWsteth) / ONE_wstETH;
-    }
+    // stETH is 1:1 to ETH. wstETH uses its stETH amount.
+    const ethAmount = token === TOKENS.wsteth ? stethByWsteth : balance;
+    if (ethAmount == null) return [];
 
     const balanceUsd = bnAmountToNumber(
       ethAmount * ethUsdPrice.latestAnswer,

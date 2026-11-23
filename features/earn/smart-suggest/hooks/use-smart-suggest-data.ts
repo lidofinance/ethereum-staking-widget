@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 
 import {
-  ONE_wstETH,
   useEthereumBalance,
   useStablecoinBalance,
   useStETHByWstETH,
@@ -35,7 +34,8 @@ export const useSmartSuggestData = (): SmartSuggestData => {
   const usdeBalance = useStablecoinBalance({ token: TOKENS.usde });
 
   const ethUsd = useEthUsd();
-  const stethPerWsteth = useStETHByWstETH(ONE_wstETH);
+  // Convert the whole balance in the contract. A per-unit rate rounds twice.
+  const stethByWsteth = useStETHByWstETH(wstethBalance.data);
 
   const ethApy = useEthVaultApy();
   const usdApy = useUsdVaultApy();
@@ -48,7 +48,7 @@ export const useSmartSuggestData = (): SmartSuggestData => {
     isEthDepositEnabled &&
     (ethApy.isLoading ||
       ethUsd.isLoading ||
-      stethPerWsteth.isLoading ||
+      stethByWsteth.isLoading ||
       ethBalance.isLoading ||
       wethBalance.isLoading ||
       stethBalance.isLoading ||
@@ -74,7 +74,7 @@ export const useSmartSuggestData = (): SmartSuggestData => {
           [TOKENS.usde]: usdeBalance.data,
         },
         ethUsdPrice: ethUsd.price,
-        stethPerWsteth: stethPerWsteth.data,
+        stethByWsteth: stethByWsteth.data,
         vaults: {
           eth: { apy: ethApy.apy, isDepositEnabled: isEthDepositEnabled },
           usd: { apy: usdApy.apy, isDepositEnabled: isUsdDepositEnabled },
@@ -89,7 +89,7 @@ export const useSmartSuggestData = (): SmartSuggestData => {
       usdtBalance.data,
       usdeBalance.data,
       ethUsd.price,
-      stethPerWsteth.data,
+      stethByWsteth.data,
       ethApy.apy,
       usdApy.apy,
       isEthDepositEnabled,
