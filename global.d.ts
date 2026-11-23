@@ -51,6 +51,8 @@ declare module 'next/config' {
 
       ethAPIBasePath: string;
       oneInchAPIKey: string | undefined;
+      p2pLambdaAPIKey: string | undefined;
+      p2pLambdaDisabled: string | undefined;
       rewardsBackendAPI: string | undefined;
       validationAPI: string | undefined;
       validationFilePath: string | undefined;

@@ -349,6 +349,8 @@ export default withBundleAnalyzer({
 
     ethAPIBasePath: process.env.ETH_API_BASE_PATH,
     oneInchAPIKey: process.env.ONE_INCH_API_KEY,
+    p2pLambdaAPIKey: process.env.P2P_LAMBDA_API_KEY,
+    p2pLambdaDisabled: process.env.P2P_LAMBDA_DISABLED,
     rewardsBackendAPI: process.env.REWARDS_BACKEND,
     validationAPI: process.env.VALIDATION_SERVICE_BASE_PATH,
     validationFilePath: process.env.VALIDATION_FILE_PATH,

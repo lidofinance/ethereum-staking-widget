@@ -1,7 +1,13 @@
 import { type FC, useEffect, useMemo, useState, Fragment } from 'react';
 import { useRouter } from 'next/router';
 
-import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
+import {
+  Wallet,
+  Stake,
+  Wrap,
+  Withdraw,
+  ChartColumnIncreasing,
+} from '@lidofinance/lido-ui';
 
 import {
   HOME_PATH,
@@ -10,6 +16,7 @@ import {
   REWARDS_PATH,
   WITHDRAWALS_PATH,
   SWAP_PATH,
+  PORTFOLIO_PATH,
 } from 'consts/urls';
 
 import { useConfig } from 'config';
@@ -69,6 +76,12 @@ const routes: PageRoute[] = [
     name: 'Swap',
     path: SWAP_PATH,
     icon: <NavIconSwap data-testid="navSwap" />,
+  },
+  {
+    name: 'Portfolio',
+    path: PORTFOLIO_PATH,
+    standalone: true,
+    icon: <ChartColumnIncreasing data-testid="navPortfolio" />,
   },
 ];
 

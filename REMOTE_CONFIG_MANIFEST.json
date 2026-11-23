@@ -53,6 +53,9 @@
       },
       "/swap": {
         "shouldDisable": false
+      },
+      "/portfolio": {
+        "shouldDisable": true
       }
     },
     "api": {
@@ -81,6 +84,11 @@
     "config": {
       "featureFlags": {
         "earnInfoBannerEnabled": true
+      },
+      "pages": {
+        "/portfolio": {
+          "shouldDisable": false
+        }
       }
     }
   },
@@ -129,6 +137,9 @@
       "pages": {
         "/swap": {
           "shouldDisable": true
+        },
+        "/portfolio": {
+          "shouldDisable": false
         }
       },
       "multiChainBanner": [],

@@ -1,79 +1,35 @@
 import styled from 'styled-components';
-import { ButtonIcon } from '@lidofinance/lido-ui';
+import { Drawer } from '@lidofinance/lido-app-ui';
 
-export const DrawerRightStyled = styled.div<{ isOpen: boolean }>`
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 300;
-  outline: none;
-  background-color: ${({ isOpen }) =>
-    isOpen ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)'};
-  pointer-events: ${({ isOpen }) => (isOpen ? 'auto' : 'none')};
-  transition: background-color 0.15s ease-out;
+export const DRAWER_WIDTH = 600;
 
-  @media (max-width: 600px) {
-    background-color: ${({ isOpen }) =>
-      isOpen ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)'};
+// the library drawer; a bottom sheet from 600px down
+export const DrawerRightPanel = styled(Drawer)`
+  // doubled class: Earn keeps its own font and colours inside the library panel
+  && {
+    background-color: var(--lido-color-foreground);
+    color: var(--lido-color-text);
+    font-family: inherit;
+  }
+
+  &:focus {
+    outline: none;
   }
 `;
 
-export const DrawerRightClose = styled(ButtonIcon)`
-  margin-left: auto;
-  color: var(--lido-color-textSecondary);
-`;
-
-export const DrawerRightWrapper = styled.div<{ isOpen: boolean }>`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 600px;
-  box-shadow: -2px 0 2px 0 var(--lido-color-shadowLight);
-  transform: translateX(${({ isOpen }) => (isOpen ? '0' : '100%')});
-  transition: transform 0.15s ease-out;
-
-  @media (max-width: 600px) {
-    left: 0;
-    width: 100%;
-    transform: translateY(${({ isOpen }) => (isOpen ? '0' : '100%')});
-  }
-`;
-
-export const DrawerRightContent = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: ${({ theme }) => theme.spaceMap.xxl}px;
-  background-color: var(--lido-color-foreground);
+export const DrawerRightTitle = styled.span`
   color: var(--lido-color-text);
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spaceMap.xl}px;
-  overflow: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-
-  @media (max-width: 600px) {
-    top: 84px;
-    border-radius: 24px 24px 0 0;
-  }
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    padding: ${({ theme }) => theme.spaceMap.xl}px;
-  }
-`;
-
-export const DrawerRightHeader = styled.div`
+  font-family: inherit;
   font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
   font-weight: 700;
   line-height: 28px;
+  letter-spacing: normal;
+`;
+
+export const DrawerRightContent = styled.div`
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spaceMap.xl}px;
 `;
 
 export const DrawerDescription = styled.div`

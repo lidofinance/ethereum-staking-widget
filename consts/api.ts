@@ -8,6 +8,9 @@ export const enum API_ROUTES {
   CONFIG_MANIFEST = 'api/config-manifest',
   GEO = 'api/geo',
   SWAP_ONE_INCH = 'api/swap/one-inch',
+  PORTFOLIO_POSITIONS = 'api/portfolio/positions',
+  PORTFOLIO_REWARDS = 'api/portfolio/rewards',
+  PORTFOLIO_TRANSACTIONS = 'api/portfolio/transactions',
 }
 
 /**

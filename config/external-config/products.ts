@@ -3,6 +3,7 @@ import type { ParsedUrlQuery } from 'querystring';
 import {
   EARN_PATH,
   HOME_PATH,
+  PORTFOLIO_PATH,
   REWARDS_PATH,
   SWAP_PATH,
   WITHDRAWALS_PATH,
@@ -31,7 +32,7 @@ export const PRODUCT_PATHS: Record<Product, string> = {
 
 // pages hidden together with a product
 const PRODUCT_PAGES: Record<Product, ManifestConfigPage[]> = {
-  stake: [HOME_PATH, WRAP_PATH, WITHDRAWALS_PATH, REWARDS_PATH],
+  stake: [HOME_PATH, WRAP_PATH, WITHDRAWALS_PATH, REWARDS_PATH, PORTFOLIO_PATH],
   earn: [EARN_PATH],
   swap: [SWAP_PATH],
 };

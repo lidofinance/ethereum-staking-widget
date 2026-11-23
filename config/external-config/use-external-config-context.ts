@@ -5,6 +5,7 @@ import { config } from 'config';
 import { STRATEGY_MANIFEST } from 'consts/react-query-strategies';
 import { REMOTE_CONFIG_MANIFEST_URL } from 'consts/external-links';
 import { API_ROUTES } from 'consts/api';
+import { PORTFOLIO_PATH } from 'consts/urls';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useEarnRuntimeState } from 'features/earn/shared/hooks/use-earn-state';
 import { useAppFlag } from 'providers/app-flag';
@@ -91,12 +92,28 @@ export const useExternalConfigContext = (
     // TODO: replace Earn logic with useEarnState hook, which is a single source of truth for Earn state.
     // Current blocker: the Navigation component (navigation.tsx) uses external config to disable pages,
     // we don't want to couple it with specific Earn state logic.
-    const overridePages: Partial<ManifestConfig> = {
-      pages: getProductPagesOverride(productsUrlState, cleanConfig.pages, {
+    const productPages = getProductPagesOverride(
+      productsUrlState,
+      cleanConfig.pages,
+      {
         // IPFS build exports only `/`, so Earn and Swap pages do not exist there
         earn: isEarnDisabledByRuntimeContext || !!config.ipfsMode,
         swap: isLedgerLive || !!config.ipfsMode,
-      }),
+      },
+    );
+    // Portfolio needs /api routes; not offered in IPFS builds and Ledger Live
+    const isPortfolioDisabled = !!config.ipfsMode || isLedgerLive;
+    const overridePages: Partial<ManifestConfig> = {
+      pages: isPortfolioDisabled
+        ? {
+            ...productPages,
+            [PORTFOLIO_PATH]: {
+              showNew: false,
+              sections: [],
+              shouldDisable: true,
+            },
+          }
+        : productPages,
     };
 
     const overrideConfig = overrideManifestConfig(cleanConfig, overridePages);

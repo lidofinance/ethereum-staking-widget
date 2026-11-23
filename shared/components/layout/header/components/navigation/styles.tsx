@@ -5,6 +5,9 @@ import { devicesHeaderMedia } from 'styles/global';
 import { NAV_Z_INDEX } from 'styles/constants';
 import { POPUP_MENU_Z_INDEX, PopupStyled, popupItemActiveBg } from '../popup';
 
+// narrow desktops: tighter gaps, so all links and the wallet fit in one row
+const NAV_COMPACT_MAX_WIDTH = 1100;
+
 const desktopCss = css`
   margin: 0 ${({ theme }) => theme.spaceMap.xxl}px 0 var(--nav-desktop-gutter-x);
   display: flex;
@@ -12,6 +15,16 @@ const desktopCss = css`
 
   svg {
     margin-right: 10px;
+  }
+
+  @media screen and (max-width: ${NAV_COMPACT_MAX_WIDTH}px) {
+    margin: 0 ${({ theme }) => theme.spaceMap.md}px 0
+      ${({ theme }) => theme.spaceMap.xl}px;
+    gap: ${({ theme }) => theme.spaceMap.lg}px;
+
+    svg {
+      margin-right: 6px;
+    }
   }
 `;
 

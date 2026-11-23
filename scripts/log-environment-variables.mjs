@@ -37,10 +37,12 @@ export const openKeys = [
   'REWARDS_BACKEND_BASE_PATH',
   'VALIDATION_FILE_PATH',
   'CONFIG_MANIFEST_PATH',
+  'P2P_LAMBDA_DISABLED',
 ];
 
 export const secretKeys = [
   'ONE_INCH_API_KEY',
+  'P2P_LAMBDA_API_KEY',
   'EL_RPC_URLS_1',
   'EL_RPC_URLS_10',
   'EL_RPC_URLS_130',
