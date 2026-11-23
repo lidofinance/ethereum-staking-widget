@@ -279,8 +279,15 @@ const describeError = (error: unknown) => {
   return error instanceof Error ? error.name : 'Unknown error';
 };
 
+export type ClientIpPresence = 'present' | 'absent';
+
 export type PortfolioHandlerOptions = {
   limiter?: ClientLimiter;
+  // a request without a client IP is not limited per client
+  onRequest?: (
+    scope: ClientLimitScope,
+    clientIpPresence: ClientIpPresence,
+  ) => void;
   onStale?: (scope: ClientLimitScope) => void;
 };
 
@@ -303,7 +310,7 @@ const createHandler =
       getCursor,
       load,
     }: PortfolioRoute<T & UpstreamNotCalled>,
-    { limiter, onStale }: PortfolioHandlerOptions = {},
+    { limiter, onRequest, onStale }: PortfolioHandlerOptions = {},
   ) =>
   async (req: NextApiRequest, res: NextApiResponse) => {
     try {
@@ -313,6 +320,7 @@ const createHandler =
       const address = parseAddress(req.query.address);
       const cursor = getCursor?.(req) ?? null;
       const clientIp = getClientIp(req);
+      onRequest?.(scope, clientIp ? 'present' : 'absent');
       const isUpstreamCallNeeded = !service.isCached(scope, address, cursor);
       const uncountUpstreamCall = limiter?.countRequest(
         clientIp,

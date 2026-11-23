@@ -88,6 +88,8 @@ const handlerOptions: PortfolioHandlerOptions = {
     limits: CLIENT_LIMITS,
     onLimit: (limit) => metrics.portfolioClientLimited.labels(limit).inc(),
   }),
+  onRequest: (scope, clientIpPresence) =>
+    metrics.portfolioRequests.labels(scope, clientIpPresence).inc(),
   onStale: (scope) => metrics.portfolioStaleServed.labels(scope).inc(),
 };
 

@@ -91,6 +91,7 @@ const load = async (cfg: SecretConfig): Promise<Handlers> => {
           portfolioUpstreamCalls: counter,
           portfolioClientLimited: counter,
           portfolioStaleServed: counter,
+          portfolioRequests: counter,
         },
       },
     };

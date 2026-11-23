@@ -15,6 +15,7 @@ export class RequestMetrics {
   portfolioUpstreamRejected: Counter<'scope' | 'reason'>;
   portfolioClientLimited: Counter<'limit'>;
   portfolioStaleServed: Counter<'scope'>;
+  portfolioRequests: Counter<'scope' | 'client_ip'>;
 
   constructor(public registry: Registry) {
     this.apiTimings = this.apiTimingsInit('internal');
@@ -43,6 +44,11 @@ export class RequestMetrics {
       METRIC_NAMES.PORTFOLIO_STALE_SERVED,
       'Portfolio answers served from an older snapshot',
       ['scope'],
+    );
+    this.portfolioRequests = this.counterInit(
+      METRIC_NAMES.PORTFOLIO_REQUESTS,
+      'Valid portfolio requests by scope and client IP (present | absent)',
+      ['scope', 'client_ip'],
     );
   }
 

@@ -12,4 +12,5 @@ export const enum METRIC_NAMES {
   PORTFOLIO_UPSTREAM_REJECTED = 'portfolio_upstream_rejected_total',
   PORTFOLIO_CLIENT_LIMITED = 'portfolio_client_limited_total',
   PORTFOLIO_STALE_SERVED = 'portfolio_stale_served_total',
+  PORTFOLIO_REQUESTS = 'portfolio_requests_total',
 }

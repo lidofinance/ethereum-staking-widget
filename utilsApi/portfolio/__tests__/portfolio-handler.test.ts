@@ -620,6 +620,23 @@ describe('client limits', () => {
     expect(client.post).toHaveBeenCalledTimes(2);
   });
 
+  it('reports whether a valid request came with a client IP', async () => {
+    const onRequest = vi.fn();
+    const handler = createPortfolioPositionsHandler(
+      createPortfolioService(makeClient()),
+      { onRequest },
+    );
+    await call(handler, wallet(1), CLIENT);
+    await call(handler, wallet(1));
+    await call(handler, wallet(1), { 'cf-connecting-ip': 'not-an-ip' });
+    await call(handler, 'not-an-address', CLIENT);
+    expect(onRequest.mock.calls).toEqual([
+      ['positions', 'present'],
+      ['positions', 'absent'],
+      ['positions', 'absent'],
+    ]);
+  });
+
   it('counts a wallet once whatever its letter case', async () => {
     const handler = createPortfolioPositionsHandler(
       createPortfolioService(makeClient()),
