@@ -126,6 +126,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     return createConfig({
       chains: [wagmiChains.mainnet],
       ssr: true,
+      ccipRead: false,
       connectors: [],
       batch: {
         multicall: false,
@@ -173,6 +174,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       chains: supportedChains,
       autoConnect: isWalletConnectionAllowed,
       ssr: true,
+      ccipRead: false,
       pollingInterval: config.PROVIDER_POLLING_INTERVAL,
       batch: {
         multicall: false,
