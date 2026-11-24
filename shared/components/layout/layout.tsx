@@ -42,8 +42,8 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
         <AmountBannerOnlyMobileWrapper>
           <AmountBanner isDismissible placement="connect_wallet" />
         </AmountBannerOnlyMobileWrapper>
-        <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>
-        <LayoutSubTitleStyle>{subtitle}</LayoutSubTitleStyle>
+        {title && <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>}
+        {subtitle && <LayoutSubTitleStyle>{subtitle}</LayoutSubTitleStyle>}
         {children}
       </Main>
       <Footer />
