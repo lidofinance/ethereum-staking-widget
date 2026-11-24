@@ -1,6 +1,7 @@
 export * from './tx-flow';
 export * from './use-allowance';
 export * from './use-balance';
+export * from './cross-staking-chain-position';
 export * from './use-contract-address';
 export * from './use-dapp-status';
 export * from './use-tx-conformation';

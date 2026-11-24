@@ -21,6 +21,7 @@ type QueryResponseData = {
   totalStaked: string;
   stakers: string;
   marketCap: string;
+  rawData: RequestResponseData;
 };
 
 export const useLidoStats = (): {
@@ -40,8 +41,9 @@ export const useLidoStats = (): {
       invariant(rawData, 'Failed to fetch LidoStats');
 
       return {
+        rawData,
         totalStaked: rawData?.totalStaked
-          ? `${Number(rawData.totalStaked).toLocaleString(LOCALE)} ETH`
+          ? `${Number(rawData.totalStaked).toLocaleString(LOCALE, { maximumFractionDigits: 0 })} ETH`
           : DATA_UNAVAILABLE,
         stakers: rawData?.uniqueAnytimeHolders
           ? Number(rawData.uniqueAnytimeHolders).toLocaleString(LOCALE)
