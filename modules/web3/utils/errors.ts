@@ -9,12 +9,16 @@ import type { Hash, TransactionReceipt } from 'viem';
 /**
  * Thrown by a tx flow when the quote re-read right before sending is worse
  * than the one the form displayed. The flow stops before the wallet is reached
- * and the user is asked to look at the updated amount.
+ * and the user is asked to look at the updated amount, or shown `userMessage`
+ * (an `ErrorMessage` value) where the flow has no displayed amount to point to.
  */
 export class QuoteMismatchError extends Error {
-  constructor() {
+  userMessage?: string;
+
+  constructor(userMessage?: string) {
     super('Quote changed between preview and submit');
     this.name = 'QuoteMismatchError';
+    this.userMessage = userMessage;
   }
 }
 

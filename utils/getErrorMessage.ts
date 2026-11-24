@@ -29,6 +29,7 @@ export enum ErrorMessage {
   CHAIN_DISCONNECTED = 'Your wallet is not connected to the selected network.\nSwitch to the selected network in your wallet and try again.',
   TX_SETTLED_DATA_UNAVAILABLE = 'Your transaction was completed, but the updated data could not be loaded. Refresh the page to see the latest state.',
   QUOTE_CHANGED = 'The exchange rate has changed. Check the updated amount and try again.',
+  UPGRADE_UNAVAILABLE = 'Upgrade is not available right now. Try again later.',
   STAKE_WETH_INTERRUPTED = 'Your WETH was unwrapped, but the stake was not sent. Retry to stake the ETH.',
   STAKE_WETH_L2_INTERRUPTED = 'Your WETH was approved, but the stake was not sent. Retry to stake it.',
   WRAP_INTERRUPTED = 'Your stETH was approved, but the wrap was not sent. Retry to wrap it.',
@@ -243,7 +244,7 @@ const extractHumaneMessage = (error: unknown) => {
     return error.message;
   }
   if (error instanceof QuoteMismatchError) {
-    return ErrorMessage.QUOTE_CHANGED;
+    return error.userMessage ?? ErrorMessage.QUOTE_CHANGED;
   }
   if (error instanceof SendCallsError) {
     return error.message;
@@ -393,6 +394,8 @@ const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
   [ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE]:
     MATOMO_ERROR_EVENTS_TYPES.TX_SETTLED_DATA_UNAVAILABLE,
   [ErrorMessage.QUOTE_CHANGED]: MATOMO_ERROR_EVENTS_TYPES.QUOTE_CHANGED,
+  [ErrorMessage.UPGRADE_UNAVAILABLE]:
+    MATOMO_ERROR_EVENTS_TYPES.UPGRADE_UNAVAILABLE,
   [ErrorMessage.STAKE_WETH_INTERRUPTED]:
     MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED,
   [ErrorMessage.STAKE_WETH_L2_INTERRUPTED]:

@@ -131,11 +131,12 @@ export const useDeposit = <DepositQueueToken extends string>({
       // queue's current penalty, so a penalty set or raised since the form
       // quoted stops the deposit here. With no quote displayed there is
       // nothing to hold the deposit to: any penalty stops it, so a deposit
-      // nobody saw priced is never charged one
+      // nobody saw priced is never charged one. Only an upgrade deposits with
+      // no quote displayed, so the stop says the upgrade is unavailable
       const checkBeforeDeposit = async (data: DepositData) => {
         if (!shownQuote) {
           if ((await readSyncDepositPenalty(data.depositQueue)) > 0n) {
-            throw new QuoteMismatchError();
+            throw new QuoteMismatchError(ErrorMessage.UPGRADE_UNAVAILABLE);
           }
           return;
         }

@@ -80,6 +80,11 @@ const penalisedQuote = (penaltyD6: bigint): VaultQuote => ({
   amountOut:
     (((AMOUNT * (1_000_000n - penaltyD6)) / 1_000_000n) * SHARES) / AMOUNT,
 });
+// the stop of a deposit with no quote displayed while a penalty is charged
+const upgradeUnavailable = expect.objectContaining({
+  name: 'QuoteMismatchError',
+  userMessage: ErrorMessage.UPGRADE_UNAVAILABLE,
+});
 
 const state = vi.hoisted(() => ({
   isAA: false,
@@ -671,7 +676,7 @@ describe('useDeposit', () => {
       expect(queues.syncQueue.write.deposit).not.toHaveBeenCalled();
       expect(queues.asyncQueue.write.deposit).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
-        expect.any(QuoteMismatchError),
+        upgradeUnavailable,
         onRetry,
       );
     });
@@ -787,7 +792,7 @@ describe('useDeposit', () => {
 
       expect(state.sendAACalls).not.toHaveBeenCalled();
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
-        expect.any(QuoteMismatchError),
+        upgradeUnavailable,
         onRetry,
       );
     });

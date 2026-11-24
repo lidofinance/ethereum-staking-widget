@@ -17,6 +17,7 @@ export const enum MATOMO_ERROR_EVENTS_TYPES {
   CHAIN_DISCONNECTED = 'CHAIN_DISCONNECTED',
   TX_SETTLED_DATA_UNAVAILABLE = 'TX_SETTLED_DATA_UNAVAILABLE',
   QUOTE_CHANGED = 'QUOTE_CHANGED',
+  UPGRADE_UNAVAILABLE = 'UPGRADE_UNAVAILABLE',
   STAKE_WETH_INTERRUPTED = 'STAKE_WETH_INTERRUPTED',
   STAKE_WETH_L2_INTERRUPTED = 'STAKE_WETH_L2_INTERRUPTED',
   WRAP_INTERRUPTED = 'WRAP_INTERRUPTED',
@@ -111,6 +112,11 @@ export const MATOMO_ERROR_EVENTS: Record<
     'Ethereum_Staking_Widget_Errors',
     'The exchange rate has changed. Check the updated amount and try again.',
     'eth_widget_errors_quote_changed',
+  ],
+  [MATOMO_ERROR_EVENTS_TYPES.UPGRADE_UNAVAILABLE]: [
+    'Ethereum_Staking_Widget_Errors',
+    'Upgrade stopped: the sync deposit queue charges a penalty',
+    'eth_widget_errors_upgrade_unavailable',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.STAKE_WETH_INTERRUPTED]: [
     'Ethereum_Staking_Widget_Errors',
