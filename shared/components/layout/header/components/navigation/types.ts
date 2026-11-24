@@ -7,6 +7,8 @@ export type PageRoute = {
   menuName?: string;
   icon: React.ReactNode;
   showNew?: boolean;
+  // a top-level link kept outside a flattened section, e.g. Portfolio
+  standalone?: boolean;
 } & (
   | {
       path: string;

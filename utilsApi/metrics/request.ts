@@ -11,6 +11,11 @@ export class RequestMetrics {
   ssrCounter: Counter<'revalidate'>;
   validationFileLoadError: Counter<'error'>;
   configManifestLoadError: Counter<'source'>;
+  portfolioUpstreamCalls: Counter<'scope' | 'result'>;
+  portfolioUpstreamRejected: Counter<'scope' | 'reason'>;
+  portfolioClientLimited: Counter<'limit'>;
+  portfolioStaleServed: Counter<'scope'>;
+  portfolioRequests: Counter<'scope' | 'client_ip'>;
 
   constructor(public registry: Registry) {
     this.apiTimings = this.apiTimingsInit('internal');
@@ -20,6 +25,40 @@ export class RequestMetrics {
     this.ssrCounter = this.ssrCounterInit();
     this.validationFileLoadError = this.validationFileLoadErrorInit();
     this.configManifestLoadError = this.configManifestLoadErrorInit();
+    this.portfolioUpstreamCalls = this.counterInit(
+      METRIC_NAMES.PORTFOLIO_UPSTREAM_CALLS,
+      'P2P Lambda calls by scope and result (ok | error | quota)',
+      ['scope', 'result'],
+    );
+    this.portfolioUpstreamRejected = this.counterInit(
+      METRIC_NAMES.PORTFOLIO_UPSTREAM_REJECTED,
+      'P2P Lambda calls not made: budget window, pause or kill switch',
+      ['scope', 'reason'],
+    );
+    this.portfolioClientLimited = this.counterInit(
+      METRIC_NAMES.PORTFOLIO_CLIENT_LIMITED,
+      'Portfolio requests rejected by a per-client limit',
+      ['limit'],
+    );
+    this.portfolioStaleServed = this.counterInit(
+      METRIC_NAMES.PORTFOLIO_STALE_SERVED,
+      'Portfolio answers served from an older snapshot',
+      ['scope'],
+    );
+    this.portfolioRequests = this.counterInit(
+      METRIC_NAMES.PORTFOLIO_REQUESTS,
+      'Valid portfolio requests by scope and client IP (present | absent)',
+      ['scope', 'client_ip'],
+    );
+  }
+
+  counterInit<T extends string>(name: string, help: string, labelNames: T[]) {
+    return new Counter<T>({
+      name: METRICS_PREFIX + name,
+      help,
+      labelNames,
+      registers: [this.registry],
+    });
   }
 
   apiTimingsInit(postfix: string) {

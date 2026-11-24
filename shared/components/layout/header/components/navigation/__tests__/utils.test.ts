@@ -24,6 +24,28 @@ describe('flattenSingleSection', () => {
     expect(flattenSingleSection(routes)).toBe(routes);
   });
 
+  it('keeps standalone links after the flattened section', () => {
+    const portfolio = { ...page('portfolio'), standalone: true };
+    expect(flattenSingleSection([stake, portfolio])).toEqual([
+      ...stake.subRoutes,
+      portfolio,
+    ]);
+  });
+
+  it('keeps sections when a standalone link sits next to other products', () => {
+    const routes = [
+      stake,
+      page('earn'),
+      { ...page('portfolio'), standalone: true },
+    ];
+    expect(flattenSingleSection(routes)).toBe(routes);
+  });
+
+  it('keeps a lone standalone link as is', () => {
+    const routes = [{ ...page('portfolio'), standalone: true }];
+    expect(flattenSingleSection(routes)).toBe(routes);
+  });
+
   it('keeps a single page route as is', () => {
     const routes = [page('earn')];
     expect(flattenSingleSection(routes)).toBe(routes);

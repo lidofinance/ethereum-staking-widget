@@ -113,6 +113,7 @@ describe('getProductPagesOverride', () => {
       '/wrap',
       '/withdrawals',
       '/rewards',
+      '/portfolio',
     ]);
   });
 

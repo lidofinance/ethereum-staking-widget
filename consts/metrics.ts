@@ -8,4 +8,9 @@ export const enum METRIC_NAMES {
   SSR_COUNT = 'ssr_count',
   VALIDATION_FILE_LOAD_ERROR = 'validation_file_load_error',
   CONFIG_MANIFEST_LOAD_ERROR = 'config_manifest_load_error',
+  PORTFOLIO_UPSTREAM_CALLS = 'portfolio_upstream_calls_total',
+  PORTFOLIO_UPSTREAM_REJECTED = 'portfolio_upstream_rejected_total',
+  PORTFOLIO_CLIENT_LIMITED = 'portfolio_client_limited_total',
+  PORTFOLIO_STALE_SERVED = 'portfolio_stale_served_total',
+  PORTFOLIO_REQUESTS = 'portfolio_requests_total',
 }
