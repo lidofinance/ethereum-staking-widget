@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import { encodeFunctionData, getContract, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 
+import { getTokenAddress } from 'config/networks/token-address';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import {
   useDappStatus,
   useTxFlow,
@@ -10,10 +12,11 @@ import {
   useLidoSDK,
   applyRoundUpTxParameter,
 } from 'modules/web3';
-import { getTokenAddress } from 'config/networks/token-address';
-import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getReferralAddress } from 'utils/get-referral-address';
+import { withFallback } from 'utils/with-fallback';
+import { warnError } from 'utils/warn-error';
 
 import type { DVVDepositFormValidatedValues } from '../types';
 import {
@@ -173,7 +176,16 @@ export const useDVVDeposit = (onRetry?: () => void) => {
           },
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
-            const balance = await vault.read.balanceOf([address]);
+            // a failed read must not fail a settled tx: the modal drops the balance
+            const balance = await withFallback(
+              vault.read.balanceOf([address]),
+              undefined,
+              {
+                onError: warnError(
+                  '[useDVVDeposit] post-deposit balance read failed',
+                ),
+              },
+            );
             txModalStages.success(balance, txHash);
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvDepositFinish);
           },

@@ -15,6 +15,9 @@ export const GGV_DEPOSIT_TOKENS: GGVDepositTokens[] = [
 export const INFINITE_DEPOSIT_CAP = maxUint112;
 export const MAX_REQUEST_DEADLINE = Number(maxUint24);
 
+// 10 bps (basis points) = 0.1%. Tolerance for minimumAssets in Teller.bulkWithdraw.
+export const GGV_BULK_WITHDRAW_SLIPPAGE_BPS = 10n;
+
 export const GGV_VAULT_DESCRIPTION =
   'Lido GGV (Golden Goose Vault) utilizes tried and tested strategies with premier DeFi protocols for increased rewards on deposits of ETH or (w)stETH.';
 

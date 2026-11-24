@@ -20,7 +20,8 @@
       {
         "name": "ggv",
         "apy": { "type": "weekly_moving_average" },
-        "deprecated": true
+        "deprecated": true,
+        "depositPauseReasonText": "The Lido GGV vault has been sunset. GGV positions are held in WETH, and withdrawals are available in WETH only."
       },
       { "name": "dvv", "deprecated": true }
     ],
@@ -31,7 +32,7 @@
       "holidayDecorEnabled": false,
       "forceAllowance": false,
       "amountBannerEnabled": true,
-      "earnInfoBannerEnabled": true,
+      "ggvBulkWithdrawEnabled": true,
       "earnSmartSuggestEnabled": true
     },
     "earnInfoBanner": {
@@ -62,37 +63,10 @@
   },
   "1": {
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
-    "leastSafeVersion": "0.76.1",
+    "leastSafeVersion": "0.147.0",
     "config": {
-      "withdrawalDex": {
-        "integration": "cowswap",
-        "enabled": true
-      },
-      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
-      "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
-      },
-      "earnVaults": [
-        { "name": "eth" },
-        { "name": "usd" },
-        { "name": "strategy", "deprecated": true },
-        {
-          "name": "ggv",
-          "apy": { "type": "weekly_moving_average" },
-          "deprecated": true
-        },
-        { "name": "dvv", "deprecated": true }
-      ],
-      "featureFlags": {},
-      "earnAllocation": {
-        "labelAllowList": [],
-        "hiddenIds": []
-      },
-      "pages": {
-        "/earn": {
-          "shouldDisable": false
-        }
+      "featureFlags": {
+        "earnInfoBannerEnabled": true
       },
       "api": {
         "validation": {
@@ -103,42 +77,10 @@
   },
   "1-staging": {
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
-    "leastSafeVersion": "0.76.1",
+    "leastSafeVersion": "0.147.0",
     "config": {
-      "withdrawalDex": {
-        "integration": "cowswap",
-        "enabled": true
-      },
-      "multiChainBanner": [10, 42161, 8453, 59144, 56, 130],
-      "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
-      },
-      "earnVaults": [
-        { "name": "eth" },
-        { "name": "usd" },
-        { "name": "strategy", "deprecated": true },
-        {
-          "name": "ggv",
-          "apy": { "type": "weekly_moving_average" },
-          "deprecated": true
-        },
-        { "name": "dvv", "deprecated": true }
-      ],
-      "featureFlags": {},
-      "earnAllocation": {
-        "labelAllowList": [],
-        "hiddenIds": []
-      },
-      "pages": {
-        "/earn": {
-          "shouldDisable": false
-        }
-      },
-      "api": {
-        "validation": {
-          "version": "1"
-        }
+      "featureFlags": {
+        "earnInfoBannerEnabled": true
       }
     }
   },
@@ -155,7 +97,6 @@
         "showOnStakeForm": false,
         "showAfterStake": false
       },
-      "earnVaults": [],
       "featureFlags": {
         "ledgerLiveL2": true,
         "dgBannerEnabled": false,

@@ -530,6 +530,27 @@ describe('ManifestSchema', () => {
       expect(result['1']?.config?.featureFlags?.disableSendCalls).toBe(false);
     });
 
+    it('accepts ggvBulkWithdrawEnabled flag', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: { featureFlags: { ggvBulkWithdrawEnabled: true } },
+        },
+      });
+      expect(result['1']?.config?.featureFlags?.ggvBulkWithdrawEnabled).toBe(
+        true,
+      );
+    });
+
+    it('leaves ggvBulkWithdrawEnabled undefined when omitted', () => {
+      const result = parseManifest({
+        '1': { ...validEntry, config: { featureFlags: {} } },
+      });
+      expect(
+        result['1']?.config?.featureFlags?.ggvBulkWithdrawEnabled,
+      ).toBeUndefined();
+    });
+
     it('throws when a known flag has a non-boolean value', () => {
       expect(() =>
         parseManifest({

@@ -93,7 +93,7 @@ export const EarnVaultsList: FC = () => {
                 data-testid="upgrading-vaults"
                 onClick={() => setIsAccordionAnimating(true)}
               >
-                Upgrading vaults
+                Legacy vaults
               </AccordionTitle>
             }
             withoutBorder

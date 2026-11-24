@@ -1,23 +1,16 @@
 import type { Hash } from 'viem';
 import styled from 'styled-components';
 
-import { InlineLoader } from '@lidofinance/lido-ui';
+import { useDappStatus } from 'modules/web3';
+
 import { useTokenAddress } from 'shared/hooks/use-token-address';
+
 import { getTokenDecimals } from 'utils/token-decimals';
 
 import { TxAmount } from '../tx-stages-parts/tx-amount';
 import { SuccessText } from '../tx-stages-parts/success-text';
 import { TxStageSuccess } from '../tx-stages-basic';
-
 import { TokenToWallet } from '../../components';
-import { useDappStatus } from 'modules/web3';
-
-export const SkeletonBalance = styled(InlineLoader).attrs({
-  color: 'text',
-})`
-  margin-left: ${({ theme }) => theme.spaceMap.xs}px;
-  width: 100px;
-`;
 
 export const BalanceContainer = styled.span`
   display: inline-block;
@@ -42,24 +35,27 @@ export const TxStageOperationSucceedBalanceShown = ({
   const { walletChainId } = useDappStatus();
   const tokenToWalletAddress = useTokenAddress(balanceToken);
 
-  const balanceNode = balance ? (
-    <TxAmount
-      amount={balance}
-      symbol={balanceToken}
-      decimals={getTokenDecimals(balanceToken)}
-    />
-  ) : (
-    <SkeletonBalance />
-  );
-
   return (
     <TxStageSuccess
       txHash={txHash}
       title={
         <>
-          Your new balance is <wbr />
+          {/* the balance is missing when its read failed after the tx settled:
+              the operation is still a success, only the amount is dropped */}
+          {balance !== undefined ? (
+            <>Your new balance is </>
+          ) : (
+            <>Your {balanceToken} balance was updated </>
+          )}
+          <wbr />
           <BalanceContainer>
-            {balanceNode}
+            {balance !== undefined && (
+              <TxAmount
+                amount={balance}
+                symbol={balanceToken}
+                decimals={getTokenDecimals(balanceToken)}
+              />
+            )}
             <TokenToWallet
               data-testid="txSuccessAddToken"
               address={tokenToWalletAddress}

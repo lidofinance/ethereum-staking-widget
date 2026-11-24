@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
 import type { Connection } from 'wagmi';
-import { providersStore } from 'reef-knot/core-react';
+import { providersStore } from 'reef-knot';
 
 import { getConnectionProvider } from '../get-connection-provider';
 
-vi.mock('reef-knot/core-react', () => ({
+vi.mock('reef-knot', () => ({
   providersStore: { findProvider: vi.fn() },
 }));
 

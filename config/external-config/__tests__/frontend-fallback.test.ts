@@ -1,7 +1,10 @@
+import localManifest from 'REMOTE_CONFIG_MANIFEST.json';
+
 import {
   getFallbackedManifestEntry,
   overrideManifestConfig,
 } from '../frontend-fallback';
+import { ManifestSchema } from '../validate';
 
 const validEntry = {
   leastSafeVersion: '1.0.0',
@@ -36,27 +39,16 @@ describe('getFallbackedManifestEntry', () => {
     expect(entry.config.earnAllocation.labelAllowList).toEqual([]);
   });
 
-  it('uses the whole local manifest when the remote manifest is invalid', () => {
-    const entry = getFallbackedManifestEntry({}, '1');
+  it.each([
+    { reason: 'the remote manifest is invalid', manifest: {} },
+    {
+      reason: 'the remote manifest has no entry for the requested network',
+      manifest: { baseConfig: {}, '560048': validEntry },
+    },
+  ])('uses the local entry when $reason', ({ manifest }) => {
+    const entry = getFallbackedManifestEntry(manifest, '1');
 
-    expect(entry.config.featureFlags.dgBannerEnabled).toBe(true);
-  });
-
-  it('materializes local network overrides on top of baseConfig', () => {
-    const mainnet = getFallbackedManifestEntry({}, '1');
-    const staging = getFallbackedManifestEntry({}, '1-staging');
-    const hoodi = getFallbackedManifestEntry({}, '560048');
-
-    expect(mainnet.config.api.validation?.version).toBe('2');
-    expect(staging.config.api.validation?.version).toBe('1');
-    expect(hoodi.config.earnVaults.map(({ name }) => name)).toEqual([
-      'eth',
-      'usd',
-      'strategy',
-      'ggv',
-      'dvv',
-    ]);
-    expect(hoodi.config.featureFlags.dgBannerEnabled).toBe(false);
+    expect(entry).toEqual(ManifestSchema.parse(localManifest)['1']);
   });
 
   it('allows a network config to replace a baseConfig array', () => {

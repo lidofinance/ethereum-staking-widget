@@ -3,8 +3,11 @@ import { useCallback } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
-import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { AACall, useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
+
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { withFallback } from 'utils/with-fallback';
+import { warnError } from 'utils/warn-error';
 
 import { getDVVaultWritableContract } from '../../contracts';
 import { useTxModalStagesDVVWithdraw } from './use-dvv-withdraw-tx-modal';
@@ -64,7 +67,16 @@ export const useDVVWithdraw = (onRetry?: () => void) => {
             );
           },
           onSuccess: async ({ txHash }) => {
-            const wstETHBalance = await wstETH.balance(address);
+            // a failed read must not fail a settled tx: the modal drops the balance
+            const wstETHBalance = await withFallback(
+              wstETH.balance(address),
+              undefined,
+              {
+                onError: warnError(
+                  '[useDVVWithdraw] post-withdraw balance read failed',
+                ),
+              },
+            );
             txModalStages.success(wstETHBalance, txHash);
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvWithdrawFinish);
           },

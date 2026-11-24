@@ -27,6 +27,9 @@ import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
 
 import { getReferralAddress } from 'utils/get-referral-address';
 import { ErrorMessage } from 'utils/getErrorMessage';
+import { warnError } from 'utils/warn-error';
+import { withFallback } from 'utils/with-fallback';
+
 import { useFastStakeConversion } from './use-conversion';
 import { useFastStakeLiquidity } from './use-fast-liquidity';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
@@ -51,7 +54,6 @@ type FastStakeData = {
   amount: bigint;
   address: Address;
   referralAddress: Address;
-  preStakeBalanceWsteth: bigint;
   // The receiver pulls WETH, so it needs an allowance first. Read here rather
   // than taken from the form state, so a retry after a confirmed approval
   // never approves again
@@ -114,7 +116,6 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
               referral,
               l1Core.publicClient,
             ),
-            preStakeBalanceWsteth: await l2.wsteth.balance(address),
             needsApprove:
               isWeth &&
               (await l2Stake.getWethAllowanceForFastStake(address)) < amount,
@@ -180,13 +181,19 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
         onSuccess: async ({ txHash, ctx: { stepId, data } }) => {
           if (stepId !== STEP.stake) return;
           const [, balance] = await Promise.all([
+            // never rejects: the form refetches are settled inside
             onConfirm?.(),
-            l2.wsteth.balance(data.address),
+            // a failed read must not fail a settled tx: the modal drops the balance
+            withFallback(l2.wsteth.balance(data.address), undefined, {
+              onError: warnError(
+                '[useL2FastStake] post-stake balance read failed',
+              ),
+            }),
           ]);
           if (featureFlags.holidayDecorEnabled) {
             bells();
           }
-          txModalStages.success(balance, data.preStakeBalanceWsteth, txHash);
+          txModalStages.success(balance, txHash);
           trackEnd({ token });
         },
         onMultisigDone: ({ ctx }) => {

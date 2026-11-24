@@ -7,7 +7,6 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { config } from 'config';
-import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 import {
   applyRoundUpTxParameter,
   useDappStatus,
@@ -16,7 +15,12 @@ import {
   useTxFlow,
   useAA,
 } from 'modules/web3';
+
+import { MockLimitReachedError } from 'features/stake/stake-form/utils';
+
 import { getReferralAddress } from 'utils/get-referral-address';
+import { warnError } from 'utils/warn-error';
+import { withFallback } from 'utils/with-fallback';
 
 import type {
   WrapFormApprovalData,
@@ -70,8 +74,18 @@ export const useWrapFormProcessor = ({
 
         const onWrapConfirm = async () => {
           const [, balance] = await Promise.all([
+            // never rejects: the form refetches are settled inside
             onConfirm?.(),
-            isL2Wrap ? l2.wsteth.balance(address) : wstETH.balance(address),
+            // a failed read must not fail a settled tx: the modal drops the balance
+            withFallback(
+              isL2Wrap ? l2.wsteth.balance(address) : wstETH.balance(address),
+              undefined,
+              {
+                onError: warnError(
+                  '[useWrapFormProcessor] post-wrap balance read failed',
+                ),
+              },
+            ),
           ]);
           return balance;
         };

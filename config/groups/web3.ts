@@ -4,6 +4,10 @@ export const PROVIDER_POLLING_INTERVAL = 12_000;
 export const PROVIDER_BATCH_TIME = 150;
 // max batch
 export const PROVIDER_MAX_BATCH = 20;
+// how long in ms a read routed through the wallet provider may stay unanswered
+// before the next RPC is tried; matches viem's default for HTTP RPCs.
+// Reads only: signing and other wallet interactions never have a timeout
+export const WALLET_READ_TIMEOUT = 10_000;
 // AA transaction polling timeout(ms)
 export const AA_TX_POLLING_TIMEOUT = 180_000; // 3 minutes
 

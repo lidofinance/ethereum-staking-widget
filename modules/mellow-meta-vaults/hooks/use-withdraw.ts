@@ -6,6 +6,7 @@ import {
   useTxFlow,
   useLidoSDK,
   useDappStatus,
+  useMainnetOnlyWagmi,
   applyRoundUpTxParameter,
   isStepSettled,
   TxSentDataUnavailableError,
@@ -17,16 +18,23 @@ import { ErrorMessage, getError } from 'utils';
 import { overrideWithQAMockBigInt } from 'utils/qa';
 import {
   CollectorContract,
+  OracleContract,
   AsyncRedeemQueueWritableContract,
   SyncRedeemQueueWritableContract,
 } from '../types/contracts';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { COLLECTOR_CONFIG } from '../consts';
-import { meetsSyncRedeemRequirements } from '../utils/sync-redeem-requirements';
+import {
+  isSyncRedeemReportUsable,
+  meetsSyncRedeemRequirements,
+} from '../utils/sync-redeem-requirements';
 
 const QA_REMAINING_DAILY_LIMIT_KEY =
   'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit';
 const QA_LIQUID_ASSETS_KEY = 'mock-qa-helpers-mellow-sync-redeem-liquid-assets';
+// Set to "0" to simulate a stale oracle report.
+const QA_REPORT_TIMESTAMP_KEY =
+  'mock-qa-helpers-mellow-sync-redeem-report-timestamp';
 
 // the one step of a withdrawal; which queue it goes to is decided in prepare
 const STEP = { redeem: 'redeem' } as const;
@@ -53,6 +61,8 @@ const USER_ACTION_ERRORS: readonly string[] = [
 type UseWithdrawArgs = {
   asyncRedeemQueue: AsyncRedeemQueueWritableContract;
   syncRedeemQueue?: SyncRedeemQueueWritableContract; // Omit for async-only queues
+  // the vault's oracle; the sync queue prices a redemption with its report
+  oracle: OracleContract;
   collector: CollectorContract;
   txModalStages: TxModalStages;
   onRetry?: () => void;
@@ -70,6 +80,7 @@ type WithdrawArgs = {
 export const useWithdraw = ({
   asyncRedeemQueue,
   syncRedeemQueue,
+  oracle,
   collector,
   txModalStages,
   onRetry,
@@ -79,12 +90,43 @@ export const useWithdraw = ({
 }: UseWithdrawArgs) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
   const txFlow = useTxFlow();
 
   const withdraw = useCallback(
     async ({ amount }: WithdrawArgs): Promise<boolean> => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
+
+      // The sync queue reverts on a stale, suspicious or zero report
+      // (StaleReport, InvalidReport). The Collector does not check it.
+      const checkReport = async (
+        syncQueue: SyncRedeemQueueWritableContract,
+      ) => {
+        invariant(publicClientMainnet, 'Public client is not available');
+
+        const [asset, [, maxAge], block] = await Promise.all([
+          syncQueue.read.asset(),
+          syncQueue.read.syncRedeemParams(),
+          publicClientMainnet.getBlock(),
+        ]);
+        const report = await oracle.read.getReport([asset]);
+
+        return isSyncRedeemReportUsable({
+          report: {
+            ...report,
+            timestamp: Number(
+              overrideWithQAMockBigInt(
+                BigInt(report.timestamp),
+                QA_REPORT_TIMESTAMP_KEY,
+              ),
+            ),
+          },
+          maxAge,
+          // The contract compares with the block time, not the user's clock
+          nowSeconds: Number(block.timestamp),
+        });
+      };
 
       const checkSyncWithdrawAvailability = async (
         syncQueue: SyncRedeemQueueWritableContract,
@@ -99,22 +141,25 @@ export const useWithdraw = ({
         // Eager return to save rpc calls, duplicates predicate from meetsSyncRedeemRequirements
         if (amount > remainingDailyLimit) return false;
 
-        // The oracle report the queue prices with is not checked here: the
-        // call site withholds `syncRedeemQueue` while it is unusable, see
-        // features/earn/vault-eth/hooks/use-sync-redeem-report
-        const [{ assets, isWithdrawalPossible }, actualLiquidAssets] =
-          await Promise.all([
-            collector.read.getWithdrawalParams([
-              amount,
-              syncQueue.address,
-              COLLECTOR_CONFIG,
-            ]) as Promise<{ assets: bigint; isWithdrawalPossible: boolean }>,
-            syncQueue.read.getLiquidAssets(),
-          ]);
+        const [
+          { assets, isWithdrawalPossible },
+          actualLiquidAssets,
+          isReportUsable,
+        ] = await Promise.all([
+          collector.read.getWithdrawalParams([
+            amount,
+            syncQueue.address,
+            COLLECTOR_CONFIG,
+          ]) as Promise<{ assets: bigint; isWithdrawalPossible: boolean }>,
+          syncQueue.read.getLiquidAssets(),
+          checkReport(syncQueue),
+        ]);
         const liquidAssets = overrideWithQAMockBigInt(
           actualLiquidAssets,
           QA_LIQUID_ASSETS_KEY,
         );
+
+        if (!isReportUsable) return false;
 
         return meetsSyncRedeemRequirements({
           isWithdrawalPossible,
@@ -270,6 +315,8 @@ export const useWithdraw = ({
       matomoEventStart,
       matomoEventSuccess,
       onRetry,
+      oracle,
+      publicClientMainnet,
       syncRedeemQueue,
       txFlow,
       txModalStages,

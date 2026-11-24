@@ -186,6 +186,7 @@ const FeatureFlagsSchema = z
     amountBannerEnabled: z.boolean(),
     earnSmartSuggestEnabled: z.boolean(),
     earnInfoBannerEnabled: z.boolean(),
+    ggvBulkWithdrawEnabled: z.boolean(),
   })
   .partial();
 

@@ -7,7 +7,7 @@ import {
   useMemo,
 } from 'react';
 import invariant from 'tiny-invariant';
-import { http, type PublicClient } from 'viem';
+import type { PublicClient } from 'viem';
 import {
   WagmiProvider,
   createConfig,
@@ -20,12 +20,14 @@ import {
 import * as wagmiChains from 'wagmi/chains';
 import { Chain } from 'wagmi/chains';
 
-import { ReefKnotProvider, getDefaultConfig } from 'reef-knot/core-react';
 import {
-  ReefKnotWalletsModal,
+  ReefKnotProvider,
+  getDefaultConfig,
   getDefaultWalletsModalConfig,
-} from 'reef-knot/connect-wallet-modal';
-import { WalletIdsEthereum, WalletsListEthereum } from 'reef-knot/wallets';
+  WalletIdsEthereum,
+  WalletsListEthereum,
+} from 'reef-knot';
+import { ReefKnotWalletsModal } from '@reef-knot/ui-lido-legacy';
 
 import { useThemeToggle } from '@lidofinance/lido-ui';
 
@@ -42,7 +44,7 @@ import {
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { SupportOnlyL1Chains } from './dapp-chain';
-import { useWeb3Transport } from './web3-transport';
+import { createHttpTransports, useWeb3Transport } from './web3-transport';
 import { wagmiChainMap } from '../consts';
 
 type ChainsList = [Chain, ...Chain[]];
@@ -121,13 +123,6 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   );
 
   const mainnetConfig = useMemo(() => {
-    const batchConfig = {
-      wait: config.PROVIDER_BATCH_TIME,
-      batchSize: config.PROVIDER_MAX_BATCH,
-    };
-
-    const rpcUrlMainnet = getRpcUrlByChainId(CHAINS.Mainnet);
-
     return createConfig({
       chains: [wagmiChains.mainnet],
       ssr: true,
@@ -137,18 +132,12 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       },
       pollingInterval: config.PROVIDER_POLLING_INTERVAL,
       transports: {
-        [wagmiChains.mainnet.id]: fallback([
-          // api/rpc
-          http(rpcUrlMainnet, {
-            batch: batchConfig,
-            name: rpcUrlMainnet,
-          }),
-          // fallback rpc from wagmi.chains like cloudfare-eth
-          http(undefined, {
-            batch: batchConfig,
-            name: 'default public RPC URL',
-          }),
-        ]),
+        [wagmiChains.mainnet.id]: fallback(
+          createHttpTransports(getRpcUrlByChainId(CHAINS.Mainnet)),
+          // one pass over the stack per request, no transport-level retries:
+          // see the note in runtime-mutable-transport.ts
+          { retryCount: 0 },
+        ),
       },
     });
   }, [getRpcUrlByChainId]);

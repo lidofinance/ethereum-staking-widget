@@ -7,6 +7,8 @@ import {
 
 import type { OnResponseFn } from 'viem/_types/clients/transports/fallback';
 
+import { RetryAfterActiveError } from './retry-after-transport';
+
 // We disable those methods so wagmi uses getLogs instead to watch events
 // Filters are not suitable for public rpc and break when changing between fallbacks
 const DISABLED_METHODS = [
@@ -89,9 +91,21 @@ export const runtimeMutableTransport = (
       let externalOnResponse: OnResponseFn | undefined;
 
       const instantiate = (transports: Transport[], withInjected: boolean) => {
-        const instance = fallback(transports)(params);
+        // One pass over the stack per request, no transport-level retries.
+        // A retry here reruns every tier, and stacked under React Query's
+        // own retries it turned one rate-limited read into up to 16 passes
+        // and kept the limiter closed. Queries are retried by React Query.
+        // Accepted cost: callers outside React Query (SDK tx reads, receipt
+        // waiting, `prepare` steps) get no retry: a request that failed on
+        // the wallet, our backend and the public RPC in a row is reported as
+        // failed
+        const instance = fallback(transports, { retryCount: 0 })(params);
         instance.value?.onResponse((response: Parameters<OnResponseFn>[0]) => {
-          if (response.status === 'error') {
+          // a benched RPC is skipped on purpose, its 429 was already reported
+          if (
+            response.status === 'error' &&
+            !(response.error instanceof RetryAfterActiveError)
+          ) {
             console.warn(
               `[runtimeMutableTransport] error in RuntimeMutableTransport(using injected: ${withInjected})`,
               response,
@@ -123,7 +137,7 @@ export const runtimeMutableTransport = (
         {
           key: 'RuntimeMutableTransport',
           name: 'RuntimeMutableTransport',
-          // retries are handled by the fallback stacks inside
+          // no transport-level retries, see the fallback stacks inside
           retryCount: 0,
           methods: { exclude: [...DISABLED_METHODS, ...WALLET_METHODS] },
           //@ts-expect-error viem cannot assign a concrete implementation to the generic EIP1193RequestFn
