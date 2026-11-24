@@ -8,6 +8,8 @@ vi.mock('../../fetchApiWrapper', () => ({
   }) => request(),
 }));
 
+const TEST_UPSTREAM_CREDENTIAL = 'Bearer secret';
+
 const okResponse = (body: unknown) =>
   ({ ok: true, status: 200, json: async () => body }) as unknown as Response;
 
@@ -15,7 +17,7 @@ describe('createLambdaClient', () => {
   it('sends POST with key verbatim, JSON body and joined URL', async () => {
     const fetcher = vi.fn().mockResolvedValue(okResponse({ a: 1 }));
     const client = createLambdaClient({
-      apiKey: 'Bearer secret',
+      apiKey: TEST_UPSTREAM_CREDENTIAL,
       baseUrl: 'https://lambda.test',
       fetcher: fetcher,
     });
@@ -27,7 +29,7 @@ describe('createLambdaClient', () => {
     const [url, init] = fetcher.mock.calls[0];
     expect(url).toBe('https://lambda.test/path');
     expect(init.method).toBe('POST');
-    expect(init.headers.Authorization).toBe('Bearer secret');
+    expect(init.headers.Authorization).toBe(TEST_UPSTREAM_CREDENTIAL);
     expect(init.headers['Content-Type']).toBe('application/json');
     expect(init.body).toBe(JSON.stringify({ x: 1 }));
     expect(init.signal).toBeInstanceOf(AbortSignal);
@@ -36,7 +38,7 @@ describe('createLambdaClient', () => {
   it('uses the default base URL', async () => {
     const fetcher = vi.fn().mockResolvedValue(okResponse({}));
     const client = createLambdaClient({
-      apiKey: 'k',
+      apiKey: TEST_UPSTREAM_CREDENTIAL,
       fetcher: fetcher,
     });
     await client.post('/p', {}, 1000);
@@ -48,7 +50,7 @@ describe('createLambdaClient', () => {
     async (status) => {
       const fetcher = vi.fn().mockResolvedValue({ ok: false, status });
       const client = createLambdaClient({
-        apiKey: 'k',
+        apiKey: TEST_UPSTREAM_CREDENTIAL,
         fetcher: fetcher,
       });
       const error = (await client
@@ -62,7 +64,7 @@ describe('createLambdaClient', () => {
   it('propagates fetcher errors', async () => {
     const fetcher = vi.fn().mockRejectedValue(new Error('network'));
     const client = createLambdaClient({
-      apiKey: 'k',
+      apiKey: TEST_UPSTREAM_CREDENTIAL,
       fetcher: fetcher,
     });
     await expect(client.post('/p', {}, 1000)).rejects.toThrow('network');

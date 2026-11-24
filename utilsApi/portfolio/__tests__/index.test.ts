@@ -11,6 +11,7 @@ type Handlers = {
 
 const LIDO_ADDRESS = [...LIDO_TOKEN_ADDRESSES][0];
 const KEY = 'Bearer secret-key';
+const KEY_WITH_NEWLINE = 'a\nb';
 
 const row = {
   type: 'token',
@@ -183,7 +184,7 @@ describe('portfolio index wiring', () => {
   });
 
   it('malformed key logs a warning', async () => {
-    await load({ p2pLambdaAPIKey: 'a\nb' });
+    await load({ p2pLambdaAPIKey: KEY_WITH_NEWLINE });
     expect(console.warn).toHaveBeenCalledWith(
       expect.stringContaining('API_KEY is malformed'),
     );
