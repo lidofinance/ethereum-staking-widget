@@ -9,6 +9,7 @@ export {
   useMainnetOnlyWagmi,
   useLidoSDK,
   useLidoSDKL2,
+  useWalletResolving,
   SupportL1AndL2WrapChains,
   SupportL1andL2StakingChains,
   SupportL1AndCustomL2Chains,

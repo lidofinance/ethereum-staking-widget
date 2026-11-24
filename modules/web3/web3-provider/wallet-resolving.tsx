@@ -1,5 +1,4 @@
-import { useEffect, useReducer } from 'react';
-import { useConnection } from 'wagmi';
+import { createContext, useContext, useEffect, useReducer } from 'react';
 
 // reef-knot reconnects after mount, and only with both keys set
 const TERMS_KEY = 'reef-knot_accept-terms_n2';
@@ -52,9 +51,9 @@ export const canReconnect = () => {
   }
 };
 
-// true while an auto-connect may still bring the wallet in
-export const useWalletResolving = (): boolean => {
-  const { status } = useConnection();
+// Tracked once for the app in Web3Provider: the auto-connect happens once
+// at boot, so a component mounted later must not restart the wait.
+export const useWalletResolvingTracker = (status: string): boolean => {
   const [state, dispatch] = useReducer(nextWalletResolveState, 'unknown');
 
   useEffect(() => {
@@ -79,3 +78,15 @@ export const useWalletResolving = (): boolean => {
 
   return status !== 'connected' && state !== 'settled';
 };
+
+export const WalletResolvingContext = createContext(false);
+WalletResolvingContext.displayName = 'WalletResolvingContext';
+
+/**
+ * True while the boot auto-connect may still bring the wallet in: show
+ * placeholders, not the "connect wallet" state. Unlike wagmi's
+ * `connecting`/`reconnecting` status it also covers the gap before
+ * reef-knot starts reconnecting, when status still reads `disconnected`.
+ * A later manual connect does not count.
+ */
+export const useWalletResolving = () => useContext(WalletResolvingContext);

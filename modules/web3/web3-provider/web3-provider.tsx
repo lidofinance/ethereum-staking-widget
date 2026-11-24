@@ -44,6 +44,10 @@ import {
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { SupportOnlyL1Chains } from './dapp-chain';
+import {
+  WalletResolvingContext,
+  useWalletResolvingTracker,
+} from './wallet-resolving';
 import { createHttpTransports, useWeb3Transport } from './web3-transport';
 import { wagmiChainMap } from '../consts';
 
@@ -228,6 +232,8 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     void onActiveConnection(activeConnection);
   }, [activeConnection, onActiveConnection]);
 
+  const isWalletResolving = useWalletResolvingTracker(status);
+
   // analytics read the wallet chain outside React; every change, including
   // a disconnect (reported as 0), is an event of its own
   useEffect(() => {
@@ -254,7 +260,9 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
             config={walletsModalConfig}
             darkThemeEnabled={themeName === 'dark'}
           />
-          <SupportOnlyL1Chains>{children}</SupportOnlyL1Chains>
+          <WalletResolvingContext.Provider value={isWalletResolving}>
+            <SupportOnlyL1Chains>{children}</SupportOnlyL1Chains>
+          </WalletResolvingContext.Provider>
         </ReefKnotProvider>
       </WagmiProvider>
     </Web3ProviderContext.Provider>

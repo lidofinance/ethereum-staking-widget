@@ -9,5 +9,4 @@ export * from './use-mainnet-earn-positions';
 export * from './use-mainnet-main-tokens';
 export * from './use-portfolio-transactions';
 export * from './use-portfolio-route';
-export * from './use-wallet-resolving';
 export * from './use-now';

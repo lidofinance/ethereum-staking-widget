@@ -13,9 +13,15 @@ import {
   UnconnectedText,
 } from './styles';
 
-const UnconnectedPosition = () => {
+type UnconnectedPositionProps = { isWalletResolving: boolean };
+
+const UnconnectedPosition = ({
+  isWalletResolving,
+}: UnconnectedPositionProps) => {
   const { data, isLoading } = useLidoApr();
-  const shouldShow = useDelayedShow([isLoading]);
+  // resolving is a gate, not a loading flag: the 300ms timeout must not
+  // flash "stake with" while the boot auto-connect may still land
+  const shouldShow = useDelayedShow([isLoading]) && !isWalletResolving;
 
   const apr = data?.data?.smaApr;
 
@@ -68,10 +74,10 @@ const ConnectedPosition = () => {
 };
 
 export const Position = () => {
-  const { isWalletConnected } = useDappStatus();
+  const { isWalletConnected, isWalletResolving } = useDappStatus();
 
   if (!isWalletConnected) {
-    return <UnconnectedPosition />;
+    return <UnconnectedPosition isWalletResolving={isWalletResolving} />;
   }
 
   return <ConnectedPosition />;
