@@ -87,3 +87,23 @@ export const BlobArt = styled.div<BlobArtProps>`
     height: 100%;
   }
 `;
+
+// forced shader failed (controls panel): impossible to miss on a stand
+export const ShaderFailed = styled.div`
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: rgba(255, 0, 0, 0.55);
+  pointer-events: none;
+`;
+
+export const ShaderFailedLabel = styled.span`
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font:
+    600 12px/1.4 ui-monospace,
+    Menlo,
+    monospace;
+  color: #fff;
+`;

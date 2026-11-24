@@ -7,11 +7,14 @@ import {
   setLiquidParams,
   useLiquidParams,
   type LiquidParams,
+  type LiquidQuality,
   type LiquidSource,
 } from './liquid-params';
+import { QUALITY_LEVELS, rememberLevel, useLiquidStatus } from './liquid-perf';
 
-// Dev-only tuning panel for the liquid background. Values are shown as a
-// ready-to-paste DEFAULT_LIQUID_PARAMS literal.
+// Tuning panel for the liquid background, shown on stands too so anyone
+// can try settings. Values are shown as a ready-to-paste
+// DEFAULT_LIQUID_PARAMS literal, with live renderer status.
 
 type NumericKey = {
   [K in keyof LiquidParams]: LiquidParams[K] extends number ? K : never;
@@ -32,10 +35,12 @@ const SLIDERS: Slider[] = [
   { key: 'edgeFade', min: 0, max: 200, step: 1 },
   { key: 'resolution', min: 0.1, max: 1, step: 0.05 },
   { key: 'blurPx', min: 0, max: 60, step: 1 },
+  { key: 'maxFps', min: 0, max: 120, step: 5 },
   { key: 'fadeInMs', min: 0, max: 4000, step: 50 },
 ];
 
 const SOURCES: LiquidSource[] = ['auto', 'shader', 'svg'];
+const QUALITIES: LiquidQuality[] = ['auto', 'high', 'medium', 'low'];
 
 // sliders that only apply while blur is on
 const BLUR_KEYS: NumericKey[] = ['softness', 'blurPx'];
@@ -43,7 +48,11 @@ const BLUR_KEYS: NumericKey[] = ['softness', 'blurPx'];
 // shown in the ⓘ popover next to each control
 const INFO: Record<keyof LiquidParams, string> = {
   source:
-    'Which renderer draws the blob. auto is the production behaviour: shader, or the SVG when WebGL is missing, slow to start or reduced motion is on. shader / svg force one to compare.',
+    'Which renderer draws the blob. auto is the production behaviour: shader, falling back to the SVG on no GPU, slow devices, reduced motion or data saver. shader disables every fallback and paints the card red if it fails. svg pauses the shader.',
+  quality:
+    'Shader quality. auto starts high and steps down (resolution, then frame rate, then SVG) when the device misses frames, and remembers the level for a week. high / medium / low pin a level.',
+  maxFps:
+    'Max shader frames per second. The motion is slow, so 30 looks the same as 60 for half the GPU and battery. 0 follows the display rate.',
   blur: 'Master switch for all softening. Off draws the bare shape with a hard edge, handy for tuning the shape sliders.',
   speed:
     'How fast the blob moves: shader seconds per real second. 0 freezes it.',
@@ -82,6 +91,9 @@ const Name = ({ name }: { name: keyof LiquidParams }) => (
   </NameCell>
 );
 
+const formatValue = (key: NumericKey, value: number, step: number) =>
+  key === 'maxFps' && value === 0 ? 'display' : value.toFixed(decimals(step));
+
 const decimals = (step: number) => (String(step).split('.')[1] ?? '').length;
 
 const toLiteral = (params: LiquidParams) =>
@@ -96,7 +108,8 @@ const toLiteral = (params: LiquidParams) =>
 
 export const LiquidControls = () => {
   const params = useLiquidParams();
-  const [isOpen, setIsOpen] = useState(true);
+  const status = useLiquidStatus();
+  const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   const copy = async () => {
@@ -124,6 +137,30 @@ export const LiquidControls = () => {
         <Button onClick={() => setIsOpen(false)}>Hide</Button>
       </Header>
 
+      <Status>
+        <span>state</span>
+        <strong>{status.state}</strong>
+        <span>quality</span>
+        <span>
+          {status.level === null
+            ? '–'
+            : status.level === 'svg'
+              ? 'svg (too slow)'
+              : QUALITY_LEVELS[status.level].name}
+        </span>
+        <span>gpu</span>
+        <span>{status.gpu ?? '–'}</span>
+        <span>fps</span>
+        <span>
+          {status.perf
+            ? `${status.perf.fps.toFixed(1)} / ${status.perf.targetFps.toFixed(0)} target @ ${status.perf.displayHz.toFixed(0)}Hz, ${(status.perf.missRate * 100).toFixed(0)}% missed`
+            : 'measuring…'}
+        </span>
+      </Status>
+      <Button onClick={() => rememberLevel(0)}>
+        Forget remembered quality (applies on reload)
+      </Button>
+
       <Row $changed={params.source !== DEFAULT_LIQUID_PARAMS.source}>
         <Name name="source" />
         <select
@@ -135,6 +172,22 @@ export const LiquidControls = () => {
           {SOURCES.map((source) => (
             <option key={source} value={source}>
               {source}
+            </option>
+          ))}
+        </select>
+      </Row>
+
+      <Row $changed={params.quality !== DEFAULT_LIQUID_PARAMS.quality}>
+        <Name name="quality" />
+        <select
+          value={params.quality}
+          onChange={(event) =>
+            setLiquidParams({ quality: event.target.value as LiquidQuality })
+          }
+        >
+          {QUALITIES.map((quality) => (
+            <option key={quality} value={quality}>
+              {quality}
             </option>
           ))}
         </select>
@@ -169,7 +222,7 @@ export const LiquidControls = () => {
                 setLiquidParams({ [key]: DEFAULT_LIQUID_PARAMS[key] })
               }
             />
-            <Value>{value.toFixed(decimals(step))}</Value>
+            <Value>{formatValue(key, value, step)}</Value>
           </Row>
         );
       })}
@@ -272,6 +325,16 @@ const Info = styled.span`
     visibility: visible;
     opacity: 1;
   }
+`;
+
+const Status = styled.div`
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 2px 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow-wrap: anywhere;
 `;
 
 const Value = styled.span`

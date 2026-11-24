@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 export type LiquidSource = 'auto' | 'shader' | 'svg';
+export type LiquidQuality = 'auto' | 'high' | 'medium' | 'low';
 
 export type LiquidParams = {
   /** shader seconds per real second */
@@ -29,9 +30,16 @@ export type LiquidParams = {
   blur: boolean;
   /** extra CSS blur on the shader canvas, on top of `softness` */
   blurPx: number;
+  /** max shader frames per second, 0 for the display rate */
+  maxFps: number;
+  /** `auto` steps down on slow devices; the others pin a level */
+  quality: LiquidQuality;
   /** boot fade-in and shader/SVG cross-fade, ms */
   fadeInMs: number;
-  /** force a source to compare them; `auto` is the production behaviour */
+  /**
+   * `auto` is the production behaviour. `shader` disables every fallback
+   * and paints the card red on failure; `svg` pauses the shader.
+   */
   source: LiquidSource;
 };
 
@@ -49,12 +57,14 @@ export const DEFAULT_LIQUID_PARAMS: LiquidParams = {
   resolution: 0.25,
   blur: true,
   blurPx: 20,
+  maxFps: 30,
+  quality: 'auto',
   fadeInMs: 600,
-  source: 'shader',
+  source: 'auto',
 };
 
-// Tuning store for the dev controls panel. Kept in localStorage so the
-// values survive the dev server's full reloads.
+// Tuning store for the controls panel. Kept in localStorage so the values
+// survive reloads.
 
 const STORAGE_KEY = 'v2-liquid-params';
 

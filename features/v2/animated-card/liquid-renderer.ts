@@ -1,8 +1,20 @@
 // Framework-free WebGL1 renderer for the card's liquid blob.
 // Draws in the Figma artwork's own box (BLOB_BOX), so the canvas can
 // replace the SVG fallback 1:1 in the same slot.
+//
+// Everything that grows with time (ball orbits, noise scroll) is computed
+// on the CPU in doubles and handed over small and wrapped, so the shader
+// stays correct where `mediump` is real half precision (most mobile GPUs).
 
+import {
+  LOWEST_LEVEL,
+  QUALITY_LEVELS,
+  type PerfLevel,
+  type QualityLevel,
+} from './liquid-perf';
 import type { LiquidParams } from './liquid-params';
+import { NOISE_PERIOD, NOISE_SIZE, getNoiseTexels } from './noise-texture';
+import { createPerfMonitor, type PerfStats } from './perf-monitor';
 
 export const BLOB_BOX = { width: 915.836, height: 474 } as const;
 
@@ -14,22 +26,39 @@ export type BlobPalette = {
   to: RGB;
 };
 
+export type LiquidFailure =
+  | 'no hardware WebGL'
+  | 'known slow GPU'
+  | 'shader link failed'
+  | 'context lost';
+
 export type LiquidRenderer = {
   setPalette: (palette: BlobPalette) => void;
   setParams: (params: LiquidParams) => void;
   start: () => void;
   stop: () => void;
   destroy: () => void;
+  gpu: string | null;
 };
 
 export type LiquidRendererOptions = {
   palette: BlobPalette;
   params: LiquidParams;
+  /** level to start from, e.g. the one this browser settled on before */
+  level: QualityLevel;
+  /** forced shader: no software/slow GPU screening, never steps to svg */
+  strict: boolean;
   /** first frames are on screen: safe to fade the canvas in */
   onReady: () => void;
-  /** the shader failed to link: use the fallback */
-  onError: () => void;
+  onError: (failure: LiquidFailure) => void;
+  /** quality changed; `svg` means the device cannot keep up at all */
+  onLevelChange: (level: PerfLevel) => void;
+  onStats: (stats: PerfStats) => void;
 };
+
+export type CreateLiquidRendererResult =
+  | { renderer: LiquidRenderer; failure?: never }
+  | { renderer?: never; failure: LiquidFailure };
 
 // frames drawn before onReady, so the first paint and any driver warm-up
 // stall happen while the canvas is still transparent
@@ -39,6 +68,36 @@ const WARMUP_FRAMES = 2;
 const MAX_FRAME_STEP_S = 0.1;
 // edge half-width, in field units, when blur is off
 const HARD_EDGE = 0.01;
+// frames ignored after a quality change while the new size settles
+const LEVEL_SETTLE_MS = 1000;
+
+// GPUs that cannot run the shader at a usable rate
+const SLOW_GPU =
+  /swiftshader|llvmpipe|basic render|mali-4|mali-t6|adreno \(tm\) 3|powervr sgx/i;
+
+// x, y, radius, orbit phase, tendril weight (0 = part of the top band)
+const BALLS = [
+  [300, 125, 92, 0, 0],
+  [425, 118, 92, 1.7, 0],
+  [545, 118, 90, 3.1, 0],
+  [655, 135, 80, 4.6, 0],
+  [185, 235, 52, 2.2, 0.45],
+  [135, 315, 40, 5.3, 0.3],
+  [445, 235, 46, 0.9, 0.45],
+  [565, 235, 46, 3.8, 0.45],
+  [690, 250, 48, 6.1, 0.5],
+  [765, 320, 42, 2.9, 0.4],
+] as const;
+
+// Figma gradient axis, pre-divided by its squared length so the shader
+// never squares a large number
+const GRADIENT_FROM = [643, 111.4] as const;
+const GRADIENT_AXIS = (() => {
+  const x = 609.8 - GRADIENT_FROM[0];
+  const y = 395.2 - GRADIENT_FROM[1];
+  const lengthSq = x * x + y * y;
+  return [x / lengthSq, y / lengthSq] as const;
+})();
 
 const VERTEX_SHADER = `
 attribute vec2 aPosition;
@@ -51,14 +110,16 @@ void main() {
 `;
 
 // Soft gaussian "metaballs" laid along the Figma shape (a top band with
-// tendrils hanging down), drifting on their own slow orbits, then
-// domain-warped by fbm noise so the outline flows like gas. Colour follows
-// the Figma linear gradient axis.
+// tendrils hanging down), domain-warped by baked fbm noise so the outline
+// flows like gas. Colour follows the Figma linear gradient axis.
 const FRAGMENT_SHADER = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 
 uniform vec2 uSize;
-uniform float uTime;
 uniform vec3 uFrom;
 uniform vec3 uTo;
 uniform float uIntensity;
@@ -66,71 +127,38 @@ uniform float uIntensity;
 uniform vec2 uThreshold;
 // x: amount (px), y: feature scale (px)
 uniform vec2 uWarp;
-uniform float uTendrils;
-uniform float uDrift;
+// xy, zw: scroll of the two noise lookups, in noise units, wrapped
+uniform vec4 uNoiseOffset;
 uniform float uEdgeFade;
+uniform vec2 uGradientFrom;
+uniform vec2 uGradientAxis;
+// xy: centre (px), z: radius (px), w: weight
+uniform vec4 uBalls[${BALLS.length}];
+uniform sampler2D uNoise;
 varying vec2 vUv;
 
-float hash(vec2 p) {
-  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
-}
-
-float noise(vec2 p) {
-  vec2 i = floor(p);
-  vec2 f = fract(p);
-  vec2 u = f * f * (3.0 - 2.0 * f);
-  return mix(
-    mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
-    mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
-    u.y
-  );
-}
+const float NOISE_PERIOD = ${NOISE_PERIOD.toFixed(1)};
 
 float fbm(vec2 p) {
-  float value = 0.0;
-  float amplitude = 0.5;
-  for (int i = 0; i < 4; i++) {
-    value += amplitude * noise(p);
-    p *= 2.03;
-    amplitude *= 0.5;
-  }
-  return value;
-}
-
-float ball(vec2 p, vec2 center, float radius, float phase) {
-  float t = uTime + phase;
-  center += vec2(sin(t * 0.61), cos(t * 0.47)) * radius * uDrift;
-  radius *= 1.0 + 0.08 * sin(t * 0.83);
-  vec2 d = (p - center) / radius;
-  return exp(-dot(d, d));
+  return texture2D(uNoise, p / NOISE_PERIOD).r;
 }
 
 void main() {
   vec2 base = vUv * uSize;
-  float t = uTime;
 
   vec2 q = base / uWarp.y;
   vec2 warp = vec2(
-    fbm(q + vec2(0.0, t * 0.09)),
-    fbm(q + vec2(5.2, 1.3) - t * 0.07)
+    fbm(q + uNoiseOffset.xy),
+    fbm(q + uNoiseOffset.zw)
   ) - 0.5;
   vec2 p = base + warp * uWarp.x;
 
   float d = 0.0;
-  // top band
-  d += ball(p, vec2(300.0, 125.0), 92.0, 0.0);
-  d += ball(p, vec2(425.0, 118.0), 92.0, 1.7);
-  d += ball(p, vec2(545.0, 118.0), 90.0, 3.1);
-  d += ball(p, vec2(655.0, 135.0), 80.0, 4.6);
-  // tendrils
-  float tendrils = 0.0;
-  tendrils += 0.45 * ball(p, vec2(185.0, 235.0), 52.0, 2.2);
-  tendrils += 0.30 * ball(p, vec2(135.0, 315.0), 40.0, 5.3);
-  tendrils += 0.45 * ball(p, vec2(445.0, 235.0), 46.0, 0.9);
-  tendrils += 0.45 * ball(p, vec2(565.0, 235.0), 46.0, 3.8);
-  tendrils += 0.50 * ball(p, vec2(690.0, 250.0), 48.0, 6.1);
-  tendrils += 0.40 * ball(p, vec2(765.0, 320.0), 42.0, 2.9);
-  d += uTendrils * tendrils;
+  for (int i = 0; i < ${BALLS.length}; i++) {
+    vec4 ball = uBalls[i];
+    vec2 offset = (p - ball.xy) / ball.z;
+    d += ball.w * exp(-dot(offset, offset));
+  }
 
   // the Figma blob is a thin shape under a 40px blur, so it reads as a
   // translucent haze: cap the peak opacity instead of going solid
@@ -144,15 +172,23 @@ void main() {
   float edge = min(min(base.x, uSize.x - base.x), min(base.y, uSize.y - base.y));
   alpha *= smoothstep(0.0, uEdgeFade, edge);
 
-  vec2 g0 = vec2(643.0, 111.4);
-  vec2 g1 = vec2(609.8, 395.2);
-  vec2 axis = g1 - g0;
-  float k = clamp(dot(base - g0, axis) / dot(axis, axis), 0.0, 1.0);
+  float k = clamp(dot(base - uGradientFrom, uGradientAxis), 0.0, 1.0);
   vec3 color = mix(uFrom, uTo, k);
 
   gl_FragColor = vec4(color * alpha, alpha);
 }
 `;
+
+const wrapNoise = (value: number) =>
+  ((value % NOISE_PERIOD) + NOISE_PERIOD) % NOISE_PERIOD;
+
+const readGpuName = (gl: WebGLRenderingContext) => {
+  const info = gl.getExtension('WEBGL_debug_renderer_info');
+  const name: unknown = gl.getParameter(
+    info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER,
+  );
+  return typeof name === 'string' ? name : null;
+};
 
 // No status checks here: with KHR_parallel_shader_compile the driver
 // compiles off the main thread, and asking for COMPILE/LINK_STATUS right
@@ -176,11 +212,34 @@ const startProgram = (gl: WebGLRenderingContext) => {
   return program;
 };
 
-/** `null` when WebGL is unavailable: use the fallback */
+const uploadNoise = (gl: WebGLRenderingContext) => {
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.LUMINANCE,
+    NOISE_SIZE,
+    NOISE_SIZE,
+    0,
+    gl.LUMINANCE,
+    gl.UNSIGNED_BYTE,
+    getNoiseTexels(),
+  );
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  return texture;
+};
+
 export const createLiquidRenderer = (
   canvas: HTMLCanvasElement,
-  { palette, params, onReady, onError }: LiquidRendererOptions,
-): LiquidRenderer | null => {
+  options: LiquidRendererOptions,
+): CreateLiquidRendererResult => {
+  const { strict, onReady, onError, onLevelChange, onStats } = options;
+
   const gl = canvas.getContext('webgl', {
     alpha: true,
     premultipliedAlpha: true,
@@ -188,63 +247,90 @@ export const createLiquidRenderer = (
     depth: false,
     stencil: false,
     powerPreference: 'low-power',
+    // software rendering (no GPU, blocklisted driver) gets no context, so
+    // it never burns CPU on the shader; a forced shader still tries
+    failIfMajorPerformanceCaveat: !strict,
   });
-  if (!gl) return null;
+  if (!gl) return { failure: 'no hardware WebGL' };
+
+  const gpu = readGpuName(gl);
+  if (!strict && gpu && SLOW_GPU.test(gpu)) {
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return { failure: 'known slow GPU' };
+  }
 
   const parallelCompile = gl.getExtension('KHR_parallel_shader_compile');
   const program = startProgram(gl);
-  if (!program) return null;
+  if (!program) return { failure: 'no hardware WebGL' };
 
   let state: 'linking' | 'ready' | 'failed' = 'linking';
-  let currentPalette = palette;
-  let currentParams = params;
+  let palette = options.palette;
+  let params = options.params;
+  let level: QualityLevel = options.level;
+  const monitor = createPerfMonitor(0);
+
   const uniform = (name: string) => gl.getUniformLocation(program, name);
   let uniforms: Record<
-    | 'time'
     | 'from'
     | 'to'
     | 'intensity'
     | 'threshold'
     | 'warp'
-    | 'tendrils'
-    | 'drift'
-    | 'edgeFade',
+    | 'noiseOffset'
+    | 'edgeFade'
+    | 'balls',
     WebGLUniformLocation | null
   > | null = null;
+  const ballData = new Float32Array(BALLS.length * 4);
 
-  const resize = () => {
-    const width = Math.round(BLOB_BOX.width * currentParams.resolution);
-    const height = Math.round(BLOB_BOX.height * currentParams.resolution);
-    if (canvas.width === width && canvas.height === height) return;
-    canvas.width = width;
-    canvas.height = height;
-    gl.viewport(0, 0, width, height);
+  const pinnedLevel = (): QualityLevel | null => {
+    const index = QUALITY_LEVELS.findIndex(
+      ({ name }) => name === params.quality,
+    );
+    return index === -1 ? null : (index as QualityLevel);
   };
-  resize();
+
+  const applyLevel = () => {
+    const { resolutionScale, fpsCap } = QUALITY_LEVELS[level];
+    const scale = params.resolution * resolutionScale;
+    const width = Math.max(1, Math.round(BLOB_BOX.width * scale));
+    const height = Math.max(1, Math.round(BLOB_BOX.height * scale));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      gl.viewport(0, 0, width, height);
+    }
+    const userCap = params.maxFps > 0 ? params.maxFps : Infinity;
+    monitor.setFpsCap(Math.min(userCap, fpsCap));
+  };
 
   const applyPalette = () => {
     if (!uniforms) return;
-    const { from, to } = currentPalette;
+    const { from, to } = palette;
     gl.uniform3f(uniforms.from, from[0], from[1], from[2]);
     gl.uniform3f(uniforms.to, to[0], to[1], to[2]);
   };
 
   const applyParams = () => {
-    resize();
+    applyLevel();
     if (!uniforms) return;
-    const p = currentParams;
-    gl.uniform1f(uniforms.intensity, p.intensity);
+    gl.uniform1f(uniforms.intensity, params.intensity);
     // blur off: a near-hard edge (a hair of width to avoid stair-stepping)
-    const softness = p.blur ? Math.max(p.softness, HARD_EDGE) : HARD_EDGE;
-    gl.uniform2f(uniforms.threshold, p.threshold, softness);
-    gl.uniform2f(uniforms.warp, p.warpAmount, Math.max(p.warpScale, 1));
-    gl.uniform1f(uniforms.tendrils, p.tendrils);
-    gl.uniform1f(uniforms.drift, p.drift);
-    gl.uniform1f(uniforms.edgeFade, Math.max(p.edgeFade, 0.001));
+    const softness = params.blur
+      ? Math.max(params.softness, HARD_EDGE)
+      : HARD_EDGE;
+    gl.uniform2f(uniforms.threshold, params.threshold, softness);
+    gl.uniform2f(
+      uniforms.warp,
+      params.warpAmount,
+      Math.max(params.warpScale, 1),
+    );
+    gl.uniform1f(uniforms.edgeFade, Math.max(params.edgeFade, 0.001));
   };
 
   // one triangle covering the viewport
   const buffer = gl.createBuffer();
+  let noiseTexture: WebGLTexture | null = null;
 
   const finishSetup = () => {
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return false;
@@ -261,17 +347,20 @@ export const createLiquidRenderer = (
     gl.enableVertexAttribArray(position);
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
+    noiseTexture = uploadNoise(gl);
+    gl.uniform1i(uniform('uNoise'), 0);
     gl.uniform2f(uniform('uSize'), BLOB_BOX.width, BLOB_BOX.height);
+    gl.uniform2f(uniform('uGradientFrom'), ...GRADIENT_FROM);
+    gl.uniform2f(uniform('uGradientAxis'), ...GRADIENT_AXIS);
     uniforms = {
-      time: uniform('uTime'),
       from: uniform('uFrom'),
       to: uniform('uTo'),
       intensity: uniform('uIntensity'),
       threshold: uniform('uThreshold'),
       warp: uniform('uWarp'),
-      tendrils: uniform('uTendrils'),
-      drift: uniform('uDrift'),
+      noiseOffset: uniform('uNoiseOffset'),
       edgeFade: uniform('uEdgeFade'),
+      balls: uniform('uBalls[0]'),
     };
     applyPalette();
     applyParams();
@@ -287,11 +376,6 @@ export const createLiquidRenderer = (
   let framesDrawn = 0;
   let frame: number | null = null;
 
-  const draw = () => {
-    gl.uniform1f(uniforms?.time ?? null, shaderTime);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  };
-
   const advance = (now: number) => {
     const step =
       lastNow === null ? 0 : Math.min((now - lastNow) / 1000, MAX_FRAME_STEP_S);
@@ -299,9 +383,43 @@ export const createLiquidRenderer = (
     bootTime += step;
     // speed eases from 0 to 1, so the blob starts still and picks up pace
     // instead of jumping into motion
-    const { speed, speedRamp } = currentParams;
-    const ramp = speedRamp > 0 ? 1 - Math.exp(-bootTime / speedRamp) : 1;
-    shaderTime += step * speed * ramp;
+    const ramp =
+      params.speedRamp > 0 ? 1 - Math.exp(-bootTime / params.speedRamp) : 1;
+    shaderTime += step * params.speed * ramp;
+  };
+
+  const draw = () => {
+    if (!uniforms) return;
+    const t = shaderTime;
+
+    BALLS.forEach(([x, y, radius, phase, tendril], index) => {
+      const local = t + phase;
+      const orbit = radius * params.drift;
+      ballData[index * 4] = x + Math.sin(local * 0.61) * orbit;
+      ballData[index * 4 + 1] = y + Math.cos(local * 0.47) * orbit;
+      ballData[index * 4 + 2] = radius * (1 + 0.08 * Math.sin(local * 0.83));
+      ballData[index * 4 + 3] = tendril === 0 ? 1 : tendril * params.tendrils;
+    });
+    gl.uniform4fv(uniforms.balls, ballData);
+    gl.uniform4f(
+      uniforms.noiseOffset,
+      0,
+      wrapNoise(t * 0.09),
+      wrapNoise(5.2 - t * 0.07),
+      wrapNoise(1.3 - t * 0.07),
+    );
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+
+  const stepDown = (now: number) => {
+    if (level < LOWEST_LEVEL) {
+      level = (level + 1) as QualityLevel;
+      applyLevel();
+      monitor.settle(now, LEVEL_SETTLE_MS);
+      onLevelChange(level);
+    } else if (!strict) {
+      onLevelChange('svg');
+    }
   };
 
   const loop = (now: number) => {
@@ -317,16 +435,22 @@ export const createLiquidRenderer = (
       }
       if (!finishSetup()) {
         state = 'failed';
-        onError();
+        onError('shader link failed');
         return;
       }
       state = 'ready';
     }
 
-    advance(now);
-    draw();
-    if (framesDrawn < WARMUP_FRAMES && ++framesDrawn === WARMUP_FRAMES) {
-      onReady();
+    if (monitor.tick(now)) {
+      advance(now);
+      draw();
+      if (framesDrawn < WARMUP_FRAMES && ++framesDrawn === WARMUP_FRAMES) {
+        onReady();
+      }
+      const verdict = monitor.drawn(now);
+      const stats = monitor.getStats();
+      if (verdict && stats) onStats(stats);
+      if (verdict === 'degrade' && pinnedLevel() === null) stepDown(now);
     }
     frame = requestAnimationFrame(loop);
   };
@@ -342,28 +466,41 @@ export const createLiquidRenderer = (
     if (state === 'ready' && frame === null) draw();
   };
 
+  const pinned = pinnedLevel();
+  if (pinned !== null) level = pinned;
+  applyLevel();
+
   return {
-    setPalette: (next) => {
-      currentPalette = next;
-      applyPalette();
-      repaintIfPaused();
-    },
-    setParams: (next) => {
-      currentParams = next;
-      applyParams();
-      repaintIfPaused();
-    },
-    start: () => {
-      if (frame === null && state !== 'failed') {
-        frame = requestAnimationFrame(loop);
-      }
-    },
-    stop,
-    destroy: () => {
-      stop();
-      gl.deleteBuffer(buffer);
-      gl.deleteProgram(program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+    renderer: {
+      gpu,
+      setPalette: (next) => {
+        palette = next;
+        applyPalette();
+        repaintIfPaused();
+      },
+      setParams: (next) => {
+        params = next;
+        const nextPinned = pinnedLevel();
+        if (nextPinned !== null && nextPinned !== level) {
+          level = nextPinned;
+          onLevelChange(level);
+        }
+        applyParams();
+        repaintIfPaused();
+      },
+      start: () => {
+        if (frame === null && state !== 'failed') {
+          frame = requestAnimationFrame(loop);
+        }
+      },
+      stop,
+      destroy: () => {
+        stop();
+        gl.deleteBuffer(buffer);
+        gl.deleteTexture(noiseTexture);
+        gl.deleteProgram(program);
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+      },
     },
   };
 };

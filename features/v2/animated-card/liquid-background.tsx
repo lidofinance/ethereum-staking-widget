@@ -5,12 +5,26 @@ import { ReactComponent as BlobDarkSVG } from './assets/blob-dark.svg';
 import { ReactComponent as BlobLightSVG } from './assets/blob-light.svg';
 import { useLiquidParams } from './liquid-params';
 import {
+  LOWEST_LEVEL,
+  loadRememberedLevel,
+  rememberLevel,
+  setLiquidStatus,
+  type PerfLevel,
+} from './liquid-perf';
+import {
   createLiquidRenderer,
   type BlobPalette,
+  type LiquidFailure,
   type LiquidRenderer,
   type RGB,
 } from './liquid-renderer';
-import { BlobAnchor, BlobArt, BlobRotation } from './styles';
+import {
+  BlobAnchor,
+  BlobArt,
+  BlobRotation,
+  ShaderFailed,
+  ShaderFailedLabel,
+} from './styles';
 import { usePrefersReducedMotion } from './use-prefers-reduced-motion';
 
 const hexToRgb = (hex: string): RGB => {
@@ -32,13 +46,22 @@ const PALETTES: Record<'light' | 'dark', BlobPalette> = {
 // shader still cross-fades over it if it gets ready later
 const FALLBACK_DELAY_MS = 1000;
 
-type Mode = 'pending' | 'shader' | 'fallback';
+type Mode = 'pending' | 'shader' | 'fallback' | 'failed';
+type SkipReason = 'reduced motion' | 'data saver' | 'remembered as too slow';
+
+const isSaveData = () =>
+  !!(navigator as Navigator & { connection?: { saveData?: boolean } })
+    .connection?.saveData;
 
 /**
  * Liquid blob behind the top of the card. Starts transparent and fades in
  * once a source is ready: the shader after its first frames are drawn, or
- * the Figma SVG when WebGL is unavailable, slow to start, or its context is
- * lost (drifting with CSS). Reduced motion gets the still SVG.
+ * the Figma SVG when the shader is skipped (reduced motion, data saver, a
+ * device that was too slow before), unavailable (no hardware GPU), slow to
+ * start, too slow to hold its frame rate, or its context is lost.
+ *
+ * `source: 'shader'` (controls panel) disables every fallback and paints
+ * the card red when the shader fails, so failures are visible on stands.
  */
 export const LiquidBackground = () => {
   const { themeName } = useThemeToggle();
@@ -47,9 +70,17 @@ export const LiquidBackground = () => {
   const params = useLiquidParams();
 
   const isReducedMotion = usePrefersReducedMotion();
+  const isStrict = params.source === 'shader';
   // `svg` only pauses the shader, so switching back is instant
-  const isShaderPaused = params.source === 'svg';
+  const isPaused = params.source === 'svg';
+
   const [mode, setMode] = useState<Mode>('pending');
+  const [failure, setFailure] = useState<LiquidFailure | SkipReason | null>(
+    null,
+  );
+  const [level, setLevel] = useState<PerfLevel | null>(null);
+  const isTooSlow = level === 'svg' && !isStrict;
+  const shouldRun = !isPaused && !isTooSlow;
 
   const canvasSlotRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<LiquidRenderer | null>(null);
@@ -58,14 +89,32 @@ export const LiquidBackground = () => {
   paletteRef.current = palette;
   const paramsRef = useRef(params);
   paramsRef.current = params;
-  const isShaderPausedRef = useRef(isShaderPaused);
-  isShaderPausedRef.current = isShaderPaused;
+  const shouldRunRef = useRef(shouldRun);
+  shouldRunRef.current = shouldRun;
 
   useEffect(() => {
     const slot = canvasSlotRef.current;
-    if (isReducedMotion || !slot) {
-      setMode('fallback');
-      return;
+    if (!slot) return;
+
+    const fail = (reason: LiquidFailure | SkipReason) => {
+      setFailure(reason);
+      setLevel(null);
+      setMode(isStrict ? 'failed' : 'fallback');
+    };
+
+    const remembered = loadRememberedLevel();
+    if (!isStrict) {
+      const skip: SkipReason | null =
+        (isReducedMotion && 'reduced motion') ||
+        (isSaveData() && 'data saver') ||
+        (remembered === 'svg' &&
+          paramsRef.current.quality === 'auto' &&
+          'remembered as too slow') ||
+        null;
+      if (skip) {
+        fail(skip);
+        return;
+      }
     }
 
     // a fresh canvas per renderer: destroy() loses the WebGL context, and a
@@ -73,38 +122,55 @@ export const LiquidBackground = () => {
     const canvas = document.createElement('canvas');
     slot.appendChild(canvas);
 
-    const renderer = createLiquidRenderer(canvas, {
+    const startLevel = remembered === 'svg' ? LOWEST_LEVEL : remembered;
+    setLevel(startLevel);
+    setFailure(null);
+
+    const created = createLiquidRenderer(canvas, {
       palette: paletteRef.current,
       params: paramsRef.current,
+      level: startLevel,
+      strict: isStrict,
       onReady: () => setMode('shader'),
-      onError: () => setMode('fallback'),
+      onError: fail,
+      onLevelChange: (next) => {
+        setLevel(next);
+        if (paramsRef.current.quality === 'auto') rememberLevel(next);
+      },
+      onStats: (perf) => setLiquidStatus({ perf }),
     });
-    if (!renderer) {
+    if (!created.renderer) {
       canvas.remove();
-      setMode('fallback');
+      fail(created.failure);
       return;
     }
+    const { renderer } = created;
     rendererRef.current = renderer;
+    setLiquidStatus({ gpu: renderer.gpu, perf: null });
 
-    const fallbackTimer = setTimeout(
-      () =>
-        setMode((current) => (current === 'pending' ? 'fallback' : current)),
-      FALLBACK_DELAY_MS,
-    );
+    const fallbackTimer = isStrict
+      ? undefined
+      : setTimeout(
+          () =>
+            setMode((current) =>
+              current === 'pending' ? 'fallback' : current,
+            ),
+          FALLBACK_DELAY_MS,
+        );
 
     let isContextLost = false;
     const onContextLost = (event: Event) => {
       event.preventDefault();
       isContextLost = true;
       renderer.stop();
-      setMode('fallback');
+      fail('context lost');
     };
     canvas.addEventListener('webglcontextlost', onContextLost);
 
     // frames only while the card is on screen and the shader is wanted
     let isOnScreen = false;
     const syncRunning = () => {
-      if (isOnScreen && !isShaderPausedRef.current && !isContextLost) {
+      if (isOnScreen && shouldRunRef.current && !isContextLost) {
         renderer.start();
       } else {
         renderer.stop();
@@ -126,12 +192,13 @@ export const LiquidBackground = () => {
       canvas.remove();
       rendererRef.current = null;
       syncRunningRef.current = null;
+      setMode('pending');
     };
-  }, [isReducedMotion]);
+  }, [isReducedMotion, isStrict]);
 
   useEffect(() => {
     syncRunningRef.current?.();
-  }, [isShaderPaused]);
+  }, [shouldRun]);
 
   useEffect(() => {
     rendererRef.current?.setPalette(palette);
@@ -141,29 +208,48 @@ export const LiquidBackground = () => {
     rendererRef.current?.setParams(params);
   }, [params]);
 
+  const isFailed = isStrict && mode === 'failed';
+  const isShaderVisible = shouldRun && mode === 'shader';
   const isSvgVisible =
-    isShaderPaused || (params.source === 'auto' && mode === 'fallback');
-  const isShaderVisible = !isShaderPaused && mode === 'shader';
+    isPaused || (!isStrict && (mode === 'fallback' || isTooSlow));
+
+  useEffect(() => {
+    const state =
+      (isFailed && `FAILED: ${failure}`) ||
+      (isPaused && 'svg (source: svg)') ||
+      (isTooSlow && 'svg (too slow for the shader)') ||
+      (mode === 'fallback' && `svg (${failure ?? 'shader slow to start'})`) ||
+      (mode === 'shader' && 'shader') ||
+      'starting';
+    setLiquidStatus({ state, level });
+  }, [isFailed, isPaused, isTooSlow, mode, failure, level]);
 
   const BlobSVG = isDark ? BlobDarkSVG : BlobLightSVG;
 
   return (
-    <BlobAnchor aria-hidden>
-      <BlobRotation>
-        <BlobArt
-          $visible={isSvgVisible}
-          $animated={isSvgVisible && !isReducedMotion}
-          $fadeMs={params.fadeInMs}
-        >
-          <BlobSVG />
-        </BlobArt>
-        <BlobArt
-          ref={canvasSlotRef}
-          $visible={isShaderVisible}
-          $fadeMs={params.fadeInMs}
-          $blurPx={params.blur ? params.blurPx : 0}
-        />
-      </BlobRotation>
-    </BlobAnchor>
+    <>
+      {isFailed && (
+        <ShaderFailed>
+          <ShaderFailedLabel>shader failed: {failure}</ShaderFailedLabel>
+        </ShaderFailed>
+      )}
+      <BlobAnchor aria-hidden>
+        <BlobRotation>
+          <BlobArt
+            $visible={isSvgVisible}
+            $animated={isSvgVisible && !isReducedMotion}
+            $fadeMs={params.fadeInMs}
+          >
+            <BlobSVG />
+          </BlobArt>
+          <BlobArt
+            ref={canvasSlotRef}
+            $visible={isShaderVisible}
+            $fadeMs={params.fadeInMs}
+            $blurPx={params.blur ? params.blurPx : 0}
+          />
+        </BlobRotation>
+      </BlobAnchor>
+    </>
   );
 };

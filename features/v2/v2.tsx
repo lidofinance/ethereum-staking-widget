@@ -19,8 +19,8 @@ export const V2 = () => {
     <TemporaryV2Layout>
       <Stats />
       <Staking />
-      {/* tuning panel for the card background, dev server only */}
-      {process.env.NODE_ENV === 'development' && <LiquidControls />}
+      {/* tuning panel for the card background, on stands too */}
+      <LiquidControls />
     </TemporaryV2Layout>
   );
 };
