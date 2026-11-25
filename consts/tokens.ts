@@ -7,7 +7,7 @@ export type LIDO_TOKENS_VALUES = (typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS];
 // where the key is the token in lowercase and the value is also the token in lowercase
 export const TOKENS = {
   // Lido tokens
-  eth: 'eth',
+  eth: 'eth', // temp
   steth: 'steth',
   wsteth: 'wsteth',
   unsteth: 'unsteth',
