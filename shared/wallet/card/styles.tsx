@@ -5,7 +5,10 @@ export const InlineLoaderStyled = styled(InlineLoader)`
   max-width: 120px;
 `;
 
-export const WalletCardStyle = styled((props) => <Block {...props} />)`
+// data-snow-surface: the holiday theme lays a snow drift on it
+export const WalletCardStyle = styled((props) => (
+  <Block data-snow-surface="card" {...props} />
+))`
   margin-bottom: ${({ theme }) => -theme.borderRadiusesMap.xl}px;
 
   border-bottom-left-radius: 0;

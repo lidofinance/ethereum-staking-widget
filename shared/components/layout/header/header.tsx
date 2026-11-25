@@ -1,20 +1,23 @@
 import { FC } from 'react';
 import { LogoLido } from 'shared/components/logos/logos';
-import { HolidaysDecorHeader } from 'shared/components/holiday-decor';
+import { WinterGarland, WinterLogoHat } from 'shared/components/winter-theme';
 
 import { MobileNavigation, Navigation } from './components/navigation';
 import { HeaderActions } from './components/header-actions';
 
-import { HeaderStyled } from './styles';
+import { HeaderStyled, LogoWrap } from './styles';
 
 export const Header: FC = () => (
   <>
     <HeaderStyled size="full" forwardedAs="header">
-      <LogoLido />
+      <LogoWrap>
+        <LogoLido />
+        <WinterLogoHat />
+      </LogoWrap>
       <Navigation />
       <HeaderActions />
-      <HolidaysDecorHeader />
     </HeaderStyled>
+    <WinterGarland />
     <MobileNavigation />
   </>
 );

@@ -9,7 +9,11 @@ export const SWAP_CARD_MAX_WIDTH = 470;
 // the design shadow of the card; the host block is transparent
 export const SWAP_CARD_SHADOW = '0px 12px 6px rgba(5, 43, 101, 0.06)';
 
-export const SwapBlock = styled(Block).attrs({ paddingLess: true })`
+export const SwapBlock = styled(Block).attrs({
+  paddingLess: true,
+  // the holiday theme lays a snow drift on it
+  'data-snow-surface': 'card',
+})`
   // CoW draws its own card, narrower than the iframe; the gap must not show
   background: transparent;
   // the page has no subtitle, keep its spacing under the title

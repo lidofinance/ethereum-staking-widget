@@ -11,7 +11,10 @@ const getBackgroundGradient = (variant: 'eth' | 'usd' | 'default'): string => {
   return gradients[variant];
 };
 
-export const CardWrapper = styled(Block)<{
+// data-snow-surface: the holiday theme lays a snow drift on it
+export const CardWrapper = styled(Block).attrs({
+  'data-snow-surface': 'block',
+})<{
   $variant: 'eth' | 'usd' | 'default';
 }>`
   position: relative;

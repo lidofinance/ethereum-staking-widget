@@ -61,7 +61,7 @@ export const LidoStats: FC = memo(() => {
         </MatomoLink>
       }
     >
-      <Block>
+      <Block data-snow-surface="block">
         <DataTable>
           <LidoStatsItem
             title={

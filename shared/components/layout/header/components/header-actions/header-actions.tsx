@@ -10,6 +10,7 @@ import { AmountBanner } from 'shared/banners/amount-banners';
 import { useDappStatus } from 'modules/web3';
 
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
+import { WinterHeaderControls } from 'shared/components/winter-theme';
 import { getChainColor } from 'utils/get-chain-color';
 
 import { ChainSwitcher } from '../chain-switcher';
@@ -55,6 +56,7 @@ export const HeaderActions: FC = () => {
           <ConnectButtonStyled size="sm" />
         )}
         {config.ipfsMode && <HeaderSettingsButton />}
+        <WinterHeaderControls />
         {!queryTheme && <ThemeTogglerStyled data-testid="themeToggler" />}
         {config.ipfsMode && (
           <BannerOnlyDesktopWrapper>

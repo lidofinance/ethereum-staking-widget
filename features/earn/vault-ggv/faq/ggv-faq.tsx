@@ -26,7 +26,7 @@ export const GGVFaq: FC = () => {
   const isBulkWithdraw = useGGVBulkWithdrawEnabled();
 
   return (
-    <Section title="FAQ" data-testid="vault-faq">
+    <Section title="FAQ" data-snow-items="block" data-testid="vault-faq">
       <WhatIsLidoGGV />
       <DepositFee />
       <WhatAreTheRisksOutlinedInTheVault />

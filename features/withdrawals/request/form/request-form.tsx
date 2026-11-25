@@ -32,7 +32,7 @@ export const RequestForm = () => {
   const mode = isWithdrawalDexEnabled ? modeForm : 'lido';
 
   return (
-    <Block data-testid="requestForm">
+    <Block data-testid="requestForm" data-snow-surface="card">
       {isPaused && <PausedInfo />}
       {isBunker && <BunkerInfo />}
       <FormController>
