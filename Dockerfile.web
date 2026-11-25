@@ -1,17 +1,21 @@
-# Web image: static Vite build served by nginx-unprivileged.
-# Node.js used only for build and to generate env file at runtime
+# Web image: static Vite build served by nginx, on Docker Hardened Images
+# (need `docker login dhi.io`). Shell and apk exist only in the -dev stages;
+# the runtime has node and nginx, the entrypoint is plain node.
 
-# Pin the Alpine minor version to avoid unexpected base OS upgrades while
-# still receiving patched packages within the Alpine 3.24 line.
+ARG NODE_VERSION=24.22.3
 ARG ALPINE_VERSION=3.24
+ARG DHI_DEV_DIGEST=sha256:7d604b901f18f4e8660af65dab69ce256fb4080e95309e00a105b931271babfd
+ARG DHI_RUNTIME_DIGEST=sha256:4544851709621aa77a18134101ef4cd6af39233cf57bdfe2adcc17e2e72866db
+
+FROM dhi.io/node:${NODE_VERSION}-alpine${ALPINE_VERSION}@${DHI_RUNTIME_DIGEST} AS runtime
 
 #
 # ################# Build Stage ##########################
 #
-FROM node:24-alpine${ALPINE_VERSION} AS builder
+FROM dhi.io/node:${NODE_VERSION}-alpine${ALPINE_VERSION}-dev@${DHI_DEV_DIGEST} AS builder
 WORKDIR /app
 
-# Dependency layer install with yarn binary version from project
+# Dependency layer; the image's Yarn 1 delegates to the committed release (yarnPath)
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn/releases .yarn/releases
 COPY server/package.json server/package.json
@@ -23,15 +27,31 @@ COPY . .
 # env-free build
 RUN yarn build:web
 
+#
+# ################# nginx Stage ##########################
+#
+# nginx from the DHI apk repository: its files plus their apk records, so the registry scan still sees them
+FROM dhi.io/node:${NODE_VERSION}-alpine${ALPINE_VERSION}-dev@${DHI_DEV_DIGEST} AS nginx
+
+COPY --from=runtime /lib/apk/db/installed /tmp/installed
+
+# Accepted drift: the minor is pinned, the patch floats on purpose so a rebuild picks up security fixes
+RUN apk add --no-cache "nginx-mainline~1.31" && \
+    PKGS="nginx-mainline libcrypto3 libssl3 pcre2 zlib" && \
+    mkdir /rootfs && \
+    for p in $PKGS; do apk info -qL "$p"; done | grep -v '^$' | tar -cf - -C / -T - | tar -xf - -C /rootfs && \
+    mkdir -p /rootfs/lib/apk/db && \
+    { awk 'BEGIN { RS = ""; ORS = "\n\n" } 1' /tmp/installed; \
+      awk -v pkgs=" $PKGS " 'BEGIN { RS = ""; ORS = "\n\n" } { n = split($0, l, "\n"); for (i = 1; i <= n; i++) if (l[i] ~ /^P:/) name = substr(l[i], 3) } index(pkgs, " " name " ")' /lib/apk/db/installed; \
+    } > /rootfs/lib/apk/db/installed && \
+    mkdir -p /rootfs/var/cache/nginx
 
 #
 # ################# Runtime Stage ##########################
 #
-FROM nginxinc/nginx-unprivileged:alpine${ALPINE_VERSION} AS runtime
+FROM runtime
 
-# Add node(w/ libstdc++ dep) for runtime env file generation
-COPY --from=builder /usr/local/bin/node /usr/local/bin/node
-COPY --from=builder /usr/lib/libstdc++.so.6 /usr/lib/libgcc_s.so.1 /usr/lib/
+COPY --from=nginx /rootfs/ /
 
 # Read-only root FS friendly: nginx writes cache + tmp into
 # /var/cache/nginx and /tmp, which the helm chart mounts as emptyDir.
@@ -39,8 +59,8 @@ COPY infra/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY infra/nginx/default.conf.template /etc/nginx/template-src/default.conf.template
 COPY infra/nginx/security-headers.conf.template /etc/nginx/template-src/security-headers.conf.template
 
-# Runtime env script + nginx config are (re)written at container start.
-COPY --chmod=755 infra/nginx/entrypoint.sh /docker-entrypoint.d/40-render-runtime-config.sh
+# Runtime env + nginx config are written at container start, then nginx runs
+COPY infra/nginx/entrypoint.mjs /etc/nginx/entrypoint.mjs
 
 # Self-contained window-env CLI bundle (esbuild output, no node_modules),
 # outside the html root so it is never served.
@@ -50,4 +70,8 @@ COPY --from=builder /app/dist-node/window-env-cli.mjs /etc/nginx/window-env-cli.
 # stays layer-cache-stable across builds.
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# node (1000), the user the DHI runtime runs as
+USER 1000
 EXPOSE 8080
+ENTRYPOINT ["node", "/etc/nginx/entrypoint.mjs"]
+CMD []

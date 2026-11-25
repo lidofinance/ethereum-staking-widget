@@ -135,8 +135,8 @@ describe('window-env loader contract', () => {
       'sha256-' +
       createHash('sha256').update(WINDOW_ENV_LOADER).digest('base64');
     expect(WINDOW_ENV_LOADER_CSP_HASH).toBe(expected);
-    expect(repoFile('../../infra/nginx/entrypoint.sh')).toContain(
-      `WINDOW_ENV_LOADER_HASH="${expected}"`,
+    expect(repoFile('../../infra/nginx/entrypoint.mjs')).toContain(
+      `'${expected}'`,
     );
   });
 });

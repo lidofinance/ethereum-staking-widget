@@ -1,6 +1,6 @@
 // Reference CSP and the CoW widget base URL resolver shared with the app
 // (modules/dexes/cowswap). The served policy is rendered by
-// infra/nginx/entrypoint.sh and scripts/vite/ipfs-head-defaults-plugin.ts:
+// infra/nginx/entrypoint.mjs and scripts/vite/ipfs-head-defaults-plugin.ts:
 // keep the directive set in sync. Plain ESM with no imports.
 
 export const DEFAULT_COWSWAP_WIDGET_BASE_URL = 'https://cow-ipfs.testnet.fi/';
@@ -41,7 +41,7 @@ const toBoolean = (value) =>
 
 /**
  * The runtime inputs of the policy, from the server environment: the same
- * variables infra/nginx/entrypoint.sh reads
+ * variables infra/nginx/entrypoint.mjs reads
  * @param {Record<string, string | undefined>} env
  */
 export const cspInputsFromEnv = (env = process.env) => ({

@@ -1,4 +1,4 @@
-# Rendered at container start by entrypoint.sh (sed): substitutes
+# Rendered at container start by entrypoint.mjs: substitutes
 # ${SELF_ORIGIN}, ${CSP_HEADER_NAME}, ${CSP_HEADER_VALUE} and writes the
 # result to /var/cache/nginx/conf.d/default.conf (the default
 # /etc/nginx/conf.d is read-only in the pod).
@@ -95,7 +95,7 @@ server {
     sub_filter_once off;
     # Inline runtime env: the build ships the window-env data element as
     # `<!--#include virtual="/window-env.json" -->` and SSI splices in the
-    # plain-JSON file written by entrypoint.sh at boot
+    # plain-JSON file written by entrypoint.mjs at boot
     ssi on;
     # text/html is sub_filter's built-in default (relisting it makes nginx
     # warn about a duplicate MIME type). sitemap.xml is text/xml (some
@@ -106,7 +106,7 @@ server {
   }
 
   # Runtime env JSON for the SSI include in location / — written by
-  # entrypoint.sh at container start. `internal`: subrequests only, a
+  # entrypoint.mjs at container start. `internal`: subrequests only, a
   # direct client fetch 404s
   location = /window-env.json {
     internal;

@@ -17,5 +17,5 @@ add_header x-permitted-cross-domain-policies "none" always;
 add_header cross-origin-opener-policy "same-origin-allow-popups" always;
 add_header permissions-policy "camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=(), encrypted-media=(), serial=(), xr-spatial-tracking=(), browsing-topics=(), usb=(self), bluetooth=(self), hid=(self), autoplay=(self), fullscreen=(self), picture-in-picture=(self)" always;
 # CSP: header name (report-only or enforcing) and value are rendered by
-# entrypoint.sh from CSP_* env vars — see default.conf.template.
+# entrypoint.mjs from CSP_* env vars — see default.conf.template.
 add_header ${CSP_HEADER_NAME} "${CSP_HEADER_VALUE}" always;

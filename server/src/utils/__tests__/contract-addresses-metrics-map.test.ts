@@ -9,7 +9,7 @@ import {
   WSTETH_ADDRESS,
 } from 'modules/dexes/cowswap/guards/oracles/feeds';
 // develop's utilsApi/contractAddressesMetricsMap lives in config/networks/rpc-contracts here;
-// the CoW profile coverage case needs the React cowswap barrel, so it runs in the root suite
+// the CoW profile coverage case needs React cowswap code: config/networks/__tests__/cowswap-profiles-rpc.test.ts
 import {
   getMetricContractAbi,
   METRIC_CONTRACT_ADDRESSES,

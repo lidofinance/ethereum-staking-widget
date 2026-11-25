@@ -13,7 +13,7 @@ var (source, transform, zod shape); `ClientEnv = z.infer<…>`. Adding an env
 = adding one entry. Producers:
 
 - dev / IPFS build: `scripts/vite/window-env-plugin.ts` (reads `.env.local`);
-- k8s web: `infra/nginx/entrypoint.sh` runs the bundled
+- k8s web: `infra/nginx/entrypoint.mjs` runs the bundled
   `scripts/window-env-cli.ts` at boot; nginx SSI splices the JSON into
   every HTML response;
 - no-window runtimes (vitest, api bundle): fallback in `config/dynamics.ts`.
@@ -47,7 +47,7 @@ locally").
 - `config/feature-flags/` — feature flag definitions
 - `config/networks/` — network/chain configuration
 - `config/client-env-manifest.ts` — runtime env source of truth (see above)
-- CSP is assembled at container boot by `infra/nginx/entrypoint.sh` (web)
+- CSP is assembled at container boot by `infra/nginx/entrypoint.mjs` (web)
   and at build time by `scripts/vite/ipfs-head-defaults-plugin.ts` (IPFS)
 
 ## Key env vars

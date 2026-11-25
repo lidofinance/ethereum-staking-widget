@@ -38,7 +38,7 @@ const WINDOW_ENV_TAG_OPEN = '<script type="application/json" id="window-env">';
 export const WINDOW_ENV_SSI_ELEMENT = `${WINDOW_ENV_TAG_OPEN}<!--#include virtual="/window-env.json" --></script>`;
 
 // sha256 of the loader script's content (inline in index.html). Hardcoded
-// here (→ IPFS CSP meta) and in infra/nginx/entrypoint.sh (→ web CSP
+// here (→ IPFS CSP meta) and in infra/nginx/entrypoint.mjs (→ web CSP
 // header); the unit test recomputes it from index.html and fails on drift.
 export const WINDOW_ENV_LOADER_CSP_HASH =
   'sha256-6ApUdZunJlq8fZcraTYQbcZ6XIB1F85yxMoDe+8WwAY=';

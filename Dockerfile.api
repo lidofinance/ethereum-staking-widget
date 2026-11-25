@@ -1,20 +1,20 @@
-# API image: the Fastify server (server/ workspace). Secrets (RPC URLs)
-# arrive via Vault Agent / container env — nothing is baked at build time.
+# API image: the Fastify server (server/ workspace), on Docker Hardened Images
+# (need `docker login dhi.io`). Shell and apk exist only in the -dev stages.
+# Secrets (RPC URLs) arrive via Vault Agent: the chart starts node with
+# --env-file, nothing is baked at build time.
 #
 # Runtime layout (WORKDIR /app/server, `node dist/index.js`, port 3001)
-# deliberately matches the simple-staking-widget PoC image: both are
-# deployed by the SAME `staking-widget` helm release, so command/port
-# expectations in the chart values must keep working unchanged.
+# matches the simple-staking-widget chart values.
 
-# Pin the Alpine minor version to avoid unexpected base OS upgrades while
-# still receiving patched packages within the Alpine 3.24 line.
+ARG NODE_VERSION=24.22.3
 ARG ALPINE_VERSION=3.24
+ARG DHI_DEV_DIGEST=sha256:7d604b901f18f4e8660af65dab69ce256fb4080e95309e00a105b931271babfd
+ARG DHI_RUNTIME_DIGEST=sha256:4544851709621aa77a18134101ef4cd6af39233cf57bdfe2adcc17e2e72866db
 
-FROM node:24-alpine${ALPINE_VERSION} AS builder
+FROM dhi.io/node:${NODE_VERSION}-alpine${ALPINE_VERSION}-dev@${DHI_DEV_DIGEST} AS builder
 WORKDIR /app
 
-# .yarn/releases is the committed yarn pinned by yarnPath in .yarnrc.yml;
-# the stock Yarn 1 from the node image delegates to it — no corepack needed
+# The image's Yarn 1 delegates to the committed release (yarnPath in .yarnrc.yml)
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn/releases .yarn/releases
 COPY server/package.json server/package.json
@@ -26,22 +26,31 @@ COPY . .
 # node_modules stay external.
 RUN yarn workspace api build
 
-FROM node:24-alpine${ALPINE_VERSION} AS runtime
-ENV NODE_ENV=production
+# Production node_modules only (the esbuild bundle keeps packages external)
+FROM dhi.io/node:${NODE_VERSION}-alpine${ALPINE_VERSION}-dev@${DHI_DEV_DIGEST} AS prod-deps
 WORKDIR /app
 
-# Production node_modules only (the esbuild bundle keeps packages external).
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn/releases .yarn/releases
 COPY server/package.json server/package.json
-RUN HUSKY=0 yarn workspaces focus api --production && yarn cache clean
+# server/node_modules exists only when a package cannot be hoisted; created so the COPY below never misses it
+RUN HUSKY=0 yarn workspaces focus api --production && yarn cache clean && \
+    mkdir -p server/node_modules
 
+FROM dhi.io/node:${NODE_VERSION}-alpine${ALPINE_VERSION}@${DHI_RUNTIME_DIGEST} AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+
+COPY --from=prod-deps /app/node_modules node_modules
+COPY --from=prod-deps /app/server/node_modules server/node_modules
+COPY server/package.json server/package.json
 COPY --from=builder /app/server/dist server/dist
 # build-info.json is read by the metrics module (also inlined into the
 # bundle at build; kept on disk for parity/debugging).
-COPY build-info.json ./
+COPY --from=builder /app/build-info.json build-info.json
 
-USER node
+# node (1000), the user the DHI runtime runs as
+USER 1000
 WORKDIR /app/server
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
