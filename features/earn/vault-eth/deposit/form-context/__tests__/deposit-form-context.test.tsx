@@ -45,6 +45,7 @@ vi.mock('modules/web3/hooks/use-dapp-status', () => ({
 }));
 vi.mock('shared/hooks/use-query-values-form', () => ({
   useQueryParamsReferralForm: () => undefined,
+  useQueryParamsTokenForm: () => undefined,
 }));
 vi.mock('shared/hook-form/form-controller', async () => {
   const { createContext } = await import('react');

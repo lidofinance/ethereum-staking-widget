@@ -59,8 +59,11 @@ export const useQueryParamsTokenForm = <T extends { token: string }>({
           shallow: true,
           scroll: false,
         }).catch(() => {});
-        const formToken = tokens[token.toLowerCase()];
-        if (formToken) {
+        // Own keys only: the maps are plain objects, so a name like
+        // `constructor` would otherwise resolve through the prototype
+        const key = token.toLowerCase();
+        const formToken = Object.hasOwn(tokens, key) ? tokens[key] : undefined;
+        if (typeof formToken === 'string') {
           setValue('token' as Path<T>, formToken as PathValue<T, Path<T>>);
         }
       }
