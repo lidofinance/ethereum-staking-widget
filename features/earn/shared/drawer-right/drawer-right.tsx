@@ -1,8 +1,7 @@
-import { FC, useRef } from 'react';
-import { Button, Link } from '@lidofinance/lido-ui';
+import { useRef } from 'react';
+import { Button, TextLink, Typography } from '@lidofinance/lido-app-ui';
 
 import { config } from 'config';
-import { LocalLink } from 'shared/components/local-link';
 import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
@@ -11,10 +10,7 @@ import {
   DRAWER_WIDTH,
   DrawerRightPanel,
   DrawerRightContent,
-  DrawerRightTitle,
-  DrawerDescription,
   DrawerRightFooter,
-  DrawerRightText,
 } from './styles';
 import { DrawerTable } from './drawer-table';
 
@@ -24,11 +20,11 @@ type DrawerRightProps = {
   shouldHideUpgradeNowButton?: boolean;
 };
 
-export const DrawerRight: FC<DrawerRightProps> = ({
+export const DrawerRight = ({
   onClose,
   isOpen,
   shouldHideUpgradeNowButton = false,
-}) => {
+}: DrawerRightProps) => {
   // the dialog itself takes focus, so no button lights up on open
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -38,11 +34,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({
       open={isOpen}
       onClose={() => onClose()}
       width={DRAWER_WIDTH}
-      title={
-        <DrawerRightTitle>
-          What is EarnETH Vault and how it works
-        </DrawerRightTitle>
-      }
+      title="What is EarnETH Vault and how it works"
       labels={{ close: 'Close' }}
       initialFocus={panelRef}
       tabIndex={-1}
@@ -50,29 +42,37 @@ export const DrawerRight: FC<DrawerRightProps> = ({
       dataTestId={{ title: 'title' }}
     >
       <DrawerRightContent>
-        <DrawerDescription data-testid="description">
+        <Typography variant="body" color="secondary" data-testid="description">
           EarnETH Vault is a meta-vault designed to optimize returns on deployed
           assets across Lido Earn strategies, with the ability to dynamically
           evolve its allocation mix. By abstracting strategy selection, the
           meta-vault provides ETH-denominated exposure to Lido Earn with the
           objective of balancing different risk and return profiles for
           ETH-denominated assets.
-        </DrawerDescription>
+        </Typography>
         <DrawerTable />
-        <DrawerRightText data-testid="table-description">
+        <Typography
+          variant="body"
+          color="secondary"
+          data-testid="table-description"
+        >
           The table above describes structural differences between accessing a
           single vault strategy and accessing a meta-vault that allocates across
           multiple strategies. It is provided for informational purposes only
           and does not constitute a recommendation. Outcomes and rewards may
           vary based on strategy composition, market conditions, and protocol
           parameters.
-        </DrawerRightText>
-        <DrawerRightText data-testid="mellow-points-text">
+        </Typography>
+        <Typography
+          variant="body"
+          color="secondary"
+          data-testid="mellow-points-text"
+        >
           All accumulated Mellow points, as well as Obol and SSV rewards, remain
           yours. Your Mellow points balance is visible on the{' '}
-          <Link
+          <TextLink
+            size="inherit"
             href="https://app.mellow.finance/dashboard"
-            target="_blank"
             onClick={() => {
               trackMatomoEvent(
                 MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthMellowDashboard,
@@ -80,47 +80,50 @@ export const DrawerRight: FC<DrawerRightProps> = ({
             }}
           >
             Mellow Dashboard
-          </Link>
+          </TextLink>
           . Obol rewards can be claimed{' '}
-          <Link href="https://launchpad.obol.org/cluster/list/" target="_blank">
+          <TextLink
+            size="inherit"
+            href="https://launchpad.obol.org/cluster/list/"
+          >
             here
-          </Link>
+          </TextLink>
           , and SSV rewards can be claimed{' '}
-          <Link href="https://www.ssvrewards.com/" target="_blank">
+          <TextLink size="inherit" href="https://www.ssvrewards.com/">
             here
-          </Link>
+          </TextLink>
           .
-        </DrawerRightText>
+        </Typography>
         <DrawerRightFooter>
           {!shouldHideUpgradeNowButton && (
-            <LocalLink href={ETH_DEPOSIT_PATH}>
-              <Button
-                fullwidth
-                onClick={() => {
-                  trackMatomoEvent(
-                    MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
-                  );
-                }}
-                data-testid="upgrade-now-button"
-              >
-                Upgrade now
-              </Button>
-            </LocalLink>
-          )}
-          <Link href={`${config.helpOrigin}/en`} target="_blank">
             <Button
-              fullwidth
-              variant="outlined"
+              href={ETH_DEPOSIT_PATH}
+              size="big"
+              fullWidth
               onClick={() => {
                 trackMatomoEvent(
-                  MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthGetInTouch,
+                  MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
                 );
               }}
-              data-testid="get-in-touch-button"
+              dataTestId={{ root: 'upgrade-now-button' }}
             >
-              Get in touch
+              Upgrade now
             </Button>
-          </Link>
+          )}
+          <Button
+            href={`${config.helpOrigin}/en`}
+            size="big"
+            variant="outline"
+            fullWidth
+            onClick={() => {
+              trackMatomoEvent(
+                MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthGetInTouch,
+              );
+            }}
+            dataTestId={{ root: 'get-in-touch-button' }}
+          >
+            Get in touch
+          </Button>
         </DrawerRightFooter>
       </DrawerRightContent>
     </DrawerRightPanel>

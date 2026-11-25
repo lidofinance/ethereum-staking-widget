@@ -21,7 +21,8 @@ export const Main: FC<ContainerProps> = (props) => {
     isEarnVault &&
     EARN_VAULTS_V1_DESIGN.includes(router.query.vault as EarnVaultV1DesignKey);
   const isEarnVaultV2 = isEarnVault && !isEarnVaultV1;
-  const mainSize = isEarnVaultV2 ? 'full' : isEarnListPage ? 'content' : size;
+  // the Earn list sets its own column width; the wide container puts its FAQ button near the screen edge
+  const mainSize = isEarnVaultV2 || isEarnListPage ? 'full' : size;
 
   return (
     <MainStyle

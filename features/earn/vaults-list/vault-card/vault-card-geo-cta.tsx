@@ -1,8 +1,8 @@
 import type { PropsWithChildren } from 'react';
 
-import { GEO_LIMITED_CARD_TEXT } from './consts';
-import { GeoNoticeContent } from './geo-notice-content';
-import { useGeoNoticeState } from './use-geo-notice-state';
+import { GEO_LIMITED_CARD_TEXT } from '../../shared/v2/geo-notice/consts';
+import { GeoNoticeContent } from '../../shared/v2/geo-notice/geo-notice-content';
+import { useGeoNoticeState } from '../../shared/v2/geo-notice/use-geo-notice-state';
 import { VaultCardGeoNoticeWrapper } from './styles';
 
 export const VaultCardGeoCta = ({ children }: PropsWithChildren) => {

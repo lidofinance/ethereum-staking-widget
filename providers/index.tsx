@@ -9,6 +9,7 @@ import { Web3Provider } from 'modules/web3';
 import { AddressValidationFile } from 'utils/address-validation';
 
 import { AppFlagProvider } from './app-flag';
+import { AppUiLinkProvider } from './app-ui-link-provider';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
 import { InpageNavigationProvider } from './inpage-navigation';
 import { ModalProvider } from './modal-provider';
@@ -37,7 +38,7 @@ export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
                 <ModalProvider>
                   <ExternalForbiddenRouteProvider>
                     <AddressValidationProvider validationFile={validationFile}>
-                      {children}
+                      <AppUiLinkProvider>{children}</AppUiLinkProvider>
                     </AddressValidationProvider>
                   </ExternalForbiddenRouteProvider>
                 </ModalProvider>

@@ -1,46 +1,48 @@
-import React, { MouseEventHandler, useCallback, useMemo } from 'react';
+import React, {
+  forwardRef,
+  MouseEventHandler,
+  useCallback,
+  useMemo,
+} from 'react';
 
 import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';
 import { getBasedHashHref } from 'utils/get-based-hash-href';
 
-type LinkIpfsProps = React.ComponentProps<'a'> & {
+type LinkIpfsProps = React.ComponentPropsWithoutRef<'a'> & {
   href: string;
   query: Record<string, string>;
 };
 
-export const LinkIpfs = ({
-  href,
-  query,
-  onClick,
-  children,
-  ...props
-}: LinkIpfsProps) => {
-  const push = usePrefixedPush();
+export const LinkIpfs = forwardRef<HTMLAnchorElement, LinkIpfsProps>(
+  ({ href, query, onClick, children, ...props }, ref) => {
+    const push = usePrefixedPush();
 
-  // Actual for click (opening in same tab)
-  const handleClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
-    (event) => {
-      // same contract as next/link: onClick may cancel navigation
-      onClick?.(event);
-      if (event.defaultPrevented) return;
+    // Actual for click (opening in same tab)
+    const handleClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
+      (event) => {
+        // same contract as next/link: onClick may cancel navigation
+        onClick?.(event);
+        if (event.defaultPrevented) return;
 
-      event.preventDefault();
-      void push(href, query);
+        event.preventDefault();
+        void push(href, query);
 
-      window.scrollTo({ top: 0 });
-    },
-    [onClick, push, href, query],
-  );
+        window.scrollTo({ top: 0 });
+      },
+      [onClick, push, href, query],
+    );
 
-  // Actual for opening in new tab
-  const basedHashHref = useMemo(
-    () => getBasedHashHref(href, query),
-    [href, query],
-  );
+    // Actual for opening in new tab
+    const basedHashHref = useMemo(
+      () => getBasedHashHref(href, query),
+      [href, query],
+    );
 
-  return (
-    <a {...props} href={basedHashHref} onClick={handleClick}>
-      {children}
-    </a>
-  );
-};
+    return (
+      <a {...props} ref={ref} href={basedHashHref} onClick={handleClick}>
+        {children}
+      </a>
+    );
+  },
+);
+LinkIpfs.displayName = 'LinkIpfs';

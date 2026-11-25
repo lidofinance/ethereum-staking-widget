@@ -10,8 +10,3 @@ export const GeoNoticeWrapper = styled.div`
 export const GeoNoticeLoader = styled(Loader).attrs({ size: 'small' })`
   flex: 0 0 auto;
 `;
-
-// stands in for CardCta, so it keeps that slot's top margin
-export const VaultCardGeoNoticeWrapper = styled.div`
-  margin-top: 32px;
-`;

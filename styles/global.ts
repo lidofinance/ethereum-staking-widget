@@ -98,15 +98,12 @@ const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     color: var(--lido-color-primary);
 
-    &:visited {
-      color: var(--lido-color-primary);
-    }
-
-    &:hover {
+    // ':where' keeps the specificity of a plain 'a'.
+    // Then the link colours of components (one class, e.g. lido-app-ui Button) win.
+    // No ':visited' rule: the 'a' rule above already colours visited links.
+    &:where(:hover) {
       color: var(--lido-color-primaryHover);
     }
-
-   
   }
 `;
 

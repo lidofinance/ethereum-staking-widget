@@ -1,4 +1,4 @@
-import { forwardRef, type ReactNode } from 'react';
+import { forwardRef, type AnchorHTMLAttributes, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { ThemeProvider, themeLight } from '@lidofinance/lido-ui';
 
@@ -20,13 +20,18 @@ const state = vi.hoisted(() => ({ calls: [] as unknown[] }));
 
 vi.mock('../drawer-table', () => ({ DrawerTable: () => null }));
 vi.mock('config', () => ({ config: { helpOrigin: 'https://help.test' } }));
+// in-app links of app-ui reach LocalLink through the Earn link provider
 vi.mock('shared/components/local-link', () => ({
-  LocalLink: ({ children }: { children: unknown }) => children,
+  LocalLink: ({
+    children,
+    ...props
+  }: AnchorHTMLAttributes<HTMLAnchorElement>) => <a {...props}>{children}</a>,
 }));
 
 // jsdom is not available and the library Drawer renders nothing on the server,
-// so the library component is stubbed; DrawerRight itself is real
-vi.mock('@lidofinance/lido-app-ui', () => ({
+// so only the Drawer is stubbed; DrawerRight and the other parts are real
+vi.mock('@lidofinance/lido-app-ui', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@lidofinance/lido-app-ui')>()),
   Drawer: forwardRef<HTMLDivElement, StubProps>((props, ref) => {
     state.calls.push(props);
     if (!props.open) return null;

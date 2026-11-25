@@ -2,9 +2,9 @@ import { VaultUsdIcon } from 'assets/earn-v2';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
-import { VaultCard } from '../shared/v2/vault-card';
+import { VaultCard } from '../vaults-list/vault-card';
 import { EARN_VAULT_USD_SLUG } from '../consts';
-import { VaultListWarning } from '../shared/v2/vault-warning';
+import { VaultListWarning } from '../vaults-list/vault-list-warning';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { UsdVaultApyHint } from './components/apy-hint';

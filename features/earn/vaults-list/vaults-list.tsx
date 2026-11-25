@@ -1,31 +1,34 @@
-import { useState, type FC } from 'react';
-
+import { useState } from 'react';
 import {
-  DisclaimerSection,
-  AprDisclaimer,
-  LegalDisclaimer,
-  ButtonInline,
-} from 'shared/components';
+  Accordion,
+  Button,
+  Divider,
+  IconInfo,
+  Typography,
+} from '@lidofinance/lido-app-ui';
+
+import { AprDisclaimer, LegalDisclaimer } from 'shared/components';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { useEarnState } from '../shared/hooks/use-earn-state';
 import { DrawerRight } from '../shared/drawer-right';
-import { UpgradeCardVaultsList } from '../shared/upgrade-card-vaults-list';
 import { EarnInfoBanner } from '../shared/v2/earn-info-banner';
 
-import { VaultCardGGV } from '../vault-ggv/vault-card-ggv-v2';
-import { VaultCardDVV } from '../vault-dvv/vault-card-dvv-v2';
-import { VaultCardSTG } from '../vault-stg/vault-card-stg-v2';
+import { VaultCardGGV } from '../vault-ggv/vault-card-ggv';
+import { VaultCardDVV } from '../vault-dvv/vault-card-dvv';
+import { VaultCardSTG } from '../vault-stg/vault-card-stg';
 import { UsdVaultCard } from '../vault-usd';
 import { EthVaultCard } from '../vault-eth';
 
+import { FaqDrawer } from './faq-drawer';
 import {
-  AccordionTitle,
-  CardsStack,
-  ListSubtitle,
-  ListWrapper,
-  AccordionTransparentStyled,
+  ListRoot,
+  Hero,
+  CardsColumn,
+  LegacyVaults,
+  LegacyVaultsList,
+  Disclaimers,
 } from './styles';
 
 const VAULT_CARDS = {
@@ -36,85 +39,84 @@ const VAULT_CARDS = {
   eth: EthVaultCard,
 };
 
-export const EarnVaultsList: FC = () => {
+export const EarnVaultsList = () => {
   const { earnVaultsEnabled } = useEarnState();
   const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
-  const [isAccordionAnimating, setIsAccordionAnimating] = useState(false);
 
-  const actualVaults = [] as typeof earnVaultsEnabled;
-  const deprecatedVaults = [] as typeof earnVaultsEnabled;
-
-  earnVaultsEnabled.forEach((vault) => {
-    if (vault.deprecated) {
-      deprecatedVaults.push(vault);
-    } else {
-      actualVaults.push(vault);
-    }
-  });
-
-  const hasDeprecatedVaults = deprecatedVaults.length > 0;
+  const actualVaults = earnVaultsEnabled.filter((vault) => !vault.deprecated);
+  const deprecatedVaults = earnVaultsEnabled.filter(
+    (vault) => vault.deprecated,
+  );
 
   return (
     <>
-      <ListSubtitle>
-        Deploy ETH and USD stablecoins into DeFi vaults for&nbsp;on&#8209;chain
-        rewards through the world&apos;s leading protocols.
-        <br />
-        <ButtonInline
-          onClick={(event) => {
-            event.preventDefault();
-            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListHowLidoEarnWorks);
-            setIsDrawerRightOpen(true);
-          }}
-          data-testid="how-lido-earn-works-button"
-        >
-          How Lido Earn Works
-        </ButtonInline>
-      </ListSubtitle>
-      <ListWrapper>
-        <EarnInfoBanner />
-        <UpgradeCardVaultsList setIsDrawerRightOpen={setIsDrawerRightOpen} />
-        <CardsStack>
+      <ListRoot data-testid="earn-vaults-list">
+        <Hero>
+          <Typography variant="h1">Earn, powered by Lido</Typography>
+          <Typography variant="body" color="secondary">
+            Deploy ETH and USD stablecoins into DeFi vaults
+            for&nbsp;on&#8209;chain rewards through the world&apos;s leading
+            protocols.
+          </Typography>
+          <Button
+            variant="ghost"
+            size="small"
+            iconLeft={<IconInfo />}
+            onClick={() => {
+              trackMatomoEvent(
+                MATOMO_EARN_EVENTS_TYPES.earnListHowLidoEarnWorks,
+              );
+              setIsDrawerRightOpen(true);
+            }}
+            dataTestId={{ root: 'how-lido-earn-works-button' }}
+          >
+            How Lido Earn Works
+          </Button>
+        </Hero>
+
+        <CardsColumn>
+          <EarnInfoBanner />
+
           {actualVaults.map((vault) => {
             const VaultCard = VAULT_CARDS[vault.name];
             return <VaultCard key={vault.name} />;
           })}
-        </CardsStack>
 
-        {hasDeprecatedVaults && (
-          <AccordionTransparentStyled
-            data-animating={isAccordionAnimating || undefined}
-            onExpand={() => setIsAccordionAnimating(false)}
-            onCollapse={() => setIsAccordionAnimating(false)}
-            summary={
-              <AccordionTitle
-                data-testid="upgrading-vaults"
-                onClick={() => setIsAccordionAnimating(true)}
+          {deprecatedVaults.length > 0 && (
+            <LegacyVaults data-testid="deprecated-vaults-list">
+              <Accordion
+                title="Upgrading vaults"
+                border={false}
+                dataTestId={{ header: 'upgrading-vaults' }}
               >
-                Legacy vaults
-              </AccordionTitle>
-            }
-            withoutBorder
-            data-testid="deprecated-vaults-list"
-          >
-            <CardsStack>
-              {deprecatedVaults.map((vault) => {
-                const VaultCard = VAULT_CARDS[vault.name];
-                return <VaultCard key={vault.name} />;
-              })}
-            </CardsStack>
-          </AccordionTransparentStyled>
-        )}
+                <LegacyVaultsList>
+                  {deprecatedVaults.map((vault, index) => {
+                    const VaultCard = VAULT_CARDS[vault.name];
+                    return (
+                      <div key={vault.name}>
+                        {index > 0 && <Divider />}
+                        <VaultCard />
+                      </div>
+                    );
+                  })}
+                </LegacyVaultsList>
+              </Accordion>
+            </LegacyVaults>
+          )}
+        </CardsColumn>
 
-        <DisclaimerSection>
+        <Disclaimers>
           <AprDisclaimer mentionAPY />
           <LegalDisclaimer />
-        </DisclaimerSection>
-      </ListWrapper>
-      <DrawerRight
-        onClose={() => setIsDrawerRightOpen(false)}
-        isOpen={isDrawerRightOpen}
-      />
+        </Disclaimers>
+
+        <DrawerRight
+          onClose={() => setIsDrawerRightOpen(false)}
+          isOpen={isDrawerRightOpen}
+        />
+      </ListRoot>
+
+      <FaqDrawer />
     </>
   );
 };

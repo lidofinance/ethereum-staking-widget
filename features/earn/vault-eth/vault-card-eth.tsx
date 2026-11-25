@@ -1,9 +1,9 @@
 import { VaultEthIcon } from 'assets/earn-v2';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
-import { VaultListWarning } from 'features/earn/shared/v2/vault-warning';
+import { VaultListWarning } from 'features/earn/vaults-list/vault-list-warning';
 
-import { VaultCard } from '../shared/v2/vault-card';
+import { VaultCard } from '../vaults-list/vault-card';
 import { EARN_VAULT_ETH_SLUG } from '../consts';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';

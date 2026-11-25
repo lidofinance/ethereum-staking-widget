@@ -1,4 +1,8 @@
-import React, { AnchorHTMLAttributes, FC, PropsWithChildren } from 'react';
+import React, {
+  AnchorHTMLAttributes,
+  forwardRef,
+  PropsWithChildren,
+} from 'react';
 import { useRouter } from 'next/router';
 import Link, { LinkProps } from 'next/link';
 
@@ -23,33 +27,41 @@ type LocalLinkProps = PropsWithChildren<
   LinkProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps>
 >;
 
-export const LocalLink: FC<LocalLinkProps> = (props) => {
-  const router = useRouter();
-  const productQuery = useProductQuery();
-  const { href, ...restProps } = props;
+// forwardRef: lido-app-ui LinkProvider needs the ref on the <a>
+export const LocalLink = forwardRef<HTMLAnchorElement, LocalLinkProps>(
+  (props, ref) => {
+    const router = useRouter();
+    const productQuery = useProductQuery();
+    const { href, ...restProps } = props;
 
-  const extraQuery: Record<string, string> = {};
-  // does not support duplicates ?ref=01234&ref=56789
-  for (const key of KEPT_QUERY_KEYS) {
-    const value = router.query[key];
-    if (value && typeof value === 'string') extraQuery[key] = value;
-  }
-  // from the products state, so they survive a navigation that lost them
-  Object.assign(extraQuery, productQuery);
+    const extraQuery: Record<string, string> = {};
+    // Skip repeated query parameters because the router returns them as arrays,
+    // e.g. ?param=01234&param=56789
+    for (const key of KEPT_QUERY_KEYS) {
+      const value = router.query[key];
+      if (value && typeof value === 'string') extraQuery[key] = value;
+    }
+    // Keep product URL parameters across navigation, using cached values when the current URL has none.
+    Object.assign(extraQuery, productQuery);
 
-  if (typeof href === 'string') {
-    if (config.ipfsMode) {
-      return <LinkIpfs {...restProps} href={href} query={extraQuery} />;
+    if (typeof href === 'string') {
+      if (config.ipfsMode) {
+        return (
+          <LinkIpfs {...restProps} ref={ref} href={href} query={extraQuery} />
+        );
+      }
+
+      return (
+        <Link
+          {...restProps}
+          ref={ref}
+          legacyBehavior={false}
+          href={{ pathname: href, query: extraQuery }}
+        />
+      );
     }
 
-    return (
-      <Link
-        {...restProps}
-        legacyBehavior={false}
-        href={{ pathname: href, query: extraQuery }}
-      />
-    );
-  }
-
-  throw new Error('Prop href as object is not compatible');
-};
+    throw new Error('Prop href as object is not compatible');
+  },
+);
+LocalLink.displayName = 'LocalLink';
