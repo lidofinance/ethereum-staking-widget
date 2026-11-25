@@ -7,7 +7,10 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
-import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
+import {
+  useQueryParamsReferralForm,
+  useQueryParamsTokenForm,
+} from 'shared/hooks/use-query-values-form';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
@@ -24,6 +27,7 @@ import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { useUsdVaultDepositRequest } from '../hooks';
 import { useUsdVaultPreviewDeposit } from '../hooks/use-preview-deposit';
 import { asUsdDepositToken } from '../../utils';
+import { USD_VAULT_DEPOSIT_TOKEN_SYMBOLS } from '../../consts';
 
 const UsdVaultDepositFormDataContext =
   createContext<USDDepositFormDataContextValue | null>(null);
@@ -84,6 +88,10 @@ export const UsdVaultDepositFormProvider: React.FC<{
 
   const { setValue } = formObject;
   useQueryParamsReferralForm<USDDepositFormValues>({ setValue });
+  useQueryParamsTokenForm<USDDepositFormValues>({
+    setValue,
+    tokens: USD_VAULT_DEPOSIT_TOKEN_SYMBOLS,
+  });
 
   const depositRequest = useUsdVaultDepositRequest({
     token: asUsdDepositToken(tokenSymbol),
