@@ -25,7 +25,7 @@ import {
   ShaderFailed,
   ShaderFailedLabel,
 } from './styles';
-import { usePrefersReducedMotion } from './use-prefers-reduced-motion';
+import { usePrefersReducedMotion } from '../utils';
 
 const hexToRgb = (hex: string): RGB => {
   const value = parseInt(hex.slice(1), 16);

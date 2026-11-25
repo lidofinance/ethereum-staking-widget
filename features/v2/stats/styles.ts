@@ -1,9 +1,9 @@
 import { Divider } from '@lidofinance/lido-app-ui';
 import styled from 'styled-components';
 
-import { fadeIn, FadeInProps } from '../utils';
+import { motionFade } from '../utils';
 
-export const StatsStack = styled.div<FadeInProps>`
+export const StatsStack = styled.div`
   min-height: 24px;
   width: 100%;
 
@@ -16,7 +16,7 @@ export const StatsStack = styled.div<FadeInProps>`
   column-gap: 5px;
   white-space: nowrap;
 
-  ${fadeIn}
+  ${motionFade()}
 `;
 
 export const GridDivivder = styled(Divider).attrs({

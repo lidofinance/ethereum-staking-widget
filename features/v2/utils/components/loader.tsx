@@ -4,7 +4,11 @@ type LoaderProps = { isLoading?: boolean } & React.ComponentProps<
   typeof Skeleton
 >;
 
-export const Loader: React.FC<LoaderProps> = ({ children, ...props }) => {
-  if (props.isLoading) return <Skeleton {...props} />;
+export const Loader: React.FC<LoaderProps> = ({
+  children,
+  isLoading,
+  ...props
+}) => {
+  if (isLoading) return <Skeleton {...props} />;
   return children;
 };

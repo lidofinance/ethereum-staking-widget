@@ -30,6 +30,22 @@ export type RequestTimeByRequestIds = {
   nextCalculationAt: string;
 };
 
+/**
+ * Latest finalization estimate among pending requests: when the last of them
+ * is expected to become claimable. Null when there are none, or when any
+ * request has no estimate, since the max is unknown then.
+ */
+const getMaxFinalizationAt = (requests: readonly RequestStatusPending[]) => {
+  let max: string | null = null;
+  for (const { finalizationAt } of requests) {
+    if (!finalizationAt) return null;
+    if (!max || Date.parse(finalizationAt) > Date.parse(max)) {
+      max = finalizationAt;
+    }
+  }
+  return max;
+};
+
 export const useWithdrawalRequests = () => {
   const { withdraw } = useLidoSDK();
   const { chainId, address, isSupportedChain } = useDappStatus();
@@ -123,6 +139,9 @@ export const useWithdrawalRequests = () => {
         }
       });
 
+      // over every pending request, so before clamping
+      const maxFinalizationAt = getMaxFinalizationAt(pendingRequests);
+
       let isClamped =
         claimableRequests.splice(MAX_SHOWN_REQUEST_PER_TYPE).length > 0;
       isClamped ||=
@@ -160,6 +179,7 @@ export const useWithdrawalRequests = () => {
         pendingAmountOfStETH,
         claimableAmountOfStETH,
         claimableAmountOfETH,
+        maxFinalizationAt,
         isClamped,
       };
     },

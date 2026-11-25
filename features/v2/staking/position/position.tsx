@@ -1,10 +1,14 @@
-import { Body } from '@lidofinance/lido-app-ui';
+import { useRef, useState } from 'react';
+import { Body, Popover, Typography } from '@lidofinance/lido-app-ui';
+
 import { useCrossStakingChainPosition, useDappStatus } from 'modules/web3';
-import { FormatPercent, FormatToken } from 'shared/formatters';
+import { FormatPercent, FormatPrice, FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
 
-import { useDelayedShow } from '../../utils';
-import { Loader } from 'features/v2/utils/loader';
+import { Loader, toMotionState, useDelayedShow } from '../../utils';
+
+import { PendingWithdrawals } from './pending-withdrawals';
+import { PositionPopover } from './position-popover';
 
 import {
   BorderedCard,
@@ -13,6 +17,7 @@ import {
   PositionAPR,
   PositionAmount,
   UnconnectedText,
+  ChevronDown,
 } from './styles';
 
 const UnconnectedPosition = () => {
@@ -26,7 +31,7 @@ const UnconnectedPosition = () => {
 
   return (
     <BorderedCard>
-      <UnconnectedText $show={shouldShow}>
+      <UnconnectedText data-state={toMotionState(shouldShow)}>
         Stake with{' '}
         {apr && (
           <Loader isLoading={isLoading}>
@@ -42,36 +47,77 @@ const UnconnectedPosition = () => {
 };
 
 const ConnectedPosition = () => {
+  const [isPositionOpen, setIsPositionOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
   // 'eth' sort gates on the wstETH rate whenever wstETH is held,
   // so the total never shows without its wstETH part
   const { data: position, isLoading: isPositionLoading } =
-    useCrossStakingChainPosition({ sort: 'usd' });
+    useCrossStakingChainPosition({ sort: 'usd', tokenList: 'staked' });
   const { data: aprData, isLoading: isAprLoading } = useLidoApr();
 
   const shouldShow = useDelayedShow([isPositionLoading, isAprLoading]);
+  const hasPosition = position?.totalEthValue !== 0n;
+
+  const shouldShowPosition = hasPosition && isPositionOpen;
 
   return (
-    <BorderedCard>
-      <PositionGrid $show={shouldShow}>
-        <PositionTitle>Staked position</PositionTitle>
-        <PositionAmount>
-          <Loader isLoading={isPositionLoading}>
-            {' '}
-            <FormatToken amount={position?.totalEthValue} symbol="ETH" />
-          </Loader>
-        </PositionAmount>
-        <PositionAPR>
-          {aprData?.data?.smaApr && (
-            <FormatPercent decimals="percent" value={aprData.data.smaApr} />
-          )}{' '}
-          APR
-        </PositionAPR>
-      </PositionGrid>
-      {/*
-        TODO: withdrawal part of ui    
-
-       */}
-    </BorderedCard>
+    <>
+      <BorderedCard>
+        <PositionGrid
+          data-state={toMotionState(shouldShow)}
+          onClick={(e) => {
+            e.preventDefault();
+            hasPosition && setIsPositionOpen(!isPositionOpen);
+          }}
+          ref={triggerRef}
+          data-clickable={hasPosition ? 'true' : 'false'}
+          data-toggled={isPositionOpen ? 'true' : 'false'}
+        >
+          <PositionTitle>
+            Staked position{' '}
+            {hasPosition && (
+              <ChevronDown data-toggled={isPositionOpen ? 'true' : 'false'} />
+            )}
+          </PositionTitle>
+          <PositionAmount>
+            <Loader isLoading={isPositionLoading}>
+              {!hasPosition ? (
+                <Typography color="tertiary">No position</Typography>
+              ) : (
+                <>
+                  <FormatToken amount={position?.totalEthValue} symbol="ETH" />
+                  &nbsp;&nbsp;
+                  <Typography
+                    as="span"
+                    color="secondary"
+                    variant="description"
+                    weight="regular"
+                  >
+                    <FormatPrice amount={position?.totalUsdValue} />
+                  </Typography>
+                </>
+              )}
+            </Loader>
+          </PositionAmount>
+          <PositionAPR>
+            {aprData?.data?.smaApr && (
+              <FormatPercent decimals="percent" value={aprData.data.smaApr} />
+            )}{' '}
+            APR
+          </PositionAPR>
+        </PositionGrid>
+        <PendingWithdrawals />
+      </BorderedCard>
+      <Popover
+        aria-label="Position details"
+        open={shouldShowPosition}
+        onClose={() => setIsPositionOpen(false)}
+        anchorRef={triggerRef}
+      >
+        <PositionPopover position={position} />
+      </Popover>
+    </>
   );
 };
 

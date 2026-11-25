@@ -1,13 +1,13 @@
 import { Button } from '@lidofinance/lido-app-ui';
 import { useDappStatus } from 'modules/web3';
 import styled from 'styled-components';
-import { fadeIn, FadeInProps } from './fade-in';
+import { motionFade, toMotionState } from '../motion';
 import { useConnectWallet } from 'shared/wallet/connect/use-connect-wallet';
 
 type ConnectButtonProps = React.ComponentProps<typeof Button>;
 
-const FadeInText = styled.span<FadeInProps>`
-  ${fadeIn}
+const FadeInText = styled.span`
+  ${motionFade()}
 `;
 
 export const ConnectButton = ({
@@ -60,7 +60,9 @@ export const ConnectButton = ({
       disabled={buttonDisabled}
       {...hackedPropsTyping}
     >
-      <FadeInText $show={showContent}>{buttonContent}</FadeInText>
+      <FadeInText data-state={toMotionState(showContent)}>
+        {buttonContent}
+      </FadeInText>
     </Button>
   );
 };

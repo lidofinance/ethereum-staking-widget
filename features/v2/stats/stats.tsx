@@ -1,6 +1,8 @@
 import { Body, Divider } from '@lidofinance/lido-app-ui';
 import { useLidoStats } from 'shared/hooks';
 
+import { toMotionState } from '../utils';
+
 import { StatsStack } from './styles';
 
 export const Stats = () => {
@@ -13,7 +15,7 @@ export const Stats = () => {
     data.rawData.uniqueAnytimeHolders != undefined;
 
   return (
-    <StatsStack $show={shouldShow}>
+    <StatsStack data-state={toMotionState(shouldShow)}>
       <span>
         <Body>
           <b>{data?.totalStaked}</b> staked
