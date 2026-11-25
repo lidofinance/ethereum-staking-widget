@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import { Block } from '@lidofinance/lido-ui';
 
-export const VaultBlock = styled(Block)`
+// data-snow-surface: the holiday theme lays a snow drift on it
+export const VaultBlock = styled(Block).attrs({ 'data-snow-surface': 'card' })`
   display: flex;
   flex-direction: column;
   padding: ${({ theme }) => theme.spaceMap.xl}px;

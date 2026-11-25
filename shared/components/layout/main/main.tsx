@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import { ContainerProps } from '@lidofinance/lido-ui';
-import { useConfig } from 'config';
 import { useRouter } from 'next/router';
+
+import { useWinterTheme } from 'shared/components/winter-theme';
 
 import { MainStyle } from './styles';
 import { EARN_PATH } from 'consts/urls';
@@ -12,7 +13,7 @@ import {
 
 export const Main: FC<ContainerProps> = (props) => {
   const { size = 'tight', ...rest } = props;
-  const { featureFlags } = useConfig().externalConfig;
+  const { enabled: isWinterThemeEnabled } = useWinterTheme();
   const router = useRouter();
 
   const isEarnListPage = router.pathname === EARN_PATH;
@@ -27,7 +28,7 @@ export const Main: FC<ContainerProps> = (props) => {
     <MainStyle
       size={mainSize}
       forwardedAs="main"
-      isHolidayDecorEnabled={featureFlags.holidayDecorEnabled}
+      isWinterThemeEnabled={isWinterThemeEnabled}
       isEarnVault={isEarnVault}
       {...rest}
     />

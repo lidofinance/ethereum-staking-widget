@@ -28,7 +28,7 @@
     "featureFlags": {
       "dgBannerEnabled": true,
       "rewardsMaintenance": false,
-      "holidayDecorEnabled": false,
+      "holidayDecorEnabled": true,
       "forceAllowance": false,
       "amountBannerEnabled": true,
       "ggvBulkWithdrawEnabled": true,

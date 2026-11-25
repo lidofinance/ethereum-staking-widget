@@ -5,7 +5,8 @@ export const InputWrap = styled.div`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
 `;
 
-export const WrapBlock = styled(Block)`
+// data-snow-surface: the holiday theme lays a snow drift on it
+export const WrapBlock = styled(Block).attrs({ 'data-snow-surface': 'card' })`
   gap: ${({ theme }) => theme.spaceMap.md}px;
   display: flex;
   flex-direction: column;

@@ -16,3 +16,10 @@ export const HeaderStyled = styled(Container)`
     padding: 18px ${({ theme }) => theme.spaceMap.lg}px;
   }
 `;
+
+// keeps the holiday hat in place over the logo
+export const LogoWrap = styled.div`
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+`;

@@ -16,7 +16,11 @@ export const StakeForm: FC = () => {
   return (
     <StakeFormProvider>
       <Wallet />
-      <StakeBlock data-testid="stakeForm">
+      <StakeBlock
+        data-testid="stakeForm"
+        data-snow-surface="card"
+        data-winter-anchor="stake-form"
+      >
         <FormControllerStyled>
           <StakeInputGroup />
           <StakeSubmitButton />

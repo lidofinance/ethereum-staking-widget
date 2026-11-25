@@ -19,6 +19,7 @@ export const StakeSubmitButton = () => {
         stakingLimitInfo?.stakeLimitLevel === LIMIT_LEVEL.REACHED
       }
       data-testid="stakeSubmitBtn"
+      data-snow-surface="button"
       errorField="amount"
     >
       {needsSeparateUnwrap ? 'Unwrap WETH and stake' : 'Stake'}

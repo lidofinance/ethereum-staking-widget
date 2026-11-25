@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import { devicesHeaderMedia } from 'styles/global';
 
 type MainStyleProps = ContainerProps & {
-  isHolidayDecorEnabled?: boolean;
+  isWinterThemeEnabled?: boolean;
   isEarnVault?: boolean;
 };
 
-// mobile room for the holiday decor above the content
-const HOLIDAY_DECOR_OFFSET = 48;
-const HOLIDAY_DECOR_EARN_VAULT_OFFSET = 88;
+// mobile room for the holiday garland under the header
+const WINTER_THEME_OFFSET = 36;
+const WINTER_THEME_EARN_VAULT_OFFSET = 76;
 
 export const MainStyle = styled(Container)<MainStyleProps>`
   position: relative;
@@ -17,9 +17,9 @@ export const MainStyle = styled(Container)<MainStyleProps>`
   padding-bottom: ${({ theme }) => theme.spaceMap.sm}px;
 
   @media ${devicesHeaderMedia.mobile} {
-    margin-top: ${({ isHolidayDecorEnabled, isEarnVault }) =>
-      isHolidayDecorEnabled
-        ? `${isEarnVault ? HOLIDAY_DECOR_EARN_VAULT_OFFSET : HOLIDAY_DECOR_OFFSET}px`
+    margin-top: ${({ isWinterThemeEnabled, isEarnVault }) =>
+      isWinterThemeEnabled
+        ? `${isEarnVault ? WINTER_THEME_EARN_VAULT_OFFSET : WINTER_THEME_OFFSET}px`
         : 'unset'};
     padding-top: 0;
   }

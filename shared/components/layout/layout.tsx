@@ -16,7 +16,11 @@ import {
   IPFSInfoBoxOnlyMobileAndPortableWrapper,
   AmountBannerOnlyMobileWrapper,
 } from './styles';
-import { HolidaysDecorFooter } from '../holiday-decor';
+import {
+  WinterCountdown,
+  WinterTheme,
+  WinterThemeProvider,
+} from '../winter-theme';
 
 type Props = {
   title?: ReactNode;
@@ -30,7 +34,8 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
   const { children } = props;
 
   return (
-    <>
+    <WinterThemeProvider>
+      <WinterTheme />
       <TestEnvBanner />
       <Header />
       <Main size={containerSize}>
@@ -42,12 +47,14 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
         <AmountBannerOnlyMobileWrapper>
           <AmountBanner isDismissible placement="connect_wallet" />
         </AmountBannerOnlyMobileWrapper>
+        {title && <WinterCountdown />}
         <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>
-        <LayoutSubTitleStyle>{subtitle}</LayoutSubTitleStyle>
+        <LayoutSubTitleStyle data-layout-subtitle>
+          {subtitle}
+        </LayoutSubTitleStyle>
         {children}
       </Main>
       <Footer />
-      <HolidaysDecorFooter />
-    </>
+    </WinterThemeProvider>
   );
 };

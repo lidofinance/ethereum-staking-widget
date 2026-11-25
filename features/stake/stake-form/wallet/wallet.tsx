@@ -29,6 +29,7 @@ const WalletComponent = () => {
   return (
     <StyledCard
       data-testid="stakeCardSection"
+      data-winter-anchor="stake-top"
       multiChainId={isChainIdOnL2 ? chainId : undefined}
     >
       <CardRow>
