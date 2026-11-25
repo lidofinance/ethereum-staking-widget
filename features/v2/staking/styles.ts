@@ -16,12 +16,12 @@ export const TabsSizer = styled.div`
 `;
 
 export const InlineShieldIcon = styled(IconShield).attrs({
-  'aria-hidden': 'true',
   width: 16,
   height: 16,
+  'aria-hidden': 'true',
 })`
   display: inline-block;
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.125em;
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
 `;

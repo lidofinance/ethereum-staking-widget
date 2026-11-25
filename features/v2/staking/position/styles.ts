@@ -4,20 +4,20 @@ import styled from 'styled-components';
 import { fadeIn, FadeInProps } from '../../utils';
 
 export const BorderedCard = styled(Card).attrs({
-  padding: 12,
+  padding: 0,
 })`
-  min-height: 72px;
+  min-height: 76px;
 
   border: 1px solid var(--lido-app-ui-color-border-default);
   border-radius: var(--lido-app-ui-border-radius-md);
-  // horizontally combines with element padding 12 from attrs
-  padding-inline: var(--lido-app-ui-space-4);
 `;
 
 export const UnconnectedText = styled(Typography).attrs({
   variant: 'body',
   weight: 'bold',
 })<FadeInProps>`
+  padding-inline: var(--lido-app-ui-space-12);
+  padding-block: var(--lido-app-ui-space-16);
   ${fadeIn}
 `;
 
@@ -26,6 +26,9 @@ export const PositionGrid = styled.div<FadeInProps>`
   width: 100%;
   grid-template-columns: 1fr auto;
   grid-template-rows: auto;
+
+  padding-inline: var(--lido-app-ui-space-12);
+  padding-block: var(--lido-app-ui-space-16);
 
   ${fadeIn}
 `;

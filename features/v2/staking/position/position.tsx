@@ -4,6 +4,8 @@ import { FormatPercent, FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
 
 import { useDelayedShow } from '../../utils';
+import { Loader } from 'features/v2/utils/loader';
+
 import {
   BorderedCard,
   PositionGrid,
@@ -13,14 +15,11 @@ import {
   UnconnectedText,
 } from './styles';
 
-type UnconnectedPositionProps = { isWalletResolving: boolean };
-
-const UnconnectedPosition = ({
-  isWalletResolving,
-}: UnconnectedPositionProps) => {
+const UnconnectedPosition = () => {
+  const { isWalletResolving } = useDappStatus();
   const { data, isLoading } = useLidoApr();
-  // resolving is a gate, not a loading flag: the 300ms timeout must not
-  // flash "stake with" while the boot auto-connect may still land
+  // isWalletResolving also has timeout but much larger,
+  // useDelayedShow still UI protects against flashing apr skelton
   const shouldShow = useDelayedShow([isLoading]) && !isWalletResolving;
 
   const apr = data?.data?.smaApr;
@@ -30,9 +29,9 @@ const UnconnectedPosition = ({
       <UnconnectedText $show={shouldShow}>
         Stake with{' '}
         {apr && (
-          <>
+          <Loader isLoading={isLoading}>
             <FormatPercent decimals="percent" value={apr} /> APR
-          </>
+          </Loader>
         )}{' '}
         <Body as="span" color="tertiary">
           daily rewards, stay liquid
@@ -46,7 +45,7 @@ const ConnectedPosition = () => {
   // 'eth' sort gates on the wstETH rate whenever wstETH is held,
   // so the total never shows without its wstETH part
   const { data: position, isLoading: isPositionLoading } =
-    useCrossStakingChainPosition({ sort: 'eth' });
+    useCrossStakingChainPosition({ sort: 'usd' });
   const { data: aprData, isLoading: isAprLoading } = useLidoApr();
 
   const shouldShow = useDelayedShow([isPositionLoading, isAprLoading]);
@@ -56,7 +55,10 @@ const ConnectedPosition = () => {
       <PositionGrid $show={shouldShow}>
         <PositionTitle>Staked position</PositionTitle>
         <PositionAmount>
-          <FormatToken amount={position?.totalEthValue} symbol="ETH" />
+          <Loader isLoading={isPositionLoading}>
+            {' '}
+            <FormatToken amount={position?.totalEthValue} symbol="ETH" />
+          </Loader>
         </PositionAmount>
         <PositionAPR>
           {aprData?.data?.smaApr && (
@@ -74,10 +76,10 @@ const ConnectedPosition = () => {
 };
 
 export const Position = () => {
-  const { isWalletConnected, isWalletResolving } = useDappStatus();
+  const { isWalletConnected } = useDappStatus();
 
   if (!isWalletConnected) {
-    return <UnconnectedPosition isWalletResolving={isWalletResolving} />;
+    return <UnconnectedPosition />;
   }
 
   return <ConnectedPosition />;

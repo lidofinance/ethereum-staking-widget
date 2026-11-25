@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const DEFAULT_TIMEOUT_MS = 300;
+const DEFAULT_TIMEOUT_MS = 400;
 
 /**
  * Turns `true` once every loading flag settles, or after `timeoutMs`
