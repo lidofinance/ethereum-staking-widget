@@ -79,7 +79,8 @@ const WalletComponent = () => {
 
 export const Wallet = () => {
   return (
-    <Fallback toActionText="to stake">
+    // the error card stands in for the wallet card: Lido-man peeks over it
+    <Fallback toActionText="to stake" data-winter-anchor="stake-top">
       <WalletComponent />
     </Fallback>
   );

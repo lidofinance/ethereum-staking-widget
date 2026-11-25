@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useMemo,
   useEffect,
   useRef,
   useState,
@@ -38,7 +39,8 @@ export const noise = (i: number, k: number): number => {
 const FORM_ICICLES: Icicle[] = Array.from({ length: COUNT }, (_, i) => {
   const long = noise(i, 1) > 0.55;
   return {
-    x: ((i + 0.5 + (noise(i, 2) - 0.5) * 0.6) / COUNT) * 100,
+    // clear of the lip's tapered ends
+    x: 7 + ((i + 0.5 + (noise(i, 2) - 0.5) * 0.6) / COUNT) * 86,
     length: Math.round(long ? 24 + noise(i, 3) * 16 : 8 + noise(i, 3) * 10),
     width: Math.round(7 + noise(i, 4) * 5),
     rot: Math.round((noise(i, 5) - 0.5) * 70),
@@ -62,24 +64,27 @@ const grow = keyframes`
 
 const Row = styled.div`
   position: absolute;
-  height: 48px;
+  height: 72px;
   pointer-events: none;
   filter: drop-shadow(0 3px 4px var(--winter-ice-shadow));
 `;
+
+// room under the card's edge for the lip's thickness
+const LIP_ROOM = 10;
 
 // the frozen lip along the card's lower edge
 const Lip = styled.svg`
   position: absolute;
   inset: 0 0 auto;
   width: 100%;
-  height: 8px;
   display: block;
+  overflow: visible;
 `;
 
 // wider than the icicle, so it is easy to hit
 const Hit = styled.span`
   position: absolute;
-  top: 4px;
+  top: var(--hang, 4px);
   padding: 0 4px 6px;
   margin-left: calc(var(--w) / -2 - 4px);
   pointer-events: auto;
@@ -142,26 +147,72 @@ const Ice = styled.span`
   }
 `;
 
-const LIP_PATH = (() => {
-  let d = 'M0 0 L100 0 L100 4';
-  for (let x = 100; x >= 0; x -= 4) {
-    d += ` L${x} ${(4.2 + Math.sin(x * 0.9) * 1.1 + noise(x, 6) * 1.6).toFixed(2)}`;
+// how far up a rounded corner the ice climbs, as a share of its quarter turn
+const LIP_CORNER = 0.5;
+
+// Ice along a card's lower edge: it hugs the card outline, goes round the
+// bottom of the rounded corners and thins out to nothing halfway up them.
+// In px, for a row as wide as the card whose top is `radius` above the
+// card's bottom edge.
+const buildEdgeLip = (width: number, radius: number) => {
+  // tucked 1px under the card, so no seam shows
+  const inner = radius - 1;
+  const thickness = (x: number) =>
+    4.2 + Math.sin(x * 0.21) * 1 + noise(Math.round(x / 3), 6) * 1.4;
+  // u: 0 at the bottom of a corner, 1 where the ice ends on it
+  const fade = (u: number) => Math.cos((u * Math.PI) / 2) ** 1.4;
+  // the angle of the corner the ice climbs, from its bottom
+  const climb = (u: number) => u * LIP_CORNER * (Math.PI / 2);
+  const at = (cx: number, r: number, angle: number) =>
+    `${(cx + r * Math.cos(angle)).toFixed(2)} ${(r * Math.sin(angle)).toFixed(2)}`;
+  const STEPS = 10;
+  const left = radius;
+  const right = width - radius;
+  const down = Math.PI / 2;
+
+  // the card outline, left to right
+  let d = `M${at(left, inner, down + climb(1))}`;
+  for (let k = STEPS - 1; k >= 0; k--) {
+    d += ` L${at(left, inner, down + climb(k / STEPS))}`;
+  }
+  for (let k = 1; k <= STEPS; k++) {
+    d += ` L${at(right, inner, down - climb(k / STEPS))}`;
+  }
+  // back along the outer edge, right to left
+  for (let k = STEPS; k >= 0; k--) {
+    const u = k / STEPS;
+    d += ` L${at(right, inner + thickness(right) * fade(u), down - climb(u))}`;
+  }
+  for (let x = right - 3; x > left; x -= 3) {
+    d += ` L${x.toFixed(1)} ${(inner + thickness(x)).toFixed(2)}`;
+  }
+  for (let k = 0; k <= STEPS; k++) {
+    const u = k / STEPS;
+    d += ` L${at(left, inner + thickness(left) * fade(u), down + climb(u))}`;
   }
   return `${d} Z`;
-})();
+};
 
 type IciclesProps = {
   style: CSSProperties;
   icicles?: Icicle[];
-  // a frozen lip along the top; off where something else draws the edge
-  lip?: boolean;
+  // the card the icicles hang from: draws ice along its rounded lower edge.
+  // Without it the row has no lip (something else draws the edge).
+  edge?: { width: number; radius: number };
 };
 
 export const WinterIcicles: FC<IciclesProps> = ({
   style,
   icicles = FORM_ICICLES,
-  lip = true,
+  edge,
 }) => {
+  const edgeWidth = edge?.width;
+  const edgeRadius = edge?.radius;
+  const lip = useMemo(
+    () =>
+      edgeWidth && edgeRadius ? buildEdgeLip(edgeWidth, edgeRadius) : null,
+    [edgeWidth, edgeRadius],
+  );
   const { reducedMotion } = useWinterTheme();
   const [phases, setPhases] = useState<Phase[]>(() =>
     icicles.map(() => 'idle'),
@@ -219,16 +270,37 @@ export const WinterIcicles: FC<IciclesProps> = ({
   };
 
   return (
-    <Row style={style} aria-hidden="true">
-      {lip && (
-        <Lip viewBox="0 0 100 8" preserveAspectRatio="none">
+    <Row
+      style={
+        edge
+          ? ({
+              ...style,
+              // icicles hang from the lip, under the card's edge
+              '--hang': `${edge.radius + 2}px`,
+            } as CSSProperties)
+          : style
+      }
+      aria-hidden="true"
+    >
+      {lip && edge && (
+        <Lip
+          viewBox={`0 0 ${edge.width} ${edge.radius + LIP_ROOM}`}
+          style={{ height: edge.radius + LIP_ROOM }}
+        >
           <defs>
-            <linearGradient id="winter-ice-lip" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient
+              id="winter-ice-lip"
+              gradientUnits="userSpaceOnUse"
+              x1="0"
+              y1={edge.radius - 2}
+              x2="0"
+              y2={edge.radius + 6}
+            >
               <stop offset="0" style={{ stopColor: 'var(--winter-snow)' }} />
               <stop offset="1" style={{ stopColor: 'var(--winter-ice-0)' }} />
             </linearGradient>
           </defs>
-          <path d={LIP_PATH} fill="url(#winter-ice-lip)" />
+          <path d={lip} fill="url(#winter-ice-lip)" />
         </Lip>
       )}
       {icicles.map(({ x, length, width, rot }, i) => (

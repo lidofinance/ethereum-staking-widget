@@ -10,8 +10,9 @@ export const HEADER_BANNER_Z_INDEX = 3;
 export const CHAIN_TOOLTIP_Z_INDEX = 100;
 
 // New Year theme layers: the sky sits under page backgrounds (-1),
-// Lido-man under the snow, snow above page content and below the
-// mobile navigation, modals and toasts
+// Lido-man under the snow, his speech bubble over it, snow above page
+// content and below the mobile navigation, modals and toasts
 export const WINTER_BACKDROP_Z_INDEX = -2;
 export const WINTER_DECOR_Z_INDEX = 4;
 export const WINTER_SNOW_Z_INDEX = 5;
+export const WINTER_BUBBLE_Z_INDEX = 6;

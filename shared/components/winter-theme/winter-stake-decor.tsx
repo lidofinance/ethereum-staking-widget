@@ -9,7 +9,7 @@ import {
 import styled from 'styled-components';
 
 import { ReactComponent as LidoManSanta } from 'assets/holidays/lido-man-santa.svg';
-import { WINTER_DECOR_Z_INDEX } from 'styles/constants';
+import { WINTER_BUBBLE_Z_INDEX, WINTER_DECOR_Z_INDEX } from 'styles/constants';
 import { devicesHeaderMedia } from 'styles/global';
 
 import {
@@ -26,6 +26,8 @@ const LIDO_MAN_W_MOBILE = 92;
 // the cropped Lido-man artwork, see assets/holidays/lido-man-santa.svg
 const LIDO_MAN_RATIO = 345 / 480;
 const BUBBLE_MS = 3600;
+// corner radius of the stake form card (lido-ui Block, borderRadiusesMap.xl)
+const FORM_RADIUS = 20;
 
 type Box = { left: number; top: number; width: number; height: number };
 type Anchors = { top: Box; form: Box; mobile: boolean };
@@ -39,6 +41,11 @@ const Layer = styled.div`
   width: 100%;
   height: 0;
   pointer-events: none;
+`;
+
+// Same origin as Layer, over the snow: drifts never cover the speech bubble
+const BubbleLayer = styled(Layer)`
+  z-index: ${WINTER_BUBBLE_Z_INDEX};
 `;
 
 // Clips Lido-man at the card edge: he hides behind the card
@@ -79,7 +86,6 @@ const LidoManButton = styled.button<{ $up: boolean }>`
 
 const Bubble = styled.div`
   position: absolute;
-  z-index: ${WINTER_DECOR_Z_INDEX + 2};
   padding: 10px 14px;
   border-radius: 14px;
   background: var(--lido-color-foreground);
@@ -229,38 +235,49 @@ export const WinterStakeDecor: FC = () => {
           ['--tail' as string]: '92%',
         }
       : { left: left + w - 30, top: top.top - h - 8 };
+    // the row is as wide as the card and starts a corner radius above its
+    // bottom edge: the ice wraps around the rounded corners
     icicles = {
-      left: form.left + 14,
-      top: form.top + form.height - 6,
-      width: form.width - 28,
+      left: form.left,
+      top: form.top + form.height - FORM_RADIUS,
+      width: form.width,
     };
   }
 
   return (
-    <Layer ref={layerRef} data-winter="stake-decor">
-      {lidoMan && (
-        <LidoManWindow style={lidoMan}>
-          <LidoManButton
-            type="button"
-            $up={up}
-            onClick={poke}
-            aria-label="Lido-man: say GM"
-            data-testid="winterLidoMan"
-          >
-            <LidoManSanta aria-hidden="true" />
-          </LidoManButton>
-        </LidoManWindow>
-      )}
-      {bubble && bubbleShown && phraseIndex >= 0 && (
-        <Bubble style={bubble} aria-hidden="true">
-          {LIDO_MAN_PHRASES[phraseIndex]}
-        </Bubble>
-      )}
-      {/* always mounted, so screen readers announce the phrase */}
-      <LiveRegion role="status">
-        {bubbleShown && phraseIndex >= 0 ? LIDO_MAN_PHRASES[phraseIndex] : ''}
-      </LiveRegion>
-      {icicles && <WinterIcicles style={icicles} />}
-    </Layer>
+    <>
+      <Layer ref={layerRef} data-winter="stake-decor">
+        {lidoMan && (
+          <LidoManWindow style={lidoMan}>
+            <LidoManButton
+              type="button"
+              $up={up}
+              onClick={poke}
+              aria-label="Lido-man: say GM"
+              data-testid="winterLidoMan"
+            >
+              <LidoManSanta aria-hidden="true" />
+            </LidoManButton>
+          </LidoManWindow>
+        )}
+        {/* always mounted, so screen readers announce the phrase */}
+        <LiveRegion role="status">
+          {bubbleShown && phraseIndex >= 0 ? LIDO_MAN_PHRASES[phraseIndex] : ''}
+        </LiveRegion>
+        {icicles && anchors && (
+          <WinterIcicles
+            style={icicles}
+            edge={{ width: anchors.form.width, radius: FORM_RADIUS }}
+          />
+        )}
+      </Layer>
+      <BubbleLayer data-winter="stake-bubble">
+        {bubble && bubbleShown && phraseIndex >= 0 && (
+          <Bubble style={bubble} aria-hidden="true">
+            {LIDO_MAN_PHRASES[phraseIndex]}
+          </Bubble>
+        )}
+      </BubbleLayer>
+    </>
   );
 };

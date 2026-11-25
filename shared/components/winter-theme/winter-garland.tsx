@@ -226,7 +226,7 @@ const Garland: FC<{ layout: GarlandLayout; mobile?: boolean }> = ({
         />
         <path d={eave} style={{ fill: 'var(--winter-ice-0)' }} />
       </Eave>
-      <WinterIcicles style={ICICLE_ROW} icicles={layout.icicles} lip={false} />
+      <WinterIcicles style={ICICLE_ROW} icicles={layout.icicles} />
     </Wrap>
   );
 };
