@@ -17,7 +17,10 @@ import {
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 import { validateStakeWeth } from 'shared/hook-form/validation/validate-stake-weth';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
-import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
+import {
+  handleResolverValidationError,
+  walletNotConnectedResult,
+} from 'shared/hook-form/validation/validation-error';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 
 import type {
@@ -86,10 +89,7 @@ export const L2StakeFormValidationResolver: Resolver<
 
     // Everything below is account data, stubbed while the dapp is inactive
     if (!isWalletActive) {
-      return {
-        values,
-        errors: { referral: 'wallet not connected' },
-      };
+      return walletNotConnectedResult('referral');
     }
 
     if (token === TOKENS_TO_STAKE.WETH) {

@@ -197,7 +197,6 @@ describe('ManifestSchema', () => {
       const result = parseManifest({
         baseConfig: {
           featureFlags: {
-            disableSendCalls: false,
             dgBannerEnabled: true,
           },
           pages: {
@@ -217,7 +216,6 @@ describe('ManifestSchema', () => {
       });
 
       expect(result['1']?.config.featureFlags).toEqual({
-        disableSendCalls: false,
         dgBannerEnabled: false,
       });
       expect(result['1']?.config.pages['/earn']).toEqual({
@@ -251,12 +249,12 @@ describe('ManifestSchema', () => {
     it('inherits baseConfig when a network config is omitted', () => {
       const result = parseManifest({
         baseConfig: {
-          featureFlags: { disableSendCalls: true },
+          featureFlags: { dgBannerEnabled: true },
         },
         '1': validEntry,
       });
 
-      expect(result['1']?.config.featureFlags.disableSendCalls).toBe(true);
+      expect(result['1']?.config.featureFlags.dgBannerEnabled).toBe(true);
     });
 
     it('does not allow special object keys to mutate prototypes', () => {
@@ -520,14 +518,30 @@ describe('ManifestSchema', () => {
           config: {
             featureFlags: {
               ledgerLiveL2: true,
-              disableSendCalls: false,
               dgBannerEnabled: true,
             },
           },
         },
       });
       expect(result['1']?.config?.featureFlags?.ledgerLiveL2).toBe(true);
-      expect(result['1']?.config?.featureFlags?.disableSendCalls).toBe(false);
+      expect(result['1']?.config?.featureFlags?.dgBannerEnabled).toBe(true);
+    });
+
+    it('accepts manifests that still carry removed flag keys and strips them', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: {
+            featureFlags: {
+              removedLegacyFlag: false,
+              dgBannerEnabled: true,
+            },
+          },
+        },
+      });
+      expect(result['1']?.config?.featureFlags).toEqual({
+        dgBannerEnabled: true,
+      });
     });
 
     it('accepts ggvBulkWithdrawEnabled flag', () => {

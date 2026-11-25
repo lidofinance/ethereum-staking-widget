@@ -26,8 +26,9 @@ import {
   getGGVVaultContract,
 } from '../../contracts';
 import { useTxModalStagesGGVDeposit } from './use-ggv-deposit-tx-modal';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useGGVDeposit = (onRetry?: () => void) => {
+export const useGGVDeposit = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesGGVDeposit();

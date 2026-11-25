@@ -1,9 +1,30 @@
 import { ToastError } from '@lidofinance/lido-ui';
+import type { FieldError } from 'react-hook-form';
 
 export enum DefaultValidationErrorTypes {
   VALIDATE = 'VALIDATE',
   UNHANDLED = 'UNHANDLED',
+  WALLET_NOT_CONNECTED = 'WALLET_NOT_CONNECTED',
 }
+
+// shape of a failed resolver result: hook-form requires empty `values`
+// whenever `errors` is not empty
+export type ResolverErrorResult = {
+  values: Record<string, never>;
+  errors: Record<string, FieldError & { payload?: Record<string, unknown> }>;
+};
+
+// Blocks submit (non-empty errors) but is deliberately neither VALIDATE nor
+// UNHANDLED and has no message, so submit buttons and inputs do not react to
+// it (same observable behavior as the previous bare-string error)
+export const walletNotConnectedResult = (
+  field: string,
+): ResolverErrorResult => ({
+  values: {},
+  errors: {
+    [field]: { type: DefaultValidationErrorTypes.WALLET_NOT_CONNECTED },
+  },
+});
 
 export const isValidationErrorTypeValidate = (type?: string) =>
   type === DefaultValidationErrorTypes.VALIDATE;
@@ -32,7 +53,7 @@ export const handleResolverValidationError = (
   error: unknown,
   formName: string,
   fallbackErrorField: string,
-) => {
+): ResolverErrorResult => {
   if (error instanceof ValidationError) {
     return {
       values: {},

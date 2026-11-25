@@ -17,8 +17,9 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { useTxModalStagesSTGWithdraw } from './use-stg-withdraw-tx-modal';
 import { getSTGRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { getWithdrawalParams } from '../utils';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useSTGWithdraw = (onRetry: () => void) => {
+export const useSTGWithdraw = (onRetry: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesSTGWithdraw();

@@ -12,9 +12,6 @@ import { TOKEN_SYMBOLS, type Token, type TokenSymbol } from 'consts/tokens';
 type StageArgs = {
   willReceiveToken: TokenSymbol;
   operationText: string;
-  // When provided, deposits of matching tokens show "request sent" messaging
-  // instead of "deposit successful".
-  isAsyncQueueToken?: (token: Token) => boolean;
 };
 
 const getTxModalStagesRequest = (
@@ -90,11 +87,14 @@ const getTxModalStagesRequest = (
       />,
     ),
 
+  // a deposit into an async queue is a request: it shows "request sent"
+  // messaging instead of "deposit successful"
   success: (
     amount: bigint,
     token: Token,
     txHash?: Hash,
     receivedShares?: bigint,
+    isAsyncQueue = false,
   ) =>
     transitStage(
       <DepositTxStageSuccess
@@ -108,9 +108,7 @@ const getTxModalStagesRequest = (
             : undefined
         }
         asyncDeposit={
-          stageOperationArgs.isAsyncQueueToken?.(token)
-            ? { amount, token: TOKEN_SYMBOLS[token] }
-            : undefined
+          isAsyncQueue ? { amount, token: TOKEN_SYMBOLS[token] } : undefined
         }
       />,
       {
@@ -118,6 +116,8 @@ const getTxModalStagesRequest = (
       },
     ),
 });
+
+export type DepositTxModalStages = ReturnType<typeof getTxModalStagesRequest>;
 
 type UseTxModalStagesDepositArgs = {
   stageOperationArgs: StageArgs;

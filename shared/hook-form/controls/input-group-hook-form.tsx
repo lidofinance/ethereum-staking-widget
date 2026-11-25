@@ -3,7 +3,8 @@ import { useFormState } from 'react-hook-form';
 import { InputGroup } from '@lidofinance/lido-ui';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
 
-type InputGroupProps = React.ComponentProps<typeof InputGroup>;
+// this wrapper is not a forwardRef component, so the ref prop is excluded
+type InputGroupProps = React.ComponentPropsWithoutRef<typeof InputGroup>;
 
 type InputGroupStyleProps = {
   success?: InputGroupProps['success'];

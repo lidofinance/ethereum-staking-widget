@@ -1,16 +1,44 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import invariant from 'tiny-invariant';
 
-import { useDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit';
-import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
-import { getVaultRefetchScope } from 'modules/mellow-meta-vaults/consts';
-import { getSyncDepositQueueWritableContract } from '../../contracts';
+import {
+  getVaultRefetchScope,
+  useDeposit,
+  useTxModalStagesDeposit,
+  type VaultQuote,
+} from 'modules/mellow-meta-vaults';
+import { useMainnetOnlyWagmi } from 'modules/web3';
+import {
+  getCollectorContract,
+  getSyncDepositQueueWritableContract,
+} from '../../contracts';
 import { ETH_VAULT_QUERY_SCOPE, ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { EthDepositToken } from '../../types';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { TOKENS } from 'consts/tokens';
 import { useEthVaultDepositSteth } from './use-deposit-steth';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useEthVaultDeposit = (onRetry?: () => void) => {
+type UseEthVaultDepositArgs = {
+  onRetry?: TxRetryHandler;
+  // The quote the form displays for the selected token and its refetch: the
+  // deposit is held to it. Required, so a caller states it: undefined only
+  // where no quote is displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
+};
+
+type EthVaultDepositArgs = {
+  amount: bigint;
+  token: EthDepositToken;
+  referral: string | null;
+};
+
+export const useEthVaultDeposit = ({
+  onRetry,
+  shownQuote,
+  refetchQuote,
+}: UseEthVaultDepositArgs) => {
   const { txModalStages } = useTxModalStagesDeposit({
     stageOperationArgs: {
       willReceiveToken: ETH_VAULT_TOKEN_SYMBOL,
@@ -21,9 +49,20 @@ export const useEthVaultDeposit = (onRetry?: () => void) => {
       operationText: 'Unlocking',
     },
   });
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
+
+  const collector = useMemo(
+    () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
+  );
 
   const { deposit: depositNormal } = useDeposit<EthDepositToken>({
-    depositQueueGetter: getSyncDepositQueueWritableContract,
+    // every ETH vault token deposits through its sync queue
+    syncDepositQueueGetter: getSyncDepositQueueWritableContract,
+    collector,
+    shownQuote,
+    refetchQuote,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnEthDepositingStart,
@@ -31,18 +70,16 @@ export const useEthVaultDeposit = (onRetry?: () => void) => {
     refetchScope: getVaultRefetchScope(ETH_VAULT_QUERY_SCOPE),
   });
 
-  const { deposit: depositSteth } = useEthVaultDepositSteth(onRetry);
+  const { deposit: depositSteth } = useEthVaultDepositSteth({
+    collector,
+    shownQuote,
+    refetchQuote,
+    txModalStages,
+    onRetry,
+  });
 
   const deposit = useCallback(
-    async ({
-      amount,
-      token,
-      referral,
-    }: {
-      amount: bigint;
-      token: EthDepositToken;
-      referral: string | null;
-    }) => {
+    async ({ amount, token, referral }: EthVaultDepositArgs) => {
       if (token === TOKENS.steth) {
         return depositSteth({ amount, referral });
       }

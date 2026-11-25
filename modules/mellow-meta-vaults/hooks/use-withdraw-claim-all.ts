@@ -13,6 +13,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { AsyncRedeemQueueWritableContract } from '../types/contracts';
 import { WithdrawRequestData } from '../types/withdraw-request-data';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 export const useWithdrawClaimAll = <WithdrawToken extends string>({
   redeemQueue,
@@ -29,7 +30,7 @@ export const useWithdrawClaimAll = <WithdrawToken extends string>({
   txModalStages: TxModalStages;
   claimableRequests: WithdrawRequestData[];
   refetchTokenBalance: (token: WithdrawToken) => unknown;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
 }) => {
@@ -58,7 +59,7 @@ export const useWithdrawClaimAll = <WithdrawToken extends string>({
 
       const claimArgs = [address, timestamps] as const;
 
-      await txFlow({
+      const { isSuccess } = await txFlow({
         callsFn: async () => [
           {
             to: redeemQueue.address,
@@ -91,13 +92,16 @@ export const useWithdrawClaimAll = <WithdrawToken extends string>({
         onReceipt: ({ txHashOrCallId, isAA }) => {
           txModalStages.pending(totalClaimableAmount, txHashOrCallId, isAA);
         },
+        onFailure: ({ error }) => {
+          txModalStages.failed(error, onRetry);
+        },
         onSuccess: async ({ txHash }) => {
           txModalStages.success(totalClaimableAmount, txHash);
           await refetchTokenBalance(token);
           if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
         },
       });
-      return true;
+      return isSuccess;
     } catch (error) {
       console.error(error);
       txModalStages.failed(error, onRetry);

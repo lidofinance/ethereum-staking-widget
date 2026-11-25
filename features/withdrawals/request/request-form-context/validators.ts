@@ -14,6 +14,7 @@ import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-con
 import {
   ValidationError,
   handleResolverValidationError,
+  walletNotConnectedResult,
 } from 'shared/hook-form/validation/validation-error';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
@@ -182,7 +183,7 @@ export const RequestFormValidationResolver: Resolver<
 
     // early validation exit for dex option
     if (mode === 'dex') {
-      return { values, errors: { requests: 'wallet not connected' } };
+      return walletNotConnectedResult('requests');
     }
 
     validateBigintMin(

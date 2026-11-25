@@ -127,16 +127,11 @@ const useSupportedChainLogic = (
   // callback that requests a chain change, soft syncing on edge-cases
   const requestChangeChain = useCallback(
     async (newChainId: number) => {
-      if (!canSwitchChain) {
-        return setChainId(newChainId);
+      if (canSwitchChain) {
+        // wallet-state sync does not fire when the wallet is already on newChainId, so set it explicitly
+        await trySwitchChain(newChainId);
       }
-
-      const { success } = await trySwitchChain(newChainId);
-      // if the chain switch was unsuccessful, we still set the chainId to the newChainId
-      if (!success) {
-        return setChainId(newChainId);
-      }
-      // success is no-op, wagmi changes the state and we sync it to chainId during render below
+      setChainId(newChainId);
     },
     [trySwitchChain, canSwitchChain],
   );

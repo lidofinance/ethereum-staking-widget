@@ -48,8 +48,28 @@ type StandardFetcher = <T>(
   params?: StandardFetcherParams,
 ) => Promise<T>;
 
+// AbortSignal.any is missing in older browsers in our browserslist (Safari < 17.4)
+const combineSignals = (signals: AbortSignal[]): AbortSignal => {
+  const controller = new AbortController();
+  const cleanups: (() => void)[] = [];
+  const abortWith = (signal: AbortSignal) => {
+    controller.abort(signal.reason);
+    cleanups.forEach((cleanup) => cleanup());
+  };
+  for (const signal of signals) {
+    if (signal.aborted) {
+      abortWith(signal);
+      break;
+    }
+    const onAbort = () => abortWith(signal);
+    signal.addEventListener('abort', onAbort, { once: true });
+    cleanups.push(() => signal.removeEventListener('abort', onAbort));
+  }
+  return controller.signal;
+};
+
 export const standardFetcher: StandardFetcher = async (url, params) => {
-  const { timeoutMs, ...fetchParams } = params || {};
+  const { timeoutMs, signal: callerSignal, ...fetchParams } = params || {};
   const controller = new AbortController();
   const timeout = timeoutMs
     ? setTimeout(
@@ -61,20 +81,26 @@ export const standardFetcher: StandardFetcher = async (url, params) => {
       )
     : null;
 
-  const response = await fetch(url, {
-    ...DEFAULT_PARAMS,
-    ...fetchParams,
-    headers: mergeHeaders(fetchParams.headers, fetchParams.body != null),
-    signal: controller.signal,
-  });
+  // the caller's signal and the timeout both abort the request
+  const signal = callerSignal
+    ? combineSignals([callerSignal, controller.signal])
+    : controller.signal;
 
-  if (timeout) {
-    clearTimeout(timeout);
+  try {
+    const response = await fetch(url, {
+      ...DEFAULT_PARAMS,
+      ...fetchParams,
+      headers: mergeHeaders(fetchParams.headers, fetchParams.body != null),
+      signal,
+    });
+
+    if (!response.ok) {
+      throw new FetcherError(await extractError(response), response.status);
+    }
+
+    return await response.json();
+  } finally {
+    // also covers a stalled body and a thrown error
+    if (timeout) clearTimeout(timeout);
   }
-
-  if (!response.ok) {
-    throw new FetcherError(await extractError(response), response.status);
-  }
-
-  return await response.json();
 };

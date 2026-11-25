@@ -10,7 +10,7 @@ import {
   TxSentDataUnavailableError,
   TxSettledError,
   TxStaleError,
-} from '../../utils/errors';
+} from '../utils/errors';
 import type { AACall, TxCallbackProps } from './types';
 
 const ADDRESS: Address = '0x00000000000000000000000000000000000000aa';
@@ -22,19 +22,40 @@ const state = vi.hoisted(() => ({
   isAA: false,
   validateAddress: vi.fn(async () => true),
   sendAACalls: vi.fn(),
+  isL2: false,
+  l1ChainId: 1,
+  address: undefined as Address | undefined,
+  getBlock: vi.fn(),
 }));
 
 vi.mock('providers/address-validation-provider', () => ({
   useAddressValidation: () => ({ validateAddress: state.validateAddress }),
 }));
 vi.mock('modules/web3', () => ({
-  useDappStatus: () => ({ address: ADDRESS }),
+  useDappStatus: () => ({ address: state.address }),
 }));
-vi.mock('../use-aa', () => ({
+vi.mock('../hooks/use-aa', () => ({
   useAA: () => ({ isAA: state.isAA }),
 }));
 vi.mock('./use-send-aa-calls', () => ({
   useSendAACalls: () => state.sendAACalls,
+}));
+vi.mock('../web3-provider/lido-sdk', () => ({
+  useLidoSDK: () => ({
+    core: {
+      // read per flow: the chain may change under a mounted hook
+      get chainId() {
+        return state.l1ChainId;
+      },
+      publicClient: { getBlock: state.getBlock },
+    },
+  }),
+}));
+vi.mock('../web3-provider/lido-sdk-l2', () => ({
+  useLidoSDKL2: () => ({
+    core: { chainId: 10, publicClient: { getBlock: state.getBlock } },
+    isL2: state.isL2,
+  }),
 }));
 
 import { useTxFlow } from './use-tx-flow';
@@ -107,6 +128,9 @@ const createLegacyArgs = (
 beforeEach(() => {
   vi.clearAllMocks();
   state.isAA = false;
+  state.isL2 = false;
+  state.l1ChainId = 1;
+  state.address = ADDRESS;
   state.validateAddress.mockResolvedValue(true);
 });
 
@@ -311,5 +335,213 @@ describe('useTxFlow with a legacy flow', () => {
     await expect(firstRun).rejects.toBeInstanceOf(TxStaleError);
     expect(first.onSign).not.toHaveBeenCalled();
     expect(second.onSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it('refetches after a superseded flow whose tx was sent but never read back', async () => {
+    const txFlow = renderHook(useTxFlow);
+    let releaseFirst = () => {};
+    const gate = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    const first = createLegacyArgs(
+      vi.fn(async (callback: TransactionCallback) => {
+        await legacySdk(
+          { stage: TransactionCallbackStage.SIGN },
+          { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+        )(callback);
+        await gate;
+        throw new Error('Timed out while waiting for transaction');
+      }),
+    );
+    const second = createLegacyArgs();
+
+    const firstRun = txFlow(first);
+    // let the first reach the network before the second takes over
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(first.onReceipt).toHaveBeenCalledTimes(1);
+    await expect(txFlow(second)).resolves.toMatchObject({ isSuccess: true });
+    releaseFirst();
+
+    // it may have landed: no Retry, and the data under the forms is refetched
+    await expect(firstRun).rejects.toBeInstanceOf(TxSentDataUnavailableError);
+    expect(first.onFailure).not.toHaveBeenCalled();
+    expect(invalidateQueries).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('useTxFlow waiting for the previous tx block', () => {
+  const BLOCK = 100n;
+  const minedStages = (blockNumber = BLOCK): TxCallbackProps[] => [
+    { stage: TransactionCallbackStage.SIGN },
+    { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+    {
+      stage: TransactionCallbackStage.CONFIRMATION,
+      payload: { ...receipt, blockNumber },
+    },
+    { stage: TransactionCallbackStage.DONE },
+  ];
+  const minedArgs = (blockNumber?: bigint) =>
+    createLegacyArgs(vi.fn(legacySdk(...minedStages(blockNumber))));
+  const latestBlock = (number: bigint) => ({ number });
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('holds the next flow until the RPC serves the block of the last tx', async () => {
+    const txFlow = renderHook(useTxFlow);
+    await txFlow(minedArgs());
+    expect(state.getBlock).not.toHaveBeenCalled();
+
+    state.getBlock
+      .mockResolvedValueOnce(latestBlock(BLOCK - 1n))
+      .mockResolvedValueOnce(latestBlock(BLOCK));
+    const next = createLegacyArgs();
+    const run = txFlow(next);
+
+    await vi.advanceTimersByTimeAsync(0);
+    expect(state.getBlock).toHaveBeenCalledWith({ blockTag: 'latest' });
+    expect(next.sendTransaction).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(1_000);
+    await expect(run).resolves.toMatchObject({ isSuccess: true });
+    expect(state.getBlock).toHaveBeenCalledTimes(2);
+    expect(next.sendTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('checks no further once the RPC caught up, until another tx lands', async () => {
+    const txFlow = renderHook(useTxFlow);
+    await txFlow(minedArgs());
+    state.getBlock.mockResolvedValue(latestBlock(BLOCK));
+
+    await txFlow(createLegacyArgs());
+    await txFlow(createLegacyArgs());
+
+    expect(state.getBlock).toHaveBeenCalledTimes(1);
+  });
+
+  it('waits for the latest block of several txs', async () => {
+    const txFlow = renderHook(useTxFlow);
+    await txFlow(minedArgs(BLOCK));
+    // a flow with no wait to do records its own block
+    state.getBlock.mockResolvedValue(latestBlock(BLOCK));
+    await txFlow(minedArgs(BLOCK + 5n));
+
+    state.getBlock.mockClear();
+    state.getBlock
+      .mockResolvedValueOnce(latestBlock(BLOCK + 4n))
+      .mockResolvedValueOnce(latestBlock(BLOCK + 5n));
+    const run = txFlow(createLegacyArgs());
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    await expect(run).resolves.toMatchObject({ isSuccess: true });
+    expect(state.getBlock).toHaveBeenCalledTimes(2);
+  });
+
+  it('goes on when the latest block cannot be read', async () => {
+    const txFlow = renderHook(useTxFlow);
+    await txFlow(minedArgs());
+    state.getBlock.mockRejectedValue(new Error('rpc down'));
+    const next = createLegacyArgs();
+
+    await expect(txFlow(next)).resolves.toMatchObject({ isSuccess: true });
+    expect(state.getBlock).toHaveBeenCalledTimes(1);
+    expect(next.sendTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('goes on once the wait times out', async () => {
+    const txFlow = renderHook(useTxFlow);
+    await txFlow(minedArgs());
+    state.getBlock.mockResolvedValue(latestBlock(BLOCK - 1n));
+    const next = createLegacyArgs();
+    const run = txFlow(next);
+
+    await vi.advanceTimersByTimeAsync(29_000);
+    expect(next.sendTransaction).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    await expect(run).resolves.toMatchObject({ isSuccess: true });
+    expect(next.sendTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not wait when no tx of the hook made it into a block', async () => {
+    const txFlow = renderHook(useTxFlow);
+    // a receipt without a block number gives nothing to wait for
+    await txFlow(
+      createLegacyArgs(
+        vi.fn(
+          legacySdk(
+            { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+            { stage: TransactionCallbackStage.CONFIRMATION, payload: receipt },
+            { stage: TransactionCallbackStage.DONE },
+          ),
+        ),
+      ),
+    );
+    await txFlow(createLegacyArgs());
+
+    expect(state.getBlock).not.toHaveBeenCalled();
+  });
+
+  it('does not wait for a block of another chain', async () => {
+    const txFlow = renderHook(useTxFlow);
+    await txFlow(minedArgs());
+
+    state.l1ChainId = 560048;
+    await txFlow(createLegacyArgs());
+    expect(state.getBlock).not.toHaveBeenCalled();
+
+    // the block is kept for its own chain
+    state.l1ChainId = 1;
+    state.getBlock.mockResolvedValue(latestBlock(BLOCK));
+    await txFlow(createLegacyArgs());
+    expect(state.getBlock).toHaveBeenCalledTimes(1);
+  });
+
+  it('neither records nor waits without an account', async () => {
+    state.address = undefined;
+    const txFlow = renderHook(useTxFlow);
+    await txFlow(minedArgs());
+    await txFlow(createLegacyArgs());
+
+    expect(state.getBlock).not.toHaveBeenCalled();
+  });
+
+  it('does not wait when the option is off', async () => {
+    const txFlow = renderHook(() => useTxFlow({ waitForPrevPendingTx: false }));
+    await txFlow(minedArgs());
+    await txFlow(createLegacyArgs());
+
+    expect(state.getBlock).not.toHaveBeenCalled();
+  });
+
+  it('records the block of an EIP-5792 batch', async () => {
+    state.isAA = true;
+    state.sendAACalls.mockImplementation(
+      async (
+        _calls: AACall[],
+        callback: (props: TxCallbackProps) => Promise<void>,
+      ) => {
+        await callback({ stage: TransactionCallbackStage.SIGN });
+        await callback({
+          stage: TransactionCallbackStage.RECEIPT,
+          callId: CALL_ID,
+        });
+        await callback({
+          stage: TransactionCallbackStage.DONE,
+          txHash: TX_HASH,
+          blockNumber: BLOCK,
+        });
+      },
+    );
+    const txFlow = renderHook(useTxFlow);
+    await txFlow(createLegacyArgs());
+    state.getBlock.mockResolvedValue(latestBlock(BLOCK));
+
+    await txFlow(createLegacyArgs());
+    expect(state.getBlock).toHaveBeenCalledTimes(1);
   });
 });

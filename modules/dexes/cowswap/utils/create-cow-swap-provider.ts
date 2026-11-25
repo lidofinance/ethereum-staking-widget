@@ -6,9 +6,12 @@ import type { Connector } from 'wagmi';
 import {
   InvalidRequestRpcError,
   isAddressEqual,
+  ProviderDisconnectedError,
   toHex,
+  UnauthorizedProviderError,
   UserRejectedRequestError,
   type Account,
+  type Address,
   type Chain,
   type Transport,
   type WalletClient,
@@ -23,17 +26,32 @@ import {
   TRANSACTION_ERROR,
   SIGN_DECLINED_MESSAGE,
   SIGN_DECLINED_HELP_TIP,
-  type ApprovalData,
-  type OrderData,
   type NetworkTxConfig,
 } from '../guards/tx';
-import type { SigningHelpTip } from '../guards/trade';
+import type { CowSwapSession, SigningHelpTip } from '../guards/trade';
 
 const WALLET_SIGNING_METHODS = new Set([
   'eth_signTypedData_v4',
   'eth_sendTransaction',
   'wallet_sendCalls',
 ]);
+
+// the widget was removed or its provider replaced
+export const SESSION_ENDED_ERROR = {
+  code: ProviderDisconnectedError.code,
+  message: 'CoW Swap session has ended',
+};
+
+// the app shows its own address notice, so no guard modal
+export const SIGNER_NOT_ALLOWED_ERROR = {
+  code: UnauthorizedProviderError.code,
+  message: 'Signer address is not allowed',
+};
+
+// checked on entry and after every await: an ended session never reaches the wallet
+const ensureSessionActive = (session: Pick<CowSwapSession, 'isActive'>) => {
+  if (!session.isActive()) throw SESSION_ENDED_ERROR;
+};
 
 // EIP-5792 `ready` (upgrade on demand) is reported as unsupported: CoW signs regularly instead of asking MetaMask for a smart account upgrade
 export const hideAtomicUpgrade = (capabilities: unknown): unknown => {
@@ -61,8 +79,14 @@ export type CreateCowSwapProviderParams = {
   isLedgerLive: boolean;
   networkTxConfig: NetworkTxConfig;
   appCode: string;
-  consumeSignedOrder: (order: OrderData) => string | null;
-  verifyApproval: (approval: ApprovalData) => string | null;
+  // ends on cleanup, provider replacement or the widget being turned off;
+  // holds what the trade guard validated
+  session: Pick<
+    CowSwapSession,
+    'isActive' | 'verifyApproval' | 'consumeSignedOrder'
+  >;
+  // the app's address check, run once per signature, right before the wallet
+  validateAddress: (address: Address) => Promise<boolean>;
   openTransactionGuardModal: (reason: string) => Promise<void>;
   openSigningErrorModal: (
     reason: string,
@@ -78,13 +102,15 @@ export const createCowSwapProvider = ({
   isLedgerLive,
   networkTxConfig,
   appCode,
-  consumeSignedOrder,
-  verifyApproval,
+  session,
+  validateAddress,
   openTransactionGuardModal,
   openSigningErrorModal,
   addCleanup,
 }: CreateCowSwapProviderParams): EthereumProvider => ({
   request: async <T>(payload: JsonRpcRequest): Promise<T> => {
+    ensureSessionActive(session);
+
     // the app owns the network; the widget asks to switch back while it is remounted for a new wallet chain
     if (payload.method === 'wallet_switchEthereumChain') {
       throw {
@@ -106,6 +132,7 @@ export const createCowSwapProvider = ({
             appCode,
           },
         );
+        ensureSessionActive(session);
 
         // this prevents extra fields to be passed along with the orginal request
         payload = sanitizedRequest as typeof payload;
@@ -113,24 +140,28 @@ export const createCowSwapProvider = ({
         // Approve amount is bounded by the validated approval or trade snapshot;
         // checked first: verifying an ETH order consumes the trade snapshot
         for (const approval of approvals) {
-          const error = verifyApproval(approval);
+          const error = session.verifyApproval(approval);
 
           if (error) throw new Error(error);
         }
 
         // Validate order trade  params, order can be recovered from different signing methods
         if (order) {
-          const error = consumeSignedOrder(order);
+          const error = session.consumeSignedOrder(order);
 
           if (error) throw new Error(error);
         }
 
-        // the wallet may have switched chain or account after validation
+        // the wallet may have switched chain or account after validation;
+        // the signer check covers every signature, order cancellations included
         if (WALLET_SIGNING_METHODS.has(payload.method)) {
-          const [liveChainId, [liveAccount]] = await Promise.all([
-            walletClient.getChainId(),
-            walletClient.getAddresses(),
-          ]);
+          const [liveChainId, [liveAccount], isSignerAllowed] =
+            await Promise.all([
+              walletClient.getChainId(),
+              walletClient.getAddresses(),
+              validateAddress(walletClient.account.address),
+            ]);
+          ensureSessionActive(session);
           if (liveChainId !== chainId) {
             throw new Error(TRANSACTION_ERROR(2049));
           }
@@ -140,8 +171,12 @@ export const createCowSwapProvider = ({
           ) {
             throw new Error(TRANSACTION_ERROR(2051));
           }
+          if (!isSignerAllowed) throw SIGNER_NOT_ALLOWED_ERROR;
         }
       } catch (error) {
+        // an ended session has no modal to show
+        ensureSessionActive(session);
+        if (error === SIGNER_NOT_ALLOWED_ERROR) throw error;
         if (error instanceof Error) {
           await openTransactionGuardModal(error.message);
         }
@@ -154,6 +189,7 @@ export const createCowSwapProvider = ({
       // NB!: client.request can throw on timeout for actions like signing
       // this is not a behavior wallet specific methods client.sign<...> have
       // but it's hard to match raw RPC body to viem dev-friendly args and methods
+      ensureSessionActive(session);
       const result = await walletClient.request(
         payload as Parameters<typeof walletClient.request>[0],
         { dedupe: true, retryCount: 0 },
@@ -208,6 +244,8 @@ export const createCowSwapProvider = ({
     }
   },
   on: (eventName: string, handler: unknown) => {
+    // an ended session registers nothing: its cleanup has already run
+    if (!session.isActive()) return;
     // Connecting EIP1193 provider events to wagmi connector events
     // Wagmi connector can be made from EIP1193 provider, but not the other way around
     // Cowswap provider: https://eips.ethereum.org/EIPS/eip-1193
