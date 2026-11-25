@@ -38,7 +38,7 @@ export const getDefaultStaticProps = <
     const { ___prefetch_manifest___ } = await fetchExternalManifest();
     const props = {
       ...(___prefetch_manifest___ ? { ___prefetch_manifest___ } : {}),
-      __validation_file__: validationFile,
+      ...(validationFile ? { __validation_file__: validationFile } : {}),
     };
 
     const base: GetStaticPropsResult<typeof props> = {

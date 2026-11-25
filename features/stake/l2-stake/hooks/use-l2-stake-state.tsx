@@ -11,7 +11,6 @@ export const useL2StakeState = () => {
   const { chainId } = useDappStatus();
   const isLedgerLive = useIsLedgerLive();
   const { l2Stake, featureFlags } = useConfig().externalConfig;
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const chainState = l2Stake.perChain[chainId as CHAINS];
 
   let isEnabled = true;

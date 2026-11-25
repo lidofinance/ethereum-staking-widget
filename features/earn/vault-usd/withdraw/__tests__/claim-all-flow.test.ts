@@ -4,7 +4,7 @@ import { TransactionRevertedError } from 'modules/web3/utils/errors';
 import type {
   LegacyTxFlowArgs,
   TxFlowContext,
-} from 'modules/web3/hooks/tx-flow/types';
+} from 'modules/web3/tx-flow/types';
 import type { Hash, TransactionReceipt } from 'viem';
 import type { TokenClaim } from '../claim-all-utils';
 

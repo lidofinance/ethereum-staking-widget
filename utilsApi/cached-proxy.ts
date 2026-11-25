@@ -54,6 +54,10 @@ export const createCachedProxy = ({
     // again or the cache is full
     ttlAutopurge: true,
   });
+  // Concurrent misses of one key share a single upstream fetch. Entries live
+  // only while the fetch runs, so a failed fetch is not remembered.
+  const inFlight = new Map<string, Promise<string>>();
+
   return async (req, res) => {
     const params = buildParams(req.query, ignoreParams, allowedQueryParams);
 
@@ -75,7 +79,7 @@ export const createCachedProxy = ({
     }
     const url = proxyUrlString + (params ? `?${params.toString()}` : '');
 
-    try {
+    const fetchBody = async () => {
       // set() is case-insensitive, so forwarded headers can't override these
       const headers = new Headers(forwardHeaders?.(req));
       headers.set('Accept', 'application/json');
@@ -85,14 +89,36 @@ export const createCachedProxy = ({
         payload: metricsHost || proxyUrlString,
         request: () =>
           standardFetcher(url, {
-            signal: AbortSignal.timeout(timeout),
+            timeoutMs: timeout,
             headers,
           }),
       });
 
       const body = JSON.stringify(transformData(data) ?? data);
-
       cache.set(cacheKey, body);
+      return body;
+    };
+
+    try {
+      const shared = inFlight.get(cacheKey);
+      let body: string;
+      if (!shared) {
+        const pending = fetchBody().finally(() => inFlight.delete(cacheKey));
+        inFlight.set(cacheKey, pending);
+        body = await pending;
+      } else if (forwardHeaders) {
+        // A shared 429 may belong to the first caller's IP. Other failures
+        // are shared without retrying against an unavailable upstream.
+        body = await shared.catch((error: unknown) => {
+          if (error instanceof FetcherError && error.status === 429) {
+            return fetchBody();
+          }
+          throw error;
+        });
+      } else {
+        body = await shared;
+      }
+
       sendJson(body);
     } catch (e) {
       // route-level cacheControl set public caching before the handler ran

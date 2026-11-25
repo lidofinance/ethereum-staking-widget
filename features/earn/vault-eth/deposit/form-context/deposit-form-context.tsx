@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, FormProvider } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
 import {
@@ -7,7 +7,10 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
-import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
+import {
+  useQueryParamsReferralForm,
+  useQueryParamsTokenForm,
+} from 'shared/hooks/use-query-values-form';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
@@ -21,8 +24,9 @@ import { useEthVaultDeposit } from '../hooks/use-deposit';
 import { useEthVaultDepositFormData } from '../hooks/use-deposit-form-data';
 import { EthVaultDepositFormValidationResolver } from './validation';
 import { useEthVaultAvailable } from '../../hooks/use-vault-available';
-import { useEthVaultDepositRequest } from '../hooks';
+import { useEthVaultDepositRequest, useEthVaultPreviewDeposit } from '../hooks';
 import { asEthDepositToken } from '../../utils';
+import { ETH_VAULT_DEPOSIT_TOKEN_SYMBOLS_FORM } from '../../consts';
 
 const EthVaultDepositFormDataContext =
   createContext<ETHDepositFormDataContextValue | null>(null);
@@ -54,8 +58,6 @@ export const EthVaultDepositFormProvider: React.FC<{
 
   // Retry event helper
   const { retryEvent } = useFormControllerRetry();
-  // Deposit function
-  const { deposit } = useEthVaultDeposit(retryEvent.fire);
 
   const formObject = useForm({
     defaultValues: { amount: null, token: TOKEN_SYMBOLS.eth, referral: null },
@@ -70,8 +72,25 @@ export const EthVaultDepositFormProvider: React.FC<{
   });
 
   const tokenSymbol = formObject.watch('token');
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  // the quote the form displays; the deposit is held to it
+  const { quote, refetchQuote } = useEthVaultPreviewDeposit({
+    amount,
+    token: asEthDepositToken(tokenSymbol),
+  });
+  // Deposit function
+  const { deposit } = useEthVaultDeposit({
+    onRetry: retryEvent.fire,
+    shownQuote: quote,
+    refetchQuote,
+  });
+
   const { setValue } = formObject;
   useQueryParamsReferralForm<ETHDepositFormValues>({ setValue });
+  useQueryParamsTokenForm<ETHDepositFormValues>({
+    setValue,
+    tokens: ETH_VAULT_DEPOSIT_TOKEN_SYMBOLS_FORM,
+  });
 
   // stETH deposits go through the wstETH deposit queue, so check wstETH queue for pending requests
   const depositRequestToken =

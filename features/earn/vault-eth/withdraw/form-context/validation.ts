@@ -41,12 +41,7 @@ export const EthVaultWithdrawFormValidationResolver: Resolver<
     );
 
     // prevents problems with conversion
-    validateBigintMin(
-      'amount',
-      amount,
-      100n,
-      `Enter amount larger than 100 wei`,
-    );
+    validateBigintMin('amount', amount, 100n, `Amount too small`);
 
     const { balance } = awaitedContext[token];
 

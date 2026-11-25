@@ -93,6 +93,7 @@ export const geoHandler: API = async (req, res) => {
 
   try {
     const { geo } = await getExternalConfig();
+    // Deliberately fail-open: on a fallback or geo-less manifest we serve the bundled/empty list rather than limiting everyone. A misconfig slipping through is a lesser harm than blocking all access.
     limitedCountries = geo.limited;
   } catch (error) {
     // no list means we cannot tell whether the country is on it

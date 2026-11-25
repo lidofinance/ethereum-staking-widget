@@ -2,8 +2,8 @@ import { trackEvent } from '@lidofinance/analytics-matomo';
 import type {
   ReefKnotConfig,
   ReefKnotWalletsModalConfig,
-} from 'reef-knot/types';
-import type { WalletIdsEthereum } from 'reef-knot/wallets';
+  WalletIdsEthereum,
+} from 'reef-knot';
 import { MATOMO_CLICK_EVENTS } from './matomo-click-events';
 
 type MetricProps = Pick<

@@ -132,7 +132,10 @@ describe('L2StakeFormValidationResolver', () => {
     it('does not check the stubbed balance', async () => {
       const result = await resolve(LIQUIDITY, visitor);
       expect((result.errors as Errors).amount).toBeUndefined();
-      expect((result.errors as Errors).referral).toBe('wallet not connected');
+      expect((result.errors as Errors).referral).toEqual({
+        type: 'WALLET_NOT_CONNECTED',
+      });
+      expect(result.values).toEqual({});
     });
 
     it('skips the liquidity check while the pool is not readable', async () => {

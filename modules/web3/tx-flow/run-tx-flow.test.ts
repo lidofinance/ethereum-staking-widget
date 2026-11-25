@@ -10,7 +10,7 @@ import {
   TxSentDataUnavailableError,
   TxSettledError,
   TxStaleError,
-} from '../../utils/errors';
+} from '../utils/errors';
 import { runTxFlow } from './run-tx-flow';
 import { isStepDone, isStepSent, isStepSettled } from './context';
 import type {
@@ -600,6 +600,174 @@ describe('runTxFlow', () => {
       expect(cb.onSuccess).not.toHaveBeenCalled();
       expect(cb.onFailure).not.toHaveBeenCalled();
     });
+
+    it('does not reach the wallet when superseded while onSign runs', async () => {
+      let current = true;
+      const send = vi.fn();
+      const cb = createCallbacks();
+      cb.onSign.mockImplementation(async () => {
+        current = false;
+      });
+      await expect(
+        run(
+          {
+            ...cb,
+            sendTransaction: legacySdk(
+              { stage: TransactionCallbackStage.SIGN },
+              send,
+            ),
+          },
+          { isCurrent: () => current },
+        ),
+      ).rejects.toBeInstanceOf(TxStaleError);
+      expect(cb.onSign).toHaveBeenCalledTimes(1);
+      expect(send).not.toHaveBeenCalled();
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('does not reach the wallet with an AA batch superseded while onSign runs', async () => {
+      let current = true;
+      const send = vi.fn();
+      const cb = createCallbacks();
+      cb.onSign.mockImplementation(async () => {
+        current = false;
+      });
+      // mirrors useSendAACalls: SIGN is awaited right before sendCalls
+      const sendAACalls = async (
+        _calls: unknown,
+        callback: (props: TxCallbackProps) => Promise<void>,
+      ) => {
+        try {
+          await callback({ stage: TransactionCallbackStage.SIGN });
+          send();
+        } catch (error) {
+          await callback({ stage: TransactionCallbackStage.ERROR, error });
+          throw error;
+        }
+      };
+      await expect(
+        run(
+          { ...cb, callsFn: async () => [] },
+          { isAA: true, sendAACalls, isCurrent: () => current },
+        ),
+      ).rejects.toBeInstanceOf(TxStaleError);
+      expect(send).not.toHaveBeenCalled();
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('reports a superseded tx that settled before its follow-up read failed as settled', async () => {
+      let current = true;
+      const cb = createCallbacks();
+      const failure = new Error('confirmations read');
+      await expect(
+        run(
+          {
+            ...cb,
+            sendTransaction: legacySdk(
+              { stage: TransactionCallbackStage.SIGN },
+              { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+              {
+                stage: TransactionCallbackStage.CONFIRMATION,
+                payload: receipt(),
+              },
+              () => {
+                current = false;
+                throw failure;
+              },
+            ),
+          },
+          { isCurrent: () => current },
+        ),
+      ).rejects.toSatisfy(
+        (error: unknown) =>
+          error instanceof TxSettledError &&
+          error.cause === failure &&
+          error.txHash === TX_HASH,
+      );
+      // the UI shows a newer flow: nothing is reported to it
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('reports a tx sent after the flow was superseded and never read back as sent', async () => {
+      let current = true;
+      const cb = createCallbacks();
+      const timeout = new Error('Timed out while waiting for transaction');
+      await expect(
+        run(
+          {
+            ...cb,
+            sendTransaction: legacySdk(
+              { stage: TransactionCallbackStage.SIGN },
+              () => {
+                current = false;
+              },
+              { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+              () => {
+                throw timeout;
+              },
+            ),
+          },
+          { isCurrent: () => current },
+        ),
+      ).rejects.toSatisfy(
+        (error: unknown) =>
+          error instanceof TxSentDataUnavailableError &&
+          error.cause === timeout &&
+          error.txHashOrCallId === TX_HASH,
+      );
+      expect(cb.onReceipt).not.toHaveBeenCalled();
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('reports a superseded AA batch that was never read back as sent', async () => {
+      let current = true;
+      const cb = createCallbacks();
+      const lost = new Error('status poll failed');
+      cb.onReceipt.mockImplementation(() => {
+        current = false;
+      });
+      await expect(
+        run(
+          { ...cb, callsFn: async () => [] },
+          {
+            isAA: true,
+            sendAACalls: aaSdk({ lostAfterReceipt: lost }),
+            isCurrent: () => current,
+          },
+        ),
+      ).rejects.toSatisfy(
+        (error: unknown) =>
+          error instanceof TxSentDataUnavailableError &&
+          error.txHashOrCallId === CALL_ID,
+      );
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('reports a superseded tx that reverted as stale, not settled', async () => {
+      let current = true;
+      const cb = createCallbacks();
+      await expect(
+        run(
+          {
+            ...cb,
+            sendTransaction: legacySdk(
+              { stage: TransactionCallbackStage.SIGN },
+              { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+              () => {
+                current = false;
+              },
+              {
+                stage: TransactionCallbackStage.CONFIRMATION,
+                payload: receipt('reverted'),
+              },
+              { stage: TransactionCallbackStage.DONE },
+            ),
+          },
+          { isCurrent: () => current },
+        ),
+      ).rejects.toBeInstanceOf(TxStaleError);
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
   });
 
   describe('stepwise flows', () => {
@@ -823,6 +991,142 @@ describe('runTxFlow', () => {
       expect(cb.onSign).not.toHaveBeenCalled();
     });
 
+    it('does not send a step superseded while onSign runs', async () => {
+      const cb = createCallbacks();
+      let current = true;
+      const send = vi.fn();
+      cb.onSign.mockImplementation(async () => {
+        current = false;
+      });
+      const sendStep = vi.fn(
+        async (_step: TxStep, callback: TransactionCallback) =>
+          legacySdk({ stage: TransactionCallbackStage.SIGN }, send)(callback),
+      );
+      await expect(
+        runSteps(
+          { ...cb, callsFn: async () => steps, sendStep },
+          { isCurrent: () => current },
+        ),
+      ).resolves.toMatchObject({ isAborted: true, isSuccess: false });
+      expect(sendStep).toHaveBeenCalledTimes(1);
+      expect(send).not.toHaveBeenCalled();
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('reports a superseded flow whose last step settled as succeeded', async () => {
+      const cb = createCallbacks();
+      let current = true;
+      const failure = new Error('confirmations read');
+      const sendStep = vi.fn(
+        async (step: TxStep, callback: TransactionCallback) =>
+          step.stepId === 'unwrap'
+            ? legacySdk(...settledStages(TX_HASH))(callback)
+            : legacySdk(
+                { stage: TransactionCallbackStage.SIGN },
+                { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH_2 },
+                () => {
+                  current = false;
+                },
+                {
+                  stage: TransactionCallbackStage.CONFIRMATION,
+                  payload: receipt(),
+                },
+                () => {
+                  throw failure;
+                },
+              )(callback),
+      );
+
+      const result = await runSteps(
+        { ...cb, callsFn: async () => steps, sendStep },
+        { isCurrent: () => current },
+      );
+
+      // the stake is on chain: a success without a Retry, nothing reported
+      expect(result).toMatchObject({
+        isSuccess: true,
+        isInterrupted: false,
+        isAborted: true,
+      });
+      expect(result.error).toBeInstanceOf(TxSettledError);
+      expect((result.error as TxSettledError).cause).toBe(failure);
+      expect(isStepSettled(result.ctx, 'stake')).toBe(true);
+      // only the unwrap reported its confirmation, the stake was stale by then
+      expect(
+        cb.onConfirmation.mock.calls.map(([args]) => args.ctx.stepId),
+      ).toEqual(['unwrap']);
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('reports a superseded flow whose last step was sent but never read back as sent', async () => {
+      const cb = createCallbacks();
+      let current = true;
+      const timeout = new Error('Timed out while waiting for transaction');
+      const sendStep = vi.fn(
+        async (step: TxStep, callback: TransactionCallback) =>
+          step.stepId === 'unwrap'
+            ? legacySdk(...settledStages(TX_HASH))(callback)
+            : legacySdk(
+                { stage: TransactionCallbackStage.SIGN },
+                () => {
+                  current = false;
+                },
+                { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH_2 },
+                () => {
+                  throw timeout;
+                },
+              )(callback),
+      );
+
+      const result = await runSteps(
+        { ...cb, callsFn: async () => steps, sendStep },
+        { isCurrent: () => current },
+      );
+
+      // it may have landed: not a failure to retry, not an interruption
+      expect(result).toMatchObject({
+        isSuccess: false,
+        isInterrupted: false,
+        isAborted: true,
+      });
+      expect(result.error).toBeInstanceOf(TxSentDataUnavailableError);
+      expect((result.error as TxSentDataUnavailableError).txHashOrCallId).toBe(
+        TX_HASH_2,
+      );
+      expect(isStepSent(result.ctx, 'stake')).toBe(true);
+      expect(cb.onReceipt).toHaveBeenCalledTimes(1);
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
+    it('stops a superseded flow before its next step, keeping what landed', async () => {
+      const cb = createCallbacks();
+      let current = true;
+      cb.onSuccess.mockImplementation(() => {
+        current = false;
+      });
+      const sendStep = vi.fn(
+        async (step: TxStep, callback: TransactionCallback) =>
+          legacySdk(
+            ...settledStages(step.stepId === 'unwrap' ? TX_HASH : TX_HASH_2),
+          )(callback),
+      );
+
+      const result = await runSteps(
+        { ...cb, callsFn: async () => steps, sendStep },
+        { isCurrent: () => current },
+      );
+
+      expect(cb.onSign).toHaveBeenCalledTimes(1);
+      expect(result).toMatchObject({
+        isSuccess: false,
+        isInterrupted: true,
+        isAborted: true,
+      });
+      expect(result.error).toBeUndefined();
+      expect(result.ctx.status).toEqual({ unwrap: 'done' });
+      expect(cb.onFailure).not.toHaveBeenCalled();
+    });
+
     it('runs prepare first and hands its data to every stage', async () => {
       const cb = createCallbacks();
       const prepare = vi.fn(async () => ({ amount: 7n }));
@@ -873,5 +1177,121 @@ describe('runTxFlow', () => {
       expect(args.ctx.data).toBeUndefined();
       expect(ctx.calls).toEqual([]);
     });
+  });
+});
+
+describe('runTxFlow tx blocks', () => {
+  const mined = (status: 'success' | 'reverted', blockNumber: bigint) => ({
+    ...receipt(status),
+    blockNumber,
+  });
+
+  it('reports the block of every mined tx, a reverted one included', async () => {
+    const onTxBlock = vi.fn();
+    const sendTransaction = legacySdk(
+      { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH },
+      {
+        stage: TransactionCallbackStage.CONFIRMATION,
+        payload: mined('success', 7n),
+      },
+      { stage: TransactionCallbackStage.DONE },
+      { stage: TransactionCallbackStage.RECEIPT, payload: TX_HASH_2 },
+      {
+        stage: TransactionCallbackStage.CONFIRMATION,
+        payload: mined('reverted', 9n),
+      },
+    );
+
+    await expect(
+      run({ sendTransaction }, { onTxBlock }),
+    ).rejects.toBeInstanceOf(TransactionRevertedError);
+    // DONE of a legacy tx carries no block: the receiver drops it
+    expect(onTxBlock.mock.calls).toEqual([[7n], [undefined], [9n]]);
+  });
+
+  it('reports the block an EIP-5792 batch gives at DONE', async () => {
+    const onTxBlock = vi.fn();
+    const sendAACalls = vi.fn(
+      async (
+        _calls: unknown,
+        callback: (props: TxCallbackProps) => Promise<void>,
+      ) => {
+        await callback({ stage: TransactionCallbackStage.SIGN });
+        await callback({
+          stage: TransactionCallbackStage.RECEIPT,
+          callId: CALL_ID,
+        });
+        await callback({
+          stage: TransactionCallbackStage.DONE,
+          txHash: TX_HASH,
+          blockNumber: 11n,
+        });
+      },
+    );
+
+    await runSteps(
+      {
+        callsFn: async () => [{ stepId: 'main', to: ADDRESS }],
+        sendStep: vi.fn(),
+      },
+      { isAA: true, sendAACalls, onTxBlock },
+    );
+    expect(onTxBlock).toHaveBeenCalledWith(11n);
+  });
+
+  it('waits for the previous tx after the address check, before reading', async () => {
+    const order: string[] = [];
+    const validateAddress = vi.fn(async () => {
+      order.push('validate');
+      return true;
+    });
+    const waitForPrevTx = vi.fn(async () => {
+      order.push('wait');
+    });
+
+    await runSteps(
+      {
+        prepare: async () => {
+          order.push('prepare');
+        },
+        callsFn: async () => [{ stepId: 'main', to: ADDRESS }],
+        sendStep: async () => {
+          order.push('send');
+        },
+      },
+      { validateAddress, waitForPrevTx },
+    );
+    expect(order).toEqual(['validate', 'wait', 'prepare', 'send']);
+  });
+
+  it('aborts a flow that went stale while waiting', async () => {
+    let isCurrent = true;
+    const prepare = vi.fn();
+    const onFailure = vi.fn();
+
+    const result = await runSteps(
+      {
+        prepare,
+        callsFn: async () => [{ stepId: 'main', to: ADDRESS }],
+        sendStep: vi.fn(),
+        onFailure,
+      },
+      {
+        isCurrent: () => isCurrent,
+        waitForPrevTx: async () => {
+          isCurrent = false;
+        },
+      },
+    );
+    expect(result.isAborted).toBe(true);
+    expect(prepare).not.toHaveBeenCalled();
+    expect(onFailure).not.toHaveBeenCalled();
+  });
+
+  it('does not wait for an address that fails validation', async () => {
+    const waitForPrevTx = vi.fn(async () => {});
+
+    await run({}, { validateAddress: vi.fn(async () => false), waitForPrevTx });
+    expect(waitForPrevTx).not.toHaveBeenCalled();
   });
 });

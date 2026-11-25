@@ -1,4 +1,4 @@
-import { type Address, ethAddress, isAddressEqual } from 'viem';
+import { type Address, isAddress, isAddressEqual } from 'viem';
 import { useCallback, useRef, useState } from 'react';
 import { mainnet } from 'viem/chains';
 
@@ -8,19 +8,15 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 // direct file import: the utils index pulls the provider, which imports the guards
 import { getTokenPair } from '../../../utils/token-pair-tracker';
 
-import type { ApprovalData, OrderData } from '../../tx';
 import { useOracleRates, type OracleFeedMaps } from '../../oracles';
 
 import {
-  approvalSnapshotFromTrade,
+  createCowSwapSession,
   evaluateTrade,
   evaluateApproval,
   toNativeSaleSnapshot,
-  verifyApprovalAgainstSnapshot,
-  verifyOrderAgainstSnapshot,
+  type CowSwapSession,
   type TokenDecimalsMap,
-  type ValidatedApprovalSnapshot,
-  type ValidatedTradeSnapshot,
 } from '../utils';
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
 
@@ -30,6 +26,17 @@ import {
   type TradeGuardModalState,
 } from '../trade-guard-modal';
 import { WRAP_UNAVAILABLE_ERROR, WRAP_UNAVAILABLE_TITLE } from '../consts';
+
+const isSameAddress = (a?: string, b?: string): boolean =>
+  a === undefined || b === undefined
+    ? a === b
+    : isAddress(a) && isAddress(b)
+      ? isAddressEqual(a, b)
+      : a === b;
+
+// stands in until the first provider starts: stores nothing
+const NO_SESSION = createCowSwapSession({});
+NO_SESSION.revoke();
 
 // ---------------------------------------------------------------------------
 // Hook
@@ -56,10 +63,8 @@ export const useTradeGuard = ({
   const [modalState, setModalState] =
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
-  const lastValidatedTradeRef = useRef<ValidatedTradeSnapshot | null>(null);
-  const lastValidatedApprovalRef = useRef<ValidatedApprovalSnapshot | null>(
-    null,
-  );
+  // holds the validated trade and approval; none is stored before a provider starts
+  const sessionRef = useRef<CowSwapSession>(NO_SESSION);
   const approvalCallIdRef = useRef(0);
   const lastTradeParamsRef = useRef<OnTradeParamsPayload | null>(null);
   const { verifyWithOracle, readSellTokenUsd, readNetworkCostAllowance } =
@@ -103,21 +108,34 @@ export const useTradeGuard = ({
     [quoteErrorEvent],
   );
 
+  // Starts the session of a new widget provider and revokes the previous one
+  const startSession = useCallback((): CowSwapSession => {
+    sessionRef.current.revoke();
+    sessionRef.current = createCowSwapSession(tokenDecimals);
+    return sessionRef.current;
+  }, [tokenDecimals]);
+
   // Swap gate: structural checks → oracle check → modal
   const validateTrade = useCallback(
     async (payload: OnTradeParamsPayload): Promise<boolean> => {
+      // the session this check stores into, even if a newer one starts meanwhile
+      const session = sessionRef.current;
+      // a failed or pending check leaves nothing to sign
+      session.storeTrade(null);
+
       const reportedSellToken = lastTradeParamsRef.current?.sellToken?.address;
       const decision = await evaluateTrade(payload, {
         isTestnet,
         verifyWithOracle,
         readNetworkCostAllowance,
-        // Invalidate previous snapshot — prevents stale data if this call fails
-        onSnapshotInvalidated: () => {
-          lastValidatedTradeRef.current = null;
-        },
       });
 
       if (!decision.ok) {
+        // prevents showing modal on expired session
+        // if session is no longer active, we can skip any UI as user flow restarts
+        if (!session.isActive()) {
+          return false;
+        }
         await showModal(
           decision.level,
           decision.messages,
@@ -127,13 +145,11 @@ export const useTradeGuard = ({
       }
 
       // Store validated params for provider-level EIP-712 verification
-      lastValidatedTradeRef.current = toNativeSaleSnapshot(
-        decision.snapshot,
-        reportedSellToken,
-        weth,
+      session.storeTrade(
+        toNativeSaleSnapshot(decision.snapshot, reportedSellToken, weth),
       );
 
-      return true;
+      return session.isActive();
     },
     [isTestnet, verifyWithOracle, readNetworkCostAllowance, showModal, weth],
   );
@@ -147,19 +163,22 @@ export const useTradeGuard = ({
     const previous = lastTradeParamsRef.current;
     // Approval snapshot belongs to the sell token and amount it was made for
     if (
-      previous?.sellToken?.address.toLowerCase() !==
-        payload.sellToken?.address.toLowerCase() ||
+      !isSameAddress(
+        previous?.sellToken?.address,
+        payload.sellToken?.address,
+      ) ||
       previous?.sellTokenAmount?.units !== payload.sellTokenAmount?.units
     ) {
-      lastValidatedApprovalRef.current = null;
+      sessionRef.current.storeApproval(null);
     }
     lastTradeParamsRef.current = payload;
   }, []);
 
   /** Approval gate — uses last ON_CHANGE_TRADE_PARAMS data. */
   const validateApproval = useCallback(async (): Promise<boolean> => {
+    const session = sessionRef.current;
     // Invalidate previous snapshot — prevents stale data if this call fails
-    lastValidatedApprovalRef.current = null;
+    session.storeApproval(null);
     const callId = ++approvalCallIdRef.current;
 
     const decision = await evaluateApproval(lastTradeParamsRef.current, {
@@ -178,9 +197,9 @@ export const useTradeGuard = ({
     }
 
     // Store validated approval for provider-level approve verification
-    lastValidatedApprovalRef.current = decision.snapshot;
+    session.storeApproval(decision.snapshot);
 
-    return true;
+    return session.isActive();
   }, [
     isTestnet,
     readSellTokenUsd,
@@ -188,33 +207,6 @@ export const useTradeGuard = ({
     tokenDecimals,
     showModal,
   ]);
-
-  /** Verify approve calldata against the last validated approval or trade. */
-  const verifyApproval = useCallback(
-    (approval: ApprovalData): string | null =>
-      verifyApprovalAgainstSnapshot(approval, [
-        lastValidatedApprovalRef.current,
-        approvalSnapshotFromTrade(lastValidatedTradeRef.current, tokenDecimals),
-      ]),
-    [tokenDecimals],
-  );
-
-  /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
-  const consumeSignedOrder = useCallback(
-    (order: OrderData): string | null => {
-      const error = verifyOrderAgainstSnapshot(
-        order,
-        lastValidatedTradeRef.current,
-        tokenDecimals,
-      );
-      // EthFlow sends ETH with the order: one transaction per validated trade
-      if (!error && isAddressEqual(order.sellToken, ethAddress)) {
-        lastValidatedTradeRef.current = null;
-      }
-      return error;
-    },
-    [tokenDecimals],
-  );
 
   const openTransactionGuardModal = useCallback(
     async (reason: string) => {
@@ -254,8 +246,7 @@ export const useTradeGuard = ({
     reportTradeParams,
     openTransactionGuardModal,
     openSigningErrorModal,
-    consumeSignedOrder,
-    verifyApproval,
     rejectWrapOrUnwrap,
+    startSession,
   };
 };

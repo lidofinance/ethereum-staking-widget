@@ -10,6 +10,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { VaultWritableContract } from '../types/contracts';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 export const useDepositClaim = ({
   vault,
@@ -21,7 +22,7 @@ export const useDepositClaim = ({
 }: {
   vault: VaultWritableContract;
   txModalStages: TxModalStages;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
   additionalQueryScopes?: string[];
@@ -42,7 +43,7 @@ export const useDepositClaim = ({
 
       try {
         setIsClaiming(true);
-        await txFlow({
+        const { isSuccess } = await txFlow({
           callsFn: async () => [
             {
               to: vault.address,
@@ -73,6 +74,9 @@ export const useDepositClaim = ({
           onReceipt: async ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, txHashOrCallId, isAA);
           },
+          onFailure: ({ error }) => {
+            txModalStages.failed(error, onRetry);
+          },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
             if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
@@ -91,7 +95,7 @@ export const useDepositClaim = ({
           },
         });
 
-        return true;
+        return isSuccess;
       } catch (error) {
         console.error(error);
         txModalStages.failed(error, onRetry);

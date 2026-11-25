@@ -6,5 +6,6 @@ export type TooltipProps = Omit<
   'anchorRef' | 'title' | 'open' | 'backdrop' | 'children'
 > & {
   title: React.ReactNode;
-  children: React.ReactElement & React.RefAttributes<HTMLElement>;
+  // element ref must be a callback or object ref (not a legacy string ref)
+  children: React.ReactElement & { ref?: React.Ref<HTMLElement> };
 };

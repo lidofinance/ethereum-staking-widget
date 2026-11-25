@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, FormProvider } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
 import {
@@ -9,6 +9,7 @@ import {
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useEthVaultWithdraw } from '../hooks/use-withdraw';
+import { useEthVaultPreviewWithdraw } from '../hooks/use-preview-withdraw';
 import { useEthVaultWithdrawFormData } from '../hooks/use-withdraw-form-data';
 import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
@@ -45,7 +46,6 @@ export const EthVaultWithdrawFormProvider: React.FC<{
   } = useEthVaultWithdrawFormData();
 
   const { retryEvent } = useFormControllerRetry();
-  const { withdraw } = useEthVaultWithdraw(retryEvent.fire);
 
   const formObject = useForm({
     defaultValues: { amount: null },
@@ -56,6 +56,17 @@ export const EthVaultWithdrawFormProvider: React.FC<{
     mode: 'onChange',
     context: validationContext,
     resolver: EthVaultWithdrawFormValidationResolver,
+  });
+
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  // the quote the form displays; the withdrawal is held to it
+  const { quote, refetchQuote } = useEthVaultPreviewWithdraw({
+    shares: amount,
+  });
+  const { withdraw } = useEthVaultWithdraw({
+    onRetry: retryEvent.fire,
+    shownQuote: quote,
+    refetchQuote,
   });
 
   const formControllerValue = useMemo(

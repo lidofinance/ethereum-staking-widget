@@ -5,9 +5,10 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { getAsyncDepositQueueWritableContract } from '../../contracts';
 import type { UsdDepositToken } from '../../types';
 import { useUsdVaultDepositFormData } from './use-deposit-form-data';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 // For old users who deposited before the sync queue migration
-export const useUsdVaultDepositCancel = (onRetry?: () => void) => {
+export const useUsdVaultDepositCancel = (onRetry?: TxRetryHandler) => {
   const { refetchData } = useUsdVaultDepositFormData();
 
   const { txModalStages } = useTxModalStagesDepositCancel({

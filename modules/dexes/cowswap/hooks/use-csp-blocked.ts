@@ -6,6 +6,9 @@ export const useCspBlocked = () => {
 
   useEffect(() => {
     const handler = (e: SecurityPolicyViolationEvent) => {
+      // report-only violations block nothing
+      if (e.disposition === 'report') return;
+
       const COWSWAP_BASE = new URL(COWSWAP_BASE_URL).origin;
 
       if (

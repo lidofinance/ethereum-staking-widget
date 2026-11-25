@@ -1,18 +1,20 @@
 import invariant from 'tiny-invariant';
 import { useMemo } from 'react';
 import { useMainnetOnlyWagmi } from 'modules/web3';
-import { usePreviewWithdraw } from 'modules/mellow-meta-vaults/hooks/use-preview-withdraw';
+import { usePreviewWithdraw } from 'modules/mellow-meta-vaults';
 import { TOKENS } from 'consts/tokens';
 import {
   getCollectorContract,
   getRedeemQueueContractWSTETH,
 } from '../../contracts';
 
+type UseEthVaultPreviewWithdrawArgs = {
+  shares: bigint | null | undefined;
+};
+
 export const useEthVaultPreviewWithdraw = ({
   shares: earnethShares,
-}: {
-  shares: bigint | null | undefined;
-}) => {
+}: UseEthVaultPreviewWithdrawArgs) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');
 

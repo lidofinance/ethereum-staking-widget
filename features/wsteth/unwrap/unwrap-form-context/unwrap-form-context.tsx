@@ -81,7 +81,6 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [networkData, approvalDataOnL2]);
 
   const processUnwrapFormFlow = useUnwrapFormProcessor({
-    approvalDataOnL2,
     onConfirm,
     onRetry: retryFire,
   });

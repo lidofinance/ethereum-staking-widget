@@ -137,7 +137,7 @@ describe('clampArgs', () => {
   });
 
   it('does not grow output once the character budget is exhausted', () => {
-    // Nine 2 KB strings exhaust the 16 KB character budget; the empty-string
+    // Nine 2 KB strings exhaust the 8 KB character budget; the empty-string
     // tree behind them used to receive one uncharged marker per string.
     const violation = [
       ...Array.from({ length: 9 }, () => 'a'.repeat(2000)),
@@ -168,5 +168,33 @@ describe('clampArgs', () => {
     expect(longestString(clamped)).toBeLessThanOrEqual(ABSOLUTE_STRING_CEILING);
     expect(countChars(clamped)).toBeLessThanOrEqual(ABSOLUTE_TOTAL_CEILING);
     expect(() => mask(clamped)).not.toThrow();
+  });
+});
+
+describe('clampArgs limits and cost', () => {
+  it('pins the caps', () => {
+    expect(MAX_STRING_LENGTH).toBe(1024);
+    expect(MAX_TOTAL_CHARS).toBe(8192);
+  });
+
+  it('bounds a huge string and does not scan it', () => {
+    const huge = 'a'.repeat(50 * 1024 * 1024);
+    const start = performance.now();
+    const [out] = clampArgs([{ 'original-policy': huge }]) as [
+      Record<string, string>,
+    ];
+    const elapsed = performance.now() - start;
+
+    expect(out['original-policy'].length).toBeLessThan(MAX_STRING_LENGTH + 64);
+    expect(elapsed).toBeLessThan(50);
+  });
+
+  it('bounds the total of many huge strings', () => {
+    const huge = 'b'.repeat(1024 * 1024);
+    const out = clampArgs([
+      Object.fromEntries(Array.from({ length: 64 }, (_, i) => [`k${i}`, huge])),
+    ]);
+
+    expect(countChars(out)).toBeLessThan(MAX_TOTAL_CHARS * 2);
   });
 });

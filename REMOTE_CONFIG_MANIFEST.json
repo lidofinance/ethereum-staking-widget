@@ -26,13 +26,13 @@
       { "name": "dvv", "deprecated": true }
     ],
     "featureFlags": {
-      "disableSendCalls": false,
       "dgBannerEnabled": true,
       "rewardsMaintenance": false,
       "holidayDecorEnabled": false,
       "forceAllowance": false,
       "amountBannerEnabled": true,
-      "ggvBulkWithdrawEnabled": true
+      "ggvBulkWithdrawEnabled": true,
+      "earnSmartSuggestEnabled": true
     },
     "earnInfoBanner": {
       "title": "EarnETH and EarnUSD now have two layers of loss protection:",
@@ -99,7 +99,8 @@
       "featureFlags": {
         "ledgerLiveL2": true,
         "dgBannerEnabled": false,
-        "amountBannerEnabled": false
+        "amountBannerEnabled": false,
+        "earnSmartSuggestEnabled": false
       },
       "pages": {
         "/withdrawals": {

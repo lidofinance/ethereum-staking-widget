@@ -195,6 +195,11 @@ export default withBundleAnalyzer({
       '@gemini-wallet/core': false,
       '@base-org/account': false,
       accounts: false,
+      // Optional peer of viem >=2.57.16 (viem/tempo -> mppx/client), reached via
+      // wagmi/connectors -> @wagmi/core/tempo. Not installed and not used by the
+      // widget; fallback applies only when resolution fails, scoped to mppx.
+      mppx: false,
+      'mppx/client': false,
     };
 
     // Alias exact 'zod' imports to a wrapper that disables Zod's eval-based JIT

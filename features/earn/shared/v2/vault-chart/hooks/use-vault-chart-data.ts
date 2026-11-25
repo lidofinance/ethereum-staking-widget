@@ -11,6 +11,7 @@ import { useUsdVaultStats } from 'features/earn/vault-usd/hooks/use-vault-stats'
 
 import { fetchMetavaultChartData } from '../apy-data/metavault-apy';
 import { METAVAULT_QUERY_SCOPE } from '../consts';
+import { isChartTimestampMs } from '../utils';
 
 export type NormalizedVaultChartPoint = {
   timestampMs: number;
@@ -107,7 +108,11 @@ export const useMetavaultChartData = ({
   const data = useMemo((): NormalizedVaultChartPoint[] | null => {
     if (!rawData) return null;
 
-    return rawData.map((item) => {
+    const points = rawData.flatMap((item) => {
+      const timestampMs = unixTimestampToMs(Number(item.timestamp));
+      // drop points that cannot be placed on the time axis
+      if (!isChartTimestampMs(timestampMs)) return [];
+
       const tvl = Number(
         formatUnits(BigInt(item.tvl.amount), item.tvl.decimals),
       );
@@ -121,13 +126,23 @@ export const useMetavaultChartData = ({
             )
           : undefined;
 
-      return {
-        timestampMs: unixTimestampToMs(Number(item.timestamp)),
-        tvl,
-        tvlUsd,
-        apyValue: Number(Number(item.apy.value).toFixed(2)),
-      };
+      return [
+        {
+          timestampMs,
+          tvl,
+          tvlUsd,
+          apyValue: Number(Number(item.apy.value).toFixed(2)),
+        },
+      ];
     });
+
+    const droppedCount = rawData.length - points.length;
+    if (droppedCount > 0) {
+      console.warn(
+        `[useMetavaultChartData] dropped ${droppedCount} point(s) with an invalid timestamp`,
+      );
+    }
+    return points;
   }, [rawData, isETHVault, ethPrice]);
 
   return {
