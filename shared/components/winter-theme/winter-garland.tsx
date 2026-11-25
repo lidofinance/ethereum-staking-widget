@@ -3,7 +3,6 @@ import styled, { css } from 'styled-components';
 
 import { devicesHeaderMedia } from 'styles/global';
 
-import type { LightsMode } from './constants';
 import {
   WinterIcicles,
   noise as icicleNoise,
@@ -105,8 +104,6 @@ const buildGarland = ({ width, hooks, sags, spacing }: GarlandLayout) => {
           // each light sparkles in its own rhythm
           ['--dur' as string]: `${(2.6 + ((i * 7919) % 31) / 10).toFixed(1)}s`,
           ['--d' as string]: `-${((i * 1.37) % 6).toFixed(2)}s`,
-          // the chase runs along the garland, left to right
-          ['--k' as string]: `${((x / width) * 2.4).toFixed(2)}s`,
         },
       });
       i++;
@@ -115,26 +112,13 @@ const buildGarland = ({ width, hooks, sags, spacing }: GarlandLayout) => {
   return { path: path.trim(), bulbs, height, eave: buildEave(width) };
 };
 
-const modeStyles: Record<LightsMode, ReturnType<typeof css>> = {
-  twinkle: css`
-    animation: winter-twinkle var(--dur) ease-in-out infinite;
-    animation-delay: var(--d);
-  `,
-  chase: css`
-    animation: winter-chase 2.4s ease-in-out infinite;
-    animation-delay: var(--k);
-  `,
-  steady: css``,
-  off: css`
-    background: var(--winter-unlit);
-    box-shadow: none;
-  `,
-};
-
 const Wrap = styled.div<{ $mobile?: boolean }>`
   position: relative;
   z-index: 1;
   height: 0;
+  /* icicles at the edges (and falling ones) must not widen the page;
+     clip keeps the vertical overflow visible */
+  overflow-x: clip;
   pointer-events: none;
   display: ${({ $mobile }) => ($mobile ? 'none' : 'block')};
 
@@ -153,7 +137,7 @@ const Wire = styled.svg`
 `;
 
 // a micro LED: a small warm point with a soft halo
-const BulbStyle = styled.span<{ $mode: LightsMode }>`
+const BulbStyle = styled.span<{ $on: boolean }>`
   position: absolute;
   width: 4px;
   height: 4px;
@@ -164,7 +148,16 @@ const BulbStyle = styled.span<{ $mode: LightsMode }>`
     0 0 2px 1px var(--winter-light-glow),
     0 0 7px 2px var(--winter-light-halo);
 
-  ${({ $mode }) => modeStyles[$mode]}
+  ${({ $on }) =>
+    $on
+      ? css`
+          animation: winter-twinkle var(--dur) ease-in-out infinite;
+          animation-delay: var(--d);
+        `
+      : css`
+          background: var(--winter-unlit);
+          box-shadow: none;
+        `}
 `;
 
 // the icy eave over the header's lower edge, on top of the wire ends
@@ -215,7 +208,7 @@ const Garland: FC<{ layout: GarlandLayout; mobile?: boolean }> = ({
         />
       </Wire>
       {bulbs.map(({ key, style }) => (
-        <BulbStyle key={key} style={style} $mode={lights} />
+        <BulbStyle key={key} style={style} $on={lights} />
       ))}
       {layout.hooks.slice(1, -1).map((x) => (
         <Hook

@@ -37,9 +37,6 @@ export const isWinterThemeAllowed = ({
 }: WinterThemeContextInput): boolean =>
   requested && !isIframe && appFlag !== 'ledger-live';
 
-export const LIGHTS_MODES = ['twinkle', 'chase', 'steady', 'off'] as const;
-export type LightsMode = (typeof LIGHTS_MODES)[number];
-
 export const LIDO_MAN_PHRASES = [
   'GM, and Happy New Year!',
   'Stake ETH, not snowballs.',

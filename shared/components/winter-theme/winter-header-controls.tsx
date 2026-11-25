@@ -49,7 +49,7 @@ const Slash: FC = () => (
 );
 
 export const WinterHeaderControls: FC = () => {
-  const { enabled, snow, lights, toggleSnow, cycleLights } = useWinterTheme();
+  const { enabled, snow, lights, toggleSnow, toggleLights } = useWinterTheme();
   if (!enabled) return null;
 
   return (
@@ -78,9 +78,10 @@ export const WinterHeaderControls: FC = () => {
       </ControlButton>
       <ControlButton
         type="button"
-        aria-label={`Lights: ${lights}`}
-        title={`Lights: ${lights}`}
-        onClick={cycleLights}
+        aria-label="Garland lights"
+        aria-pressed={lights}
+        title={lights ? 'Lights: on' : 'Lights: off'}
+        onClick={toggleLights}
         data-testid="winterLightsToggle"
       >
         <svg
@@ -96,7 +97,7 @@ export const WinterHeaderControls: FC = () => {
         >
           <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" />
         </svg>
-        {lights === 'off' && <Slash />}
+        {!lights && <Slash />}
       </ControlButton>
     </>
   );

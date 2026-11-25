@@ -151,11 +151,10 @@ const Hills = styled.svg`
 
 const TREE_LIGHTS = buildTreeLights(HILLS.midForest);
 
-// a warm point with a soft halo; twinkles unless the lights are steady
-const TreeLights = styled.g<{ $twinkle: boolean }>`
+// a warm point with a soft halo, twinkling on its own
+const TreeLights = styled.g`
   circle {
-    animation: ${({ $twinkle }) =>
-      $twinkle ? 'winter-tree-light var(--dur) ease-in-out infinite' : 'none'};
+    animation: winter-tree-light var(--dur) ease-in-out infinite;
     animation-delay: var(--d);
   }
 `;
@@ -249,8 +248,8 @@ export const WinterBackdrop: FC = () => {
           style={{ fill: 'var(--winter-mid-forest)' }}
         />
         <path d={HILLS.midCaps} style={{ fill: 'var(--winter-mid-caps)' }} />
-        {lights !== 'off' && (
-          <TreeLights $twinkle={lights !== 'steady'}>
+        {lights && (
+          <TreeLights>
             {TREE_LIGHTS.map(({ x, y, delay, duration }, i) => (
               <g
                 key={i}

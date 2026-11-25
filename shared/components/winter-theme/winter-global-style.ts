@@ -104,19 +104,6 @@ export const WinterGlobalStyle = createGlobalStyle`
       filter: brightness(1);
     }
   }
-  @keyframes winter-chase {
-    0%, 100% {
-      transform: scale(1);
-      filter: brightness(0.8);
-    }
-    50% {
-      transform: scale(1.35);
-      filter: brightness(1.25);
-      box-shadow:
-        0 0 4px 2px var(--winter-light-glow),
-        0 0 16px 6px var(--winter-light-halo);
-    }
-  }
   @keyframes winter-tree-light {
     0%, 100% { opacity: 0.55; }
     18% { opacity: 1; }
