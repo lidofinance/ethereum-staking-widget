@@ -42,11 +42,3 @@ export const LIDO_MAN_PHRASES = [
   'Stake ETH, not snowballs.',
   'Ho-ho-HODL!',
 ] as const;
-
-// Local midnight of the next New Year
-export const getNextNewYear = (now: Date) =>
-  new Date(now.getFullYear() + 1, 0, 1, 0, 0, 0);
-
-// The countdown is shown in December and turns into a greeting
-// for the first days of January
-export const GREETING_DAYS = 7;

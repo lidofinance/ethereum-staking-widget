@@ -16,11 +16,7 @@ import {
   IPFSInfoBoxOnlyMobileAndPortableWrapper,
   AmountBannerOnlyMobileWrapper,
 } from './styles';
-import {
-  WinterCountdown,
-  WinterTheme,
-  WinterThemeProvider,
-} from '../winter-theme';
+import { WinterTheme, WinterThemeProvider } from '../winter-theme';
 
 type Props = {
   title?: ReactNode;
@@ -47,7 +43,6 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
         <AmountBannerOnlyMobileWrapper>
           <AmountBanner isDismissible placement="connect_wallet" />
         </AmountBannerOnlyMobileWrapper>
-        {title && <WinterCountdown />}
         <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>
         <LayoutSubTitleStyle data-layout-subtitle>
           {subtitle}
