@@ -1,14 +1,21 @@
 import { useEffect, useState, type FC } from 'react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
+import { HOME_PATH } from 'consts/urls';
 import { devicesHeaderMedia } from 'styles/global';
 
 import { getCountdownState, type CountdownState } from './countdown';
 import { useWinterTheme } from './winter-theme-context';
 
+const CHIP_HEIGHT = 32;
+
+// The row is reserved from the server-known flag, the chip fills it after
+// mount, so the title below never jumps
 const Row = styled.div`
   display: flex;
   justify-content: center;
+  height: ${CHIP_HEIGHT}px;
   margin-top: 8px;
   margin-bottom: 14px;
 
@@ -21,7 +28,7 @@ const Chip = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 32px;
+  height: ${CHIP_HEIGHT}px;
   padding: 0 14px;
   border-radius: 16px;
   background: var(--lido-color-foreground);
@@ -35,8 +42,10 @@ const Digits = styled.span`
   font-variant-numeric: tabular-nums;
 `;
 
+// Stake page only
 export const WinterCountdown: FC = () => {
-  const { enabled } = useWinterTheme();
+  const { requested, enabled } = useWinterTheme();
+  const { pathname } = useRouter();
   const [state, setState] = useState<CountdownState | null>(null);
 
   useEffect(() => {
@@ -47,31 +56,33 @@ export const WinterCountdown: FC = () => {
     return () => clearInterval(id);
   }, [enabled]);
 
-  if (!enabled || !state) return null;
+  if (!requested || pathname !== HOME_PATH) return null;
 
   return (
     <Row data-winter="countdown">
-      <Chip role="timer" aria-live="off">
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          style={{ stroke: 'var(--lido-color-primary)' }}
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          aria-hidden="true"
-        >
-          <path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7" />
-        </svg>
-        {state.kind === 'countdown' ? (
-          <span>
-            New Year in <Digits>{state.label}</Digits>
-          </span>
-        ) : (
-          <span>{state.label}</span>
-        )}
-      </Chip>
+      {enabled && state && (
+        <Chip role="timer" aria-live="off">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            style={{ stroke: 'var(--lido-color-primary)' }}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7" />
+          </svg>
+          {state.kind === 'countdown' ? (
+            <span>
+              New Year in <Digits>{state.label}</Digits>
+            </span>
+          ) : (
+            <span>{state.label}</span>
+          )}
+        </Chip>
+      )}
     </Row>
   );
 };

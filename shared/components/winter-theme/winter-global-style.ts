@@ -1,7 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
 
-import { devicesHeaderMedia } from 'styles/global';
-
 // Theme tokens branch in CSS (see styles/global.ts): data-lido-theme is set
 // before the first paint, theme.name is not. The canvases read the same
 // tokens through getComputedStyle.
@@ -24,8 +22,8 @@ const LIGHT = `
   --winter-wire: #3e5a4a;
   --winter-unlit: #c5cdd8;
   --winter-ice-0: rgba(255, 255, 255, 0.98);
-  --winter-ice-1: rgba(130, 190, 240, 0.75);
-  --winter-ice-shadow: rgba(39, 56, 82, 0.15);
+  --winter-ice-1: rgba(100, 168, 232, 0.9);
+  --winter-ice-shadow: rgba(39, 56, 82, 0.24);
   --winter-frost: rgba(70, 150, 220, 0.5);
   --winter-chip-shadow: rgba(39, 56, 82, 0.1);
   --winter-night-display: none;
@@ -74,6 +72,11 @@ export const WinterGlobalStyle = createGlobalStyle`
   }
 
   /* bulbs stay opaque: only brightness and glow change */
+  /* the app's fixed 1560x784 glow would show its edges over the sky */
+  [data-background-gradient] {
+    display: none;
+  }
+
   @keyframes winter-twinkle {
     0%, 62%, 100% {
       filter: brightness(1.08);
@@ -103,19 +106,12 @@ export const WinterGlobalStyle = createGlobalStyle`
     to { transform: translateX(3%) scaleY(1.15); }
   }
   @keyframes winter-aurora-hue {
-    from { filter: blur(4px) saturate(1.7) brightness(1.15) hue-rotate(-16deg); }
-    to { filter: blur(4px) saturate(1.7) brightness(1.15) hue-rotate(24deg); }
+    from { filter: blur(1.4px) saturate(1.7) brightness(1.15) hue-rotate(-16deg); }
+    to { filter: blur(1.4px) saturate(1.7) brightness(1.15) hue-rotate(24deg); }
   }
   @keyframes winter-pop {
     from { transform: scale(0.9); }
     to { transform: scale(1); }
-  }
-
-  /* room for Lido-man's hat between the subtitle and the stake card */
-  @media ${devicesHeaderMedia.mobile} {
-    [data-layout-subtitle] {
-      margin-bottom: 38px;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {

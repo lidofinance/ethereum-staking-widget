@@ -1,23 +1,38 @@
 import type { FC } from 'react';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import { createGlobalStyle } from 'styled-components';
 
-import { SnowCanvas } from './snow-canvas';
-import { WinterBackdrop } from './winter-backdrop';
-import { WinterGlobalStyle } from './winter-global-style';
-import { WinterStakeDecor } from './winter-stake-decor';
+import { HOME_PATH } from 'consts/urls';
+import { devicesHeaderMedia } from 'styles/global';
+
 import { useWinterTheme } from './winter-theme-context';
 
-// Page-level layers of the New Year theme. Everything here renders only
-// when the manifest flag `holidayDecorEnabled` is on.
+const WinterLayers = dynamic(
+  () => import('./winter-layers').then((m) => m.WinterLayers),
+  { ssr: false },
+);
+
+// Room for Lido-man's hat between the subtitle and the stake card on
+// phones. Rendered from the server-known flag, so nothing jumps on mount.
+const StakeLayoutStyle = createGlobalStyle`
+  @media ${devicesHeaderMedia.mobile} {
+    [data-layout-subtitle] {
+      margin-bottom: 38px;
+    }
+  }
+`;
+
+// Page-level layers of the New Year theme, behind the manifest flag
+// `holidayDecorEnabled`
 export const WinterTheme: FC = () => {
-  const { enabled } = useWinterTheme();
-  if (!enabled) return null;
+  const { requested, enabled } = useWinterTheme();
+  const { pathname } = useRouter();
 
   return (
     <>
-      <WinterGlobalStyle />
-      <WinterBackdrop />
-      <WinterStakeDecor />
-      <SnowCanvas />
+      {requested && pathname === HOME_PATH && <StakeLayoutStyle />}
+      {enabled && <WinterLayers />}
     </>
   );
 };

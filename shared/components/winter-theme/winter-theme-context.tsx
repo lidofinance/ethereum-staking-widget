@@ -10,10 +10,17 @@ import {
 } from 'react';
 
 import { useConfig } from 'config';
+import { useAppFlag } from 'providers/app-flag';
 import { useIsIframe } from 'shared/hooks/use-is-iframe';
 import { useLocalStorage } from 'shared/hooks/use-local-storage';
 
-import { LIGHTS_MODES, WINTER_STORAGE_KEY, type LightsMode } from './constants';
+import {
+  LIGHTS_MODES,
+  WINTER_STORAGE_KEY,
+  isWinterThemeAllowed,
+  isWinterThemeRequested,
+  type LightsMode,
+} from './constants';
 
 type WinterSettings = {
   snow: boolean;
@@ -23,7 +30,9 @@ type WinterSettings = {
 const DEFAULT_SETTINGS: WinterSettings = { snow: true, lights: 'twinkle' };
 
 export type WinterThemeValue = {
-  // the whole theme: manifest flag, and never inside Ledger Live / Safe
+  // the flag asks for the theme; known on the server, used to reserve space
+  requested: boolean;
+  // the theme is on: client only, never inside Ledger Live or Safe
   enabled: boolean;
   reducedMotion: boolean;
   snow: boolean;
@@ -33,6 +42,7 @@ export type WinterThemeValue = {
 };
 
 const DISABLED: WinterThemeValue = {
+  requested: false,
   enabled: false,
   reducedMotion: false,
   snow: false,
@@ -64,6 +74,7 @@ const isLightsMode = (value: unknown): value is LightsMode =>
 export const WinterThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   const { featureFlags } = useConfig().externalConfig;
   const isIframe = useIsIframe();
+  const appFlag = useAppFlag();
   const reducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [stored, setStored] = useLocalStorage<WinterSettings>(
@@ -74,25 +85,41 @@ export const WinterThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   // the theme depends on window (iframe, storage): render it on the client only
   useEffect(() => setMounted(true), []);
 
-  const enabled = mounted && !!featureFlags.holidayDecorEnabled && !isIframe;
+  const requested = isWinterThemeRequested(featureFlags.holidayDecorEnabled);
+  const enabled =
+    mounted && isWinterThemeAllowed({ requested, isIframe, appFlag });
   const snow = stored?.snow !== false;
   const lights = isLightsMode(stored?.lights) ? stored.lights : 'twinkle';
 
+  // read the stored value, not the render closure: other tabs may have changed it
   const toggleSnow = useCallback(
-    () => setStored((s) => ({ ...DEFAULT_SETTINGS, ...s, snow: !snow })),
-    [setStored, snow],
+    () =>
+      setStored((s) => ({
+        ...DEFAULT_SETTINGS,
+        ...s,
+        snow: s?.snow === false,
+      })),
+    [setStored],
   );
 
-  const cycleLights = useCallback(() => {
-    const next =
-      LIGHTS_MODES[(LIGHTS_MODES.indexOf(lights) + 1) % LIGHTS_MODES.length];
-    setStored((s) => ({ ...DEFAULT_SETTINGS, ...s, lights: next }));
-  }, [setStored, lights]);
+  const cycleLights = useCallback(
+    () =>
+      setStored((s) => {
+        const current = isLightsMode(s?.lights) ? s.lights : 'twinkle';
+        const next =
+          LIGHTS_MODES[
+            (LIGHTS_MODES.indexOf(current) + 1) % LIGHTS_MODES.length
+          ];
+        return { ...DEFAULT_SETTINGS, ...s, lights: next };
+      }),
+    [setStored],
+  );
 
   const value = useMemo<WinterThemeValue>(
     () =>
       enabled
         ? {
+            requested,
             enabled,
             reducedMotion,
             snow,
@@ -101,8 +128,8 @@ export const WinterThemeProvider: FC<PropsWithChildren> = ({ children }) => {
             toggleSnow,
             cycleLights,
           }
-        : DISABLED,
-    [enabled, reducedMotion, snow, lights, toggleSnow, cycleLights],
+        : { ...DISABLED, requested },
+    [requested, enabled, reducedMotion, snow, lights, toggleSnow, cycleLights],
   );
 
   return (

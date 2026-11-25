@@ -68,19 +68,25 @@ export const depositOnPile = (pile: SnowPile, j: number) => {
 
 const REPOSE = 0.8;
 const SLIDE = 0.3;
+const SETTLE = 0.05;
 
-// Steep steps slide down to the neighbour; total snow is conserved
-export const relaxPile = (pile: SnowPile) => {
+// Steep steps slide down to the neighbour; total snow is conserved.
+// Returns whether anything moved, so a settled drift is not redrawn.
+export const relaxPile = (pile: SnowPile): boolean => {
   const { h } = pile;
+  let moved = false;
   for (let j = 0; j < pile.n - 1; j++) {
     const d = h[j] - h[j + 1];
-    if (Math.abs(d) <= REPOSE) continue;
+    // the small margin lets a drift settle instead of creeping forever
+    if (Math.abs(d) <= REPOSE + SETTLE) continue;
     const m = (Math.abs(d) - REPOSE) * SLIDE;
     const [from, to] = d > 0 ? [j, j + 1] : [j + 1, j];
     if (h[to] + m > pileCap(pile, to)) continue;
     h[from] -= m;
     h[to] += m;
+    moved = true;
   }
+  return moved;
 };
 
 export const getPileVolume = (pile: SnowPile) =>

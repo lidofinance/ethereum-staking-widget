@@ -1,6 +1,7 @@
 // Northern lights: curtains of vertical rays drawn with a pre-rendered
-// gradient sprite, additive blending. The canvas is rendered at half size
-// and blurred in CSS, so per frame this is ~1.5k cheap drawImage calls.
+// gradient sprite, additive blending. The canvas box is a third of the
+// visible size, blurred and scaled up in CSS, so per frame this is
+// ~1k cheap drawImage calls.
 
 type Curtain = {
   sprite: number;
@@ -53,7 +54,8 @@ const SPRITE_COLORS: [string, string][] = [
   ['200,150,255', '255,180,170'],
 ];
 
-const SCALE = 0.5;
+// the canvas box is already small (scaled up in CSS): draw 1:1
+const SCALE = 1;
 
 const makeSprite = (core: string, top: string): HTMLCanvasElement => {
   const c = document.createElement('canvas');
@@ -75,11 +77,12 @@ const makeSprite = (core: string, top: string): HTMLCanvasElement => {
 export class AuroraPainter {
   private sprites: HTMLCanvasElement[] | null = null;
 
-  draw(canvas: HTMLCanvasElement, time: number): void {
+  // Returns false while the canvas is hidden (light theme), so the caller
+  // can back off instead of polling layout every frame
+  draw(canvas: HTMLCanvasElement, time: number): boolean {
     const W = canvas.offsetWidth;
     const H = canvas.offsetHeight;
-    // hidden by the light theme (display: none)
-    if (!W || !H) return;
+    if (!W || !H) return false;
 
     const AW = Math.round(W * SCALE);
     const AH = Math.round(H * SCALE);
@@ -88,7 +91,7 @@ export class AuroraPainter {
       canvas.height = AH;
     }
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) return false;
 
     if (!this.sprites) {
       this.sprites = SPRITE_COLORS.map(([core, top]) => makeSprite(core, top));
@@ -126,5 +129,6 @@ export class AuroraPainter {
 
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = 'source-over';
+    return true;
   }
 }

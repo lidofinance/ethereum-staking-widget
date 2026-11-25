@@ -13,7 +13,8 @@ import {
 
 export const Main: FC<ContainerProps> = (props) => {
   const { size = 'tight', ...rest } = props;
-  const { enabled: isWinterThemeEnabled } = useWinterTheme();
+  // reserved from the flag, known on the server: no jump when the theme mounts
+  const { requested: isWinterThemeEnabled } = useWinterTheme();
   const router = useRouter();
 
   const isEarnListPage = router.pathname === EARN_PATH;

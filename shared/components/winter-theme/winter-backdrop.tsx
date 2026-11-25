@@ -1,6 +1,7 @@
 import { useMemo, useRef, type FC } from 'react';
 import styled from 'styled-components';
 
+import { WINTER_BACKDROP_Z_INDEX } from 'styles/constants';
 import { devicesHeaderMedia } from 'styles/global';
 
 import { AuroraPainter } from './aurora';
@@ -17,7 +18,7 @@ const HORIZON_MOBILE =
 
 const Backdrop = styled.div`
   position: fixed;
-  z-index: -1;
+  z-index: ${WINTER_BACKDROP_Z_INDEX};
   inset: 0;
   overflow: hidden;
   pointer-events: none;
@@ -64,20 +65,45 @@ const Moon = styled.div`
   }
 `;
 
+// The canvas box is a third of the area and scaled up by a transform:
+// the blur runs on that small layer, so it is smooth and is not split into
+// tiles (a full-size blurred layer showed seams and banding). The mask
+// fades the curtains out at the top and bottom instead of cutting them.
+const AURORA_SCALE = 3;
+
 const AuroraCanvas = styled.canvas`
   position: absolute;
   left: 0;
-  top: 18vh;
-  width: 100%;
-  height: 62vh;
-  mix-blend-mode: screen;
+  top: 10vh;
+  width: calc(100% / ${AURORA_SCALE});
+  height: calc(72vh / ${AURORA_SCALE});
+  transform: scale(${AURORA_SCALE});
+  transform-origin: 0 0;
+  /* no mix-blend-mode: blending with the sky is done per compositor tile
+     and left a visible seam; the rays already add up inside the canvas */
+  will-change: transform;
   opacity: 0.85;
-  filter: blur(4px) saturate(1.7) brightness(1.15);
+  filter: blur(1.4px) saturate(1.7) brightness(1.15);
   animation: winter-aurora-hue 11s ease-in-out infinite alternate;
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 28%,
+    #000 85%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 28%,
+    #000 85%,
+    transparent 100%
+  );
 
   @media ${devicesHeaderMedia.mobile} {
-    top: 14vh;
-    height: 52vh;
+    top: 18vh;
+    height: calc(48vh / ${AURORA_SCALE});
+    opacity: 0.6;
   }
 `;
 
@@ -112,7 +138,9 @@ const Hills = styled.svg`
   left: 0;
   bottom: ${HORIZON};
   width: 100%;
-  height: 260px;
+  /* grows with the width: a fixed height would make "slice" crop the far
+     forest flat on wide screens */
+  height: max(260px, calc(100vw * 260 / 1440));
 
   @media ${devicesHeaderMedia.mobile} {
     bottom: ${HORIZON_MOBILE};
@@ -133,6 +161,9 @@ const Ground = styled.div`
     height: calc(${HORIZON_MOBILE} + 2px);
   }
 `;
+
+// a fixed moment of the animation for prefers-reduced-motion
+const STILL_AURORA_TIME = 40000;
 
 const STAR_COUNT = 70;
 
@@ -160,15 +191,18 @@ export const WinterBackdrop: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const painter = useMemo(() => new AuroraPainter(), []);
   const stars = useStars();
-  const lastDraw = useRef(0);
+  const nextDraw = useRef(0);
 
   useAnimationFrame((time) => {
-    // ~30 fps is plenty for a slow curtain
-    if (time - lastDraw.current < 33) return;
-    lastDraw.current = time;
-    if (canvasRef.current) {
-      painter.draw(canvasRef.current, reducedMotion ? 40000 : time);
-    }
+    if (time < nextDraw.current || !canvasRef.current) return;
+    const visible = painter.draw(
+      canvasRef.current,
+      reducedMotion ? STILL_AURORA_TIME : time,
+    );
+    // ~30 fps for a slow curtain; a still aurora (reduced motion) and a
+    // hidden one (light theme) only check back once a second, for a
+    // resize or a theme switch
+    nextDraw.current = time + (visible && !reducedMotion ? 33 : 1000);
   }, true);
 
   return (

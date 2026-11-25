@@ -48,6 +48,7 @@ const AppWrapper = (
         />
       </Head>
       <BackgroundGradient
+        data-background-gradient
         width={1560}
         height={784}
         style={{

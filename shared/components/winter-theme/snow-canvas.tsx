@@ -1,6 +1,9 @@
 import { useEffect, useRef, type FC } from 'react';
 import styled from 'styled-components';
 
+import { WINTER_SNOW_Z_INDEX } from 'styles/constants';
+
+import { SNOW_SURFACE_ATTR } from './constants';
 import {
   PILE_COL,
   PILE_SHAPES,
@@ -19,19 +22,17 @@ import {
 import { useAnimationFrame } from './use-animation-frame';
 import { useWinterTheme } from './winter-theme-context';
 
-// Elements opt in with data-snow-surface="card" | "block" | "button"
-export const SNOW_SURFACE_ATTR = 'data-snow-surface';
-
-// above page content, below the mobile navigation, modals and toasts
-export const SNOW_Z_INDEX = 5;
-
-// Falling flakes and knocked-off snow live in viewport space
+// Falling flakes and knocked-off snow live in viewport space.
+// 100% of the fixed box (not 100vw/100vh): matches the drawing area
+// exactly, without the scrollbar and with the iOS toolbar.
 const FlakeCanvas = styled.canvas`
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: ${SNOW_Z_INDEX};
+  /* a canvas does not stretch to inset on its own: without these it takes
+     its bitmap size, which the loop then grows every frame */
+  width: 100%;
+  height: 100%;
+  z-index: ${WINTER_SNOW_Z_INDEX};
   pointer-events: none;
 `;
 
@@ -39,7 +40,7 @@ const FlakeCanvas = styled.canvas`
 // card, so it scrolls with the card instead of chasing it
 const DriftLayer = styled.div`
   position: absolute;
-  z-index: ${SNOW_Z_INDEX};
+  z-index: ${WINTER_SNOW_Z_INDEX};
   top: 0;
   left: 0;
   width: 100%;
@@ -81,12 +82,15 @@ type Drift = {
   kind: SnowPileKind;
   pile: SnowPile;
   canvas: HTMLCanvasElement;
-  // viewport position of the pile base, refreshed every frame
+  // pile base inside the layer, measured a few times a second
+  lx: number;
+  ly: number;
+  // pile base in the viewport, derived every frame from one layer read
   x: number;
   y: number;
   w: number;
-  // last placement inside the layer, to skip redundant style writes
   placed: string;
+  dirty: boolean;
 };
 
 type Palette = {
@@ -109,6 +113,14 @@ const readPalette = (): Palette => {
     driftShadow: v('--winter-drift-shadow', 'rgba(0,0,0,0.2)'),
   };
 };
+
+const samePalette = (a: Palette | null, b: Palette) =>
+  !!a &&
+  a.flake === b.flake &&
+  a.flakeShadow === b.flakeShadow &&
+  a.snow === b.snow &&
+  a.driftBottom === b.driftBottom &&
+  a.driftShadow === b.driftShadow;
 
 const spawnFlake = (W: number, H: number, anywhere: boolean): Flake => {
   const layer = Math.random();
@@ -141,16 +153,20 @@ class SnowScene {
   drifts: Drift[] = [];
   pointer = { x: -9999, y: -9999 };
   palette: Palette | null = null;
-  discoveredAt = 0;
-  paletteAt = 0;
+  discoveredAt = -Infinity;
+  paletteAt = -Infinity;
+  flakesCleared = false;
 
-  // Which elements carry a drift. Cheap enough to run a few times a second.
+  // Which elements carry a drift and where they sit in the layer.
+  // Runs a few times a second; layout shifts are picked up here.
   discover(layer: HTMLElement) {
+    const origin = layer.getBoundingClientRect();
     const nodes = Array.from(
       document.querySelectorAll<HTMLElement>(`[${SNOW_SURFACE_ATTR}]`),
     );
     const rects = nodes.map((el) => el.getBoundingClientRect());
     const keep: Drift[] = [];
+    const dpr = getDpr();
 
     nodes.forEach((el, i) => {
       const kind = el.getAttribute(SNOW_SURFACE_ATTR);
@@ -170,7 +186,8 @@ class SnowScene {
       // a disabled button would look like part of the decor
       if (kind === 'button' && el.matches(':disabled')) return;
 
-      const width = rect.width - PILE_SHAPES[kind].inset * 2;
+      const { inset, max } = PILE_SHAPES[kind];
+      const width = rect.width - inset * 2;
       if (width < 24) return;
 
       let drift = this.drifts.find((d) => d.el === el);
@@ -179,8 +196,42 @@ class SnowScene {
         prefillPile(pile);
         const canvas = drift?.canvas ?? document.createElement('canvas');
         canvas.setAttribute('aria-hidden', 'true');
-        if (!canvas.parentElement) layer.appendChild(canvas);
-        drift = { el, kind, pile, canvas, x: 0, y: 0, w: width, placed: '' };
+        drift = {
+          el,
+          kind,
+          pile,
+          canvas,
+          lx: 0,
+          ly: 0,
+          x: 0,
+          y: 0,
+          w: pile.n * PILE_COL,
+          placed: '',
+          dirty: true,
+        };
+      }
+      // the layer element can be replaced (remount, hot reload):
+      // always hang the drift in the current one
+      if (drift.canvas.parentElement !== layer) layer.appendChild(drift.canvas);
+
+      drift.lx = rect.left - origin.left + inset;
+      drift.ly = rect.top - origin.top;
+
+      const cw = drift.w + DRIFT_PAD_X * 2;
+      const ch = max + DRIFT_PAD_TOP + DRIFT_PAD_BOTTOM;
+      const left = Math.round(drift.lx - DRIFT_PAD_X);
+      const top = Math.round(drift.ly - max - DRIFT_PAD_TOP);
+      const key = `${left}:${top}:${cw}:${ch}:${dpr}`;
+      if (key !== drift.placed) {
+        drift.placed = key;
+        drift.canvas.width = Math.round(cw * dpr);
+        drift.canvas.height = Math.round(ch * dpr);
+        drift.canvas.style.width = `${cw}px`;
+        drift.canvas.style.height = `${ch}px`;
+        drift.canvas.style.left = `${left}px`;
+        drift.canvas.style.top = `${top}px`;
+        // resizing clears the bitmap
+        drift.dirty = true;
       }
       keep.push(drift);
     });
@@ -191,35 +242,8 @@ class SnowScene {
     this.drifts = keep;
   }
 
-  // Track the cards every frame: the flakes need viewport coordinates,
-  // the drift canvases need their place in the layer
-  place(layer: HTMLElement) {
-    const origin = layer.getBoundingClientRect();
-    const dpr = getDpr();
-    for (const d of this.drifts) {
-      const rect = d.el.getBoundingClientRect();
-      const { inset, max } = PILE_SHAPES[d.kind];
-      d.x = rect.left + inset;
-      d.y = rect.top;
-      d.w = d.pile.n * PILE_COL;
-
-      const cw = d.w + DRIFT_PAD_X * 2;
-      const ch = max + DRIFT_PAD_TOP + DRIFT_PAD_BOTTOM;
-      const left = Math.round(d.x - origin.left - DRIFT_PAD_X);
-      const top = Math.round(d.y - origin.top - max - DRIFT_PAD_TOP);
-      const key = `${left}:${top}:${cw}:${ch}:${dpr}`;
-      if (key === d.placed) continue;
-      d.placed = key;
-      d.canvas.width = Math.round(cw * dpr);
-      d.canvas.height = Math.round(ch * dpr);
-      d.canvas.style.width = `${cw}px`;
-      d.canvas.style.height = `${ch}px`;
-      d.canvas.style.left = `${left}px`;
-      d.canvas.style.top = `${top}px`;
-    }
-  }
-
   emit(d: Drift, cells: SweptCell[], vx: number, vy: number) {
+    if (cells.length > 0) d.dirty = true;
     for (const { j, amount } of cells) {
       if (this.particles.length >= MAX_PARTICLES) return;
       if (Math.random() > amount / 3) continue;
@@ -266,14 +290,54 @@ class SnowScene {
       this.discover(layer);
       this.discoveredAt = time;
     }
-    if (!this.palette || time - this.paletteAt > PALETTE_EVERY_MS) {
-      this.palette = readPalette();
+    if (time - this.paletteAt > PALETTE_EVERY_MS) {
+      const palette = readPalette();
+      // theme switched: repaint the drifts in the new colours
+      if (!samePalette(this.palette, palette)) {
+        for (const d of this.drifts) d.dirty = true;
+      }
+      this.palette = palette;
       this.paletteAt = time;
     }
-    this.place(layer);
+    const palette = this.palette ?? readPalette();
 
-    const W = window.innerWidth;
-    const H = window.innerHeight;
+    // one layout read per frame: the drifts move with the layer on scroll
+    const origin = layer.getBoundingClientRect();
+    for (const d of this.drifts) {
+      d.x = origin.left + d.lx;
+      d.y = origin.top + d.ly;
+    }
+
+    this.drawFlakeLayer(canvas, dt, falling, palette);
+
+    const dpr = getDpr();
+    for (const d of this.drifts) {
+      if (relaxPile(d.pile)) d.dirty = true;
+      if (!d.dirty) continue;
+      this.drawDrift(d, palette, dpr);
+      d.dirty = false;
+    }
+  }
+
+  drawFlakeLayer(
+    canvas: HTMLCanvasElement,
+    dt: number,
+    falling: boolean,
+    palette: Palette,
+  ) {
+    // nothing moves: clear once and leave the canvas alone
+    if (!falling && this.particles.length === 0 && this.flakes.length === 0) {
+      if (!this.flakesCleared) {
+        canvas.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
+        this.flakesCleared = true;
+      }
+      return;
+    }
+    this.flakesCleared = false;
+
+    const W = canvas.clientWidth;
+    const H = canvas.clientHeight;
+    if (!W || !H) return;
     const dpr = getDpr();
     if (
       canvas.width !== Math.round(W * dpr) ||
@@ -287,13 +351,8 @@ class SnowScene {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
 
-    const palette = this.palette;
     this.drawFlakes(ctx, W, H, dt, falling, palette);
     this.drawParticles(ctx, dt, palette);
-    for (const d of this.drifts) {
-      relaxPile(d.pile);
-      this.drawDrift(d, palette, dpr);
-    }
   }
 
   drawFlakes(
@@ -341,6 +400,7 @@ class SnowScene {
           );
           if (f.y >= drift.y - pile.h[j] && f.y <= drift.y + 6) {
             depositOnPile(pile, j);
+            drift.dirty = true;
             landed = true;
             break;
           }
@@ -390,8 +450,10 @@ class SnowScene {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, d.canvas.width, d.canvas.height);
 
+    // the bottom edge overlaps the card by a couple of pixels, so no sky
+    // shows between the drift and the card
     ctx.beginPath();
-    ctx.moveTo(x0 - 2, base + 1.5);
+    ctx.moveTo(x0 - 2, base + 3);
     let px = x0 + PILE_COL / 2;
     let py = base + 1 - pile.h[0];
     ctx.lineTo(px, py);
@@ -402,14 +464,14 @@ class SnowScene {
       px = x;
       py = y;
     }
-    ctx.lineTo(x0 + d.w + 2, base + 1.5);
+    ctx.lineTo(x0 + d.w + 2, base + 3);
     ctx.closePath();
 
     ctx.save();
     ctx.shadowColor = palette.driftShadow;
     ctx.shadowBlur = 8;
     ctx.shadowOffsetY = 2;
-    const g = ctx.createLinearGradient(0, base - pile.max, 0, base + 2);
+    const g = ctx.createLinearGradient(0, base - pile.max, 0, base + 3);
     g.addColorStop(0, palette.snow);
     g.addColorStop(1, palette.driftBottom);
     ctx.fillStyle = g;
@@ -433,19 +495,26 @@ export const SnowCanvas: FC = () => {
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
-    const onMove = (e: PointerEvent) =>
-      scene.onPointerMove(e.clientX, e.clientY);
+    // mouse and pen only: a finger scrolling the page must not sweep drifts
+    const isPointer = (e: PointerEvent) =>
+      e.pointerType === 'mouse' || e.pointerType === 'pen';
+    const onMove = (e: PointerEvent) => {
+      if (isPointer(e)) scene.onPointerMove(e.clientX, e.clientY);
+    };
     const onLeave = () => {
       scene.pointer.x = -9999;
       scene.pointer.y = -9999;
     };
     const onClick = (e: MouseEvent) => scene.onClick(e.clientX, e.clientY);
+    const root = document.documentElement;
     window.addEventListener('pointermove', onMove, { passive: true });
-    document.addEventListener('pointerleave', onLeave);
+    root.addEventListener('mouseleave', onLeave);
+    window.addEventListener('blur', onLeave);
     window.addEventListener('click', onClick, { passive: true });
     return () => {
       window.removeEventListener('pointermove', onMove);
-      document.removeEventListener('pointerleave', onLeave);
+      root.removeEventListener('mouseleave', onLeave);
+      window.removeEventListener('blur', onLeave);
       window.removeEventListener('click', onClick);
       scene.dispose();
     };

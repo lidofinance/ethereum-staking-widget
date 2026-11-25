@@ -61,6 +61,15 @@ describe('snow-model', () => {
     expect(pile.h[51]).toBeGreaterThan(0);
   });
 
+  it('reports whether relaxing moved any snow', () => {
+    const pile = createPile(300, 'card');
+    pile.h[50] = 20;
+    expect(relaxPile(pile)).toBe(true);
+    for (let i = 0; i < 500; i++) relaxPile(pile);
+    // a settled drift stays put, so it is not redrawn
+    expect(relaxPile(pile)).toBe(false);
+  });
+
   it('does not drain a prefilled drift over time', () => {
     const pile = createPile(400, 'card');
     prefillPile(pile);

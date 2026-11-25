@@ -9,18 +9,17 @@ import {
 import styled from 'styled-components';
 
 import { ReactComponent as LidoManSanta } from 'assets/holidays/lido-man-santa.svg';
+import { WINTER_DECOR_Z_INDEX } from 'styles/constants';
 import { devicesHeaderMedia } from 'styles/global';
 
-import { LIDO_MAN_PHRASES } from './constants';
+import {
+  ANCHOR_FORM,
+  ANCHOR_TOP,
+  LIDO_MAN_PHRASES,
+  WINTER_ANCHOR_ATTR,
+} from './constants';
 import { ICE_LIP, ICE_LIP_HIGHLIGHTS, ICE_LIP_VIEWBOX } from './shapes';
-import { SNOW_Z_INDEX } from './snow-canvas';
 import { useWinterTheme } from './winter-theme-context';
-
-// The card the decor hangs on. The wallet card sits above the form when
-// it is shown, so Lido-man peeks over whichever is on top.
-export const WINTER_ANCHOR_ATTR = 'data-winter-anchor';
-export const ANCHOR_TOP = 'stake-top';
-export const ANCHOR_FORM = 'stake-form';
 
 const LIDO_MAN_W = 132;
 const LIDO_MAN_W_MOBILE = 92;
@@ -34,7 +33,7 @@ type Anchors = { top: Box; form: Box; mobile: boolean };
 // Under the snow canvas, so drifts and flakes stay in front of Lido-man
 const Layer = styled.div`
   position: absolute;
-  z-index: ${SNOW_Z_INDEX - 1};
+  z-index: ${WINTER_DECOR_Z_INDEX};
   top: 0;
   left: 0;
   width: 100%;
@@ -80,7 +79,7 @@ const LidoManButton = styled.button<{ $up: boolean }>`
 
 const Bubble = styled.div`
   position: absolute;
-  z-index: ${SNOW_Z_INDEX + 1};
+  z-index: ${WINTER_DECOR_Z_INDEX + 2};
   padding: 10px 14px;
   border-radius: 14px;
   background: var(--lido-color-foreground);
@@ -108,6 +107,15 @@ const Bubble = styled.div`
     white-space: normal;
     max-width: 180px;
   }
+`;
+
+const LiveRegion = styled.div`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 `;
 
 const Icicles = styled.svg`
@@ -165,11 +173,20 @@ const useAnchors = (layerRef: React.RefObject<HTMLDivElement>) => {
     );
   }, [layerRef]);
 
+  // The page grows or shrinks when the form changes (wallet, banners,
+  // errors): watch the body instead of polling. A slow fallback tick covers
+  // moves that keep the body size, and it skips hidden tabs.
   useEffect(() => {
     measure();
-    const id = setInterval(measure, 300);
+    const observer =
+      'ResizeObserver' in window ? new ResizeObserver(() => measure()) : null;
+    observer?.observe(document.body);
+    const id = setInterval(() => {
+      if (!document.hidden) measure();
+    }, 1000);
     window.addEventListener('resize', measure);
     return () => {
+      observer?.disconnect();
       clearInterval(id);
       window.removeEventListener('resize', measure);
     };
@@ -242,10 +259,14 @@ export const WinterStakeDecor: FC = () => {
         </LidoManWindow>
       )}
       {bubble && bubbleShown && phraseIndex >= 0 && (
-        <Bubble role="status" style={bubble}>
+        <Bubble style={bubble} aria-hidden="true">
           {LIDO_MAN_PHRASES[phraseIndex]}
         </Bubble>
       )}
+      {/* always mounted, so screen readers announce the phrase */}
+      <LiveRegion role="status">
+        {bubbleShown && phraseIndex >= 0 ? LIDO_MAN_PHRASES[phraseIndex] : ''}
+      </LiveRegion>
       {icicles && (
         <Icicles
           style={icicles}
