@@ -21,7 +21,7 @@ export const StakeFaq: FC = () => {
   const onClickHandler = useMatomoEventHandle();
 
   return (
-    <Section title="FAQ" onClick={onClickHandler}>
+    <Section title="FAQ" data-snow-items="block" onClick={onClickHandler}>
       <WhatIsLido />
       <HowDoesLidoWork />
       <HowDoesDirectStakingWork />

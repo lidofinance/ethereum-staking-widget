@@ -18,7 +18,7 @@ import {
   LIDO_MAN_PHRASES,
   WINTER_ANCHOR_ATTR,
 } from './constants';
-import { ICE_LIP, ICE_LIP_HIGHLIGHTS, ICE_LIP_VIEWBOX } from './shapes';
+import { WinterIcicles } from './winter-icicles';
 import { useWinterTheme } from './winter-theme-context';
 
 const LIDO_MAN_W = 132;
@@ -116,13 +116,6 @@ const LiveRegion = styled.div`
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
-`;
-
-const Icicles = styled.svg`
-  position: absolute;
-  height: 44px;
-  overflow: visible;
-  filter: drop-shadow(0 3px 4px var(--winter-ice-shadow));
 `;
 
 const toBox = (el: Element, origin: DOMRect): Box => {
@@ -267,34 +260,7 @@ export const WinterStakeDecor: FC = () => {
       <LiveRegion role="status">
         {bubbleShown && phraseIndex >= 0 ? LIDO_MAN_PHRASES[phraseIndex] : ''}
       </LiveRegion>
-      {icicles && (
-        <Icicles
-          style={icicles}
-          viewBox={ICE_LIP_VIEWBOX}
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <defs>
-            <linearGradient id="winter-ice" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" style={{ stopColor: 'var(--winter-snow)' }} />
-              <stop
-                offset="0.16"
-                style={{ stopColor: 'var(--winter-ice-0)' }}
-              />
-              <stop offset="1" style={{ stopColor: 'var(--winter-ice-1)' }} />
-            </linearGradient>
-          </defs>
-          <path d={ICE_LIP} fill="url(#winter-ice)" />
-          <path
-            d={ICE_LIP_HIGHLIGHTS}
-            stroke="#FFFFFF"
-            strokeOpacity="0.85"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        </Icicles>
-      )}
+      {icicles && <WinterIcicles style={icicles} />}
     </Layer>
   );
 };

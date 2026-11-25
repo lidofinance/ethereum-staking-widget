@@ -1,4 +1,4 @@
-import { useMemo, useRef, type FC } from 'react';
+import { useMemo, useRef, type CSSProperties, type FC } from 'react';
 import styled from 'styled-components';
 
 import { WINTER_BACKDROP_Z_INDEX } from 'styles/constants';
@@ -6,6 +6,7 @@ import { devicesHeaderMedia } from 'styles/global';
 
 import { AuroraPainter } from './aurora';
 import { HILLS, HILLS_VIEWBOX } from './shapes';
+import { buildTreeLights } from './tree-lights';
 import { useAnimationFrame } from './use-animation-frame';
 import { useWinterTheme } from './winter-theme-context';
 
@@ -148,6 +149,17 @@ const Hills = styled.svg`
   }
 `;
 
+const TREE_LIGHTS = buildTreeLights(HILLS.midForest);
+
+// a warm point with a soft halo; twinkles unless the lights are steady
+const TreeLights = styled.g<{ $twinkle: boolean }>`
+  circle {
+    animation: ${({ $twinkle }) =>
+      $twinkle ? 'winter-tree-light var(--dur) ease-in-out infinite' : 'none'};
+    animation-delay: var(--d);
+  }
+`;
+
 // snowfield under the horizon, the colour the hills' near slope fades into
 const Ground = styled.div`
   position: absolute;
@@ -187,7 +199,7 @@ const useStars = () =>
   );
 
 export const WinterBackdrop: FC = () => {
-  const { reducedMotion } = useWinterTheme();
+  const { reducedMotion, lights } = useWinterTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const painter = useMemo(() => new AuroraPainter(), []);
   const stars = useStars();
@@ -237,6 +249,34 @@ export const WinterBackdrop: FC = () => {
           style={{ fill: 'var(--winter-mid-forest)' }}
         />
         <path d={HILLS.midCaps} style={{ fill: 'var(--winter-mid-caps)' }} />
+        {lights !== 'off' && (
+          <TreeLights $twinkle={lights !== 'steady'}>
+            {TREE_LIGHTS.map(({ x, y, delay, duration }, i) => (
+              <g
+                key={i}
+                style={
+                  {
+                    '--d': `${delay.toFixed(2)}s`,
+                    '--dur': `${duration.toFixed(1)}s`,
+                  } as CSSProperties
+                }
+              >
+                <circle
+                  cx={x.toFixed(1)}
+                  cy={y.toFixed(1)}
+                  r="2.6"
+                  style={{ fill: 'var(--winter-light-halo)' }}
+                />
+                <circle
+                  cx={x.toFixed(1)}
+                  cy={y.toFixed(1)}
+                  r="0.9"
+                  style={{ fill: 'var(--winter-light-core)' }}
+                />
+              </g>
+            ))}
+          </TreeLights>
+        )}
         <path d={HILLS.near} fill="url(#winter-near)" />
         <path
           d={HILLS.nearRim}

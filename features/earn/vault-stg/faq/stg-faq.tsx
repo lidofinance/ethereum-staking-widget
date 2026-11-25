@@ -26,7 +26,7 @@ import {
 
 export const STGFaq: FC = () => {
   return (
-    <Section title="FAQ" data-testid="vault-faq">
+    <Section title="FAQ" data-snow-items="block" data-testid="vault-faq">
       <WhatIsLidoStrategy />
       <WhatAreMellowPoints />
       <WhatFeesAreApplied />

@@ -37,7 +37,11 @@
 </defs>
 <g class="lm-hat" transform="translate(30 6)">
 <path d="M118 150 C 112 70, 190 -8, 290 -18 C 340 -22, 372 0, 382 30 C 352 18, 322 26, 312 52 C 300 84, 300 118, 306 140 Z" fill="#E14D4D" stroke="#08090B" stroke-width="9" stroke-linejoin="round"/>
-<path d="M232 -6 C 290 -16, 338 -6, 362 14 C 340 14, 322 24, 314 44 C 290 20, 262 6, 232 -6 Z" fill="#B83A3A"/>
+<clipPath id="lm-hat-clip"><path d="M118 150 C 112 70, 190 -8, 290 -18 C 340 -22, 372 0, 382 30 C 352 18, 322 26, 312 52 C 300 84, 300 118, 306 140 Z"/></clipPath>
+<g clip-path="url(#lm-hat-clip)">
+<path d="M306 150 C 300 118, 300 84, 312 52 C 322 26, 352 18, 382 30 L 384 0 C 350 -6, 300 14, 282 52 C 268 84, 270 118, 278 150 Z" fill="#B83A3A"/>
+</g>
+<path d="M118 150 C 112 70, 190 -8, 290 -18 C 340 -22, 372 0, 382 30 C 352 18, 322 26, 312 52 C 300 84, 300 118, 306 140 Z" fill="none" stroke="#08090B" stroke-width="9" stroke-linejoin="round"/>
 <rect x="86" y="128" width="256" height="46" rx="23" fill="#FFFFFF" stroke="#08090B" stroke-width="9" transform="rotate(-6 212 151)"/>
 <circle cx="384" cy="34" r="25" fill="#FFFFFF" stroke="#08090B" stroke-width="9"/>
 </g></svg>

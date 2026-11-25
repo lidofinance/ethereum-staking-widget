@@ -23,7 +23,7 @@ export const WrapFaq = () => {
     : faqComponentsMap.get(chainType) || EthereumFAQ;
 
   return (
-    <Section title="FAQ" onClick={onClickHandler}>
+    <Section title="FAQ" data-snow-items="block" onClick={onClickHandler}>
       <FAQ />
     </Section>
   );

@@ -3,7 +3,11 @@ import styled from 'styled-components';
 
 import { WINTER_SNOW_Z_INDEX } from 'styles/constants';
 
-import { SNOW_SURFACE_ATTR } from './constants';
+import {
+  SNOW_ITEMS_ATTR,
+  SNOW_SKIP_ATTR,
+  SNOW_SURFACE_ATTR,
+} from './constants';
 import {
   PILE_COL,
   PILE_SHAPES,
@@ -53,9 +57,10 @@ const DriftLayer = styled.div`
   }
 `;
 
-// room above the drift for its shadow, and below the card edge
-const DRIFT_PAD_TOP = 12;
-const DRIFT_PAD_BOTTOM = 6;
+// room above the drift, and below the card edge for the overhang and its
+// shadow
+const DRIFT_PAD_TOP = 6;
+const DRIFT_PAD_BOTTOM = 12;
 const DRIFT_PAD_X = 6;
 
 type Flake = {
@@ -98,6 +103,7 @@ type Palette = {
   flakeShadow: string;
   snow: string;
   driftBottom: string;
+  driftFace: string;
   driftShadow: string;
 };
 
@@ -110,17 +116,49 @@ const readPalette = (): Palette => {
     flakeShadow: v('--winter-flake-shadow', 'rgba(0,0,0,0)'),
     snow: v('--winter-snow', '#fff'),
     driftBottom: v('--winter-drift-bottom', '#eef3fa'),
+    driftFace: v('--winter-drift-face', '#d6e2f1'),
     driftShadow: v('--winter-drift-shadow', 'rgba(0,0,0,0.2)'),
   };
 };
 
 const samePalette = (a: Palette | null, b: Palette) =>
-  !!a &&
-  a.flake === b.flake &&
-  a.flakeShadow === b.flakeShadow &&
-  a.snow === b.snow &&
-  a.driftBottom === b.driftBottom &&
-  a.driftShadow === b.driftShadow;
+  !!a && (Object.keys(b) as (keyof Palette)[]).every((k) => a[k] === b[k]);
+
+// Elements that carry a drift: marked ones, and the items of marked lists
+const findSurfaces = () => {
+  const found: { el: HTMLElement; kind: string | null }[] = [];
+  document
+    .querySelectorAll<HTMLElement>(`[${SNOW_SURFACE_ATTR}]`)
+    .forEach((el) =>
+      found.push({ el, kind: el.getAttribute(SNOW_SURFACE_ATTR) }),
+    );
+  // Section: header first, content last
+  document
+    .querySelectorAll<HTMLElement>(`[${SNOW_ITEMS_ATTR}]`)
+    .forEach((list) => {
+      const kind = list.getAttribute(SNOW_ITEMS_ATTR);
+      const content = list.lastElementChild;
+      if (!content) return;
+      for (const el of Array.from(content.children)) {
+        if (el instanceof HTMLElement) found.push({ el, kind });
+      }
+    });
+  return found.filter(({ el }) => !el.closest(`[${SNOW_SKIP_ATTR}]`));
+};
+
+// x of a pile column's centre in the drift canvas
+const colX = (j: number) => DRIFT_PAD_X + j * PILE_COL + PILE_COL / 2;
+
+// Snow sags a little over the card edge: the drift lies on the card
+// instead of being pasted in front of it. Fixed per column, scaled by depth.
+const overhangAt = (pile: SnowPile, j: number) => {
+  const depth = Math.min(1, pile.h[j] / 6);
+  if (depth <= 0) return 0;
+  // slow waves, with an occasional lump that sags lower
+  const wave = Math.sin(j * 0.31) * 0.7 + Math.sin(j * 0.11 + 1) * 0.6;
+  const lump = Math.max(0, Math.sin(j * 0.53 + 2) - 0.75) * 5;
+  return depth * (2.4 + wave + lump);
+};
 
 const spawnFlake = (W: number, H: number, anywhere: boolean): Flake => {
   const layer = Math.random();
@@ -143,6 +181,7 @@ const spawnFlake = (W: number, H: number, anywhere: boolean): Flake => {
 
 const MAX_PARTICLES = 500;
 const DISCOVER_EVERY_MS = 250;
+const LAYOUT_SETTLE_MS = 600;
 const PALETTE_EVERY_MS = 500;
 
 const getDpr = () => Math.min(2, window.devicePixelRatio || 1);
@@ -154,6 +193,9 @@ class SnowScene {
   pointer = { x: -9999, y: -9999 };
   palette: Palette | null = null;
   discoveredAt = -Infinity;
+  // the page changed size (accordion, banner): track the drifts every frame
+  // for a moment instead of a few times a second
+  layoutChangedAt = -Infinity;
   paletteAt = -Infinity;
   flakesCleared = false;
 
@@ -161,15 +203,12 @@ class SnowScene {
   // Runs a few times a second; layout shifts are picked up here.
   discover(layer: HTMLElement) {
     const origin = layer.getBoundingClientRect();
-    const nodes = Array.from(
-      document.querySelectorAll<HTMLElement>(`[${SNOW_SURFACE_ATTR}]`),
-    );
-    const rects = nodes.map((el) => el.getBoundingClientRect());
+    const surfaces = findSurfaces();
+    const rects = surfaces.map(({ el }) => el.getBoundingClientRect());
     const keep: Drift[] = [];
     const dpr = getDpr();
 
-    nodes.forEach((el, i) => {
-      const kind = el.getAttribute(SNOW_SURFACE_ATTR);
+    surfaces.forEach(({ el, kind }, i) => {
       const rect = rects[i];
       if (!isPileKind(kind) || !rect.width || !rect.height) return;
       // another surface lies on top of this edge (wallet card over the form)
@@ -286,7 +325,10 @@ class SnowScene {
     dt: number,
     falling: boolean,
   ) {
-    if (time - this.discoveredAt > DISCOVER_EVERY_MS) {
+    if (
+      time - this.discoveredAt > DISCOVER_EVERY_MS ||
+      time - this.layoutChangedAt < LAYOUT_SETTLE_MS
+    ) {
       this.discover(layer);
       this.discoveredAt = time;
     }
@@ -440,42 +482,74 @@ class SnowScene {
     ctx.globalAlpha = 1;
   }
 
-  // in the drift canvas' own coordinates: the card edge is `base`
+  // In the drift canvas' own coordinates: the card edge is `base`.
+  // Lit from above: a bright mound, a shaded front face where the snow
+  // hangs over the edge, and that overhang's shadow on the card.
   drawDrift(d: Drift, palette: Palette, dpr: number) {
     const ctx = d.canvas.getContext('2d');
     if (!ctx) return;
     const { pile } = d;
     const base = pile.max + DRIFT_PAD_TOP;
-    const x0 = DRIFT_PAD_X;
+    const width = d.canvas.width / dpr;
+    const height = d.canvas.height / dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, d.canvas.width, d.canvas.height);
+    ctx.clearRect(0, 0, width, height);
 
-    // the bottom edge overlaps the card by a couple of pixels, so no sky
-    // shows between the drift and the card
-    ctx.beginPath();
-    ctx.moveTo(x0 - 2, base + 3);
-    let px = x0 + PILE_COL / 2;
-    let py = base + 1 - pile.h[0];
-    ctx.lineTo(px, py);
+    const outline = new Path2D();
+    // the top: a smooth curve through the column heights
+    let px = colX(0);
+    let py = base - pile.h[0];
+    outline.moveTo(px, py);
     for (let j = 1; j < pile.n; j++) {
-      const x = x0 + j * PILE_COL + PILE_COL / 2;
-      const y = base + 1 - pile.h[j];
-      ctx.quadraticCurveTo(px, py, (px + x) / 2, (py + y) / 2);
+      const x = colX(j);
+      const y = base - pile.h[j];
+      outline.quadraticCurveTo(px, py, (px + x) / 2, (py + y) / 2);
       px = x;
       py = y;
     }
-    ctx.lineTo(x0 + d.w + 2, base + 3);
-    ctx.closePath();
+    // the overhang, right to left; +1 so no gap shows at the edge
+    px = colX(pile.n - 1);
+    py = base + 1;
+    outline.lineTo(px, py);
+    for (let j = pile.n - 2; j >= 0; j--) {
+      const x = colX(j);
+      const y = base + 1 + overhangAt(pile, j);
+      outline.quadraticCurveTo(px, py, (px + x) / 2, (py + y) / 2);
+      px = x;
+      py = y;
+    }
+    outline.closePath();
 
+    // the overhang's shadow, only on the card
     ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, base, width, height - base);
+    ctx.clip();
     ctx.shadowColor = palette.driftShadow;
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetY = 2;
-    const g = ctx.createLinearGradient(0, base - pile.max, 0, base + 3);
-    g.addColorStop(0, palette.snow);
-    g.addColorStop(1, palette.driftBottom);
-    ctx.fillStyle = g;
-    ctx.fill();
+    ctx.shadowBlur = 5;
+    ctx.shadowOffsetY = 3;
+    ctx.fillStyle = palette.driftFace;
+    ctx.fill(outline);
+    ctx.restore();
+
+    // the mound
+    const top = ctx.createLinearGradient(0, base - pile.max, 0, base);
+    top.addColorStop(0, palette.snow);
+    top.addColorStop(1, palette.driftBottom);
+    ctx.fillStyle = top;
+    ctx.fill(outline);
+
+    // the front face, from just above the edge down to the overhang
+    const faceTop = base - 1.5;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, faceTop, width, height - faceTop);
+    ctx.clip();
+    const face = ctx.createLinearGradient(0, faceTop, 0, base + 5);
+    face.addColorStop(0, palette.driftBottom);
+    face.addColorStop(1, palette.driftFace);
+    ctx.fillStyle = face;
+    ctx.fill(outline);
     ctx.restore();
   }
 
@@ -507,11 +581,19 @@ export const SnowCanvas: FC = () => {
     };
     const onClick = (e: MouseEvent) => scene.onClick(e.clientX, e.clientY);
     const root = document.documentElement;
+    const observer =
+      'ResizeObserver' in window
+        ? new ResizeObserver(() => {
+            scene.layoutChangedAt = performance.now();
+          })
+        : null;
+    observer?.observe(document.body);
     window.addEventListener('pointermove', onMove, { passive: true });
     root.addEventListener('mouseleave', onLeave);
     window.addEventListener('blur', onLeave);
     window.addEventListener('click', onClick, { passive: true });
     return () => {
+      observer?.disconnect();
       window.removeEventListener('pointermove', onMove);
       root.removeEventListener('mouseleave', onLeave);
       window.removeEventListener('blur', onLeave);

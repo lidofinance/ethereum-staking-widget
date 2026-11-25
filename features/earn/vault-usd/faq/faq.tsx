@@ -51,7 +51,7 @@ export const EarnUsdFaq: FC = () => {
 
   return (
     <FaqGroup activeItemHash={activeItemHash}>
-      <Section data-testid="vault-faq">
+      <Section data-testid="vault-faq" data-snow-items="block">
         <WhatIsEarnUsd defaultExpanded />
         <WhatIsApyForEarnUsd id={FAQ_IDS.apy} />
         <WhatFeesAreApplied id={FAQ_IDS.fees} />

@@ -98,6 +98,8 @@ export const EarnVaultsList: FC = () => {
             }
             withoutBorder
             data-testid="deprecated-vaults-list"
+            // collapsed cards would carry snow, and it flickers on toggle
+            data-snow-skip
           >
             <CardsStack>
               {deprecatedVaults.map((vault) => {

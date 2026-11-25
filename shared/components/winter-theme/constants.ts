@@ -7,6 +7,10 @@ export const WINTER_STORAGE_KEY = 'lido-winter-theme';
 
 // Elements opt in to a snow drift with data-snow-surface="card" | "block" | "button"
 export const SNOW_SURFACE_ATTR = 'data-snow-surface';
+// On a list (FAQ): every item of its content gets a drift of this kind
+export const SNOW_ITEMS_ATTR = 'data-snow-items';
+// No drifts inside (collapsible content: hidden cards would carry snow)
+export const SNOW_SKIP_ATTR = 'data-snow-skip';
 
 // The stake cards Lido-man and the icicles hang on. The wallet card sits
 // above the form when shown, so Lido-man peeks over whichever is on top.
