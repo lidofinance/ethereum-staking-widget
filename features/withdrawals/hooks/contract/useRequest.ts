@@ -1,19 +1,25 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
+import type { Address } from 'viem';
 
 import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 import {
-  useAA,
+  applyRoundUpTxParameter,
+  isStepSettled,
   useDappStatus,
   useIsSmartAccount,
   useLidoSDK,
   useTxFlow,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 import { config } from 'config';
-import { applyRoundUpTxParameter } from 'modules/web3';
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { ErrorMessage } from 'utils/getErrorMessage';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { useWithdrawalRequestTxApprove } from './use-withdrawal-request-tx-approve';
 
@@ -21,13 +27,29 @@ type UseWithdrawalRequestArgs = {
   amount: bigint | null;
   token: TOKENS_TO_WITHDRAWLS;
   onConfirm?: () => Promise<void>;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
 };
 
 type RequestArgs = {
   requests: bigint[] | null;
   amount: bigint | null;
   token: TOKENS_TO_WITHDRAWLS;
+};
+
+// the steps of a request, the first one only for an allowance short of the
+// amount that is approved rather than covered by a permit
+const STEP = { approve: 'approve', request: 'request' } as const;
+
+// what every stage of a request needs, read once before the first step
+type RequestData = {
+  address: Address;
+  // The withdrawal queue pulls the tokens, so it needs an allowance first.
+  // Read here rather than taken from the form state, so a retry after a
+  // confirmed approval never approves again
+  needsApprove: boolean;
+  // An EOA short of allowance signs a permit that goes with the request,
+  // unless the user chose the allowance flow instead
+  isPermit: boolean;
 };
 
 export const useWithdrawalRequest = ({
@@ -37,7 +59,6 @@ export const useWithdrawalRequest = ({
   onRetry,
 }: UseWithdrawalRequestArgs) => {
   const { address } = useDappStatus();
-  const { isAA } = useAA();
   const { isBunker } = useWithdrawals();
   const { withdraw } = useLidoSDK();
   const { txModalStages } = useTxModalStagesRequest();
@@ -45,13 +66,10 @@ export const useWithdrawalRequest = ({
   const { hasBytecode } = useIsSmartAccount();
   const {
     allowance,
-    needsApprove,
     isApprovalFlow,
     isApprovalFlowLoading,
     isTokenLocked,
-    hasEnoughAllowance,
     refetchAllowance,
-    processApproveTx,
     isForceAllowance,
     setIsForceAllowance,
   } = useWithdrawalRequestTxApprove({ amount, token });
@@ -59,14 +77,14 @@ export const useWithdrawalRequest = ({
   const { closeModal } = useTransactionModal();
 
   const request = useCallback(
-    async ({ requests, amount, token }: RequestArgs) => {
+    async ({ requests, amount, token }: RequestArgs): Promise<boolean> => {
       invariant(
         requests && requests.length > 0,
         'cannot submit empty requests',
       );
       invariant(amount, 'cannot submit empty amount');
-      // The modal shows `amount`, the direct and permit paths send `requests`
-      // and the AA path splits `amount` again: one total for all three
+      // The modal shows `amount` and the approval covers it, every path sends
+      // `requests`: one total for all of them
       invariant(
         requests.reduce((total, value) => total + value, 0n) === amount,
         'requests do not add up to the amount',
@@ -77,152 +95,158 @@ export const useWithdrawalRequest = ({
         setIsForceAllowance(true);
       };
 
+      if (isBunker) {
+        const bunkerDialogResult = await txModalStages.dialogBunker();
+        if (!bunkerDialogResult) {
+          return false;
+        }
+      }
+
       let isSigningPermit = false;
 
-      try {
-        if (isBunker) {
-          const bunkerDialogResult = await txModalStages.dialogBunker();
-          if (!bunkerDialogResult) {
-            closeModal();
-            return false;
+      const { isSuccess } = await txFlow<RequestData>({
+        prepare: async ({ isAA }) => {
+          invariant(address, 'account is not defined');
+          const currentAllowance = await withdraw.approval.getAllowance({
+            account: address,
+            token,
+          });
+          const needsApprove = currentAllowance < amount;
+          return {
+            address,
+            needsApprove,
+            // a contract cannot sign a permit and an AA wallet batches the
+            // approval with the request
+            isPermit:
+              needsApprove && !isAA && !hasBytecode && !isForceAllowance,
+          };
+        },
+        // the approval joins the batch for AA wallets and goes as a separate
+        // transaction otherwise
+        callsFn: async ({ data }) => {
+          const [approveTx, requestTx] = await Promise.all([
+            data.needsApprove && !data.isPermit
+              ? withdraw.approval.approvePopulateTx({ amount, token })
+              : null,
+            withdraw.request.requestWithdrawalPopulateTx({
+              requests,
+              token,
+              receiver: data.address,
+            }),
+          ]);
+          return [
+            approveTx && { stepId: STEP.approve, ...approveTx },
+            { stepId: STEP.request, ...requestTx },
+          ];
+        },
+        sendStep: async (step, txStagesCallback, { data }) => {
+          if (step.stepId === STEP.approve) {
+            trackMatomoEvent(
+              MATOMO_TX_EVENTS_TYPES.withdrawalRequestApprovalStart,
+            );
+            await withdraw.approval.approve({
+              amount,
+              token,
+              callback: txStagesCallback,
+            });
+            return;
           }
-        }
-
-        // A rare case when the connected address has bytecode (is contract) but does not support batch txs for some reason
-        // or the address has enough allowance to skip approval or allowance is forced
-        if (
-          (!isAA && (hasBytecode || isForceAllowance)) ||
-          hasEnoughAllowance
-        ) {
-          await txFlow({
-            sendTransaction: async (txStagesCallback) => {
-              if (needsApprove) {
-                await processApproveTx({ onRetry });
-              }
-              await withdraw.request.requestWithdrawal({
-                requests,
-                token,
-                callback: txStagesCallback,
-              });
-            },
-            onSign: async ({ payload }) => {
-              txModalStages.sign(amount, token);
-              const fallback =
-                token === TOKENS_TO_WITHDRAWLS.stETH
-                  ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
-                  : config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT;
-              return applyRoundUpTxParameter(
-                (payload as bigint) ?? fallback * BigInt(requests.length),
-              );
-            },
-            onReceipt: async ({ payload }) => {
-              return txModalStages.pending(amount, token, payload);
-            },
-            onFailure: ({ error }) =>
-              txModalStages.failed(
-                error,
-                onRetry,
-                isSigningPermit,
-                onTryAllowance,
-              ),
-            onSuccess: async ({ txHash }) => {
-              void onConfirm?.();
-              txModalStages.success(amount, token, txHash);
-              await refetchAllowance();
-            },
-            onMultisigDone: () => {
-              txModalStages.successMultisig();
-            },
+          if (data.isPermit) {
+            // ERC-2612 permit flow for EOAs (no batching)
+            const deadline = applyRoundUpTxParameter(
+              BigInt(Math.floor(Date.now() / 1000)) + 86_400n, // 1 day
+            );
+            await withdraw.request.requestWithdrawalWithPermit({
+              requests,
+              token,
+              callback: txStagesCallback,
+              deadline,
+            });
+            return;
+          }
+          await withdraw.request.requestWithdrawal({
+            requests,
+            token,
+            callback: txStagesCallback,
           });
-        } else {
-          await txFlow({
-            callsFn: async () => {
-              // Approve + Withdraw batch tx
-              const args = { amount, token, receiver: address };
-              return await Promise.all([
-                needsApprove && withdraw.approval.approvePopulateTx(args),
-                withdraw.request.requestWithdrawalPopulateTx(args),
-              ]);
-            },
-            sendTransaction: async (txStagesCallback) => {
-              // ERC-2612 permit flow for EOAs (no batching)
-              const deadline = applyRoundUpTxParameter(
-                BigInt(Math.floor(Date.now() / 1000)) + 86_400n, // 1 day
-              );
-              await withdraw.request.requestWithdrawalWithPermit({
-                requests,
-                token,
-                callback: txStagesCallback,
-                deadline,
-              });
-            },
-            onPermit: async () => {
-              isSigningPermit = true;
-              txModalStages.signPermit();
-            },
-            onSign: async ({ payload }) => {
-              isSigningPermit = false;
-              txModalStages.sign(amount, token);
-              const fallback =
-                token === TOKENS_TO_WITHDRAWLS.stETH
-                  ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
-                  : config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
-              return applyRoundUpTxParameter(
-                (payload as bigint) ?? fallback * BigInt(requests.length),
-              );
-            },
-            onReceipt: async ({ txHashOrCallId }) => {
-              txModalStages.pending(amount, token, txHashOrCallId, isAA);
-            },
-            onSuccess: async ({ txHash }) => {
-              if (isAA) {
-                await Promise.all([
-                  onConfirm?.(),
-                  isApprovalFlow ? refetchAllowance() : Promise.resolve(null),
-                ]);
-                txModalStages.success(amount, token, txHash);
-              } else {
-                void onConfirm?.();
-                txModalStages.success(amount, token, txHash);
-                if (isApprovalFlow) {
-                  await refetchAllowance();
-                }
-              }
-            },
-            onFailure: ({ error }) =>
-              txModalStages.failed(
-                error,
-                onRetry,
-                isSigningPermit,
-                onTryAllowance,
-              ),
-            onMultisigDone: () => {
-              txModalStages.successMultisig();
-            },
-          });
-        }
+        },
+        onPermit: () => {
+          isSigningPermit = true;
+          txModalStages.signPermit();
+        },
+        // an AA batch reports as its last step, the request
+        onSign: ({ payload, ctx: { stepId, data } }) => {
+          isSigningPermit = false;
+          if (stepId === STEP.approve) {
+            txModalStages.signApproval(amount, token);
+            return;
+          }
+          txModalStages.sign(amount, token);
+          const isSteth = token === TOKENS_TO_WITHDRAWLS.stETH;
+          const fallback = data.isPermit
+            ? isSteth
+              ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
+              : config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT
+            : isSteth
+              ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
+              : config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT;
+          return applyRoundUpTxParameter(
+            payload ?? fallback * BigInt(requests.length),
+          );
+        },
+        onReceipt: ({ txHashOrCallId, isAA, ctx: { stepId } }) =>
+          stepId === STEP.approve
+            ? txModalStages.pendingApproval(amount, token, txHashOrCallId)
+            : txModalStages.pending(amount, token, txHashOrCallId, isAA),
+        onSuccess: async ({ txHash, isAA, ctx: { stepId } }) => {
+          if (stepId === STEP.approve) {
+            trackMatomoEvent(
+              MATOMO_TX_EVENTS_TYPES.withdrawalRequestApprovalFinish,
+            );
+            return;
+          }
+          if (isAA) {
+            await Promise.all([onConfirm?.(), refetchAllowance()]);
+            txModalStages.success(amount, token, txHash);
+            return;
+          }
+          void onConfirm?.();
+          txModalStages.success(amount, token, txHash);
+          await refetchAllowance();
+        },
+        onMultisigDone: ({ ctx }) => {
+          if (ctx.stepId === STEP.request) txModalStages.successMultisig();
+        },
+        onFailure: async ({ error, ctx }) => {
+          console.error(error);
+          // the allowance changed under the form: refresh it before a retry
+          if (isStepSettled(ctx, STEP.approve)) await refetchAllowance();
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.request, [
+              {
+                stepId: STEP.approve,
+                message: ErrorMessage.WITHDRAWAL_REQUEST_INTERRUPTED,
+              },
+            ]),
+            onRetry,
+            isSigningPermit,
+            onTryAllowance,
+          );
+          isSigningPermit = false;
+        },
+      });
 
-        return true;
-      } catch (error) {
-        console.error(error);
-        txModalStages.failed(error, onRetry, isSigningPermit, onTryAllowance);
-        isSigningPermit = false;
-        return false;
-      }
+      // requested (or proposed to a multisig): the form resets
+      return isSuccess;
     },
     [
+      address,
       closeModal,
       hasBytecode,
-      hasEnoughAllowance,
-      isAA,
-      isApprovalFlow,
       isBunker,
       isForceAllowance,
-      address,
-      needsApprove,
       onConfirm,
       onRetry,
-      processApproveTx,
       refetchAllowance,
       setIsForceAllowance,
       txFlow,

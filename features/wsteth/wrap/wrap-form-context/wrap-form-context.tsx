@@ -107,7 +107,6 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [networkData, approvalDataOnL1]);
 
   const processWrapFormFlow = useWrapFormProcessor({
-    approvalDataOnL1,
     onConfirm,
     onRetry: retryFire,
   });

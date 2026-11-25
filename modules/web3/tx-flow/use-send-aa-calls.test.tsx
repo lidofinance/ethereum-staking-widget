@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { Hash } from 'viem';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { TxSentDataUnavailableError } from '../../utils/errors';
+import { TxSentDataUnavailableError } from '../utils/errors';
 import type { AACall, TxCallbackProps } from './types';
 
 const ACCOUNT = '0x00000000000000000000000000000000000000aa';
@@ -21,7 +21,7 @@ vi.mock('wagmi', () => ({
 vi.mock('config', () => ({
   config: { PROVIDER_POLLING_INTERVAL: 1, AA_TX_POLLING_TIMEOUT: 1 },
 }));
-vi.mock('../../web3-provider/lido-sdk', () => ({
+vi.mock('../web3-provider/lido-sdk', () => ({
   useLidoSDK: () => ({
     core: {
       walletClient: {
@@ -31,7 +31,7 @@ vi.mock('../../web3-provider/lido-sdk', () => ({
     },
   }),
 }));
-vi.mock('../../web3-provider/lido-sdk-l2', () => ({
+vi.mock('../web3-provider/lido-sdk-l2', () => ({
   useLidoSDKL2: () => ({ core: undefined, isL2: false }),
 }));
 

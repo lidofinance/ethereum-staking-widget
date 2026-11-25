@@ -1,4 +1,5 @@
 export * from './consts';
+export * from './tx-flow';
 export * from './hooks';
 export * from './utils';
 // after the hooks: the fee hooks build on them and the provider layer

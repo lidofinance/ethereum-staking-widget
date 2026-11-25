@@ -24,8 +24,9 @@ import {
   getDVVaultWritableContract,
 } from '../../contracts';
 import { useTxModalStagesDVVDeposit } from './use-dvv-deposit-tx-modal';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useDVVDeposit = (onRetry?: () => void) => {
+export const useDVVDeposit = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core, wrap } = useLidoSDK();
   const { txModalStages } = useTxModalStagesDVVDeposit();

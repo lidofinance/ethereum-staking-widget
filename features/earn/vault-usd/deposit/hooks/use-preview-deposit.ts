@@ -5,13 +5,15 @@ import { useMainnetOnlyWagmi } from 'modules/web3';
 import { getCollectorContract, getDepositQueueContract } from '../../contracts';
 import { UsdDepositToken } from '../../types';
 
+type UseUsdVaultPreviewDepositArgs = {
+  amount?: bigint | null;
+  token: UsdDepositToken;
+};
+
 export const useUsdVaultPreviewDeposit = ({
   amount,
   token,
-}: {
-  amount?: bigint | null;
-  token: UsdDepositToken;
-}) => {
+}: UseUsdVaultPreviewDepositArgs) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');
 

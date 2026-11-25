@@ -18,7 +18,6 @@ export const L2StakeLiquidityBanner = () => {
   const { chainId } = useDappStatus();
   const chainName = getPrettyChainName(chainId);
   const liquidityTargetEth = parseEther(
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     String(l2Stake.perChain[chainId as CHAINS].liquidityTarget),
   );
 

@@ -1,21 +1,13 @@
-import { useMemo, useCallback } from 'react';
-
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
+import { useMemo } from 'react';
 
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import {
   useAA,
   useAllowance,
   useDappStatus,
-  useLidoSDK,
   useStETHContractAddress,
   useWstETHContractAddress,
 } from 'modules/web3';
-
-import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
-
-import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapTxApproveArgs = {
   amount: bigint;
@@ -28,8 +20,6 @@ export const useWrapTxOnL1Approve = ({
 }: UseWrapTxApproveArgs) => {
   const { address, isWalletConnected, isDappActiveOnL1, isChainIdOnL2 } =
     useDappStatus();
-  const { wrap } = useLidoSDK();
-  const { txModalStages } = useTxModalWrap();
   const { isAA } = useAA();
 
   const { data: staticTokenAddress } = useStETHContractAddress();
@@ -60,44 +50,8 @@ export const useWrapTxOnL1Approve = ({
   // because the approval tx will be included in the batch.
   const shouldShowUnlockRequirement = needsApprove && !isAA;
 
-  const processApproveTx = useCallback(
-    async ({ onRetry }: { onRetry?: () => void }) => {
-      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.wrapApprovalStart);
-
-      const approveTx = await wrap.approveStethForWrap({
-        value: amount,
-        callback: async ({ stage, payload }) => {
-          switch (stage) {
-            case TransactionCallbackStage.SIGN:
-              txModalStages.signApproval(amount, token);
-              break;
-            case TransactionCallbackStage.RECEIPT:
-              txModalStages.pendingApproval(amount, token, payload);
-              break;
-            case TransactionCallbackStage.MULTISIG_DONE:
-              txModalStages.successMultisig();
-              break;
-            case TransactionCallbackStage.ERROR:
-              txModalStages.failed(payload, onRetry);
-              break;
-            default:
-          }
-        },
-      });
-
-      // wait for refetch to settle
-      await refetchAllowance().catch();
-
-      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.wrapApprovalFinish);
-
-      return approveTx.hash;
-    },
-    [amount, refetchAllowance, token, txModalStages, wrap],
-  );
-
   return useMemo(
     () => ({
-      processApproveTx,
       allowance,
       // fix first loading when the wallet is autoconnecting
       isAllowanceLoading:
@@ -112,7 +66,6 @@ export const useWrapTxOnL1Approve = ({
       isShowAllowance: !isWalletConnected || isDappActiveOnL1 || !isChainIdOnL2,
     }),
     [
-      processApproveTx,
       allowance,
       isAllowanceLoading,
       needsApprove,

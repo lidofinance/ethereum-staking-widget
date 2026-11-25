@@ -3,6 +3,7 @@ import {
   formatTooltipContent,
   buildChartSeries,
   alignToVaultTimestamps,
+  isChartTimestampMs,
 } from '../utils';
 import {
   VAULT_CHART_COLOR,
@@ -387,5 +388,23 @@ describe('alignToVaultTimestamps', () => {
       expect(t).toBe(apyData[i][0]);
       expect(rate).toBeCloseTo(i * 0.01, 10);
     });
+  });
+});
+
+describe('isChartTimestampMs', () => {
+  it.each([0, 1_773_100_800_000, 10_000_000_000 * 1000])('accepts %s', (ms) => {
+    expect(isChartTimestampMs(ms)).toBe(true);
+  });
+
+  // microseconds, nanoseconds, "1e13" seconds, "Infinity" and "abc" in seconds
+  it.each([
+    1_792_728_696_000_000_000,
+    1e16,
+    Infinity,
+    NaN,
+    -1,
+    10_000_000_001 * 1000,
+  ])('rejects %s', (ms) => {
+    expect(isChartTimestampMs(ms)).toBe(false);
   });
 });

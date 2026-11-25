@@ -1,7 +1,11 @@
 import { decodeFunctionData, getAddress, type Address, type Hash } from 'viem';
 
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
-import { TxSettledError, TxSentDataUnavailableError } from 'modules/web3';
+import type { TxFlowArgs } from 'modules/web3/tx-flow/types';
+import {
+  QuoteMismatchError,
+  TxSettledError,
+  TxSentDataUnavailableError,
+} from 'modules/web3';
 import {
   aaSendCalls,
   legacyPerformTransaction,
@@ -18,6 +22,8 @@ import type {
   OracleContract,
   SyncRedeemQueueWritableContract,
 } from 'modules/mellow-meta-vaults/types/contracts';
+import type { VaultQuote } from 'modules/mellow-meta-vaults/utils/quote';
+import { COLLECTOR_CONFIG } from 'modules/mellow-meta-vaults/consts';
 
 // Referenced from the hoisted mock factories, so hoisted with them
 const { ACCOUNT } = vi.hoisted(() => ({
@@ -76,9 +82,9 @@ const oracle = {
 };
 
 vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   return {
     ...errors,
     ...context,
@@ -113,6 +119,8 @@ type QueueReads = {
   liquidAssets: bigint;
   assets: bigint;
   isWithdrawalPossible: boolean;
+  // the sync queue's penaltyD6, zero unless a test sets it
+  penaltyD6?: bigint;
 };
 
 const createQueues = ({
@@ -120,6 +128,7 @@ const createQueues = ({
   liquidAssets,
   assets,
   isWithdrawalPossible,
+  penaltyD6 = 0n,
 }: QueueReads) => {
   const limits = [...remainingDailyLimit];
   const nextLimit = () =>
@@ -131,7 +140,7 @@ const createQueues = ({
       remainingDailyLimit: vi.fn(async () => [0n, nextLimit()] as const),
       getLiquidAssets: vi.fn(async () => liquidAssets),
       asset: vi.fn(async () => ASSET),
-      syncRedeemParams: vi.fn(async () => [0n, MAX_AGE] as const),
+      syncRedeemParams: vi.fn(async () => [penaltyD6, MAX_AGE] as const),
     },
     estimateGas: { redeem: vi.fn(async () => 100_000n) },
     write: { redeem: vi.fn(async () => TX_HASH) },
@@ -155,8 +164,17 @@ const createQueues = ({
 type Queues = ReturnType<typeof createQueues>;
 
 const onRetry = vi.fn();
+const refetchQuote = vi.fn();
 
-const withdraw = (queues: Queues, { sync = true } = {}) =>
+type WithdrawOptions = {
+  sync?: boolean;
+  shownQuote?: VaultQuote;
+};
+
+const withdraw = (
+  queues: Queues,
+  { sync = true, shownQuote }: WithdrawOptions = {},
+) =>
   renderHook(() =>
     useWithdraw({
       asyncRedeemQueue:
@@ -166,6 +184,8 @@ const withdraw = (queues: Queues, { sync = true } = {}) =>
         : undefined,
       collector: queues.collector as unknown as CollectorContract,
       oracle: oracle as unknown as OracleContract,
+      shownQuote,
+      refetchQuote,
       txModalStages: state.txModalStages,
       onRetry,
     }),
@@ -251,8 +271,8 @@ describe('useWithdraw', () => {
       expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
     });
 
-    // ETHV-WD-ROUTE-05: the sync queue reverts on a stale, suspicious or zero
-    // report (StaleReport, InvalidReport). The Collector quote does not show it
+    // the sync queue reverts on a stale, suspicious or zero report
+    // (StaleReport, InvalidReport). The Collector quote does not show it
     it.each([
       ['older than maxAge', { timestamp: Number(NOW) - MAX_AGE - 1 }],
       ['suspicious', { isSuspicious: true }],
@@ -295,6 +315,23 @@ describe('useWithdraw', () => {
       );
     });
 
+    it('requests through the async queue while the sync queue charges a penalty', async () => {
+      const queues = createQueues({ ...ample, penaltyD6: 1_000n });
+
+      await expect(withdraw(queues)).resolves.toBe(true);
+
+      expect(queues.asyncRedeemQueue.write.redeem).toHaveBeenCalledWith(
+        [AMOUNT],
+        expect.anything(),
+      );
+      expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
+      expect(state.txModalStages.success).toHaveBeenCalledWith(
+        AMOUNT,
+        TX_HASH,
+        false,
+      );
+    });
+
     it('never checks the sync queue when there is none', async () => {
       const queues = createQueues(ample);
 
@@ -308,8 +345,8 @@ describe('useWithdraw', () => {
   });
 
   describe('failures on the instant route', () => {
-    // ETHV-WD-ROUTE-06: the redemption settled, only the confirmations read
-    // failed. The capacity it used must not read as a depleted buffer
+    // the redemption settled, only the confirmations read failed. The
+    // capacity it used must not read as a depleted buffer
     it('reports a settled redemption as completed, without rechecking the buffer', async () => {
       state.performTransaction.mockImplementation(
         legacyPerformTransaction('unconfirmed'),
@@ -456,6 +493,101 @@ describe('useWithdraw', () => {
     });
   });
 
+  describe('quote check', () => {
+    // the form quotes the async queue; the Collector prices both alike
+    const shownQuote: VaultQuote = {
+      amountIn: AMOUNT,
+      amountOut: ample.assets,
+    };
+
+    it('re-reads the quote on the queue the redemption goes to, right before sending', async () => {
+      const queues = createQueues(ample);
+
+      await expect(withdraw(queues, { shownQuote })).resolves.toBe(true);
+
+      // the availability check, then the quote right before the send
+      expect(queues.collector.read.getWithdrawalParams).toHaveBeenCalledTimes(
+        2,
+      );
+      expect(
+        queues.collector.read.getWithdrawalParams,
+      ).toHaveBeenLastCalledWith([AMOUNT, SYNC_QUEUE, COLLECTOR_CONFIG]);
+      expect(queues.syncRedeemQueue.write.redeem).toHaveBeenCalledTimes(1);
+      expect(refetchQuote).not.toHaveBeenCalled();
+    });
+
+    it('re-reads the quote on the async queue when the redemption goes there', async () => {
+      const queues = createQueues({ ...ample, penaltyD6: 1n });
+
+      await expect(withdraw(queues, { shownQuote })).resolves.toBe(true);
+
+      expect(
+        queues.collector.read.getWithdrawalParams,
+      ).toHaveBeenLastCalledWith([AMOUNT, ASYNC_QUEUE, COLLECTOR_CONFIG]);
+      expect(queues.asyncRedeemQueue.write.redeem).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops before the redemption when the fresh quote is worse than the displayed one', async () => {
+      const queues = createQueues(ample);
+
+      await expect(
+        withdraw(queues, {
+          shownQuote: { amountIn: AMOUNT, amountOut: ample.assets + 1n },
+        }),
+      ).resolves.toBe(false);
+
+      expect(state.performTransaction).not.toHaveBeenCalled();
+      expect(refetchQuote).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+      );
+      // a changed quote says nothing about the instant route
+      expect(
+        state.txModalStages.instantWithdrawalUnavailable,
+      ).not.toHaveBeenCalled();
+    });
+
+    it('skips the quote check where no quote is displayed', async () => {
+      const queues = createQueues(ample);
+
+      await expect(withdraw(queues)).resolves.toBe(true);
+
+      // only the availability check reads the Collector
+      expect(queues.collector.read.getWithdrawalParams).toHaveBeenCalledTimes(
+        1,
+      );
+    });
+
+    // the penalty is read once to pick the route and again right before sending
+    const penaltySetAfterRouting = (queues: ReturnType<typeof createQueues>) =>
+      queues.syncRedeemQueue.read.syncRedeemParams
+        .mockResolvedValueOnce([0n, MAX_AGE])
+        .mockResolvedValueOnce([1_000n, MAX_AGE]);
+
+    it('stops an instant redemption when a penalty was set after the route was chosen', async () => {
+      const queues = createQueues(ample);
+      penaltySetAfterRouting(queues);
+
+      await expect(withdraw(queues, { shownQuote })).resolves.toBe(false);
+
+      expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
+      expect(state.performTransaction).not.toHaveBeenCalled();
+      expect(refetchQuote).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+      );
+    });
+
+    it('checks the penalty before an instant redemption even where no quote is displayed', async () => {
+      const queues = createQueues(ample);
+      penaltySetAfterRouting(queues);
+
+      await expect(withdraw(queues)).resolves.toBe(false);
+
+      expect(queues.syncRedeemQueue.write.redeem).not.toHaveBeenCalled();
+    });
+  });
+
   describe('EIP-5792 signing', () => {
     beforeEach(() => {
       state.isAA = true;
@@ -509,6 +641,39 @@ describe('useWithdraw', () => {
         TX_HASH,
         false,
       );
+    });
+
+    it('sends no batch when the fresh quote is worse than the displayed one', async () => {
+      state.sendAACalls.mockImplementation(
+        aaSendCalls({ callId: CALL_ID, txHash: TX_HASH }),
+      );
+      const queues = createQueues(ample);
+
+      await expect(
+        withdraw(queues, {
+          shownQuote: { amountIn: AMOUNT, amountOut: ample.assets + 1n },
+        }),
+      ).resolves.toBe(false);
+
+      expect(state.sendAACalls).not.toHaveBeenCalled();
+      expect(refetchQuote).toHaveBeenCalledTimes(1);
+      expect(state.txModalStages.failed).toHaveBeenCalledWith(
+        expect.any(QuoteMismatchError),
+      );
+    });
+
+    it('sends the batch when the fresh quote equals the displayed one', async () => {
+      const sendCalls = aaSendCalls({ callId: CALL_ID, txHash: TX_HASH });
+      state.sendAACalls.mockImplementation(sendCalls);
+      const queues = createQueues(ample);
+
+      await expect(
+        withdraw(queues, {
+          shownQuote: { amountIn: AMOUNT, amountOut: ample.assets },
+        }),
+      ).resolves.toBe(true);
+
+      expect(sentAACalls(sendCalls)[0]?.to).toBe(SYNC_QUEUE);
     });
 
     it('reports a rejected batch and offers a retry', async () => {

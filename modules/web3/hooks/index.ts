@@ -1,4 +1,3 @@
-export * from './tx-flow';
 export * from './use-allowance';
 export * from './use-balance';
 export * from './use-contract-address';

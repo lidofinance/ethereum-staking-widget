@@ -18,8 +18,9 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDeposit } from './use-stg-deposit-tx-modal';
 import { getReferralAddress } from 'utils/get-referral-address';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useSTGDeposit = (onRetry?: () => void) => {
+export const useSTGDeposit = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesSTGDeposit();

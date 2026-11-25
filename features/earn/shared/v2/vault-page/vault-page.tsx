@@ -13,7 +13,7 @@ import { type MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { useInpageNavigation } from 'providers/inpage-navigation';
 
-import { VaultChart } from '../vault-chart';
+import { VaultChart, VaultChartErrorBoundary } from '../vault-chart';
 import { EarnInfoBanner } from '../earn-info-banner';
 
 import type { VaultBalanceProp } from './content/top-section';
@@ -170,7 +170,9 @@ export const VaultPage: FC<Props> = (props) => {
 
           {activeTab === TABS.PERFORMANCE && (
             <>
-              <VaultChart vaultName={props.vaultName} matomo={props.matomo} />
+              <VaultChartErrorBoundary>
+                <VaultChart vaultName={props.vaultName} matomo={props.matomo} />
+              </VaultChartErrorBoundary>
               <Metrics>
                 {fees.map((fee, index) => (
                   <InfoRow key={index} data-testid="fee">

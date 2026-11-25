@@ -4,16 +4,18 @@
 // `.cjs` because next-logger preloads the logger config without a build step,
 // and the project is `"type": "module"`.
 
-// Per-string cap is the main knob. Sized above the longest strings this app
-// logs — a CSP report's `original-policy` (~700 chars) and a viem error `.stack`
-// (~800 chars) — with room for both to grow.
+// Per-string cap is the main knob: 1024 still fits the longest strings this app
+// logs (a CSP report's `original-policy`, ~700 chars; a viem error `.stack`,
+// ~800). Kept low because the masking regex in next-logger.config.cjs costs
+// superlinear time in string length, and CSP reports arrive unauthenticated
+// and in bursts.
 // Two shared caps bound a whole log line: characters for string content and
 // nodes for structure. Per-string and per-key caps alone don't, since nesting
 // multiplies node count, and empty strings or numbers cost no characters at all.
 // Real log lines are tens of nodes (a CSP report) to a few hundred (a viem error
 // with its cause chain); the node cap is sized well above that.
-const MAX_STRING_LENGTH = 2 * 1024;
-const MAX_TOTAL_CHARS = 16 * 1024;
+const MAX_STRING_LENGTH = 1024;
+const MAX_TOTAL_CHARS = 8 * 1024;
 const MAX_TOTAL_NODES = 1024;
 const MAX_OBJECT_KEYS = 64;
 const MAX_ARRAY_ITEMS = 64;

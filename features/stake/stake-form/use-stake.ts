@@ -11,10 +11,8 @@ import {
   useLidoSDK,
   useAA,
   useTxFlow,
-  isStepSent,
   isStepSettled,
-  TxSettledError,
-  TxFlowInterruptedError,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 
 import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
@@ -29,6 +27,7 @@ import { MockLimitReachedError } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 import { useBells } from './hooks/use-bells';
 import { useWethUnwrap } from './hooks/use-weth-unwrap';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -38,7 +37,7 @@ type StakeArguments = {
 
 type StakeOptions = {
   onConfirm?: () => Promise<void> | void;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   // the WETH was unwrapped but the stake did not go through
   onUnwrapped?: () => void;
 };
@@ -162,21 +161,13 @@ export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
             onUnwrapped?.();
             await onConfirm?.();
           }
-          // The unwrap landed but the stake was never sent (its estimate or
-          // signature failed, or the unwrap's follow-up read did). Whatever
-          // the reason, the user must learn that the funds are safe and are
-          // ETH now, which the bare error would not say (unlike the L2
-          // approve-then-stake chain, where a retry just finds the
-          // allowance in place)
-          const isInterruptedAfterUnwrap =
-            isStepSettled(ctx, STEP.unwrap) && !isStepSent(ctx, STEP.stake);
           txModalStages.failed(
-            isInterruptedAfterUnwrap
-              ? new TxFlowInterruptedError(
-                  ErrorMessage.STAKE_WETH_INTERRUPTED,
-                  error instanceof TxSettledError ? error.cause : error,
-                )
-              : error,
+            detectTxFlowInterruption(error, ctx, STEP.stake, [
+              {
+                stepId: STEP.unwrap,
+                message: ErrorMessage.STAKE_WETH_INTERRUPTED,
+              },
+            ]),
             onRetry,
           );
         },

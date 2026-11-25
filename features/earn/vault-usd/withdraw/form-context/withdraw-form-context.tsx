@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, FormProvider } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
 import {
@@ -10,6 +10,7 @@ import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-for
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { useUsdVaultWithdraw } from '../hooks/use-withdraw';
+import { useUsdVaultPreviewWithdraw } from '../hooks/use-preview-withdraw';
 import { useUsdVaultWithdrawFormData } from '../hooks/use-withdraw-form-data';
 import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { USD_VAULT_TOKEN_SYMBOL } from '../../consts';
@@ -61,10 +62,19 @@ export const UsdVaultWithdrawFormProvider: React.FC<{
 
   // The selected payout token decides which redeem queue the withdrawal goes to.
   const tokenSymbol = formObject.watch('token');
-  const { withdraw } = useUsdVaultWithdraw(
-    retryEvent.fire,
-    asUsdWithdrawToken(tokenSymbol),
-  );
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  // the quote the form displays for the selected token; the withdrawal is
+  // held to it
+  const { quote, refetchQuote } = useUsdVaultPreviewWithdraw({
+    shares: amount,
+    token: asUsdWithdrawToken(tokenSymbol),
+  });
+  const { withdraw } = useUsdVaultWithdraw({
+    onRetry: retryEvent.fire,
+    token: asUsdWithdrawToken(tokenSymbol),
+    shownQuote: quote,
+    refetchQuote,
+  });
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({

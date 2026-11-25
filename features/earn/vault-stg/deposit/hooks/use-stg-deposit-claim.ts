@@ -8,8 +8,9 @@ import { getSTGVaultWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDepositClaim } from './use-stg-deposit-claim-tx-modal';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useSTGDepositClaim = (onRetry?: () => void) => {
+export const useSTGDepositClaim = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const queryClient = useQueryClient();

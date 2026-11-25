@@ -4,13 +4,14 @@ import invariant from 'tiny-invariant';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
 import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 import { useAA, useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 
-type Args = {
-  onRetry?: () => void;
+type UseClaimArgs = {
+  onRetry?: TxRetryHandler;
 };
 
-export const useClaim = ({ onRetry }: Args) => {
+export const useClaim = ({ onRetry }: UseClaimArgs) => {
   const { address } = useDappStatus();
   const { withdraw } = useLidoSDK();
   const { isAA } = useAA();
@@ -30,7 +31,7 @@ export const useClaim = ({ onRetry }: Args) => {
         const requestsIds = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);
 
-        await txFlow({
+        const { isSuccess } = await txFlow({
           callsFn: async () => {
             return [
               await withdraw.claim.claimRequestsPopulateTx({
@@ -64,7 +65,7 @@ export const useClaim = ({ onRetry }: Args) => {
           },
         });
 
-        return true;
+        return isSuccess;
       } catch (error) {
         console.error(error);
         txModalStages.failed(error, onRetry);

@@ -25,6 +25,7 @@ import {
 import { getGGVAssetsOut, getGGVMinimumAssetsOut } from '../../utils';
 import { useTxModalStagesGGVBulkWithdraw } from './use-ggv-bulk-withdraw-modal';
 import type { GGVWithdrawalFormValidatedValues } from '../types';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 const STEP = { withdraw: 'withdraw' } as const;
 
@@ -35,7 +36,7 @@ type BulkWithdrawData = {
   wethBalanceBefore?: bigint;
 };
 
-export const useGGVBulkWithdraw = (onRetry?: () => void) => {
+export const useGGVBulkWithdraw = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesGGVBulkWithdraw();
