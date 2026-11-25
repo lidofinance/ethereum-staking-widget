@@ -84,18 +84,10 @@ export const startupCheckValidationFile = async () => {
     try {
       // If no validation file path is specified, skip check
       // read when the check runs, see config-manifest.mjs
-      const VALIDATION_FILE_PATH = process.env.VALIDATION_FILE_PATH;
+      const VALIDATION_FILE_PATH = process.env.VALIDATION_FILE_PATH?.trim();
       if (!VALIDATION_FILE_PATH) {
         console.info(
           '[startupCheckValidationFile] No VALIDATION_FILE_PATH specified - skipping validation file check',
-        );
-        return { success: true, skipped: true };
-      }
-
-      // If path is empty string, skip check
-      if (VALIDATION_FILE_PATH.trim() === '') {
-        console.info(
-          '[startupCheckValidationFile] Empty VALIDATION_FILE_PATH - skipping validation file check',
         );
         return { success: true, skipped: true };
       }

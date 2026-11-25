@@ -4,9 +4,9 @@ import { useConnection } from 'wagmi';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { config } from 'config';
 // the concrete files, not the provider barrel: that one leads back here
-import { useLidoSDK } from '../../web3-provider/lido-sdk';
-import { useLidoSDKL2 } from '../../web3-provider/lido-sdk-l2';
-import { SendCallsError, TxSentDataUnavailableError } from '../../utils/errors';
+import { useLidoSDK } from '../web3-provider/lido-sdk';
+import { useLidoSDKL2 } from '../web3-provider/lido-sdk-l2';
+import { SendCallsError, TxSentDataUnavailableError } from '../utils/errors';
 import { AACall, TxCallbackProps } from './types';
 
 export const useSendAACalls = () => {
@@ -75,10 +75,8 @@ export const useSendAACalls = () => {
         }
 
         // extract last receipt if there was no atomic batch
-        const txHash = callStatus.receipts
-          ? callStatus?.receipts[callStatus.receipts.length - 1]
-              ?.transactionHash
-          : undefined;
+        const lastReceipt = callStatus.receipts?.at(-1);
+        const txHash = lastReceipt?.transactionHash;
 
         // The wallet says the batch went through but gives nothing to find it
         // by: the outcome cannot be confirmed from here, which is not a failure
@@ -92,6 +90,7 @@ export const useSendAACalls = () => {
         await callback({
           stage: TransactionCallbackStage.DONE,
           txHash,
+          blockNumber: lastReceipt?.blockNumber,
         });
 
         return { callStatus, txHash };

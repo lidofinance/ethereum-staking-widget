@@ -6,9 +6,11 @@ import {
 } from 'viem';
 
 import {
+  QuoteMismatchError,
   TransactionRevertedError,
   TxSentDataUnavailableError,
   TxSettledError,
+  TxStaleError,
 } from 'modules/web3';
 import {
   getErrorMessage,
@@ -35,8 +37,16 @@ describe('isRetryableTxError', () => {
     ).toBe(false);
   });
 
+  it('refuses a retry of a flow superseded by a newer one', () => {
+    expect(isRetryableTxError(new TxStaleError())).toBe(false);
+  });
+
   it('refuses a retry the wallet cannot pay for', () => {
     expect(isRetryableTxError({ code: -32000 })).toBe(false);
+  });
+
+  it('refuses a retry after the quote changed: the form shows the new one first', () => {
+    expect(isRetryableTxError(new QuoteMismatchError())).toBe(false);
   });
 });
 

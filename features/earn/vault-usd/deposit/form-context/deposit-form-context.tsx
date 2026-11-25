@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, FormProvider } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
 import {
@@ -7,7 +7,10 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
-import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
+import {
+  useQueryParamsReferralForm,
+  useQueryParamsTokenForm,
+} from 'shared/hooks/use-query-values-form';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
@@ -22,7 +25,9 @@ import { useUsdVaultDepositFormData } from '../hooks/use-deposit-form-data';
 import { UsdVaultDepositFormValidationResolver } from './validation';
 import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { useUsdVaultDepositRequest } from '../hooks';
+import { useUsdVaultPreviewDeposit } from '../hooks/use-preview-deposit';
 import { asUsdDepositToken } from '../../utils';
+import { USD_VAULT_DEPOSIT_TOKEN_SYMBOLS } from '../../consts';
 
 const UsdVaultDepositFormDataContext =
   createContext<USDDepositFormDataContextValue | null>(null);
@@ -54,8 +59,6 @@ export const UsdVaultDepositFormProvider: React.FC<{
 
   // Retry event helper
   const { retryEvent } = useFormControllerRetry();
-  // Deposit function
-  const { deposit } = useUsdVaultDeposit(retryEvent.fire);
 
   const formObject = useForm({
     defaultValues: { amount: null, token: TOKEN_SYMBOLS.usdc, referral: null },
@@ -70,8 +73,25 @@ export const UsdVaultDepositFormProvider: React.FC<{
   });
 
   const tokenSymbol = formObject.watch('token');
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  // the quote the form displays; the deposit is held to it
+  const { quote, refetchQuote } = useUsdVaultPreviewDeposit({
+    amount,
+    token: asUsdDepositToken(tokenSymbol),
+  });
+  // Deposit function
+  const { deposit } = useUsdVaultDeposit({
+    onRetry: retryEvent.fire,
+    shownQuote: quote,
+    refetchQuote,
+  });
+
   const { setValue } = formObject;
   useQueryParamsReferralForm<USDDepositFormValues>({ setValue });
+  useQueryParamsTokenForm<USDDepositFormValues>({
+    setValue,
+    tokens: USD_VAULT_DEPOSIT_TOKEN_SYMBOLS,
+  });
 
   const depositRequest = useUsdVaultDepositRequest({
     token: asUsdDepositToken(tokenSymbol),

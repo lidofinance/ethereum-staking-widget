@@ -8,7 +8,10 @@ import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-con
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
-import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
+import {
+  handleResolverValidationError,
+  walletNotConnectedResult,
+} from 'shared/hook-form/validation/validation-error';
 
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
@@ -55,10 +58,7 @@ export const WrapFormValidationResolver: Resolver<
         messageMaxAmount(awaitedContext.stethBalance, token),
       );
     } else {
-      return {
-        values,
-        errors: { token: 'wallet is not connected' },
-      };
+      return walletNotConnectedResult('token');
     }
 
     return {

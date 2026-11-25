@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, ReactNode } from 'react';
+import { useCallback, useMemo, ReactNode } from 'react';
 import { useRouter } from 'next/router';
 
 import { useRouterPath } from 'shared/hooks/use-router-path';
@@ -17,25 +17,27 @@ export const ExternalForbiddenRouteProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [showContent, setShowContent] = useState(true);
   const router = useRouter();
   const path = useRouterPath();
   const { pages } = useConfig().externalConfig;
   const productsUrlState = useProductsUrlState();
   const productQuery = useProductQuery();
 
+  // content admission follows the current path only, never the redirect outcome
+  const isDisabled = !!pages && isDisabledPath(path, pages);
+
   const checkPathEffect = useCallback(() => {
     if (pages && isDisabledPath(path, pages)) {
-      setShowContent(false);
       const query = getRedirectQuery(
         router.pathname,
         router.query,
         productQuery,
       );
       // `/` when stake is enabled, else the first enabled product
-      void router
-        .push({ pathname: getHomePath(productsUrlState, pages), query })
-        .finally(() => setShowContent(true));
+      void router.push({
+        pathname: getHomePath(productsUrlState, pages),
+        query,
+      });
     }
   }, [pages, path, router, productsUrlState, productQuery]);
 
@@ -43,8 +45,14 @@ export const ExternalForbiddenRouteProvider = ({
 
   return (
     <>
-      <LayoutEffectSsrDelayed effect={checkPathEffect} deps={effectDeps} />
-      {showContent && children}
+      <LayoutEffectSsrDelayed
+        effect={checkPathEffect}
+        deps={effectDeps}
+        // NextJS router is not guaranteed to be isReady:true on the first render
+        // and this will cause query params to be empty
+        waitForNextRouter
+      />
+      {!isDisabled && children}
     </>
   );
 };

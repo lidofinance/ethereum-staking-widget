@@ -22,12 +22,15 @@ const isValidValidationFile = (
   );
 };
 
-const getValidationFilePath = (): string | undefined => {
-  return (
-    process.env.VALIDATION_FILE_PATH ||
-    config.validationFilePath ||
-    serverRuntimeConfig.validationFilePath
-  );
+// A blank value counts as not configured, same as unset
+export const getValidationFilePath = (): string | undefined => {
+  return [
+    process.env.VALIDATION_FILE_PATH,
+    config.validationFilePath,
+    serverRuntimeConfig.validationFilePath,
+  ]
+    .map((path) => path?.trim())
+    .find(Boolean);
 };
 
 export const loadValidationFile = async (): Promise<AddressValidationFile> => {

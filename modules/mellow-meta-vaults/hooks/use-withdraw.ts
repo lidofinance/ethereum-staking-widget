@@ -9,6 +9,7 @@ import {
   useMainnetOnlyWagmi,
   applyRoundUpTxParameter,
   isStepSettled,
+  QuoteMismatchError,
   TxSentDataUnavailableError,
   type TxFlowOptions,
 } from 'modules/web3';
@@ -28,6 +29,12 @@ import {
   isSyncRedeemReportUsable,
   meetsSyncRedeemRequirements,
 } from '../utils/sync-redeem-requirements';
+import {
+  isQuoteWorse,
+  readWithdrawQuote,
+  type VaultQuote,
+} from '../utils/quote';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 const QA_REMAINING_DAILY_LIMIT_KEY =
   'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit';
@@ -64,8 +71,13 @@ type UseWithdrawArgs = {
   // the vault's oracle; the sync queue prices a redemption with its report
   oracle: OracleContract;
   collector: CollectorContract;
+  // The quote the form displays and its refetch: the withdrawal is held to
+  // it. Required, so a caller states it: undefined only where no quote is
+  // displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
   txModalStages: TxModalStages;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
   // the vault's query scopes, refetched after a withdrawal whose outcome
@@ -82,6 +94,8 @@ export const useWithdraw = ({
   syncRedeemQueue,
   oracle,
   collector,
+  shownQuote,
+  refetchQuote,
   txModalStages,
   onRetry,
   matomoEventStart,
@@ -98,18 +112,22 @@ export const useWithdraw = ({
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
 
-      // The sync queue reverts on a stale, suspicious or zero report
-      // (StaleReport, InvalidReport). The Collector does not check it.
-      const checkReport = async (
+      // The sync queue's own terms, which the Collector does not check. It
+      // reverts on a stale, suspicious or zero report (StaleReport,
+      // InvalidReport). It pays out with its `penaltyD6` while the async
+      // queue charges none: a non-zero sync penalty makes the async queue
+      // cheaper, so route there
+      const checkSyncTerms = async (
         syncQueue: SyncRedeemQueueWritableContract,
       ) => {
         invariant(publicClientMainnet, 'Public client is not available');
 
-        const [asset, [, maxAge], block] = await Promise.all([
+        const [asset, [penaltyD6, maxAge], block] = await Promise.all([
           syncQueue.read.asset(),
           syncQueue.read.syncRedeemParams(),
           publicClientMainnet.getBlock(),
         ]);
+        if (penaltyD6 > 0n) return false;
         const report = await oracle.read.getReport([asset]);
 
         return isSyncRedeemReportUsable({
@@ -144,7 +162,7 @@ export const useWithdraw = ({
         const [
           { assets, isWithdrawalPossible },
           actualLiquidAssets,
-          isReportUsable,
+          areSyncTermsMet,
         ] = await Promise.all([
           collector.read.getWithdrawalParams([
             amount,
@@ -152,14 +170,14 @@ export const useWithdraw = ({
             COLLECTOR_CONFIG,
           ]) as Promise<{ assets: bigint; isWithdrawalPossible: boolean }>,
           syncQueue.read.getLiquidAssets(),
-          checkReport(syncQueue),
+          checkSyncTerms(syncQueue),
         ]);
         const liquidAssets = overrideWithQAMockBigInt(
           actualLiquidAssets,
           QA_LIQUID_ASSETS_KEY,
         );
 
-        if (!isReportUsable) return false;
+        if (!areSyncTermsMet) return false;
 
         return meetsSyncRedeemRequirements({
           isWithdrawalPossible,
@@ -187,6 +205,43 @@ export const useWithdraw = ({
       const asyncWithdrawArgs = [amount] as const;
       const syncWithdrawArgs = [amount, address] as const;
 
+      // The quote is re-read right before sending, as the last step before
+      // the wallet is reached in both signing paths, on the queue the
+      // withdrawal goes to. Only a worse quote than the displayed one stops
+      // the withdrawal; a better one passes. The form displays the async
+      // queue's quote: the Collector prices a redemption by the queue's asset
+      // alone (oracle price, less the redeem fee), so the sync queue of the
+      // same asset quotes the same, and its own penalty routes to the async
+      // queue in prepare
+      const verifyQuote = async ({ syncQueue }: WithdrawData) => {
+        // A penalty set on the sync queue since prepare: the instant route
+        // would charge it, so stop here; the next attempt goes async
+        const syncPenaltyCheck = syncQueue
+          ? syncQueue.read.syncRedeemParams().then(([penaltyD6]) => {
+              if (penaltyD6 > 0n) {
+                void refetchQuote?.();
+                throw new QuoteMismatchError();
+              }
+            })
+          : undefined;
+        if (!shownQuote) {
+          await syncPenaltyCheck;
+          return;
+        }
+        const [quote] = await Promise.all([
+          readWithdrawQuote({
+            collector,
+            redeemQueue: syncQueue ?? asyncRedeemQueue,
+            shares: amount,
+          }),
+          syncPenaltyCheck,
+        ]);
+        if (isQuoteWorse(quote, shownQuote)) {
+          void refetchQuote?.();
+          throw new QuoteMismatchError();
+        }
+      };
+
       const { isSuccess } = await txFlow<WithdrawData>({
         refetchScope,
         prepare: async () => {
@@ -202,28 +257,37 @@ export const useWithdraw = ({
               availability.status === 'available' ? syncRedeemQueue : undefined,
           };
         },
-        callsFn: async ({ data: { syncQueue } }) => [
-          syncQueue
-            ? {
-                stepId: STEP.redeem,
-                to: syncQueue.address,
-                data: encodeFunctionData({
-                  abi: syncQueue.abi,
-                  functionName: 'redeem',
-                  args: syncWithdrawArgs,
-                }),
-              }
-            : {
-                stepId: STEP.redeem,
-                to: asyncRedeemQueue.address,
-                data: encodeFunctionData({
-                  abi: asyncRedeemQueue.abi,
-                  functionName: 'redeem',
-                  args: asyncWithdrawArgs,
-                }),
-              },
-        ],
-        sendStep: async (_step, txStagesCallback, { data: { syncQueue } }) => {
+        // a batch is signed as built, so it is checked once built; a
+        // stepwise send checks right before the redemption
+        callsFn: async ({ isAA, data }) => {
+          const { syncQueue } = data;
+          const calls = [
+            syncQueue
+              ? {
+                  stepId: STEP.redeem,
+                  to: syncQueue.address,
+                  data: encodeFunctionData({
+                    abi: syncQueue.abi,
+                    functionName: 'redeem',
+                    args: syncWithdrawArgs,
+                  }),
+                }
+              : {
+                  stepId: STEP.redeem,
+                  to: asyncRedeemQueue.address,
+                  data: encodeFunctionData({
+                    abi: asyncRedeemQueue.abi,
+                    functionName: 'redeem',
+                    args: asyncWithdrawArgs,
+                  }),
+                },
+          ];
+          if (isAA) await verifyQuote(data);
+          return calls;
+        },
+        sendStep: async (_step, txStagesCallback, { data }) => {
+          await verifyQuote(data);
+          const { syncQueue } = data;
           if (syncQueue) {
             await core.performTransaction({
               getGasLimit: async (opts) =>
@@ -279,6 +343,13 @@ export const useWithdraw = ({
             return;
           }
 
+          // the quote changed before anything was sent: no retry, the form
+          // shows the new quote before the user submits again
+          if (error instanceof QuoteMismatchError) {
+            txModalStages.failed(error);
+            return;
+          }
+
           const isUserActionError = USER_ACTION_ERRORS.includes(
             getError(error),
           );
@@ -309,7 +380,7 @@ export const useWithdraw = ({
     [
       address,
       asyncRedeemQueue,
-      collector.read,
+      collector,
       core,
       refetchScope,
       matomoEventStart,
@@ -317,6 +388,8 @@ export const useWithdraw = ({
       onRetry,
       oracle,
       publicClientMainnet,
+      refetchQuote,
+      shownQuote,
       syncRedeemQueue,
       txFlow,
       txModalStages,

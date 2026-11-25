@@ -3,6 +3,7 @@ import { formatEther } from 'viem';
 import invariant from 'tiny-invariant';
 import type {
   GGVDepositFormValidationContext,
+  GGVDepositFormValidatedValues,
   GGVDepositFormValues,
 } from './types';
 
@@ -28,7 +29,8 @@ const messageMaxCapacity = (max: bigint, token: TokenSymbol) =>
 
 export const GGVDepositFormValidationResolver: Resolver<
   GGVDepositFormValues,
-  GGVDepositFormValidationContext
+  GGVDepositFormValidationContext,
+  GGVDepositFormValidatedValues
 > = async (values, context) => {
   const { amount, token } = values;
   try {
@@ -39,7 +41,8 @@ export const GGVDepositFormValidationResolver: Resolver<
     validateEtherAmount('amount', amount, token);
 
     // early return
-    if (!context.isWalletActive) return { values, errors: {} };
+    if (!context.isWalletActive)
+      return { values: { ...values, amount }, errors: {} };
 
     // wait for context promise with timeout and extract relevant data
     // validation function only waits limited time for data and fails validation otherwise
@@ -70,7 +73,7 @@ export const GGVDepositFormValidationResolver: Resolver<
       );
 
     return {
-      values: { ...values },
+      values: { ...values, amount },
       errors: {},
     };
   } catch (error) {

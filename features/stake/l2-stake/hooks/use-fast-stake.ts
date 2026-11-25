@@ -11,9 +11,9 @@ import {
   useAA,
   useTxFlow,
   useLidoSDKL2,
-  TxSettledError,
-  TxFlowInterruptedError,
+  isStepSettled,
   QuoteMismatchError,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 import {
   calcFastStakeWstethByEth,
@@ -34,6 +34,7 @@ import { useFastStakeConversion } from './use-conversion';
 import { useFastStakeLiquidity } from './use-fast-liquidity';
 import { useTxModalStagesL2FastStake } from './use-tx-modal-stages-fast-stake';
 import { useTrackStakeEvent } from './use-track-event';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -41,9 +42,9 @@ type StakeArguments = {
   referral: string | null;
 };
 
-type StakeOptions = {
+type UseL2FastStakeArgs = {
   onConfirm?: () => Promise<void> | void;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
 };
 
 // the steps of a stake, the first one only for WETH short of allowance
@@ -60,7 +61,7 @@ type FastStakeData = {
   needsApprove: boolean;
 };
 
-export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
+export const useL2FastStake = ({ onConfirm, onRetry }: UseL2FastStakeArgs) => {
   const { bells } = useBells();
   const { address } = useDappStatus();
   const { isAA } = useAA();
@@ -205,23 +206,17 @@ export const useL2FastStake = ({ onConfirm, onRetry }: StakeOptions) => {
           // or paused since the last read): refresh the cap the amount is
           // validated against, so the field shows why before any retry
           void refetchLiquidity({ throwOnError: false });
-          // The approval settled but its confirmation read failed, so the
-          // SDK never got to the stake. Not a completed stake: keep the
-          // amount, refresh the allowance and offer to continue. Any other
-          // failure after the approval shows as is: a retry reads the
-          // allowance and goes straight to the stake
-          if (ctx.stepId === STEP.approve && error instanceof TxSettledError) {
-            await onConfirm?.();
-            txModalStages.failed(
-              new TxFlowInterruptedError(
-                ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
-                error.cause,
-              ),
-              onRetry,
-            );
-            return;
-          }
-          txModalStages.failed(error, onRetry);
+          // Refresh the landed approval even when the stake was declined.
+          if (isStepSettled(ctx, STEP.approve)) await onConfirm?.();
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.stake, [
+              {
+                stepId: STEP.approve,
+                message: ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
+              },
+            ]),
+            onRetry,
+          );
         },
       });
 

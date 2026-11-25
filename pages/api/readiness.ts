@@ -6,6 +6,7 @@ import { getReadiness } from 'scripts/readiness.mjs';
 // and always 200 once the process is up) this flips to 503 while the pod is
 // still starting and as soon as shutdown begins, so the endpoints controller
 // drains traffic before the server stops accepting connections.
+// Readiness intentionally does not gate on the manifest source: a bad manifest must not take all pods out of rotation; the local fallback keeps serving.
 const readiness = (_req: NextApiRequest, res: NextApiResponse) => {
   const { ready, reason } = getReadiness();
 

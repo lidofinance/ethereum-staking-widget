@@ -11,7 +11,7 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/common';
 import type { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 
-import type { TxFlowArgs } from 'modules/web3/hooks/tx-flow/types';
+import type { TxFlowArgs } from 'modules/web3/tx-flow/types';
 import {
   L2StakeModule,
   calcFastStakeWstethByEth,
@@ -81,12 +81,14 @@ vi.mock('../hooks/use-conversion', () => ({
 vi.mock('../hooks/use-fast-liquidity', () => ({
   useFastStakeLiquidity: () => ({ refetch: state.refetchLiquidity }),
 }));
-vi.mock('modules/web3', async () => {
-  const { runTxFlow } = await import('modules/web3/hooks/tx-flow/run-tx-flow');
+vi.mock('modules/web3', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('modules/web3')>();
+  const { runTxFlow } = await import('modules/web3/tx-flow/run-tx-flow');
   const errors = await import('modules/web3/utils');
-  const context = await import('modules/web3/hooks/tx-flow/context');
+  const context = await import('modules/web3/tx-flow/context');
   const queryKeys = await import('modules/web3/consts/query-keys');
   return {
+    ...actual,
     ...errors,
     ...context,
     ...queryKeys,
@@ -448,11 +450,16 @@ describe('useL2FastStake', () => {
       expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
       expect(walletClient.writeContract).toHaveBeenCalledWith(approveCall);
       expect(state.txModalStages.failed).toHaveBeenCalledWith(
-        expect.objectContaining({ message: 'User rejected the request' }),
+        expect.objectContaining({
+          message: ErrorMessage.STAKE_WETH_L2_INTERRUPTED,
+          cause: expect.objectContaining({
+            message: 'User rejected the request',
+          }),
+        }),
         onRetry,
       );
       expect(state.txModalStages.success).not.toHaveBeenCalled();
-      expect(onConfirm).not.toHaveBeenCalled();
+      expect(onConfirm).toHaveBeenCalledTimes(1);
 
       // the approval is on chain: the retry reads it while building the stake
       setAllowance(AMOUNT);
@@ -746,6 +753,7 @@ describe('quote verification', () => {
     // the approve went through, the stake was never sent
     expect(walletClient.writeContract).toHaveBeenCalledTimes(1);
     expect(walletClient.writeContract).toHaveBeenCalledWith(approveCall);
+    expect(onConfirm).toHaveBeenCalledTimes(1);
     expect(state.txModalStages.failed).toHaveBeenCalledWith(
       expect.any(QuoteMismatchError),
       onRetry,

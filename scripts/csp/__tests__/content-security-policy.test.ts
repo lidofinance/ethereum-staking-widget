@@ -1,3 +1,5 @@
+import { validateHeaderValue } from 'node:http';
+
 import {
   DEFAULT_COWSWAP_WIDGET_BASE_URL,
   createContentSecurityPolicy,
@@ -119,6 +121,66 @@ describe('createContentSecurityPolicy', () => {
       createContentSecurityPolicy({ ...serverInputs, reportOnly: true })
         .reportOnly,
     ).toBe(true);
+  });
+});
+
+describe('createContentSecurityPolicy with an invalid value', () => {
+  it.each([
+    ['a control character', 'https://a.example\r\nX: 1'],
+    ['NUL', 'https://a.example\u0000'],
+    ['a directive separator', 'https://a.example; script-src *'],
+  ])('throws on a trusted host with %s', (_name, bad) => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        trustedHosts: ['https://ok.example', bad],
+      }),
+    ).toThrow(/\[csp\] invalid configuration: trusted host/);
+  });
+
+  it('throws on a relative report URI', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        reportUri: '/api/csp-report',
+      }),
+    ).toThrow(/report URI "\/api\/csp-report"/);
+  });
+
+  it('throws on an invalid CoW base URL instead of using the default', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        cowswapBaseUrl: 'not a url',
+      }),
+    ).toThrow(/CoW base URL "not a url"/);
+  });
+
+  it('names every invalid value in one error', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        trustedHosts: ['bad host'],
+        reportUri: 'relative',
+      }),
+    ).toThrow(/trusted host "bad host", report URI "relative"/);
+  });
+
+  it('skips blank trusted host entries left by the separator', () => {
+    const directives = directivesOf({
+      ...serverInputs,
+      trustedHosts: ['https://trusted.example', ' ', ''],
+    });
+
+    expect(directives.scriptSrc).toContain('https://trusted.example');
+    expect(directives.scriptSrc).not.toContain('');
+  });
+
+  it('renders a header Node accepts for valid inputs', () => {
+    const [name, value] = createCspHeader(
+      createContentSecurityPolicy(serverInputs),
+    );
+    expect(() => validateHeaderValue(name, value)).not.toThrow();
   });
 });
 

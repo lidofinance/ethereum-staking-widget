@@ -18,7 +18,12 @@ vi.mock('../../guards/tx', async (importOriginal) => ({
 }));
 
 import type { JsonRpcRequest } from '@cowprotocol/widget-react';
-import { InvalidRequestRpcError, UserRejectedRequestError } from 'viem';
+import {
+  InvalidRequestRpcError,
+  ProviderDisconnectedError,
+  UnauthorizedProviderError,
+  UserRejectedRequestError,
+} from 'viem';
 
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { extractCodeFromError } from 'utils/getErrorMessage';
@@ -34,6 +39,7 @@ import { MAINNET_TX_CONFIG } from '../../guards/tx/__tests__/fixtures';
 import {
   createCowSwapProvider,
   hideAtomicUpgrade,
+  SIGNER_NOT_ALLOWED_ERROR,
   type CreateCowSwapProviderParams,
 } from '../create-cow-swap-provider';
 
@@ -61,7 +67,31 @@ const makeConnector = () => {
   };
 };
 
-const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
+const deferred = <T>() => {
+  let settle!: (value: T) => void;
+  const promise = new Promise<T>((resolve) => {
+    settle = resolve;
+  });
+  return { promise, resolve: settle };
+};
+
+type SessionChecks = Pick<
+  CreateCowSwapProviderParams['session'],
+  'consumeSignedOrder' | 'verifyApproval'
+>;
+
+const setup = ({
+  consumeSignedOrder = vi.fn().mockReturnValue(null),
+  verifyApproval = vi.fn().mockReturnValue(null),
+  ...overrides
+}: Partial<CreateCowSwapProviderParams & SessionChecks> = {}) => {
+  // stands in for the session the hook starts and cleanup ends
+  const session = {
+    active: true,
+    end() {
+      this.active = false;
+    },
+  };
   const walletClient = {
     account: { address: SIGNER },
     request: vi.fn().mockResolvedValue('0xresult'),
@@ -77,8 +107,12 @@ const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
     isLedgerLive: false,
     networkTxConfig: MAINNET_TX_CONFIG,
     appCode: 'Test App',
-    consumeSignedOrder: vi.fn().mockReturnValue(null),
-    verifyApproval: vi.fn().mockReturnValue(null),
+    session: {
+      isActive: () => session.active,
+      consumeSignedOrder,
+      verifyApproval,
+    },
+    validateAddress: vi.fn().mockResolvedValue(true),
     openTransactionGuardModal: vi.fn().mockResolvedValue(undefined),
     openSigningErrorModal: vi.fn().mockResolvedValue(undefined),
     addCleanup: (fn: () => void) => cleanups.push(fn),
@@ -91,6 +125,7 @@ const setup = (overrides: Partial<CreateCowSwapProviderParams> = {}) => {
     walletClient,
     connector,
     cleanups,
+    session,
   };
 };
 
@@ -244,9 +279,9 @@ describe('request — validation', () => {
 
     // verifying an ETH order consumes the trade snapshot the approve needs
     expect(
-      vi.mocked(params.verifyApproval).mock.invocationCallOrder[0],
+      vi.mocked(params.session.verifyApproval).mock.invocationCallOrder[0],
     ).toBeLessThan(
-      vi.mocked(params.consumeSignedOrder).mock.invocationCallOrder[0],
+      vi.mocked(params.session.consumeSignedOrder).mock.invocationCallOrder[0],
     );
   });
 
@@ -260,7 +295,7 @@ describe('request — validation', () => {
     const { provider, params, walletClient } = setup();
 
     await provider.request(SIGN_REQUEST);
-    expect(params.verifyApproval).toHaveBeenCalledWith(approval);
+    expect(params.session.verifyApproval).toHaveBeenCalledWith(approval);
     expect(walletClient.request).toHaveBeenCalledTimes(1);
   });
 
@@ -322,6 +357,154 @@ describe('request — validation', () => {
     const { provider, walletClient } = setup();
 
     await provider.request(SIGN_REQUEST);
+    expect(walletClient.request).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// request — session
+// ---------------------------------------------------------------------------
+describe('request — session', () => {
+  const SESSION_ENDED = { code: ProviderDisconnectedError.code };
+
+  it('rejects every request of an ended session before validation', async () => {
+    const { provider, session, walletClient } = setup();
+    session.end();
+
+    await expect(provider.request(SIGN_REQUEST)).rejects.toMatchObject(
+      SESSION_ENDED,
+    );
+    await expect(provider.request(rpc('eth_chainId'))).rejects.toMatchObject(
+      SESSION_ENDED,
+    );
+    expect(validateRpcRequest).not.toHaveBeenCalled();
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('a request validating while the session ends never reaches the wallet', async () => {
+    const validation = deferred<never>();
+    vi.mocked(validateRpcRequest).mockReturnValue(validation.promise);
+    const { provider, params, session, walletClient } = setup();
+
+    const pending = provider.request(SIGN_REQUEST);
+    session.end();
+    validation.resolve({
+      order: ORDER,
+      approvals: [],
+      sanitizedRequest: SIGN_REQUEST,
+    } as never);
+
+    await expect(pending).rejects.toMatchObject(SESSION_ENDED);
+    expect(params.session.consumeSignedOrder).not.toHaveBeenCalled();
+    expect(params.openTransactionGuardModal).not.toHaveBeenCalled();
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('a session ending during the signer and account checks stops the request', async () => {
+    const signerCheck = deferred<boolean>();
+    const { provider, params, session, walletClient } = setup({
+      validateAddress: () => signerCheck.promise,
+    });
+
+    const pending = provider.request(SIGN_REQUEST);
+    await vi.waitFor(() =>
+      expect(walletClient.getAddresses).toHaveBeenCalled(),
+    );
+    session.end();
+    signerCheck.resolve(true);
+
+    await expect(pending).rejects.toMatchObject(SESSION_ENDED);
+    expect(params.openTransactionGuardModal).not.toHaveBeenCalled();
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('a failed validation of an ended session opens no modal', async () => {
+    const validation = deferred<never>();
+    vi.mocked(validateRpcRequest).mockReturnValue(validation.promise);
+    const consumeSignedOrder = vi.fn().mockReturnValue('amount mismatch');
+    const { provider, params, session } = setup({ consumeSignedOrder });
+
+    const pending = provider.request(SIGN_REQUEST);
+    session.end();
+    validation.resolve({
+      order: ORDER,
+      approvals: [],
+      sanitizedRequest: SIGN_REQUEST,
+    } as never);
+
+    await expect(pending).rejects.toMatchObject(SESSION_ENDED);
+    expect(params.openTransactionGuardModal).not.toHaveBeenCalled();
+  });
+
+  it('an ended session subscribes to no connector events', () => {
+    const { provider, session, connector, cleanups } = setup();
+    session.end();
+
+    provider.on('accountsChanged', vi.fn());
+
+    expect(connector.emitter.on).not.toHaveBeenCalled();
+    expect(cleanups).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// request — signer check
+// ---------------------------------------------------------------------------
+describe('request — signer check', () => {
+  it.each([
+    ['eth_signTypedData_v4', [SIGNER, '{}']],
+    ['eth_sendTransaction', [{}]],
+    ['wallet_sendCalls', [{}]],
+  ])(
+    'rejects %s at the provider when the signer is not allowed',
+    async (method, rpcParams) => {
+      const validateAddress = vi.fn().mockResolvedValue(false);
+      const { provider, params, walletClient } = setup({ validateAddress });
+
+      await expect(provider.request(rpc(method, rpcParams))).rejects.toEqual(
+        SIGNER_NOT_ALLOWED_ERROR,
+      );
+      expect(validateAddress).toHaveBeenCalledWith(SIGNER);
+      expect(params.openTransactionGuardModal).not.toHaveBeenCalled();
+      expect(walletClient.request).not.toHaveBeenCalled();
+    },
+  );
+
+  it('rejects an order cancellation signature when the signer is not allowed', async () => {
+    // a cancellation carries no order: only the signer check stands before the wallet
+    const cancellation = rpc('eth_signTypedData_v4', [
+      SIGNER,
+      JSON.stringify({ primaryType: 'OrderCancellations' }),
+    ]);
+    vi.mocked(validateRpcRequest).mockResolvedValue({
+      order: undefined,
+      approvals: [],
+      sanitizedRequest: cancellation,
+    });
+    const validateAddress = vi.fn().mockResolvedValue(false);
+    const { provider, params, walletClient } = setup({ validateAddress });
+
+    await expect(provider.request(cancellation)).rejects.toMatchObject({
+      code: UnauthorizedProviderError.code,
+    });
+    expect(params.session.consumeSignedOrder).not.toHaveBeenCalled();
+    expect(walletClient.request).not.toHaveBeenCalled();
+  });
+
+  it('sends a signature request when the signer is allowed', async () => {
+    const { provider, params, walletClient } = setup();
+
+    await expect(provider.request(SIGN_REQUEST)).resolves.toBe('0xresult');
+    expect(params.validateAddress).toHaveBeenCalledTimes(1);
+    expect(params.validateAddress).toHaveBeenCalledWith(SIGNER);
+    expect(walletClient.request).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not check the signer for read-only requests', async () => {
+    const { provider, params, walletClient } = setup();
+
+    await provider.request(rpc('eth_chainId'));
+    expect(params.validateAddress).not.toHaveBeenCalled();
     expect(walletClient.request).toHaveBeenCalledTimes(1);
   });
 });

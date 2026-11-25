@@ -12,7 +12,10 @@ import {
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 import { validateStakeWeth } from 'shared/hook-form/validation/validate-stake-weth';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
-import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
+import {
+  handleResolverValidationError,
+  walletNotConnectedResult,
+} from 'shared/hook-form/validation/validation-error';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 
 import type {
@@ -77,10 +80,7 @@ export const stakeFormValidationResolver: Resolver<
     }
 
     if (!isWalletActive) {
-      return {
-        values,
-        errors: { referral: 'wallet not connected' },
-      };
+      return walletNotConnectedResult('referral');
     }
 
     return {

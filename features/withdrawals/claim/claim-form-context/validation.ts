@@ -2,6 +2,7 @@ import { Resolver } from 'react-hook-form';
 import {
   ValidationError,
   handleResolverValidationError,
+  walletNotConnectedResult,
 } from 'shared/hook-form/validation/validation-error';
 import invariant from 'tiny-invariant';
 import { ClaimFormValidationContext, ClaimFormInputType } from './types';
@@ -28,13 +29,7 @@ export const claimFormValidationResolver: Resolver<
       );
 
     if (!isWalletActive) {
-      return {
-        values: {
-          requests,
-          selectedTokens,
-        },
-        errors: { selectedTokens: 'no wallet connected' },
-      };
+      return walletNotConnectedResult('selectedTokens');
     }
 
     return {

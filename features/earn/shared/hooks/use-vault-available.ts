@@ -3,6 +3,11 @@ import { useEarnState } from 'features/earn/shared/hooks/use-earn-state';
 import { useDappStatus } from 'modules/web3';
 import { NetworkConfig } from 'config/networks/networks-map';
 
+type UseVaultAvailableArgs = {
+  vaultName: string;
+  contractName: keyof NetworkConfig['contracts'];
+};
+
 /**
  * Hook to check vault and its features availability
  * Differs from `isVaultEnabled` in that it also checks for contract address and supported chain
@@ -10,10 +15,7 @@ import { NetworkConfig } from 'config/networks/networks-map';
 export const useVaultAvailable = ({
   vaultName,
   contractName,
-}: {
-  vaultName: string;
-  contractName: keyof NetworkConfig['contracts'];
-}) => {
+}: UseVaultAvailableArgs) => {
   const { chainId, isSupportedChain } = useDappStatus();
   const { earnVaults, isVaultEnabled } = useEarnState();
 

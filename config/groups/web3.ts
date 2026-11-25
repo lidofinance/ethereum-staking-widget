@@ -10,6 +10,11 @@ export const PROVIDER_MAX_BATCH = 20;
 export const WALLET_READ_TIMEOUT = 10_000;
 // AA transaction polling timeout(ms)
 export const AA_TX_POLLING_TIMEOUT = 180_000; // 3 minutes
+// How long in ms a tx flow waits for the RPC to serve the block of the
+// previous tx before it reads, and how often it checks. MetaMask moves its
+// `latest` block every 20s by default; past the timeout the flow goes on
+export const TX_FLOW_PREV_BLOCK_TIMEOUT = 30_000;
+export const TX_FLOW_PREV_BLOCK_INTERVAL = 1_000;
 
 // account for gas estimation
 // will always have:
