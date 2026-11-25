@@ -16,7 +16,7 @@ import { USER_AGENT } from 'config/groups/app';
  * `pages/api/rpc.ts` (`@lidofinance/next-pages` `rpcFactory`).
  *
  * Defenses preserved verbatim (RFC §5.3 "must-not-lose"):
- *   - Method allowlist (ALLOWED_METHODS — identical 17 entries)
+ *   - Method allowlist (ALLOWED_METHODS — identical 18 entries)
  *   - `eth_call` `to` must be in the per-chain contract allowlist
  *     (derived from `getContractAddress()` — all supported chains incl. L2s)
  *   - `eth_getLogs` `address` must be allowlisted AND non-empty
@@ -31,6 +31,7 @@ import { USER_AGENT } from 'config/groups/app';
  *     (satanizer hook in src/logger.ts)
  *
  * NO CORS here on purpose — the RPC proxy is same-origin only.
+ * JSON-only request/response guard: utils/enforce-json-only.ts (registered in index.ts).
  */
 const MAX_LOGS_RANGE = 20_000;
 const MAX_RESPONSE_BYTES = 1_000_000;
@@ -45,6 +46,7 @@ const ALLOWED_METHODS = new Set<string>([
   'eth_getBlockByNumber',
   'eth_feeHistory',
   'eth_maxPriorityFeePerGas',
+  'linea_estimateGas',
   'eth_getBalance',
   'eth_blockNumber',
   'eth_getTransactionByHash',

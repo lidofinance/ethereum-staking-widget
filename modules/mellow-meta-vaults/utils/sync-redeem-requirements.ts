@@ -1,3 +1,27 @@
+export type SyncRedeemReport = {
+  priceD18: bigint;
+  timestamp: number;
+  isSuspicious: boolean;
+};
+
+/**
+ * Whether the sync redeem queue would accept the report it prices with: the
+ * contract reverts with InvalidReport on a suspicious or zero-price report and
+ * with StaleReport once `report.timestamp + maxAge < block.timestamp`.
+ */
+export const isSyncRedeemReportUsable = ({
+  report,
+  maxAge,
+  nowSeconds,
+}: {
+  report: SyncRedeemReport;
+  maxAge: number;
+  nowSeconds: number;
+}) =>
+  !report.isSuspicious &&
+  report.priceD18 > 0n &&
+  report.timestamp + maxAge >= nowSeconds;
+
 /**
  * Checks whether there are enough funds to use the sync queue.
  *

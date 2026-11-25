@@ -1,25 +1,29 @@
 import { Eth } from '@lidofinance/lido-ui';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useStakeFormData } from '../stake-form-context';
-import { useStakingLimitWarning, useDappStatus } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 
-export const StakeAmountInput = () => {
+import { useStakeFormData } from '../stake-form-context';
+
+type StakeAmountInputProps = Pick<
+  React.ComponentProps<typeof TokenAmountInputHookForm>,
+  'warning' | 'error'
+>;
+
+export const StakeAmountInput = (props: StakeAmountInputProps) => {
   const { isWalletConnected, isDappActive } = useDappStatus();
-  const { maxAmount, stakingLimitInfo } = useStakeFormData();
-  const { limitWarning, limitError } = useStakingLimitWarning(
-    stakingLimitInfo?.stakeLimitLevel,
-  );
+  const { maxAmount, token, isWethSupported } = useStakeFormData();
 
   return (
     <TokenAmountInputHookForm
       disabled={isWalletConnected && !isDappActive}
       fieldName="amount"
-      token={'ETH'}
+      token={token}
       data-testid="stakeInput"
-      leftDecorator={<Eth />}
       maxValue={maxAmount}
-      error={limitError}
-      warning={limitWarning}
+      showErrorMessage={false}
+      // the token select carries the icon when it is shown
+      leftDecorator={isWethSupported ? undefined : <Eth />}
+      {...props}
     />
   );
 };

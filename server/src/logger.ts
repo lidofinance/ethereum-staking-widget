@@ -2,6 +2,7 @@ import { satanizer, commonPatterns } from '@lidofinance/satanizer';
 
 import { config, rpcProvidersUrls } from './config.js';
 import { clampArgs } from './utils/clamp-log-args.js';
+import { getRpcUrlPatterns } from './utils/rpc-url-log-patterns.js';
 
 /**
  * Secret masking for pino logs — port of `next-logger.config.cjs`.
@@ -15,9 +16,14 @@ import { clampArgs } from './utils/clamp-log-args.js';
  * hook does NOT cover `console.*` — those sites must mask explicitly via
  * `utils/masked-error.ts`.
  */
-const RPC_URL_VALUES = Object.values(rpcProvidersUrls).flatMap((value) =>
-  (value ?? []).map((url) => url.trim()).filter(Boolean),
-);
+const RPC_URL_VALUES = [
+  ...new Set([
+    ...Object.values(rpcProvidersUrls).flatMap((value) =>
+      (value ?? []).map((url) => url.trim()).filter(Boolean),
+    ),
+    ...getRpcUrlPatterns(),
+  ]),
+];
 
 const patterns = [
   ...commonPatterns,

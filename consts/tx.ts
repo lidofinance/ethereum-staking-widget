@@ -1,3 +1,5 @@
+// TODO: recalculate after GLAMSTERDAM fork
+
 export const WSTETH_APPROVE_GAS_LIMIT = 78_000n;
 export const STETH_L2_APPROVE_GAS_LIMIT = 52_500n;
 
@@ -9,3 +11,6 @@ export const UNWRAP_GAS_LIMIT = 115_000n;
 export const UNWRAP_L2_GAS_LIMIT = 77_500n;
 
 export const WEI_PER_ETHER = 1_000_000_000_000_000_000n; // 10n ** 18n;
+
+// WETH9 withdraw() burns the caller's WETH and sends ETH back (~35k gas)
+export const WETH_UNWRAP_GAS_LIMIT = 50_000n;

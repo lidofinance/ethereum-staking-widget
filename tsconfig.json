@@ -29,6 +29,7 @@
       "networks/*": ["./networks/*"],
       "providers": ["./providers/index.tsx"],
       "providers/*": ["./providers/*"],
+      "scripts/*": ["./scripts/*"],
       "shared/*": ["./shared/*"],
       "styles": ["./styles/index.ts"],
       "styles/*": ["./styles/*"],

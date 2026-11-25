@@ -15,6 +15,7 @@ import { hasTrailingSlash, stripTrailingSlashLoader } from './trailing-slash';
  *   /withdrawals            → redirect → /withdrawals/request
  *   /withdrawals/:mode      → WithdrawalsPage    (request | claim, else 404)
  *   /rewards                → RewardsPage
+ *   /swap                   → SwapPage
  *   /earn                   → EarnPage
  *   /earn/:vault            → EarnVaultRedirect  (→ /earn/:vault/deposit)
  *   /earn/:vault/:action    → EarnVaultActionPage
@@ -70,6 +71,7 @@ export const router = createRouter([
         lazy: lazyRoute(() => import('./routes/withdrawals')),
       },
       { path: 'rewards', lazy: lazyRoute(() => import('./routes/rewards')) },
+      { path: 'swap', lazy: lazyRoute(() => import('./routes/swap')) },
       { path: 'earn', lazy: lazyRoute(() => import('./routes/earn')) },
       {
         path: 'earn/:vault',

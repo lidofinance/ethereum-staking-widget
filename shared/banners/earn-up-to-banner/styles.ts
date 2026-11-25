@@ -13,7 +13,7 @@ export const Wrap = styled(BannerWrap)`
       rgba(201, 172, 255, 0.2) 21.01%,
       rgba(255, 206, 190, 0.2) 102.78%
     ),
-    ${theme.name === 'light' ? '#fff' : '#273852'}
+    ${theme.name === 'light' ? '#fff' : 'var(--custom-fill-dark)'}
     `};
   color: var(--lido-color-text);
   overflow: hidden;

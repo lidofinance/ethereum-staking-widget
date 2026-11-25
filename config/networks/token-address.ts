@@ -1,9 +1,9 @@
 import { ethAddress, getAddress, type Address } from 'viem';
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { CONTRACT_NAMES, getNetworkConfigMapByChain } from './networks-map';
 import { Token, TOKENS, type TokenSymbol } from 'consts/tokens';
 import { asToken } from 'utils/as-token';
+import { isSupportedL2Chain } from 'consts/chains';
 
 const TOKENS_TO_CONTRACTS: Record<
   Token,
@@ -25,14 +25,27 @@ const TOKENS_TO_CONTRACTS: Record<
 } as const;
 
 export const getTokenAddress = (
-  chain: CHAINS,
+  chain: number,
   _token: TokenSymbol | Token,
 ): Address | undefined => {
   const token = asToken(_token);
   // 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   if (token === TOKENS.eth) return getAddress(ethAddress);
 
-  return TOKENS_TO_CONTRACTS[token]
-    ? getNetworkConfigMapByChain(chain)?.contracts[TOKENS_TO_CONTRACTS[token]]
+  let contractKey = TOKENS_TO_CONTRACTS[token];
+
+  // We map L2 tokens to their respective L2 contracts keys
+  // The contracts are different because ABIs are different between L1 and L2 token contracts
+  if (isSupportedL2Chain(chain)) {
+    if (token === TOKENS.wsteth) {
+      contractKey = CONTRACT_NAMES.L2wstETH;
+    }
+    if (token === TOKENS.steth) {
+      contractKey = CONTRACT_NAMES.L2stETH;
+    }
+  }
+
+  return contractKey
+    ? getNetworkConfigMapByChain(chain)?.contracts[contractKey]
     : undefined;
 };

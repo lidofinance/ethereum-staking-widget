@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, FormProvider } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
 import {
@@ -22,6 +22,7 @@ import { useUsdVaultDepositFormData } from '../hooks/use-deposit-form-data';
 import { UsdVaultDepositFormValidationResolver } from './validation';
 import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { useUsdVaultDepositRequest } from '../hooks';
+import { useUsdVaultPreviewDeposit } from '../hooks/use-preview-deposit';
 import { asUsdDepositToken } from '../../utils';
 
 const UsdVaultDepositFormDataContext =
@@ -54,8 +55,6 @@ export const UsdVaultDepositFormProvider: React.FC<{
 
   // Retry event helper
   const { retryEvent } = useFormControllerRetry();
-  // Deposit function
-  const { deposit } = useUsdVaultDeposit(retryEvent.fire);
 
   const formObject = useForm({
     defaultValues: { amount: null, token: TOKEN_SYMBOLS.usdc, referral: null },
@@ -70,6 +69,19 @@ export const UsdVaultDepositFormProvider: React.FC<{
   });
 
   const tokenSymbol = formObject.watch('token');
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  // the quote the form displays; the deposit is held to it
+  const { quote, refetchQuote } = useUsdVaultPreviewDeposit({
+    amount,
+    token: asUsdDepositToken(tokenSymbol),
+  });
+  // Deposit function
+  const { deposit } = useUsdVaultDeposit({
+    onRetry: retryEvent.fire,
+    shownQuote: quote,
+    refetchQuote,
+  });
+
   const { setValue } = formObject;
   useQueryParamsReferralForm<USDDepositFormValues>({ setValue });
 
@@ -90,7 +102,11 @@ export const UsdVaultDepositFormProvider: React.FC<{
         return result;
       },
       onReset: (values: USDDepositFormValidatedValues) => {
-        formObject.reset({ amount: null, token: values.token });
+        formObject.reset({
+          amount: null,
+          token: values.token,
+          referral: values.referral,
+        });
       },
       retryEvent,
     }),

@@ -272,3 +272,82 @@ describe('fetchExternalManifest with CONFIG_MANIFEST_PATH', () => {
     expect(metricsLabelsMock).toHaveBeenCalledWith({ source: 'remote' });
   });
 });
+
+describe('fetchExternalManifest overlapping loads', () => {
+  const manifestWith = (version: string) => ({
+    baseConfig: {},
+    '1': { leastSafeVersion: version },
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    delete process.env.CONFIG_MANIFEST_PATH;
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(console, 'info').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    fetchMock.mockReset();
+  });
+
+  it('shares one load between overlapping calls', async () => {
+    const upstream = Promise.withResolvers<unknown>();
+    fetchMock.mockReturnValue(upstream.promise);
+    const { fetchExternalManifest } = await importFreshModule();
+
+    const calls = [
+      fetchExternalManifest(),
+      fetchExternalManifest(),
+      fetchExternalManifest(),
+    ];
+    upstream.resolve(remoteResponse(manifestWith('1.0.0')));
+    const results = await Promise.all(calls);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(results[0]).toBe(results[2]);
+  });
+
+  it('keeps the newest manifest when a started load finishes late', async () => {
+    const older = Promise.withResolvers<unknown>();
+    fetchMock.mockReturnValueOnce(older.promise);
+    const { fetchExternalManifest } = await importFreshModule();
+
+    const first = fetchExternalManifest();
+    // a later call joins the running load instead of racing it
+    const second = fetchExternalManifest();
+    older.resolve(remoteResponse(manifestWith('2.0.0')));
+    await Promise.all([first, second]);
+
+    const manifest = await fetchExternalManifest();
+    expect(manifest['1']?.leastSafeVersion).toBe('2.0.0');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the last good manifest when the next load fails', async () => {
+    fetchMock.mockResolvedValueOnce(remoteResponse(manifestWith('1.0.0')));
+    fetchMock.mockRejectedValue(new Error('502'));
+    const { fetchExternalManifest } = await importFreshModule();
+
+    await fetchExternalManifest();
+    // let the memory cache expire so the remote is re-fetched
+    vi.advanceTimersByTime(REMOTE_TTL_MS + 1);
+    const [a, b] = await Promise.all([
+      fetchExternalManifest(),
+      fetchExternalManifest(),
+    ]);
+
+    expect(a['1']?.leastSafeVersion).toBe('1.0.0');
+    expect(b).toBe(a);
+    // 1 successful fetch + one shared run of 3 failed retries
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+
+    // the failed load is not remembered: a recovered upstream is picked up
+    fetchMock.mockReset();
+    fetchMock.mockResolvedValue(remoteResponse(manifestWith('3.0.0')));
+    const recovered = await fetchExternalManifest();
+    expect(recovered['1']?.leastSafeVersion).toBe('3.0.0');
+  });
+});

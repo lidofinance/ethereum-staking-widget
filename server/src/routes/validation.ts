@@ -9,6 +9,7 @@ import {
   CACHE_VALIDATION_HEADERS,
 } from '../utils/cache-control.js';
 import { createCachedProxy } from '../utils/cached-proxy.js';
+import { getClientRequestHeaders } from '../utils/client-request-headers.js';
 import { getExternalManifestConfig } from '../utils/external-manifest.js';
 import { getValidationFile } from '../utils/validation-file.js';
 import { allowAnyOrigin } from '../utils/cors.js';
@@ -35,8 +36,9 @@ import { ROUTES } from '../consts.js';
  *   (default '1') — the same `getExternalConfig()` source the legacy route
  *   used (the PoC port drifted to a MANIFEST_OVERRIDE-as-URL scheme).
  * - GET only (404 otherwise), 10s upstream timeout, 1s LRU cache.
- * - `ignoreParams: true` — the address travels in the path; nothing else is
- *   forwarded upstream.
+ * - `ignoreParams: true` — the address travels in the path; no query is
+ *   forwarded upstream. Client IP (CF header only), User-Agent and Referer go
+ *   upstream as `X-Client-*` headers (utils/client-request-headers.ts).
  */
 export const validationRoute: FastifyPluginAsync = async (fastify) => {
   const upstream = config.VALIDATION_SERVICE_BASE_PATH;
@@ -84,6 +86,7 @@ export const validationRoute: FastifyPluginAsync = async (fastify) => {
         cacheTTL: 1_000,
         ignoreParams: true,
         timeout: 10_000,
+        forwardHeaders: getClientRequestHeaders,
         fallback: validateByFile,
       })
     : null;

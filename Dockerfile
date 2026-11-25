@@ -56,22 +56,18 @@ WORKDIR /app
 
 # Production dependencies only — devDependencies never reach the final image.
 COPY --from=prod-deps /app/node_modules ./node_modules
-# Yarn resolves the project on `yarn start` and writes this state file if it is
-# missing — which fails as `node` on a root-owned /app/.yarn, and again on a
-# read-only root filesystem. Ship the one that matches this node_modules tree.
-COPY --from=prod-deps /app/.yarn/install-state.gz ./.yarn/install-state.gz
 # node must own .next: ISR revalidation writes back into .next/server/pages
 # wherever the root filesystem is writable (the docker/compose deploys)
 COPY --from=build --chown=node:node /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=build /app/build-info.json ./build-info.json
-# Runtime entrypoints: `yarn start` needs the vendored yarn, and next.config.mjs
-# is re-evaluated by the custom server, pulling in scripts/ and env-dynamics.
-COPY --from=build /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
-COPY --from=build /app/.yarn/releases ./.yarn/releases
+# Runtime entrypoints: next.config.mjs is re-evaluated by the custom server,
+# pulling in scripts/ and env-dynamics. package.json for `"type": "module"`.
+# No yarn at runtime: the CMD runs node directly, so the lockfile, .yarnrc.yml
+# and the vendored release stay in the build stages.
+COPY --from=build /app/package.json ./
 COPY --from=build /app/server.mjs /app/next.config.mjs /app/env-dynamics.mjs /app/next-logger.config.cjs ./
 COPY --from=build /app/scripts ./scripts
-COPY --from=build /app/utilsApi/clamp-log-args.cjs ./utilsApi/clamp-log-args.cjs
 
 # public/runtime is where startup injects runtime env vars; the k8s chart mounts
 # an emptyDir here, so the rest of the root filesystem can stay read-only
@@ -85,4 +81,7 @@ EXPOSE 3000
 HEALTHCHECK --interval=10s --timeout=3s \
   CMD wget -nv -t1 --spider http://localhost:3000/api/health || exit 1
 
-CMD ["yarn", "start"]
+# Same runner as `yarn start`, without yarn: the stock Yarn 1 launcher would be
+# PID 1 and exits as soon as it forwards SIGTERM, which kills the server before
+# it can drain. The script execs node, so node is PID 1 and handles the signal.
+CMD ["sh", "scripts/start-prod.sh"]

@@ -5,7 +5,8 @@ const modalStyles = css`
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       ellipse 70% 90% at 50% 50%,
       #00a3ff -60%,
       rgba(0, 163, 255, 0) 80%
@@ -19,7 +20,8 @@ export const Wrapper = styled.div<{ $isModal?: boolean; $marginTop?: number }>`
   flex-direction: column;
   padding: ${({ theme }) => theme.spaceMap.md}px 20px;
   border-radius: 16px;
-  background: linear-gradient(-115deg, #00a3ff -10%, rgba(0, 163, 255, 0) 60%),
+  background:
+    linear-gradient(-115deg, #00a3ff -10%, rgba(0, 163, 255, 0) 60%),
     var(--lido-color-accent);
   color: #fff;
   width: 240px;
@@ -73,7 +75,7 @@ export const CtaLink = styled.a<{ $isModal?: boolean }>`
   font-weight: 700;
   line-height: 24px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
-  color: #273852;
+  color: var(--custom-fill-dark);
   background-color: #fff;
   text-decoration: none;
   cursor: pointer;
@@ -82,11 +84,11 @@ export const CtaLink = styled.a<{ $isModal?: boolean }>`
   order: 2;
 
   &:visited {
-    color: #273852;
+    color: var(--custom-fill-dark);
   }
 
   &:hover {
-    color: #273852;
+    color: var(--custom-fill-dark);
     background-color: rgba(225, 225, 225, 1);
   }
 

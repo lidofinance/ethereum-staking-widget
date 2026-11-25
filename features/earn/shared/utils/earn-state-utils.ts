@@ -1,3 +1,5 @@
+import { EARN_VAULTS } from '../../consts';
+
 export const EARN_STATES = {
   ENABLED: 'enabled',
   DISABLED: 'disabled',
@@ -12,6 +14,14 @@ export const EARN_STATE_KEYWORDS = [
   EARN_STATES.DISABLED,
 ] as const;
 
+const isEarnStateKeyword = (
+  value: string,
+): value is (typeof EARN_STATE_KEYWORDS)[number] =>
+  EARN_STATE_KEYWORDS.some((keyword) => keyword === value);
+
+const isEarnVault = (value: string): value is (typeof EARN_VAULTS)[number] =>
+  EARN_VAULTS.some((vault) => vault === value);
+
 /**
  * Pure function that computes earn runtime state from inputs.
  * Extracted for testability.
@@ -21,6 +31,7 @@ export const EARN_STATE_KEYWORDS = [
  * - Ledger Live is always disabled (cannot be overridden via URL).
  * - URL parameter `?earn=disabled` disables earn globally.
  * - URL parameter `?earn=vault1,vault2` shows ONLY those vaults (allowlist); others are hidden.
+ * - Unknown vault names are ignored; with no known vault the allowlist is not applied.
  * - URL parameter `?earn=enabled` is a no-op (earn is already enabled by default).
  */
 export const computeEarnRuntimeState = ({
@@ -39,9 +50,13 @@ export const computeEarnRuntimeState = ({
     isReady &&
     earnParam &&
     typeof earnParam === 'string' &&
-    !EARN_STATE_KEYWORDS.includes(earnParam as any) // Only treat as vault names if it's not a keyword (enabled/disabled)
+    !isEarnStateKeyword(earnParam) // Only treat as vault names if it's not a keyword (enabled/disabled)
   ) {
-    vaultsEnabledByUrl = earnParam.split(',');
+    // unknown names must not hide anything
+    vaultsEnabledByUrl = earnParam
+      .split(',')
+      .map((vault) => vault.trim())
+      .filter(isEarnVault);
   }
 
   const someVaultsEnabledByURL = vaultsEnabledByUrl.length > 0;

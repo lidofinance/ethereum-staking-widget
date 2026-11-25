@@ -33,6 +33,8 @@ export const VaultCardGGV = () => {
       }
       ctaLabel={sharesBalance && sharesBalance > 0n ? 'Manage' : 'View'}
       illustration={<VaultGgvIcon />}
+      // EarnETH does not accept GG now
+      isUpgradable={false}
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDeposit);
       }}

@@ -79,8 +79,42 @@ fi
 # CSP hash of the inline window-env loader in index.html (pinned by unit test)
 WINDOW_ENV_LOADER_HASH="sha256-6ApUdZunJlq8fZcraTYQbcZ6XIB1F85yxMoDe+8WwAY="
 
-# Trusted hosts for CSP script-src, comma-separated in the env var
-CSP_TRUSTED_SRC_VALUE="$(printf '%s' "${CSP_TRUSTED_HOSTS:-}" | tr ',' ' ')"
+# Trusted hosts for CSP script-src, comma-separated in the env var. Blank
+# entries are skipped; an entry that is not one source token (space, `;`, `,`
+# or a control char) would inject directives, so it fails startup.
+CSP_TRUSTED_SRC_VALUE=""
+OLD_IFS="$IFS"
+IFS=','
+# no globbing: sources like https://*.example.com must stay literal
+set -f
+for CSP_TRUSTED_HOST in ${CSP_TRUSTED_HOSTS:-}; do
+  CSP_TRUSTED_HOST="$(printf '%s' "$CSP_TRUSTED_HOST" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+  [ -z "$CSP_TRUSTED_HOST" ] && continue
+  if ! printf '%s' "$CSP_TRUSTED_HOST" | grep -Eq '^[!-~]+$' ||
+    printf '%s' "$CSP_TRUSTED_HOST" | grep -q '[;,]'; then
+    echo "entrypoint: ERROR: CSP_TRUSTED_HOSTS has an invalid source" >&2
+    exit 1
+  fi
+  CSP_TRUSTED_SRC_VALUE="${CSP_TRUSTED_SRC_VALUE} ${CSP_TRUSTED_HOST}"
+done
+set +f
+IFS="$OLD_IFS"
+
+# report-uri must be one absolute URL token
+CSP_REPORT_URI="${CSP_REPORT_URI:-}"
+if [ -n "$CSP_REPORT_URI" ]; then
+  case "$CSP_REPORT_URI" in
+    *"$NL"*)
+      echo "entrypoint: ERROR: CSP_REPORT_URI contains a newline" >&2
+      exit 1
+      ;;
+  esac
+  if ! printf '%s' "$CSP_REPORT_URI" | grep -Eq '^[A-Za-z][A-Za-z0-9+.-]*://[!-~]+$' ||
+    printf '%s' "$CSP_REPORT_URI" | grep -q '[;,]'; then
+    echo "entrypoint: ERROR: CSP_REPORT_URI must be an absolute URL" >&2
+    exit 1
+  fi
+fi
 
 
 # CSP trusted scripts: self, trusted hosts from env, env-loader script, and the per-build import map (if present)
@@ -95,6 +129,7 @@ CSP_WALLET_CONNECT_HOSTS="https://*.walletconnect.org https://*.walletconnect.co
 # CoW widget iframe origin — same env and default as COWSWAP_BASE_URL in
 # features/dex-withdrawals/cowswap/consts.ts. Lands in the CSP header, so only
 # a bare https URL is accepted (a space or `;` would inject directives).
+COWSWAP_WIDGET_BASE_URL="$(printf '%s' "${COWSWAP_WIDGET_BASE_URL:-}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 COWSWAP_WIDGET_BASE_URL="${COWSWAP_WIDGET_BASE_URL:-https://cow-ipfs.testnet.fi/}"
 case "$COWSWAP_WIDGET_BASE_URL" in
   *"$NL"*)
@@ -107,11 +142,14 @@ if ! printf '%s' "$COWSWAP_WIDGET_BASE_URL" | grep -Eq '^https://[A-Za-z0-9.-]+(
   exit 1
 fi
 
+# one trailing '/' like resolveCowswapBaseUrl: the widget loads <base>/#/..., a source ending in '/' admits it by prefix
+COWSWAP_WIDGET_BASE_URL="$(printf '%s' "$COWSWAP_WIDGET_BASE_URL" | sed -e 's:/*$:/:')"
+
 CSP_IFRAME_VALUE="'self' ${COWSWAP_WIDGET_BASE_URL} ${CSP_WALLET_CONNECT_HOSTS}"
 
 CSP_VALUE="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.reown.com; img-src 'self' data: blob: ${CSP_WALLET_CONNECT_HOSTS}; script-src ${CSP_SCRIPT_SRC_VALUE}; connect-src 'self' https: wss:; frame-ancestors *; frame-src ${CSP_IFRAME_VALUE}; child-src ${CSP_IFRAME_VALUE}; worker-src 'none'; object-src 'none'; media-src 'none'; manifest-src 'self'; form-action 'self'; script-src-attr 'none'; base-uri 'none'"
 
-if [ -n "${CSP_REPORT_URI:-}" ]; then
+if [ -n "$CSP_REPORT_URI" ]; then
   CSP_VALUE="${CSP_VALUE}; report-uri ${CSP_REPORT_URI}"
 fi
 

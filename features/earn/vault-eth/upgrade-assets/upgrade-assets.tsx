@@ -1,8 +1,8 @@
-import { type FC, useCallback, useState } from 'react';
+import { type FC, useCallback, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
-import { TokenGGIcon, TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
+import { TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
 import { FormatToken } from 'shared/formatters/format-token';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -33,15 +33,12 @@ import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 
 const TOKEN_ICON_MAP = {
-  [TOKENS.gg]: <TokenGGIcon />,
   [TOKENS.streth]: <TokenStrethIcon />,
   [TOKENS.dvsteth]: <TokenDvstethIcon />,
 };
 
 const getMatomoEventForToken = (token: EthDepositTokenUpgradable) => {
   switch (token) {
-    case TOKENS.gg:
-      return MATOMO_EARN_EVENTS_TYPES.earnEthGgTokenUpgrade;
     case TOKENS.streth:
       return MATOMO_EARN_EVENTS_TYPES.earnEthStrethTokenUpgrade;
     case TOKENS.dvsteth:
@@ -56,26 +53,42 @@ type UpgradeArgs = {
 };
 
 export const UpgradeAssetsBlock: FC = () => {
-  const { isWalletConnected } = useDappStatus();
+  const { isWalletConnected, address, chainId } = useDappStatus();
   const queryClient = useQueryClient();
-  const { balances, refetchBalances } = useUpgradableTokenBalances();
+  const { balances, fetchBalances } = useUpgradableTokenBalances();
+  // The connection as of the latest render, read when an upgrade resumes
+  // after its awaits: the upgrade itself keeps the account it started with
+  const connectionRef = useRef({ address, chainId });
+  connectionRef.current = { address, chainId };
   const [isUpgrading, setIsUpgrading] = useState(false);
   const referral = useReferralQueryValue();
   const { isDepositGeoAvailable } = useEarnGeoGate();
   const { isDepositEnabled } = useEthVaultAvailable();
   const { openDrawer: openDrawerRight } = useEthVaultDrawer();
 
-  const { deposit } = useEthVaultDeposit();
+  // an upgrade deposits the whole balance with no quote displayed
+  const { deposit } = useEthVaultDeposit({
+    shownQuote: undefined,
+    refetchQuote: undefined,
+  });
 
   const upgrade = useCallback(
     async ({ token }: UpgradeArgs) => {
       setIsUpgrading(true);
 
       try {
-        const balancesQuery = await refetchBalances();
-        if (!balancesQuery.isSuccess) return;
+        // keyed to the account this upgrade started for, see fetchBalances
+        const balancesData = await fetchBalances().catch(() => undefined);
+        if (!balancesData) return;
+        // the deposit below would still run as the account it captured: an
+        // upgrade started for one account must not continue under another
+        if (
+          connectionRef.current.address !== address ||
+          connectionRef.current.chainId !== chainId
+        )
+          return;
 
-        const balanceAmount = balancesQuery.data?.[token] ?? 0n;
+        const balanceAmount = balancesData[token] ?? 0n;
         const depositAmount = overrideWithQAMockBigInt(
           balanceAmount,
           QA_KEYS.earnEthUpgradeAmount,
@@ -93,7 +106,7 @@ export const UpgradeAssetsBlock: FC = () => {
           if (matomoEvent) {
             trackMatomoEvent(matomoEvent);
           }
-          await refetchBalances();
+          await fetchBalances().catch(() => undefined);
           await Promise.all([
             queryClient.refetchQueries(
               { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
@@ -110,7 +123,7 @@ export const UpgradeAssetsBlock: FC = () => {
         setIsUpgrading(false);
       }
     },
-    [deposit, queryClient, referral, refetchBalances],
+    [deposit, queryClient, referral, fetchBalances, address, chainId],
   );
 
   // An upgrade is a deposit: hide the block when deposits are paused, even if

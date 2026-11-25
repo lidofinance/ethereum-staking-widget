@@ -1,3 +1,5 @@
+// TODO: recalculate after GLAMSTERDAM fork
+
 // fallback gas limits per 1 withdraw request
 export const WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT = 255_350n;
 export const WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT =

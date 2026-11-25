@@ -1,5 +1,5 @@
 import { useConnection, useChains } from 'wagmi';
-import { isSDKSupportedL2Chain } from 'consts/chains';
+import { isSupportedL2Chain } from 'consts/chains';
 
 import { useDappChain } from 'modules/web3/web3-provider/dapp-chain';
 
@@ -19,7 +19,7 @@ export const useDappStatus = () => {
     ? isWalletConnected && isSupportedChain
     : false;
 
-  const isL2 = isSDKSupportedL2Chain(walletChainId);
+  const isL2 = isSupportedL2Chain(walletChainId);
 
   const chains = useChains();
   const currentChain = chains.find((chain) => chain.id === walletChainId);

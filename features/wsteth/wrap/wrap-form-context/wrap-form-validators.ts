@@ -8,7 +8,10 @@ import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-con
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
-import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
+import {
+  handleResolverValidationError,
+  walletNotConnectedResult,
+} from 'shared/hook-form/validation/validation-error';
 
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
@@ -23,7 +26,10 @@ const messageMaxAmount = (max: bigint, token: TOKENS_TO_WRAP) =>
 export const WrapFormValidationResolver: Resolver<
   WrapFormInputType,
   WrapFormValidationContext
-> = async (values, validationContext) => {
+> = async (liveValues, validationContext) => {
+  // hook-form passes its live values object: a snapshot keeps what is
+  // validated and what is submitted the same if a field changes mid-await
+  const values = { ...liveValues };
   const { amount, token } = values;
   try {
     invariant(validationContext, 'validation context must be present');
@@ -52,10 +58,7 @@ export const WrapFormValidationResolver: Resolver<
         messageMaxAmount(awaitedContext.stethBalance, token),
       );
     } else {
-      return {
-        values,
-        errors: { token: 'wallet is not connected' },
-      };
+      return walletNotConnectedResult('token');
     }
 
     return {

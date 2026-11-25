@@ -7,10 +7,8 @@ import PartnerMellowIcon from './partner-mellow.svg?react';
 import PartnerRuntimeLabsIcon from './partner-runtime-labs.svg?react';
 import PartnerRuntimeLabsIconInverted from './partner-runtime-labs-inverted.svg?react';
 
-import TokenEthIcon from './token-eth.svg?react';
 import TokenEthScalableIcon from './token-eth-scalable.svg?react';
 import TokenEthIcon32 from './token-eth-32.svg?react';
-import TokenStethIcon from './token-steth.svg?react';
 import TokenStethScalableIcon from './token-steth-scalable.svg?react';
 import TokenWethIcon from './token-weth.svg?react';
 import TokenWethScalableIcon from './token-weth-scalable.svg?react';
@@ -38,15 +36,8 @@ import EarnUpToBannerIcon from './earn-up-to-banner.svg?react';
 export { default as BaseIcon } from './allocation/base.svg?react';
 export { default as ArbitrumIcon } from './allocation/arbitrum.svg?react';
 export { default as EthereumIcon } from './allocation/ethereum.svg?react';
-export { default as EulerIcon } from './allocation/euler.svg?react';
-export { default as MorphoIcon } from './allocation/morpho.svg?react';
-export { default as Univ3Icon } from './allocation/uniswap_v3.svg?react';
 export { default as AaveV3Icon } from './allocation/aave_v3.svg?react';
-export { default as BalancerIcon } from './allocation/balancer.svg?react';
-export { default as MerklIcon } from './allocation/merkl.svg?react';
-export { default as EtherfiIcon } from './allocation/etherfi.svg?react';
 export { default as LineaIcon } from './allocation/linea.svg?react';
-export { default as YearnV3Icon } from './allocation/yearn-v3.svg?react';
 export { default as KatanaIcon } from './allocation/katana.svg?react';
 export { default as PlasmaIcon } from './allocation/plasma.svg?react';
 export { default as SparkIcon } from './allocation/spark.svg?react';
@@ -104,10 +95,8 @@ export {
   VaultGGVIcon,
   VaultDVVIcon,
   VaultSTGIcon,
-  TokenEthIcon,
   TokenEthScalableIcon,
   TokenEthIcon32,
-  TokenStethIcon,
   TokenStethScalableIcon,
   TokenWethIcon,
   TokenWethScalableIcon,

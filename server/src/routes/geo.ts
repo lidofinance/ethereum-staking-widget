@@ -142,6 +142,7 @@ export const geoRoute: FastifyPluginAsync = async (fastify) => {
       const manifestConfig = await getExternalManifestConfig();
       // no manifest entry at all → cannot tell → limited; a present entry
       // without a geo block → no limited countries (schema-default parity)
+      // fail-open on a fallback or geo-less manifest: a misconfig is a lesser harm than limiting everyone
       limitedCountries = manifestConfig
         ? readLimitedCountries(manifestConfig.geo)
         : null;

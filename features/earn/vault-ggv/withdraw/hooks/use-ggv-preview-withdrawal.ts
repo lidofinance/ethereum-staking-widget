@@ -6,9 +6,11 @@ import { useDappStatus, useLidoSDK } from 'modules/web3';
 
 import { useDebouncedValue } from 'shared/hooks';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
 import { getGGVQueueContract } from '../../contracts';
 import { useGGVAvailable } from '../../hooks/use-ggv-available';
+import { getGGVAssetsOut } from '../../utils';
 import { useGGVWithdrawForm } from '../form-context';
 
 import type { GGVWithdrawalFormValues } from '../types';
@@ -18,7 +20,8 @@ export const useGGVPreviewWithdrawal = (
 ) => {
   const { isDappActive } = useDappStatus();
   const { wrap } = useLidoSDK();
-  const { minDiscount } = useGGVWithdrawForm();
+  const { minDiscount, isBulkWithdraw, bulkRate, shareDecimals, reason } =
+    useGGVWithdrawForm();
   const publicClient = usePublicClient();
   const { isGGVAvailable } = useGGVAvailable();
 
@@ -27,6 +30,7 @@ export const useGGVPreviewWithdrawal = (
   const debouncedAmount = useDebouncedValue(amount, 500);
   const isDebounced = isEnabled && amount !== debouncedAmount;
 
+  // Queue mode: wstETH through the queue preview
   const query = useQuery({
     queryKey: [
       'ggv',
@@ -36,7 +40,7 @@ export const useGGVPreviewWithdrawal = (
         minDiscount,
       },
     ] as const,
-    enabled: isEnabled,
+    enabled: isEnabled && !isBulkWithdraw,
     queryFn: async () => {
       invariant(publicClient, 'Public client is not available');
       const queue = getGGVQueueContract(publicClient);
@@ -60,14 +64,41 @@ export const useGGVPreviewWithdrawal = (
     },
   });
 
-  const usdQuery = useWstethUsd(query.data?.wsteth);
+  // Bulk mode: WETH by the accountant rate, same math as the Teller
+  const bulkAssets =
+    isBulkWithdraw && isEnabled && bulkRate != null && shareDecimals != null
+      ? getGGVAssetsOut(debouncedAmount ?? 0n, bulkRate, shareDecimals)
+      : undefined;
+
+  const wstethUsdQuery = useWstethUsd(
+    isBulkWithdraw ? undefined : query.data?.wsteth,
+  );
+  const ethUsdQuery = useEthUsd(bulkAssets);
+
+  if (isBulkWithdraw) {
+    return {
+      isLoading:
+        isDebounced ||
+        // Null rate means the accountant is paused. Then there is no preview.
+        // A failed state read gives no rate too. Do not wait for it.
+        (isEnabled &&
+          bulkRate === undefined &&
+          reason !== 'state-unavailable') ||
+        ethUsdQuery.isLoading,
+      data: {
+        assets: bulkAssets,
+        usd: ethUsdQuery.usdAmount,
+        eth: undefined,
+      },
+    };
+  }
 
   return {
-    isLoading: isDebounced || query.isLoading || usdQuery.isLoading,
+    isLoading: isDebounced || query.isLoading || wstethUsdQuery.isLoading,
     data: {
-      wsteth: query.data?.wsteth,
-      usd: usdQuery.usdAmount,
-      eth: usdQuery.ethAmount,
+      assets: query.data?.wsteth,
+      usd: wstethUsdQuery.usdAmount,
+      eth: wstethUsdQuery.ethAmount,
     },
   };
 };

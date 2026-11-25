@@ -1,8 +1,6 @@
-import { Text } from '@lidofinance/lido-ui';
-
+import { useStETHByWstETH } from 'modules/web3';
 import { CardBalance } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
-import { useStETHByWstETH } from 'modules/web3';
 
 import { useRequestFormData } from '../request-form-context';
 
@@ -11,30 +9,26 @@ export const WalletWstethBalance = () => {
   const { data: stethByWstethBalance, isLoading: isStethByWstethLoading } =
     useStETHByWstETH(balanceWSteth);
 
-  const stethBalanceValue = (
-    <>
-      <FormatToken
-        data-testid="wstEthBalance"
-        amount={balanceWSteth}
-        symbol="wstETH"
-      />
-      <Text size={'xxs'} color={'secondary'}>
-        ≈{' '}
-        <FormatToken
-          data-testid="wstEthBalanceOption"
-          amount={stethByWstethBalance}
-          symbol="ETH"
-        />
-      </Text>
-    </>
-  );
-
   return (
     <CardBalance
       small
       title="wstETH balance"
-      loading={loading.isStethBalanceLoading || isStethByWstethLoading}
-      value={stethBalanceValue}
+      loading={loading.isWstethBalanceLoading || isStethByWstethLoading}
+      value={
+        <FormatToken
+          data-testid="wstEthBalance"
+          amount={balanceWSteth}
+          symbol="wstETH"
+        />
+      }
+      extra={
+        <FormatToken
+          approx
+          data-testid="wstEthBalanceOption"
+          amount={stethByWstethBalance}
+          symbol="ETH"
+        />
+      }
     />
   );
 };

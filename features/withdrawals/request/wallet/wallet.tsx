@@ -4,7 +4,7 @@ import { Divider } from '@lidofinance/lido-ui';
 
 import { WalletMyRequests } from 'features/withdrawals/shared';
 import { WalletWrapperStyled } from 'features/withdrawals/shared';
-import { CardAccount, CardRow, Fallback } from 'shared/wallet';
+import { CardNetwork, CardRow, Fallback } from 'shared/wallet';
 
 import { RequestFormInputType } from '../request-form-context';
 import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
@@ -21,7 +21,7 @@ export const WalletComponent = () => {
     <WalletWrapperStyled data-testid="requestCardSection">
       <CardRow>
         {isSteth ? <WalletStethBalance /> : <WalletWstethBalance />}
-        <CardAccount />
+        <CardNetwork />
       </CardRow>
       <Divider />
       <CardRow>

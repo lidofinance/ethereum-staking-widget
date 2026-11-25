@@ -8,6 +8,7 @@ import {
   SYNC_REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
   FEE_MANAGER_ABI,
+  ORACLE_ABI,
 } from '../abi';
 
 export type Contract<TAbi extends Abi = Abi> = GetContractReturnType<
@@ -68,3 +69,5 @@ export type SyncRedeemQueueWritableContract = Contract<
 export type ShareManagerContract = Contract<typeof SHARE_MANAGER_ABI>;
 
 export type FeeManagerContract = ContractReadonly<typeof FEE_MANAGER_ABI>;
+
+export type OracleContract = ContractReadonly<typeof ORACLE_ABI>;

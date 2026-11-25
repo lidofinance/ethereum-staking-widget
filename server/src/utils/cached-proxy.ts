@@ -4,6 +4,9 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import { CACHE_DEFAULT_ERROR_HEADERS } from './cache-control.js';
 
 const DEFAULT_CACHE_MAX_ENTRIES = 200;
+// Full rewards histories reach several MB each: a count cap alone let 200 of
+// them pin the heap of the one server process
+const DEFAULT_CACHE_MAX_BYTES = 32 * 1024 * 1024;
 const DEFAULT_TIMEOUT_MS = 5_000;
 
 export interface CachedProxyOptions {
@@ -18,6 +21,10 @@ export interface CachedProxyOptions {
   transformData?: (data: unknown) => unknown;
   /** Hard cap on cache entries. Default 200. Bounds memory. */
   cacheMaxEntries?: number;
+  /** Hard cap on cached bytes (serialized). Larger bodies are served uncached. Default 32MB. */
+  cacheMaxBytes?: number;
+  /** Extra upstream headers from the request; cache hits don't reach upstream. */
+  forwardHeaders?: (req: FastifyRequest) => Record<string, string>;
   /**
    * Called instead of the error response on ANY upstream failure (4xx, 5xx,
    * network) — lets a route serve a local fallback (e.g. /api/validation →
@@ -26,10 +33,20 @@ export interface CachedProxyOptions {
   fallback?: (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
 }
 
+class UpstreamStatusError extends Error {
+  constructor(
+    readonly status: number,
+    readonly statusText: string,
+  ) {
+    super(`upstream responded ${status}`);
+  }
+}
+
 /**
  * Ported from `utilsApi/cached-proxy.ts`. Same caching semantics
- * (per-key LRU, bounded entries) and same query whitelist (bounded cache
- * keyspace — vault note F8, known-issues 2026-05-14).
+ * (per-key LRU bounded by entries and serialized bytes, TTL autopurge,
+ * concurrent misses of one key share one upstream fetch) and same query
+ * whitelist (bounded cache keyspace — vault note F8, known-issues 2026-05-14).
  *
  * Upstream URLs may embed secrets — log lines here rely on the process-wide
  * satanizer mask (`src/logger.ts`) to scrub them.
@@ -47,10 +64,18 @@ export interface CachedProxyOptions {
  * status-based branches (422/429/503 in rewards error blocks) keep working.
  */
 export const createCachedProxy = (opts: CachedProxyOptions) => {
-  const cache = new LRUCache<string, object>({
+  const cache = new LRUCache<string, string>({
     max: opts.cacheMaxEntries ?? DEFAULT_CACHE_MAX_ENTRIES,
+    maxSize: opts.cacheMaxBytes ?? DEFAULT_CACHE_MAX_BYTES,
+    sizeCalculation: (value) => Math.max(Buffer.byteLength(value), 1),
     ttl: opts.cacheTTL,
+    // Without this an expired entry stays in memory until its key is read
+    // again or the cache is full
+    ttlAutopurge: true,
   });
+  // Concurrent misses of one key share a single upstream fetch. Entries live
+  // only while the fetch runs, so a failed fetch is not remembered.
+  const inFlight = new Map<string, Promise<string>>();
   const timeout = opts.timeout ?? DEFAULT_TIMEOUT_MS;
   const transform = opts.transformData ?? ((d: unknown) => d);
 
@@ -70,46 +95,87 @@ export const createCachedProxy = (opts: CachedProxyOptions) => {
         : opts.proxyUrl;
 
     const cacheKey = `${url}-${params?.toString() ?? ''}`;
+    const sendJson = (body: string) =>
+      reply.type('application/json; charset=utf-8').send(body);
+
     const cached = cache.get(cacheKey);
     if (cached !== undefined) {
-      return reply.send(cached);
+      return sendJson(cached);
     }
 
     const fullUrl = url + (params ? `?${params.toString()}` : '');
 
-    try {
-      const res = await fetch(fullUrl, {
-        signal: AbortSignal.timeout(timeout),
-        headers: {
-          accept: 'application/json',
-          'content-type': 'application/json',
-        },
-      });
+    const fetchBody = async (): Promise<string> => {
+      // set() is case-insensitive, so forwarded headers can't override these
+      const headers = new Headers(opts.forwardHeaders?.(req));
+      headers.set('accept', 'application/json');
+      headers.set('content-type', 'application/json');
 
-      if (!res.ok) {
-        if (res.status >= 400 && res.status < 500) {
+      // one bound for headers and body; cleared so no timer outlives the fetch
+      const controller = new AbortController();
+      const timer = setTimeout(
+        () =>
+          controller.abort(
+            new DOMException(
+              `Request timed out after ${timeout} ms`,
+              'TimeoutError',
+            ),
+          ),
+        timeout,
+      );
+      try {
+        const res = await fetch(fullUrl, {
+          signal: controller.signal,
+          headers,
+        });
+        if (!res.ok) throw new UpstreamStatusError(res.status, res.statusText);
+
+        const data = (await res.json()) as unknown;
+        const body = JSON.stringify(transform(data) ?? data);
+        cache.set(cacheKey, body);
+        return body;
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    try {
+      const shared = inFlight.get(cacheKey);
+      let body: string;
+      if (!shared) {
+        const pending = fetchBody().finally(() => inFlight.delete(cacheKey));
+        inFlight.set(cacheKey, pending);
+        body = await pending;
+      } else if (opts.forwardHeaders) {
+        // A shared 429 may belong to the first caller's IP. Other failures
+        // are shared without retrying against an unavailable upstream.
+        body = await shared.catch((error: unknown) => {
+          if (error instanceof UpstreamStatusError && error.status === 429) {
+            return fetchBody();
+          }
+          throw error;
+        });
+      } else {
+        body = await shared;
+      }
+      return sendJson(body);
+    } catch (err) {
+      if (err instanceof UpstreamStatusError) {
+        if (err.status >= 400 && err.status < 500) {
           req.log.warn(
-            { upstreamUrl: fullUrl, status: res.status },
+            { upstreamUrl: fullUrl, status: err.status },
             'cached-proxy: forwarding 4xx',
           );
           if (opts.fallback) return opts.fallback(req, reply);
-          return sendError(reply, res.status, { error: res.statusText });
+          return sendError(reply, err.status, { error: err.statusText });
         }
         req.log.error(
-          { upstreamUrl: fullUrl, status: res.status },
+          { upstreamUrl: fullUrl, status: err.status },
           'cached-proxy: upstream 5xx',
         );
         if (opts.fallback) return opts.fallback(req, reply);
         return sendError(reply, 502, { error: 'upstream error' });
       }
-
-      const data = (await res.json()) as unknown;
-      const transformed = transform(data) ?? data;
-      if (transformed !== null && typeof transformed === 'object') {
-        cache.set(cacheKey, transformed);
-      }
-      return reply.send(transformed);
-    } catch (err) {
       // undici wraps the real reason into a generic "fetch failed"; the
       // errno code (ENOTFOUND, ECONNREFUSED, …) hides in `cause`. Surface
       // it — bounded and secret-free — in the log AND the reply body.

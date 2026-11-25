@@ -4,7 +4,9 @@ import type { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
 
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { StakeLimitFullInfo } from 'shared/hooks';
-import { LIMIT_LEVEL } from 'types';
+
+import type { LIMIT_LEVEL } from 'types';
+import type { FeeEstimateTx } from 'modules/web3';
 
 export type WrapFormInputType = {
   amount: bigint | null;
@@ -42,5 +44,7 @@ export type WrapFormDataContextValueType = WrapFormNetworkData &
     isSteth: boolean;
     maxAmount?: bigint;
     wrapGasLimit: bigint;
+    // representative tx of the selected wrap for chain-specific fee quotes
+    wrapTx?: FeeEstimateTx;
     stakeLimitInfo?: StakeLimitFullInfo;
   };

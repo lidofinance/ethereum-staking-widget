@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 
-import { config } from 'config';
+import { lidoEcosystemPath } from 'utils/lido-ecosystem-path';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { HOME_PATH } from 'consts/urls';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -31,7 +31,7 @@ export const HowCanIGetSteth: FC = () => {
         </OuterLink>
         , or in other{' '}
         <OuterLink
-          href={`${config.rootOrigin}/lido-ecosystem?tokens=stETH&categories=Get`}
+          href={lidoEcosystemPath({ tokens: ['stETH'], categories: ['Get'] })}
           data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthIntegrations}
         >
           DEX Lido integrations

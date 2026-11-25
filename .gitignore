@@ -33,6 +33,7 @@ test/playwright-report
 /dist-node/
 /.next/
 /server/dist/
+/.next-fork/
 /out/
 
 # production

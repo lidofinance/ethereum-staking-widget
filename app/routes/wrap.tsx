@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
-import { SupportL2Chains } from 'modules/web3';
+import { SupportL1AndL2WrapChains } from 'modules/web3';
 import { LegalDisclaimer } from 'shared/components/legal-disclaimer';
 import { DisclaimerSection } from 'shared/components/disclaimer-section';
 
@@ -19,7 +19,7 @@ export default function WrapPage() {
   if (mode !== undefined && mode !== 'unwrap') return <NotFoundPage />;
 
   return (
-    <SupportL2Chains>
+    <SupportL1AndL2WrapChains>
       <Layout
         title="Wrap & Unwrap"
         subtitle="Stable-balance stETH wrapper for DeFi"
@@ -32,6 +32,6 @@ export default function WrapPage() {
           <LegalDisclaimer />
         </DisclaimerSection>
       </Layout>
-    </SupportL2Chains>
+    </SupportL1AndL2WrapChains>
   );
 }

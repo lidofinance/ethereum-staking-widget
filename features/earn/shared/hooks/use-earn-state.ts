@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router';
 
 import { useIsLedgerLive } from 'modules/web3';
 import { useConfig } from 'config/use-config';
+import { useProductsUrlState } from 'config/external-config/use-products-url-state';
 import { EARN_PATH } from 'consts/urls';
 
 import {
@@ -9,19 +10,6 @@ import {
   EARN_STATES,
   computeEarnRuntimeState,
 } from '../utils/earn-state-utils';
-
-/**
- * Helper to cache earn param in global scope to prevent loss in iframe rerenders
- */
-const getCachedEarnParam = () => {
-  if (typeof window === 'undefined') return undefined;
-  return (window as any).__earnParamCache__;
-};
-
-const setCachedEarnParam = (value: string | undefined) => {
-  if (typeof window === 'undefined') return;
-  (window as any).__earnParamCache__ = value;
-};
 
 /**
  * Determines the overall earn state based on runtime context and external configuration.
@@ -105,24 +93,21 @@ export const useEarnState = () => {
  */
 export const useEarnRuntimeState = () => {
   const [searchParams] = useSearchParams();
+  // `earn` and `product` params, cached against iframe rerenders
+  const { products } = useProductsUrlState();
   // ?app= is read directly from search params (not useAppFlag/useIsLedgerLive) because this
   // hook is called from useExternalConfigContext inside ConfigProvider, before Web3Provider
   // (Wagmi) is mounted. The full connector-based check is applied separately in useEarnState.
   const isLedgerLiveByFlag = searchParams.get('app') === 'ledger-live';
 
-  // Cache the earn query param to prevent it from being lost on rerenders in iframe
-  // (query params can get lost in iframe due to History API limitations)
-  const earnQueryParam = searchParams.get('earn');
-  if (earnQueryParam) {
-    setCachedEarnParam(earnQueryParam);
-  }
-
-  // Use cached value if current ?earn= is absent, but we had it before
-  const earnParam = earnQueryParam || getCachedEarnParam();
+  // `?product=` without earn disables it like `?earn=disabled`
+  const earnParam = products.earn.enabled
+    ? products.earn.value
+    : EARN_STATES.DISABLED;
 
   return computeEarnRuntimeState({
     isLedgerLive: isLedgerLiveByFlag,
-    earnParam: typeof earnParam === 'string' ? earnParam : undefined,
+    earnParam,
     // the SPA router has no hydration delay for query parsing
     isReady: true,
   });

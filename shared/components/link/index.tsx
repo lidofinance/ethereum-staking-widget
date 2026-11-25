@@ -6,6 +6,8 @@ import {
 } from 'react';
 import { Link as RouterLink, useSearchParams } from 'react-router';
 
+import { useProductQuery } from 'config/external-config/use-products-url-state';
+
 /**
  * The single navigation link. Replaces the LocalLink / LinkIpfs
  * pair: react-router's <Link> already renders the right href in both
@@ -22,14 +24,13 @@ import { Link as RouterLink, useSearchParams } from 'react-router';
  */
 
 // Search params forwarded to every internal navigation so integration
-// context (referral, embeds, Ledger Live flag, theming, earn allowlist,
-// QA flags) survives page switches.
+// context (referral, embeds, Ledger Live flag, theming, QA flags) survives
+// page switches. Product params come from useProductQuery.
 const PASSTHROUGH_PARAMS = [
   'ref',
   'embed',
   'app',
   'theme',
-  'earn',
   'forceAllowance',
 ] as const;
 
@@ -54,6 +55,8 @@ export type LinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> &
 
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const [searchParams] = useSearchParams();
+  // from the products state, so they survive a navigation that lost them
+  const productQuery = useProductQuery();
 
   const isOuter = !!props.href && isOuterLink(props.href);
 
@@ -74,11 +77,14 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       const value = searchParams.get(key);
       if (value && !params.has(key)) params.set(key, value);
     }
+    for (const [key, value] of Object.entries(productQuery)) {
+      if (!params.has(key)) params.set(key, value);
+    }
     const qs = params.toString();
     const searchPart = qs ? '?' + qs : '';
     const hashPart = hash ? '#' + hash : '';
     return pathname + searchPart + hashPart;
-  }, [isOuter, props.href, props.to, searchParams]);
+  }, [isOuter, props.href, props.to, searchParams, productQuery]);
 
   if (props.to && props.href) {
     throw new Error('Link: cannot specify both `to` and `href` props');

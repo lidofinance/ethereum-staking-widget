@@ -24,6 +24,7 @@ vi.mock('config/networks/rpc-contracts', () => ({
 }));
 
 import { collectRequestAddressMetric } from '../collect-request-address-metric.js';
+import { getFunctionNameFromAbi } from 'utils/get-function-name-from-abi';
 
 const makeEthCall = (data: string) => ({
   jsonrpc: '2.0',
@@ -68,14 +69,17 @@ describe('collectRequestAddressMetric on a recognized contract', () => {
 
   it('collapses every unknown selector into a single series', async () => {
     const { counter, recorded } = makeCounterMock();
-    const calls = Array.from({ length: 1000 }, (_, i) =>
-      makeEthCall(`0x${i.toString(16).padStart(8, '0')}`),
-    );
-    await collectRequestAddressMetric({
-      calls,
-      chainId: CHAIN_MAINNET,
-      metrics: counter,
-    });
+    // 1000 distinct selectors, sent in batches the collector processes whole
+    for (let batch = 0; batch < 50; batch++) {
+      const calls = Array.from({ length: 20 }, (_, i) =>
+        makeEthCall(`0x${(batch * 20 + i).toString(16).padStart(8, '0')}`),
+      );
+      await collectRequestAddressMetric({
+        calls,
+        chainId: CHAIN_MAINNET,
+        metrics: counter,
+      });
+    }
     const series = new Set(recorded.map((labels) => JSON.stringify(labels)));
     expect(recorded.length).toBe(1000);
     expect(series.size).toBe(1);
@@ -85,5 +89,16 @@ describe('collectRequestAddressMetric on a recognized contract', () => {
       methodEncoded: 'unknown',
       methodDecoded: 'unknown',
     });
+  });
+});
+
+describe('getFunctionNameFromAbi', () => {
+  it('resolves selectors from one map per ABI, known and unknown alike', () => {
+    const selector = toFunctionSelector(ABI[0]);
+    // first call builds the map, later calls only read it
+    expect(getFunctionNameFromAbi(ABI, selector)).toBe('balanceOf');
+    expect(getFunctionNameFromAbi(ABI, selector)).toBe('balanceOf');
+    expect(getFunctionNameFromAbi(ABI, '0xdeadbeef')).toBeNull();
+    expect(getFunctionNameFromAbi(ABI, '0xdeadbeef')).toBeNull();
   });
 });

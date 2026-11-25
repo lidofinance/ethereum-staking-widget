@@ -4,6 +4,7 @@ import type { Plugin } from 'vite';
 import { metaTagsToHtml, pageMeta } from '../../shared/seo';
 import { parseHtml, requireHead } from './parse-html';
 import { WINDOW_ENV_LOADER_CSP_HASH } from './window-env-plugin';
+import { resolveCowswapBaseUrl } from '../csp/content-security-policy.mjs';
 
 /**
  * IPFS serves a single `index.html` (no path-based routing), so the
@@ -33,10 +34,10 @@ export const ipfsHeadDefaultsPlugin = (): Plugin => {
     'sha256-' +
     createHash('sha256').update(IPFS_BASE_SCRIPT_CONTENT).digest('base64');
 
-  // Same env and default as COWSWAP_BASE_URL in
-  // features/dex-withdrawals/cowswap/consts.ts
-  const cowswapWidgetBaseUrl =
-    process.env.COWSWAP_WIDGET_BASE_URL || 'https://cow-ipfs.testnet.fi/';
+  // Same resolver as COWSWAP_BASE_URL in modules/dexes/cowswap/consts.ts
+  const cowswapWidgetBaseUrl = resolveCowswapBaseUrl(
+    process.env.COWSWAP_WIDGET_BASE_URL,
+  );
   if (!/^https:\/\/[\w.-]+(:\d+)?(\/[\w.~/-]*)?$/.test(cowswapWidgetBaseUrl)) {
     throw new Error('COWSWAP_WIDGET_BASE_URL must be a plain https URL');
   }

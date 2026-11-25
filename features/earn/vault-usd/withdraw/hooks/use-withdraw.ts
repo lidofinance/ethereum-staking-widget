@@ -2,22 +2,40 @@ import { WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 import { useMemo } from 'react';
 import { useLidoSDK, useMainnetOnlyWagmi } from 'modules/web3';
-import { useWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw';
-import { useTxModalStagesWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw-tx-modal';
+import {
+  getVaultRefetchScope,
+  useTxModalStagesWithdraw,
+  useWithdraw,
+  type VaultQuote,
+} from 'modules/mellow-meta-vaults';
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import {
   getCollectorContract,
+  getOracleContract,
   getRedeemQueueWritableContract,
   getSyncRedeemQueueWritableContract,
 } from '../../contracts';
+import { USD_VAULT_QUERY_SCOPE } from '../../consts';
 import type { UsdWithdrawToken } from '../../types';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useUsdVaultWithdraw = (
-  onRetry: () => void,
-  token: UsdWithdrawToken,
-) => {
+type UseUsdVaultWithdrawArgs = {
+  onRetry: TxRetryHandler;
+  // the payout token, which decides the redeem queues
+  token: UsdWithdrawToken;
+  // the quote the form displays and its refetch: the withdrawal is held to it
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
+};
+
+export const useUsdVaultWithdraw = ({
+  onRetry,
+  token,
+  shownQuote,
+  refetchQuote,
+}: UseUsdVaultWithdrawArgs) => {
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesWithdraw({
     stageOperationArgs: {
@@ -31,6 +49,11 @@ export const useUsdVaultWithdraw = (
 
   const collector = useMemo(
     () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
+  );
+
+  const oracle = useMemo(
+    () => getOracleContract(publicClientMainnet),
     [publicClientMainnet],
   );
 
@@ -54,9 +77,13 @@ export const useUsdVaultWithdraw = (
     collector,
     asyncRedeemQueue,
     syncRedeemQueue,
+    oracle,
+    shownQuote,
+    refetchQuote,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalStart,
     matomoEventSuccess: MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalFinish,
+    refetchScope: getVaultRefetchScope(USD_VAULT_QUERY_SCOPE),
   });
 };

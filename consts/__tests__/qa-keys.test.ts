@@ -4,7 +4,7 @@ import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { QA_KEYS, QA_MOCK_GROUPS, QA_CUSTOM_UI_KEYS } from 'consts/qa-keys';
-import { LEVEL_ORDER } from 'features/dex-withdrawals/cowswap/trade-guard/utils/resolve-level';
+import { LEVEL_ORDER } from 'modules/dexes/cowswap/guards/trade/consts';
 
 const PROJECT_ROOT = join(__dirname, '..', '..');
 

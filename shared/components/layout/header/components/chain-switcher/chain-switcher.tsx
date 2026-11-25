@@ -1,17 +1,19 @@
-import { FC, useState, useMemo, createElement, ComponentType } from 'react';
+import { FC, useMemo, createElement } from 'react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 import {
   CHAIN_ICONS_MAP,
+  CHAIN_NAME_OVERRIDE,
   getPrettyChainName,
   useDappStatus,
   wagmiChainMap,
 } from 'modules/web3';
+import { usePopupMenu } from '../popup';
 
 import {
   ChainSwitcherOptions,
   ChainOption,
-} from './components/chain-switcher-options/chain-switcher-options';
-import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
+} from './components/chain-switcher-options';
+import { SelectIconTooltip } from './components/select-icon-tooltip';
 import {
   ChainSwitcherWrapperStyled,
   ChainSwitcherStyled,
@@ -22,11 +24,6 @@ import type { CHAIN_ID } from 'consts/chains';
 
 type IconsMapType = Record<number, ChainOption>;
 
-const overriddenChainNames: Record<number, string> = {
-  10: 'Optimism',
-  130: 'Unichain',
-};
-
 export const ChainSwitcher: FC = () => {
   const {
     isDappActive,
@@ -36,22 +33,26 @@ export const ChainSwitcher: FC = () => {
     supportedChainIds,
     requestChangeChain,
   } = useDappStatus();
-
-  const [opened, setOpened] = useState(false);
-  const isLocked = useMemo(
-    () => supportedChainIds.length < 2 || isSwitchChainPending,
-    [supportedChainIds, isSwitchChainPending],
-  );
+  const isLocked = supportedChainIds.length < 2 || isSwitchChainPending;
+  const {
+    opened,
+    close,
+    wrapperProps,
+    triggerProps,
+    menuProps,
+    backdropProps,
+  } = usePopupMenu({ mode: 'button', disabled: isLocked });
 
   const iconsMap = useMemo(
     () =>
       (supportedChainIds as CHAIN_ID[]).reduce(
-        (acc: IconsMapType, chainId: CHAIN_ID) => {
-          acc[chainId] = {
-            name: overriddenChainNames[chainId] ?? wagmiChainMap[chainId].name,
-            iconComponent: CHAIN_ICONS_MAP.has(chainId)
-              ? createElement(CHAIN_ICONS_MAP.get(chainId) as ComponentType)
-              : null,
+        (acc: IconsMapType, optionChainId: CHAIN_ID) => {
+          const Icon = CHAIN_ICONS_MAP.get(optionChainId);
+          acc[optionChainId] = {
+            name:
+              CHAIN_NAME_OVERRIDE[optionChainId] ??
+              wagmiChainMap[optionChainId].name,
+            iconComponent: Icon ? createElement(Icon) : null,
           };
           return acc;
         },
@@ -61,37 +62,37 @@ export const ChainSwitcher: FC = () => {
   );
 
   return (
-    <ChainSwitcherWrapperStyled data-testid="chainSwitcher">
+    <ChainSwitcherWrapperStyled data-testid="chainSwitcher" {...wrapperProps}>
       <ChainSwitcherStyled
+        type="button"
         data-testid={`currentChain=${chainId}`}
+        // icon-only button: the label names the current network
+        aria-label={`Network: ${getPrettyChainName(chainId)}`}
+        aria-haspopup={isLocked ? undefined : 'menu'}
+        aria-disabled={isLocked}
         $disabled={isLocked}
         $loading={isSwitchChainPending}
-        onClick={() => {
-          if (!isLocked) {
-            setOpened((prev) => !prev);
-          }
-        }}
+        {...triggerProps}
       >
         <IconStyle $loading={isSwitchChainPending}>
-          {iconsMap[chainId].iconComponent}
+          {iconsMap[chainId]?.iconComponent}
         </IconStyle>
         {!isLocked && <ArrowStyle data-testid="canExpanded" $opened={opened} />}
         {isSwitchChainPending && <Loader size="small" />}
       </ChainSwitcherStyled>
 
       {!isLocked && (
-        <>
-          <ChainSwitcherOptions
-            currentChainId={chainId}
-            onSelect={(chainId) => {
-              setOpened(false);
-              requestChangeChain(chainId);
-            }}
-            setOpened={setOpened}
-            opened={opened}
-            options={iconsMap}
-          />
-        </>
+        <ChainSwitcherOptions
+          currentChainId={chainId}
+          onSelect={(nextChainId) => {
+            close();
+            requestChangeChain(nextChainId);
+          }}
+          opened={opened}
+          options={iconsMap}
+          menuProps={menuProps}
+          backdropProps={backdropProps}
+        />
       )}
       {!isDappActive && (
         <SelectIconTooltip showArrow>

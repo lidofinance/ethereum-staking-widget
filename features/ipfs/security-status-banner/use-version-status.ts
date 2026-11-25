@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForceDisconnect } from 'reef-knot/core-react';
+import { useForceDisconnect } from 'reef-knot';
 import { useQuery } from '@tanstack/react-query';
 
 import buildInfo from 'build-info.json';

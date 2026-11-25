@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useDepositQueueRequest } from 'modules/mellow-meta-vaults/hooks/use-deposit-queue-request';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 import { EthDepositToken } from '../../types';
-import { getAsyncDepositQueueContract } from '../../contracts';
+import { getLegacyAsyncDepositQueueContract } from '../../contracts';
 
 export const useEthVaultDepositQueueRequest = (token: EthDepositToken) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -11,7 +11,7 @@ export const useEthVaultDepositQueueRequest = (token: EthDepositToken) => {
 
   const depositQueue = useMemo(
     () =>
-      getAsyncDepositQueueContract({
+      getLegacyAsyncDepositQueueContract({
         publicClient: publicClientMainnet,
         token,
       }),

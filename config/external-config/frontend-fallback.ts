@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import invariant from 'tiny-invariant';
 
-import { ManifestSchema } from './validate';
-import { getLocalFallbackManifest, getManifestKey } from './utils';
+import { ManifestSchema, type ManifestKey } from './validate';
+import { getLocalFallbackManifest } from './utils';
 import type { ManifestConfig, ManifestEntry } from './types';
 
 export const overrideManifestConfig = (
@@ -28,10 +28,8 @@ export const overrideManifestConfig = (
 
 export const getFallbackedManifestEntry = (
   prefetchedManifest: unknown,
-  defaultChain: number,
-  manifestOverride?: string,
+  key: ManifestKey,
 ): ManifestEntry => {
-  const key = getManifestKey(defaultChain, manifestOverride);
   const parseResult = ManifestSchema.safeParse(prefetchedManifest);
   const fallbackManifest = getLocalFallbackManifest();
 
@@ -48,16 +46,10 @@ export const getFallbackedManifestEntry = (
 
 export const useFallbackManifestEntry = (
   prefetchedManifest: unknown,
-  defaultChain: number,
-  manifestOverride?: string,
+  key: ManifestKey,
 ): ManifestEntry => {
   return useMemo(
-    () =>
-      getFallbackedManifestEntry(
-        prefetchedManifest,
-        defaultChain,
-        manifestOverride,
-      ),
-    [prefetchedManifest, defaultChain, manifestOverride],
+    () => getFallbackedManifestEntry(prefetchedManifest, key),
+    [prefetchedManifest, key],
   );
 };

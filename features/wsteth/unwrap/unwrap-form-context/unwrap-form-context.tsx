@@ -81,7 +81,6 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [networkData, approvalDataOnL2]);
 
   const processUnwrapFormFlow = useUnwrapFormProcessor({
-    approvalDataOnL2,
     onConfirm,
     onRetry: retryFire,
   });
@@ -110,6 +109,8 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     (): FormControllerContextValueType<UnwrapFormInputType> => ({
       onSubmit,
       retryEvent,
+      // keeps state between L1/L2 changes
+      resetFormOn: 'walletAddress',
     }),
     [onSubmit, retryEvent],
   );

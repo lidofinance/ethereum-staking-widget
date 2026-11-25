@@ -1,33 +1,42 @@
-import { useCallback, useState } from 'react';
-import { ErrorMessage } from 'utils';
+import { useCallback, useRef, useState } from 'react';
 
 import { Loader } from '@lidofinance/lido-ui';
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconFail, StageIconSuccess } from './icons';
 import { ModalFooterButton, LoaderWrapper } from './styles';
+import type { TxRetryHandler } from '../types';
 
 type TxStageFailProps = {
   failedText?: React.ReactNode;
-  onRetry?: React.MouseEventHandler<HTMLSpanElement>;
+  // Present only when the transaction may be submitted again: the stage
+  // builders decide that from the error, see `isRetryableTxError`
+  onRetry?: TxRetryHandler;
+  // The transaction itself went through, only a follow-up read failed
+  isSettled?: boolean;
   footer?: React.ReactNode;
 };
 
 export const TxStageFail = ({
   failedText,
   onRetry,
+  isSettled = false,
   footer,
 }: TxStageFailProps) => {
   const [isLoading, setLoading] = useState(false);
-  const handleRetry = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
-      setLoading(true);
-      onRetry?.(e);
-    },
-    [onRetry],
-  );
-  // The transaction itself went through, only a follow-up read failed:
-  // retrying would submit it again
-  const isSettled = failedText === ErrorMessage.TX_SETTLED_DATA_UNAVAILABLE;
+  const retryPending = useRef(false);
+  const handleRetry = useCallback(async () => {
+    if (retryPending.current) return;
+    retryPending.current = true;
+    setLoading(true);
+    try {
+      await onRetry?.();
+    } catch (error) {
+      console.error('[TxStageFail] Retry failed:', error);
+    } finally {
+      retryPending.current = false;
+      setLoading(false);
+    }
+  }, [onRetry]);
 
   return (
     <TransactionModalContent
@@ -38,8 +47,6 @@ export const TxStageFail = ({
       description={failedText ?? 'Something went wrong'}
       footer={footer}
       footerHint={
-        !isSettled &&
-        failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
         onRetry &&
         (!isLoading ? (
           <ModalFooterButton onClick={handleRetry}>Retry</ModalFooterButton>

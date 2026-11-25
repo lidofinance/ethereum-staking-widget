@@ -13,9 +13,10 @@ export type {
 } from './types';
 export {
   getManifestKey,
+  getConfiguredManifestKey,
   getLocalFallbackManifest,
-  isDisabledPath,
 } from './utils';
+export { isDisabledPath } from './disabled-path';
 export {
   ManifestSchema,
   ManifestEntrySchema,

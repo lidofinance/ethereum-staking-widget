@@ -8,7 +8,7 @@ import {
   useEthereumBalance,
   useStethBalance,
   useWstethBalance,
-  useMaxGasPrice,
+  useMaxTxCost,
   useIsSmartAccount,
   BALANCE_PADDING,
 } from 'modules/web3';
@@ -25,8 +25,7 @@ export const useWrapFormNetworkData = () => {
   const { data: stakeLimitInfo, refetch: stakeLimitInfoUpdate } =
     useStakingLimitInfo();
 
-  const { gasLimitETH, gasLimitStETH } = useWrapGasLimit();
-  const { maxGasPrice } = useMaxGasPrice();
+  const { gasLimitETH, gasLimitStETH, txStETH } = useWrapGasLimit();
 
   const maxAmountETH = useTokenMaxAmount({
     balance: ethBalance,
@@ -37,7 +36,11 @@ export const useWrapFormNetworkData = () => {
     isLoading: isSmartAccountLoading,
   });
 
-  const wrapEthGasCost = maxGasPrice ? maxGasPrice * gasLimitStETH : undefined;
+  // ETH needed for the stETH wrap tx; on L2 the quote includes the L1 data fee
+  const { maxTxCost: wrapEthGasCost } = useMaxTxCost({
+    gasLimit: gasLimitStETH,
+    tx: txStETH,
+  });
 
   const revalidateWrapFormData = useCallback(async () => {
     await Promise.allSettled([
@@ -64,6 +67,7 @@ export const useWrapFormNetworkData = () => {
       revalidateWrapFormData,
       gasLimitETH,
       gasLimitStETH,
+      txStETH,
       maxAmountETH,
     }),
     [
@@ -76,6 +80,7 @@ export const useWrapFormNetworkData = () => {
       revalidateWrapFormData,
       gasLimitETH,
       gasLimitStETH,
+      txStETH,
       maxAmountETH,
     ],
   );

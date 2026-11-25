@@ -1,5 +1,5 @@
 export enum LIMIT_LEVEL {
-  SAFE,
+  SAFE = 1,
   WARN,
   REACHED,
 }

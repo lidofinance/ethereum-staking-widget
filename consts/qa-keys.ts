@@ -27,6 +27,8 @@ export const QA_KEYS = {
     'mock-qa-helpers-mellow-sync-redeem-remaining-daily-limit',
   mellowSyncRedeemLiquidAssets:
     'mock-qa-helpers-mellow-sync-redeem-liquid-assets',
+  mellowSyncRedeemReportTimestamp:
+    'mock-qa-helpers-mellow-sync-redeem-report-timestamp',
   // geo availability — set via `window.setMockGeoCountry('US')`, which
   // reloads the page (the geo query is immutable, a live edit would not
   // refetch). Read in shared/hooks/use-geo-availability.ts.
@@ -197,6 +199,12 @@ export const QA_MOCK_GROUPS: QaMockGroup[] = [
         label: 'Mellow sync-redeem liquid assets, wei',
         type: 'bigint',
       },
+      {
+        key: QA_KEYS.mellowSyncRedeemReportTimestamp,
+        label: 'Mellow sync-redeem oracle report timestamp, s',
+        description: 'Set to 0 to simulate a stale oracle report',
+        type: 'bigint',
+      },
     ],
   },
   {
@@ -217,14 +225,14 @@ export const QA_MOCK_GROUPS: QaMockGroup[] = [
       },
       {
         key: QA_KEYS.tradeGuardMaxSell,
-        label: 'Max allowed sell amount',
-        description: 'Clamped: only lower (stricter) than default 5000',
+        label: 'Max allowed sell amount, USD',
+        description: 'Clamped: only lower (stricter) than default 10000000',
         type: 'number',
       },
       {
         key: QA_KEYS.tradeGuardMinSell,
-        label: 'Min sell units to trigger oracle',
-        description: 'Clamped: only lower (stricter) than default 0.5',
+        label: 'Min sell amount to trigger oracle, USD',
+        description: 'Clamped: only lower (stricter) than default 1000',
         type: 'number',
       },
     ],

@@ -95,6 +95,27 @@ describe('/api/validation', () => {
     expect(readFileMock).not.toHaveBeenCalled();
   });
 
+  it('forwards the client IP, user agent and referer upstream', async () => {
+    fetchMock.mockResolvedValue(upstreamResponse({ isValid: true }));
+    const app = await buildApp();
+
+    await app.inject({
+      method: 'GET',
+      url: `/api/validation?address=${CLEAN}`,
+      headers: {
+        'cf-connecting-ip': '52.8.121.91',
+        'user-agent': 'curl/8.5.0',
+        referer: 'https://stake.lido.fi/',
+      },
+    });
+
+    const headers = new Headers(fetchMock.mock.calls[0][1]?.headers);
+    expect(headers.get('x-client-ip')).toBe('52.8.121.91');
+    expect(headers.get('x-client-user-agent')).toBe('curl/8.5.0');
+    expect(headers.get('x-client-referer')).toBe('https://stake.lido.fi/');
+    expect(headers.get('accept')).toBe('application/json');
+  });
+
   it('falls back to the file when the upstream is unreachable', async () => {
     fetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
     readFileMock.mockResolvedValue(FILE_CONTENT);

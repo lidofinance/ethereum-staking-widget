@@ -107,6 +107,7 @@ export const useAddressValidation = () => {
  * 1. No address / ipfsMode            → true
  * 2. Validation not configured        → true (DEFAULT)
  * 3. /api/validation answered         → its isValid (upstream OR api-pod file)
+ *    (any 429 = client over a rate limit: isValid false, no fallback)
  * 4. api pod down + static blocklist  → local check vs /runtime/validation.json
  * 5. api pod down + no blocklist      → true (fail-open, best-effort by nature)
  *

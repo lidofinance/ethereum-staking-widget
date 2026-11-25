@@ -8,8 +8,9 @@ import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDepositCancel } from './use-stg-deposit-cancel-tx-modal';
 import type { STGDepositTokens } from '../form-context/types';
 import { useSTGDepositFormData } from './use-stg-deposit-form-data';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useSTGDepositCancel = (onRetry?: () => void) => {
+export const useSTGDepositCancel = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesSTGDepositCancel();
@@ -23,8 +24,8 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
       invariant(address, 'Address is not available');
 
       const depositQueue = getSTGDepositQueueWritableContract({
-        publicClient: core.rpcProvider,
-        walletClient: core.web3Provider as WalletClient,
+        publicClient: core.publicClient,
+        walletClient: core.walletClient as WalletClient,
         token,
       });
 

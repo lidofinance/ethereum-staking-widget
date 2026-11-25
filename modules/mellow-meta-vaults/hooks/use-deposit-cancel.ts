@@ -9,6 +9,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { TxModalStages } from '../types/tx-modal-stages';
 import { AsyncDepositQueueGetter } from '../types/deposit-queue-getter';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 export const useDepositCancel = <DepositQueueToken extends string>({
   depositQueueGetter,
@@ -21,7 +22,7 @@ export const useDepositCancel = <DepositQueueToken extends string>({
   depositQueueGetter: AsyncDepositQueueGetter<DepositQueueToken>;
   txModalStages: TxModalStages;
   refetchTokenBalance: (token: DepositQueueToken) => unknown;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
 }) => {
@@ -38,13 +39,13 @@ export const useDepositCancel = <DepositQueueToken extends string>({
 
       try {
         const depositQueue = depositQueueGetter({
-          publicClient: core.rpcProvider,
-          walletClient: core.web3Provider as WalletClient,
+          publicClient: core.publicClient,
+          walletClient: core.walletClient as WalletClient,
           token: token as DepositQueueToken,
         });
 
         setIsCanceling(true);
-        await txFlow({
+        const { isSuccess } = await txFlow({
           callsFn: async () => [
             {
               to: depositQueue.address,
@@ -69,6 +70,9 @@ export const useDepositCancel = <DepositQueueToken extends string>({
           onReceipt: ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, token, txHashOrCallId, isAA);
           },
+          onFailure: ({ error }) => {
+            txModalStages.failed(error, onRetry);
+          },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, token, txHash);
             await refetchTokenBalance(token as DepositQueueToken);
@@ -76,7 +80,7 @@ export const useDepositCancel = <DepositQueueToken extends string>({
           },
         });
 
-        return true;
+        return isSuccess;
       } catch (error) {
         console.error(error);
         txModalStages.failed(error, onRetry);

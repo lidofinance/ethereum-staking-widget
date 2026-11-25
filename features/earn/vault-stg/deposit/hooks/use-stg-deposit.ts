@@ -18,8 +18,9 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDeposit } from './use-stg-deposit-tx-modal';
 import { getReferralAddress } from 'utils/get-referral-address';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useSTGDeposit = (onRetry?: () => void) => {
+export const useSTGDeposit = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesSTGDeposit();
@@ -34,8 +35,8 @@ export const useSTGDeposit = (onRetry?: () => void) => {
 
       try {
         const depositContract = getSTGDepositQueueWritableContract({
-          publicClient: core.rpcProvider,
-          walletClient: core.web3Provider as WalletClient,
+          publicClient: core.publicClient,
+          walletClient: core.walletClient as WalletClient,
           token,
         });
 
@@ -43,14 +44,14 @@ export const useSTGDeposit = (onRetry?: () => void) => {
           address: tokenAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
         const referralAddress = await getReferralAddress(
           referral,
-          core.rpcProvider,
+          core.publicClient,
         );
 
         let needsApprove = false;

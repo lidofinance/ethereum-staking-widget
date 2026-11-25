@@ -1,4 +1,8 @@
 export { Web3Provider, useMainnetOnlyWagmi } from './web3-provider';
 export { useLidoSDK } from './lido-sdk';
 export { useLidoSDKL2 } from './lido-sdk-l2';
-export { SupportL2Chains } from './dapp-chain';
+export {
+  SupportL1AndL2WrapChains,
+  SupportL1andL2StakingChains,
+  SupportL1AndCustomL2Chains,
+} from './dapp-chain';

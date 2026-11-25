@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
+import { superbridgeWstethLink } from 'consts/external-links';
 import { Link } from 'shared/components/link';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
@@ -12,7 +13,7 @@ export const WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimism: FC 
         <p>
           You would need to{' '}
           <OuterLink
-            href={`https://superbridge.app/optimism`}
+            href={superbridgeWstethLink('optimism', 'to-mainnet')}
             data-matomo={
               MATOMO_CLICK_EVENTS_TYPES.faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack
             }

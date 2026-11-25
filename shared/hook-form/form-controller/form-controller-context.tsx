@@ -2,12 +2,14 @@ import invariant from 'tiny-invariant';
 import { createContext, useContext } from 'react';
 import type { FieldValues } from 'react-hook-form';
 import type { EventSubscription } from 'utils/event-subscription';
+import type { ResetMode } from 'shared/hooks/use-wagmi-connection-changed-callback';
 
 export type FormControllerContextValueType<F extends FieldValues = any> = {
   isLocked?: boolean;
   onSubmit: (args: F) => Promise<boolean>;
   onReset?: (args: F) => void;
   retryEvent: EventSubscription;
+  resetFormOn?: ResetMode;
 };
 
 export const FormControllerContext =

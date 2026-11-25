@@ -17,6 +17,9 @@ import { maskedError } from './masked-error.js';
  * - unset → remote fetch from the repo's `main` branch (same constant as
  *   `consts/external-links.ts` `REMOTE_CONFIG_MANIFEST_URL`), 3 retries.
  *
+ * Overlapping calls share one in-flight load, so an older response can never
+ * land after a newer one. 5s timeout per remote attempt.
+ *
  * Failure never caches: a broken source is retried on the next call, and
  * the last known good manifest (if any) is served meanwhile — boot with a
  * broken file is prevented by `scripts/startup-checks/config-manifest.mjs`.
@@ -31,10 +34,7 @@ import { maskedError } from './masked-error.js';
  */
 const GITHUB_RAW_MAIN_PATH =
   'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main';
-// TODO: switch to REMOTE_CONFIG_MANIFEST.json once the config-manifest
-// feature reaches main; until then the new file does not exist on main and
-// the fetch would 404 (same TODO as consts/external-links.ts).
-export const REMOTE_CONFIG_MANIFEST_URL = `${GITHUB_RAW_MAIN_PATH}/IPFS.json`;
+export const REMOTE_CONFIG_MANIFEST_URL = `${GITHUB_RAW_MAIN_PATH}/REMOTE_CONFIG_MANIFEST.json`;
 
 const REMOTE_TTL_MS = 10 * 60 * 1000; // CACHE_EXTERNAL_CONFIG_TTL = 10m
 const FILE_TTL_MS = 60 * 1000; // CACHE_EXTERNAL_CONFIG_FILE_TTL = 1m
@@ -141,10 +141,22 @@ const fetchManifestFromRemote = async (): Promise<Manifest> => {
   throw lastError;
 };
 
-export const fetchExternalManifest = async (): Promise<Manifest> => {
-  const now = Date.now();
-  if (cache && now - cache.at < cache.ttl) return cache.value;
+// overlapping loads share one run, so an older response can never land after
+// a newer one and overwrite the cache or lastGoodManifest
+let inFlightLoad: Promise<Manifest> | null = null;
 
+export const fetchExternalManifest = async (): Promise<Manifest> => {
+  if (cache && Date.now() - cache.at < cache.ttl) return cache.value;
+
+  // loadManifest never rejects: errors resolve to the last good manifest
+  inFlightLoad ??= loadManifest().finally(() => {
+    inFlightLoad = null;
+  });
+  return inFlightLoad;
+};
+
+const loadManifest = async (): Promise<Manifest> => {
+  const now = Date.now();
   // with CONFIG_MANIFEST_PATH the file is the source of truth, no remote fetch
   const manifestPath = config.CONFIG_MANIFEST_PATH;
   try {

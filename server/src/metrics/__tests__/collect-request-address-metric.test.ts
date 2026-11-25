@@ -7,6 +7,7 @@ vi.mock('config/networks/rpc-contracts', () => ({
 
 import type { MockInstance } from 'vitest';
 import type { Counter } from 'prom-client';
+import { PROVIDER_MAX_BATCH } from 'config/groups/web3';
 
 import { collectRequestAddressMetric } from '../collect-request-address-metric.js';
 
@@ -168,5 +169,24 @@ describe('collectRequestAddressMetric', () => {
     for (const args of warnSpy.mock.calls) {
       expect(args.map(String).join(' ').length).toBeLessThan(512);
     }
+  });
+});
+
+describe('collectRequestAddressMetric entry cap', () => {
+  it('processes at most PROVIDER_MAX_BATCH entries, as the route admits', async () => {
+    const warnSpy = vi
+      .spyOn(console, 'warn')
+      .mockImplementation(() => undefined);
+    const { counter, recorded } = makeCounterMock();
+    const calls = Array.from({ length: PROVIDER_MAX_BATCH * 5 }, () =>
+      makeEthCall(VALID_UNKNOWN_TO),
+    );
+    await collectRequestAddressMetric({
+      calls,
+      chainId: CHAIN_MAINNET,
+      metrics: counter,
+    });
+    expect(recorded.length).toBe(PROVIDER_MAX_BATCH);
+    warnSpy.mockRestore();
   });
 });

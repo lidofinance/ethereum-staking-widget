@@ -1,9 +1,10 @@
 import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 
-import { config } from 'config';
+import { lidoEcosystemPath } from 'utils/lido-ecosystem-path';
 import { WRAP_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { superbridgeWstethLink } from 'consts/external-links';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { Link } from 'shared/components/link';
 
@@ -25,7 +26,7 @@ export const HowCanIGetWstethOnOptimism: FC = () => {
         </Link>{' '}
         on Optimism,{' '}
         <OuterLink
-          href={`https://superbridge.app/optimism/wstETH`}
+          href={superbridgeWstethLink('optimism', 'to-l2')}
           data-matomo={
             MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism
           }
@@ -34,7 +35,7 @@ export const HowCanIGetWstethOnOptimism: FC = () => {
         </OuterLink>
         , or use the{' '}
         <OuterLink
-          href={`${config.rootOrigin}/lido-ecosystem?tokens=wstETH&categories=Get`}
+          href={lidoEcosystemPath({ tokens: ['wstETH'], categories: ['Get'] })}
           data-matomo={
             MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnOptimismIntegrations
           }

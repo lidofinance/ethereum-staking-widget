@@ -1,3 +1,7 @@
+import type { QueryKey } from '@tanstack/react-query';
+
+import { ACCOUNT_READ_QUERY_KEYS } from 'modules/web3';
+
 export const COLLECTOR_CONFIG = {
   baseAssetFallback: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
   oracleUpdateInterval: 86400n,
@@ -5,6 +9,17 @@ export const COLLECTOR_CONFIG = {
 } as const;
 
 export const MELLOW_VAULTS_QUERY_SCOPE = 'mellow-meta-vault';
+
+// What a vault deposit or withdrawal whose outcome could not be read leaves
+// stale: the vault's own queries, the shared queue and request reads under
+// this scope, and the account's wagmi reads
+export const getVaultRefetchScope = (
+  vaultQueryScope: string,
+): readonly QueryKey[] => [
+  [vaultQueryScope],
+  [MELLOW_VAULTS_QUERY_SCOPE],
+  ...ACCOUNT_READ_QUERY_KEYS,
+];
 
 export const WITHDRAWAL_WAITING_TIME_TOOLTIP =
   'Withdrawals are instant when the buffer has enough liquidity to cover your request. Larger requests go to the withdrawal queue, usually settled within 72 hours but occasionally longer depending on size.';

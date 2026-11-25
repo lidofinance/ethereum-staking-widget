@@ -66,7 +66,7 @@ const getTxModalStagesUnwrap = (
       />,
     ),
 
-  success: (balance: bigint, txHash?: Hash) =>
+  success: (balance: bigint | undefined, txHash?: Hash) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}

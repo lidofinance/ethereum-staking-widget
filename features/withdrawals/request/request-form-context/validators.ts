@@ -14,6 +14,7 @@ import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-con
 import {
   ValidationError,
   handleResolverValidationError,
+  walletNotConnectedResult,
 } from 'shared/hook-form/validation/validation-error';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
@@ -138,7 +139,11 @@ const transformContext = (
 export const RequestFormValidationResolver: Resolver<
   RequestFormInputType,
   RequestFormValidationContextType
-> = async (values, context) => {
+> = async (liveValues, context) => {
+  // hook-form passes its live values object: a snapshot keeps the amount the
+  // requests are split from and the amount submitted the same if the field
+  // changes mid-await
+  const values = { ...liveValues };
   const { amount, mode, token } = values;
   const validationResults: ValidationResults = {
     requests: null,
@@ -178,7 +183,7 @@ export const RequestFormValidationResolver: Resolver<
 
     // early validation exit for dex option
     if (mode === 'dex') {
-      return { values, errors: { requests: 'wallet not connected' } };
+      return walletNotConnectedResult('requests');
     }
 
     validateBigintMin(

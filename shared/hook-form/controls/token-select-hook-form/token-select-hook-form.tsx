@@ -26,7 +26,11 @@ const iconsMap: { [key in TokenSymbol]?: JSX.Element } = {
 type TokenSelectHookFormProps = {
   options: TokenOption[];
   fieldName?: string;
+  // the amount field, reset to its default on a token change
   resetField?: string;
+  // false keeps the amount across the token change and re-validates it;
+  // only for forms whose tokens share decimals, the amount is in base units
+  resetAmount?: boolean;
   errorField?: string;
   onChange?: (value: TokenSymbol) => void;
   warning?: boolean;
@@ -37,6 +41,7 @@ export const TokenSelectHookForm = ({
   options,
   fieldName = 'token',
   resetField = 'amount',
+  resetAmount = true,
   errorField = 'amount',
   onChange,
   warning,
@@ -45,7 +50,7 @@ export const TokenSelectHookForm = ({
   const { field } = useController<Record<string, TokenSymbol>>({
     name: fieldName,
   });
-  const { setValue, clearErrors } = useFormContext();
+  const { setValue, getValues, clearErrors, trigger } = useFormContext();
 
   const { errors, defaultValues } = useFormState<Record<string, unknown>>({
     name: errorField,
@@ -65,12 +70,20 @@ export const TokenSelectHookForm = ({
           shouldTouch: false,
           shouldValidate: false,
         });
-        setValue(resetField, defaultValues?.[resetField], {
-          shouldDirty: false,
-          shouldTouch: false,
-          shouldValidate: false,
-        });
-        clearErrors(resetField);
+        if (resetAmount) {
+          setValue(resetField, defaultValues?.[resetField], {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+          clearErrors(resetField);
+        } else if (getValues(resetField) == null) {
+          // an empty amount is not an error yet: only stale errors go
+          clearErrors(resetField);
+        } else {
+          // the amount stays: re-check it against the new token (balance, limits)
+          void trigger(resetField);
+        }
         onChange?.(value as TokenSymbol);
       }}
     >

@@ -198,6 +198,9 @@ export const ROUTE_META: Record<string, PageMetaInput> = {
       'Keep track of your daily Ethereum staking rewards using our stETH ' +
       'reward tracker. View stETH balances, historical rewards and transfers.',
   },
+  '/swap': {
+    title: 'Swap | Lido',
+  },
   '/earn': {
     title: 'Lido Earn | Lido',
     description:

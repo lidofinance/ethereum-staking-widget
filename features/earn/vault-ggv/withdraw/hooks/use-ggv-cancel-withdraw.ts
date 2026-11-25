@@ -28,8 +28,8 @@ export const useGGVCancelWithdraw = () => {
       setIsLoading(true);
       try {
         const queue = getGGVQueueWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         const { amountOfShares, amountOfAssets } = request.metadata;

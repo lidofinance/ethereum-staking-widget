@@ -1,11 +1,13 @@
-import { config } from 'config';
 import { useMemo } from 'react';
-import { type Transport, http, custom, Chain } from 'viem';
-
+import { type Transport, custom, Chain } from 'viem';
 import type { Connection } from 'wagmi';
+
+import { config } from 'config';
 
 import { runtimeMutableTransport } from './runtime-mutable-transport';
 import { getConnectionProvider } from './get-connection-provider';
+import { createHttpTransports } from './http-transports';
+import { timeoutTransport } from './timeout-transport';
 
 // Applies the active connection's wallet provider to the transport map.
 // Fail-safe ordering: the previous wallet transport is dropped synchronously
@@ -31,7 +33,12 @@ export const createActiveConnectionListener = (
 
     if (!provider || seq !== connectionSeq) return;
 
-    setTransportMap[activeConnection.chainId]?.(custom(provider));
+    // Reads only: this transport rejects signing and wallet methods, those go
+    // through the connector and may wait for the user as long as it takes.
+    // A wallet that hangs on a read is given up on and the next RPC serves
+    setTransportMap[activeConnection.chainId]?.(
+      timeoutTransport(custom(provider), config.WALLET_READ_TIMEOUT),
+    );
   };
 };
 
@@ -41,27 +48,13 @@ export const useWeb3Transport = (
   backendRpcMap: Record<number, string>,
 ) => {
   const { transportMap, setTransportMap } = useMemo(() => {
-    const batchConfig = {
-      wait: config.PROVIDER_BATCH_TIME,
-      batchSize: config.PROVIDER_MAX_BATCH,
-    };
-
     const transportMap: Record<number, Transport> = {};
     const setTransportMap: Record<number, (t: Transport | null) => void> = {};
 
     for (const chain of supportedChains) {
-      const [transport, setTransport] = runtimeMutableTransport([
-        // api/rpc
-        http(backendRpcMap[chain.id], {
-          batch: batchConfig,
-          name: backendRpcMap[chain.id],
-        }),
-        // fallback rpc from wagmi.chains like cloudfare-eth
-        http(undefined, {
-          batch: batchConfig,
-          name: 'default HTTP RPC',
-        }),
-      ]);
+      const [transport, setTransport] = runtimeMutableTransport(
+        createHttpTransports(backendRpcMap[chain.id]),
+      );
       transportMap[chain.id] = transport;
       setTransportMap[chain.id] = setTransport;
     }

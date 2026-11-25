@@ -21,14 +21,16 @@ const isStatItemAvailable = (val: any): boolean => {
 };
 
 export const LidoStats: FC = memo(() => {
-  const { chainId } = useDappStatus();
+  const { chainId, isChainIdOnL2 } = useDappStatus();
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
-
-  const stethAddress = useTokenAddress(LIDO_TOKENS.steth);
+  // For L2's show stats for current default chain
+  // on stands this generally correlates with correct API
+  const lidoStatsChainId = isChainIdOnL2 ? config.defaultChain : chainId;
+  const stethAddress = useTokenAddress(LIDO_TOKENS.steth, lidoStatsChainId);
   const etherscanLink = useMemo(() => {
-    return getEtherscanTokenLink(chainId, stethAddress ?? '');
-  }, [chainId, stethAddress]);
+    return getEtherscanTokenLink(lidoStatsChainId, stethAddress ?? '');
+  }, [lidoStatsChainId, stethAddress]);
 
   if (!lidoStats.data) {
     return null;

@@ -72,7 +72,7 @@ export const useLidoSDK = () => {
 
 export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const subscribe = useTokenTransferSubscription();
-  const { isConnected } = useConnection();
+  const { isConnected, address } = useConnection();
   const { chainId, isChainMatched, wagmiWalletChain, supportedChainIds } =
     useDappChain();
   const walletChainId = wagmiWalletChain?.id;
@@ -87,7 +87,10 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
         : config.defaultChain;
   }, [isChainMatched, chainId, walletChainId, supportedChainIds]);
 
-  const { data: walletClient } = useWalletClient({ chainId: sdkChainId });
+  const { data: walletClient } = useWalletClient({
+    chainId: sdkChainId,
+    account: address,
+  });
   const publicClient = usePublicClient({ chainId: sdkChainId });
 
   // reset internal wagmi state after disconnect

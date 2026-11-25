@@ -77,7 +77,7 @@ export const RpcStatusBox = styled.div<RpcStatusBoxProps>`
 `;
 
 export const Button = styled(ButtonOriginal)`
-  color: #273852;
+  color: var(--custom-fill-dark);
   background-color: #fff;
   width: fit-content;
 

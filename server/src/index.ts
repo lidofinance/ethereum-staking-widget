@@ -12,7 +12,7 @@ import {
   registerSecretsRotationRestart,
   registerShutdownSignals,
 } from '../../scripts/shutdown.mjs';
-import { markReady } from '../../scripts/readiness.mjs';
+import { markNotReady, markReady } from '../../scripts/readiness.mjs';
 
 import { config, rpcProvidersUrls } from './config.js';
 import { loggerOptions } from './logger.js';
@@ -20,6 +20,8 @@ import { maskedError } from './utils/masked-error.js';
 import { requestMetricsPlugin } from './plugins/request-metrics.js';
 import { rateLimitPlugin } from './plugins/rate-limit.js';
 import { securityHeadersPlugin } from './plugins/security-headers.js';
+import { enforceJsonOnly } from './utils/enforce-json-only.js';
+import { ROUTES } from './consts.js';
 
 import { healthRoute } from './routes/health.js';
 import { metricsRoute } from './routes/metrics.js';
@@ -39,7 +41,11 @@ const fastify = Fastify({
   // server.mjs headersTimeout/requestTimeout settings).
   bodyLimit: 1024 * 1024, // 1 MiB
   connectionTimeout: 60_000,
+  requestTimeout: 30_000,
 });
+// slow-headers protection, values from the legacy server.mjs
+fastify.server.headersTimeout = 10_000;
+fastify.server.maxHeadersCount = 50;
 
 const start = async (): Promise<void> => {
   // Diagnostic: log which chains have RPC URLs configured (counts only,
@@ -67,6 +73,8 @@ const start = async (): Promise<void> => {
   // `/api/rpc` is same-origin only — parity with the legacy wrappers.
   await fastify.register(requestMetricsPlugin);
   await fastify.register(securityHeadersPlugin);
+  // before the rate limit: its onRequest hook must run first, so 429s are pinned too
+  await fastify.register(enforceJsonOnly, { paths: [ROUTES.api.rpc] });
   await fastify.register(rateLimitPlugin, {
     max: config.RATE_LIMIT,
     // RATE_LIMIT_TIME_FRAME is seconds by team convention; @fastify/rate-limit
@@ -86,18 +94,20 @@ const start = async (): Promise<void> => {
   await fastify.register(geoRoute);
   await fastify.register(configManifestRoute);
 
-  await fastify.listen({ host: config.HOST, port: config.PORT });
-  markReady();
-
-  // Shared with the Next target: graceful close on signals (force-exit timer
-  // guards a hung close) and restart-by-exit on OpenBao secret rotation.
+  // Graceful close on signals (force-exit timer guards a hung close) and
+  // restart-by-exit on OpenBao secret rotation. Armed before listen: an
+  // unreadable explicit SECRETS_FILE fails startup instead of serving.
   // Fastify's close callback takes no error argument — the helper's error
   // branch stays dormant, the exit path is unchanged.
   registerShutdownSignals(fastify);
   registerSecretsRotationRestart(fastify);
+
+  await fastify.listen({ host: config.HOST, port: config.PORT });
+  markReady();
 };
 
 start().catch((err) => {
   console.error('Fatal startup error:', maskedError(err));
+  markNotReady('startup failed');
   process.exit(1);
 });

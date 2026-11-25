@@ -112,7 +112,7 @@ export const VaultChart = (props: VaultChartProps) => {
             'min-width:170px;border-radius:10px;padding:12px;gap: 8px;box-shadow: 0 4px 16px 0 rgba(0, 10, 61, 0.16);',
           textStyle: {
             fontFamily: 'Manrope, sans-serif',
-            color: isDark ? '#fff' : '#273852',
+            color: isDark ? '#fff' : 'var(--custom-fill-dark)',
           },
           ...(isDark && {
             backgroundColor: '#131317',

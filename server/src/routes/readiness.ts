@@ -7,6 +7,8 @@ import { ROUTES } from '../consts.js';
  * Ported from `pages/api/readiness.ts`. k8s readiness target: unlike
  * /api/health (liveness) it is 503 until listen() completes and again as soon
  * as shutdown begins (scripts/shutdown.mjs), so traffic drains first.
+ * It does not gate on the manifest source: a bad manifest must not take all
+ * pods out of rotation; the local fallback keeps serving.
  */
 export const readinessRoute: FastifyPluginAsync = async (fastify) => {
   // kubelet probes share the node-IP rate-limit bucket — a 429 would flap readiness

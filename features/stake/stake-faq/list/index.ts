@@ -1,4 +1,5 @@
 export * from './how-does-lido-work';
+export * from './how-does-direct-staking-work';
 export * from './lido-fee';
 export * from './risks-of-engaging-with-lido';
 export * from './what-security-measures';

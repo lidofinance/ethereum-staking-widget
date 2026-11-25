@@ -23,9 +23,7 @@ const EL_RPC_SCHEMA = Object.values(CHAINS).reduce(
  * Replaces the `serverRuntimeConfig` block from next.config.mjs +
  * `config/get-secret-config.ts`.
  *
- * Chain set matches the current widget (Soneium 1868/1946 were dropped
- * 2026-06-17, commit adfad475): Mainnet, Hoodi, Sepolia, Optimism,
- * OptimismSepolia, Unichain, UnichainSepolia.
+ * One EL_RPC_URLS_<chainId> key per entry of CHAINS (consts/chains).
  *
  * All RPC URL lists are comma-separated; consumers split.
  */
@@ -62,7 +60,11 @@ const envSchema = z.object({
   ONE_INCH_API_KEY: z.string().optional(),
   REWARDS_BACKEND: z.string().optional(),
   VALIDATION_SERVICE_BASE_PATH: z.string().optional(),
-  VALIDATION_FILE_PATH: z.string().optional(),
+  // blank counts as unset, same as the startup check
+  VALIDATION_FILE_PATH: z
+    .string()
+    .optional()
+    .transform((v) => v?.trim() || undefined),
   // Manifest file mounted into the container (e.g. k8s configmap); presence
   // makes it the manifest source of truth (no remote fetch). Trimmed so a
   // whitespace-only env behaves like an unset one, same as the startup check.

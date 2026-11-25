@@ -4,7 +4,8 @@ import { useSwitchChain as useWagmiSwitchChain } from 'wagmi';
 import { CHAIN_SWITCH_TIMEOUT } from '../consts';
 import { UserRejectedRequestError } from 'viem';
 import { ToastError } from '@lidofinance/lido-ui';
-import { useIsLedgerLive, useIsSafeWallet } from '../hooks';
+// the concrete file, not the hooks barrel: that one leads back here
+import { useIsLedgerLive, useIsSafeWallet } from '../hooks/use-is-wallet';
 import { useConfig } from 'config';
 
 export class SwitchChainTimeoutError extends Error {

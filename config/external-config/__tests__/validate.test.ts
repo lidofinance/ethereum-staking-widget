@@ -197,7 +197,6 @@ describe('ManifestSchema', () => {
       const result = parseManifest({
         baseConfig: {
           featureFlags: {
-            disableSendCalls: false,
             dgBannerEnabled: true,
           },
           pages: {
@@ -217,7 +216,6 @@ describe('ManifestSchema', () => {
       });
 
       expect(result['1']?.config.featureFlags).toEqual({
-        disableSendCalls: false,
         dgBannerEnabled: false,
       });
       expect(result['1']?.config.pages['/earn']).toEqual({
@@ -251,12 +249,12 @@ describe('ManifestSchema', () => {
     it('inherits baseConfig when a network config is omitted', () => {
       const result = parseManifest({
         baseConfig: {
-          featureFlags: { disableSendCalls: true },
+          featureFlags: { dgBannerEnabled: true },
         },
         '1': validEntry,
       });
 
-      expect(result['1']?.config.featureFlags.disableSendCalls).toBe(true);
+      expect(result['1']?.config.featureFlags.dgBannerEnabled).toBe(true);
     });
 
     it('does not allow special object keys to mutate prototypes', () => {
@@ -469,6 +467,49 @@ describe('ManifestSchema', () => {
     });
   });
 
+  describe('config.earnInfoBanner', () => {
+    it('defaults to empty object when omitted', () => {
+      const result = parseManifest({ '1': validEntry });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+
+    it('accepts title and text at max length boundary', () => {
+      const maxText = 'a'.repeat(250);
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: { earnInfoBanner: { title: maxText, text: maxText } },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({
+        title: maxText,
+        text: maxText,
+      });
+    });
+
+    it('drops the section when text exceeds max length', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: {
+            earnInfoBanner: { title: 'Title', text: 'a'.repeat(251) },
+          },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+
+    it('drops the section when a field has a non-string value', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: { earnInfoBanner: { title: 42, text: 'Text' } },
+        },
+      });
+      expect(result['1']?.config?.earnInfoBanner).toEqual({});
+    });
+  });
+
   describe('config.featureFlags', () => {
     it('accepts known feature flags', () => {
       const result = parseManifest({
@@ -477,14 +518,51 @@ describe('ManifestSchema', () => {
           config: {
             featureFlags: {
               ledgerLiveL2: true,
-              disableSendCalls: false,
               dgBannerEnabled: true,
             },
           },
         },
       });
       expect(result['1']?.config?.featureFlags?.ledgerLiveL2).toBe(true);
-      expect(result['1']?.config?.featureFlags?.disableSendCalls).toBe(false);
+      expect(result['1']?.config?.featureFlags?.dgBannerEnabled).toBe(true);
+    });
+
+    it('accepts manifests that still carry removed flag keys and strips them', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: {
+            featureFlags: {
+              removedLegacyFlag: false,
+              dgBannerEnabled: true,
+            },
+          },
+        },
+      });
+      expect(result['1']?.config?.featureFlags).toEqual({
+        dgBannerEnabled: true,
+      });
+    });
+
+    it('accepts ggvBulkWithdrawEnabled flag', () => {
+      const result = parseManifest({
+        '1': {
+          ...validEntry,
+          config: { featureFlags: { ggvBulkWithdrawEnabled: true } },
+        },
+      });
+      expect(result['1']?.config?.featureFlags?.ggvBulkWithdrawEnabled).toBe(
+        true,
+      );
+    });
+
+    it('leaves ggvBulkWithdrawEnabled undefined when omitted', () => {
+      const result = parseManifest({
+        '1': { ...validEntry, config: { featureFlags: {} } },
+      });
+      expect(
+        result['1']?.config?.featureFlags?.ggvBulkWithdrawEnabled,
+      ).toBeUndefined();
     });
 
     it('throws when a known flag has a non-boolean value', () => {
@@ -681,5 +759,208 @@ describe('ManifestSchema', () => {
         }),
       ).not.toThrow();
     });
+  });
+});
+
+describe('baseConfig.l2Stake', () => {
+  const BASE = 8453;
+  const LINEA = 59144;
+
+  const parseL2Stake = (l2Stake?: unknown) =>
+    ManifestSchema.parse({ baseConfig: { l2Stake } }).baseConfig.l2Stake;
+
+  it('applies defaults to every chain when omitted', () => {
+    const result = parseL2Stake(undefined);
+    expect(result.common).toEqual({ enabled: true, liquidityTarget: 25 });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: true,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('fills chains without an entry from common', () => {
+    const result = parseL2Stake({
+      common: { enabled: false, liquidityTarget: 40 },
+      perChain: {},
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 40,
+    });
+    expect(result.perChain[LINEA]).toEqual({
+      enabled: false,
+      liquidityTarget: 40,
+    });
+  });
+
+  it('keeps the common disable switch for a chain that only overrides liquidity', () => {
+    const result = parseL2Stake({
+      common: { enabled: false },
+      perChain: { [BASE]: { liquidityTarget: 10 } },
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 10,
+    });
+    expect(result.perChain[LINEA]).toEqual({
+      enabled: false,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('keeps the common liquidity target for a chain that only overrides enabled', () => {
+    const result = parseL2Stake({
+      common: { liquidityTarget: 40 },
+      perChain: { [BASE]: { enabled: false } },
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 40,
+    });
+  });
+
+  it('lets an explicit per-chain value override common', () => {
+    const result = parseL2Stake({
+      common: { enabled: false, liquidityTarget: 40 },
+      perChain: { [BASE]: { enabled: true, liquidityTarget: 5 } },
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: true,
+      liquidityTarget: 5,
+    });
+  });
+
+  it('does not let an undefined per-chain value override common', () => {
+    const result = parseL2Stake({
+      common: { enabled: false },
+      perChain: { [BASE]: { enabled: undefined, liquidityTarget: 10 } },
+    });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 10,
+    });
+  });
+
+  it('accepts common alone: the natural shape of an incident toggle', () => {
+    const result = parseL2Stake({ common: { enabled: false } });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 25,
+    });
+    expect(result.perChain[LINEA]).toEqual({
+      enabled: false,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('accepts perChain alone and keeps the other chains at the defaults', () => {
+    const result = parseL2Stake({ perChain: { [BASE]: { enabled: false } } });
+    expect(result.perChain[BASE]).toEqual({
+      enabled: false,
+      liquidityTarget: 25,
+    });
+    expect(result.perChain[LINEA]).toEqual({
+      enabled: true,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('treats an empty or non-object section like an omitted one', () => {
+    expect(parseL2Stake({})).toEqual(parseL2Stake(undefined));
+    expect(parseL2Stake('off')).toEqual(parseL2Stake(undefined));
+    expect(parseL2Stake(null)).toEqual(parseL2Stake(undefined));
+  });
+
+  it('fails closed on a malformed kill switch instead of rejecting the manifest', () => {
+    const perChain = parseL2Stake({
+      perChain: { [BASE]: { enabled: 'yes' } },
+    });
+    expect(perChain.perChain[BASE].enabled).toBe(false);
+    expect(perChain.perChain[LINEA].enabled).toBe(true);
+
+    const common = parseL2Stake({ common: { enabled: 'false' } });
+    expect(common.perChain[BASE].enabled).toBe(false);
+  });
+
+  it('falls through to common on a malformed liquidity target', () => {
+    const result = parseL2Stake({
+      common: { liquidityTarget: 40 },
+      perChain: {
+        [BASE]: { liquidityTarget: -1 },
+        [LINEA]: { liquidityTarget: '10' },
+      },
+    });
+    expect(result.perChain[BASE].liquidityTarget).toBe(40);
+    expect(result.perChain[LINEA].liquidityTarget).toBe(40);
+    expect(parseL2Stake({ common: { liquidityTarget: 2.5 } }).common).toEqual({
+      enabled: true,
+      liquidityTarget: 25,
+    });
+  });
+
+  it('drops chain keys that are not a positive integer or not a known chain', () => {
+    const result = parseL2Stake({
+      perChain: {
+        base: { enabled: false },
+        '0': { enabled: false },
+        '8453 ': { enabled: false },
+        '137': { enabled: false },
+        [BASE]: null,
+      },
+    });
+    expect(result.perChain[BASE].enabled).toBe(true);
+    expect(Object.keys(result.perChain)).not.toContain('137');
+  });
+
+  it('is carried into every network entry', () => {
+    const manifest = ManifestSchema.parse({
+      baseConfig: { l2Stake: { common: { enabled: false } } },
+      '1': { leastSafeVersion: '1.0.0' },
+    });
+    expect(manifest['1']?.config.l2Stake.perChain[BASE].enabled).toBe(false);
+  });
+});
+
+describe('baseConfig.swap', () => {
+  const BASE = 8453;
+  const ARBITRUM = 42161;
+
+  const parseSwap = (swap?: unknown) =>
+    ManifestSchema.parse({ baseConfig: { swap } }).baseConfig.swap;
+
+  it('has no per-chain switches when omitted', () => {
+    expect(parseSwap(undefined)).toEqual({ perChain: {} });
+  });
+
+  it('keeps boolean `enabled` per chain', () => {
+    const result = parseSwap({
+      perChain: { [BASE]: { enabled: false }, [ARBITRUM]: { enabled: true } },
+    });
+    expect(result.perChain[BASE]).toEqual({ enabled: false });
+    expect(result.perChain[ARBITRUM]).toEqual({ enabled: true });
+  });
+
+  it('drops invalid keys and entries instead of failing', () => {
+    const result = parseSwap({
+      perChain: {
+        base: { enabled: false },
+        '0': { enabled: false },
+        [BASE]: { enabled: 'no' },
+        [ARBITRUM]: null,
+      },
+    });
+    expect(result).toEqual({ perChain: {} });
+    expect(parseSwap('broken')).toEqual({ perChain: {} });
+  });
+
+  it('lets a network entry override baseConfig', () => {
+    const manifest = ManifestSchema.parse({
+      baseConfig: { swap: { perChain: { [BASE]: { enabled: true } } } },
+      '1': {
+        leastSafeVersion: '1.0.0',
+        config: { swap: { perChain: { [BASE]: { enabled: false } } } },
+      },
+    });
+    expect(manifest['1']?.config.swap.perChain[BASE]?.enabled).toBe(false);
   });
 });

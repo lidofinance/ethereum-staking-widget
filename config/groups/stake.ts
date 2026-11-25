@@ -11,6 +11,8 @@ export const PRECISION = 10 ** 6;
 
 export const EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
+// TODO: recalculate after GLAMSTERDAM fork
+
 export const STETH_SUBMIT_GAS_LIMIT_DEFAULT = 90000;
 
 export const STAKE_GASLIMIT_FALLBACK = BigInt(

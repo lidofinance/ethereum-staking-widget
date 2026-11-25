@@ -7,6 +7,7 @@ import {
   type MetricContractName,
 } from 'config/networks/rpc-contracts';
 import { getFunctionNameFromAbi } from 'utils/get-function-name-from-abi';
+import { PROVIDER_MAX_BATCH } from 'config/groups/web3';
 
 const UNKNOWN_LABEL = 'unknown';
 const ADDRESS_LENGTH = 42; // '0x' + 40 hex chars
@@ -43,9 +44,11 @@ export const collectRequestAddressMetric = ({
   chainId: number;
   metrics: Counter<string>;
 }): void => {
-  calls.forEach((rawCall) => {
+  // The route rejects a batch above PROVIDER_MAX_BATCH; never do per-entry work beyond it
+  const count = Math.min(calls.length, PROVIDER_MAX_BATCH);
+  for (let i = 0; i < count; i++) {
     try {
-      const call = rawCall as {
+      const call = calls[i] as {
         method?: unknown;
         params?: Array<{ to?: unknown; data?: unknown }>;
       };
@@ -55,13 +58,13 @@ export const collectRequestAddressMetric = ({
         call.method !== 'eth_call' ||
         !call.params?.[0]?.to
       ) {
-        return;
+        continue;
       }
 
       const { to, data } = call.params[0];
       // Metrics collection is independent of the route's own checks, so verify
       // the shape here rather than assuming a well-formed address.
-      if (typeof to !== 'string' || to.length !== ADDRESS_LENGTH) return;
+      if (typeof to !== 'string' || to.length !== ADDRESS_LENGTH) continue;
       const address = getAddress(to);
       const contractName = (
         METRIC_CONTRACT_ADDRESSES as unknown as Record<
@@ -106,5 +109,5 @@ export const collectRequestAddressMetric = ({
         )}`,
       );
     }
-  });
+  }
 };

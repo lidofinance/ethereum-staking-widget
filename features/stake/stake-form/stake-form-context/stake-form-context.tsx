@@ -5,29 +5,37 @@ import {
   createContext,
   useContext,
   useCallback,
+  useEffect,
 } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
 import {
   useEthereumBalance,
   useStethBalance,
+  useWethBalance,
   BALANCE_PADDING,
 } from 'modules/web3';
 
 import {
   FormControllerContext,
   FormControllerContextValueType,
+  passFormStateTo,
+  recoverFormState,
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
 import { useIsSmartAccount, useMaxGasPrice } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
+import { WETH_UNWRAP_GAS_LIMIT } from 'consts/tx';
+import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
+import { minBN } from 'utils/bn';
 
 import {
   type StakeFormDataContextValue,
   type StakeFormInput,
   type StakeFormNetworkData,
+  type StakeFormValidationContextByToken,
 } from './types';
 import {
   stakeFormValidationResolver,
@@ -36,6 +44,7 @@ import {
 
 import { useStake } from '../use-stake';
 import { useStethSubmitGasLimit } from '../hooks';
+import { useWethUnwrap } from '../hooks/use-weth-unwrap';
 import {
   useQueryParamsAmountForm,
   useQueryParamsReferralForm,
@@ -66,12 +75,18 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   } = useStethBalance();
   const { isSmartAccount, isLoading: isSmartAccountLoading } =
     useIsSmartAccount();
-  const gasLimit = useStethSubmitGasLimit();
+  const gasLimitEth = useStethSubmitGasLimit();
+  // unwrap + submit; the unwrap is a fixed-cost WETH9 call
+  const gasLimitWeth = gasLimitEth + WETH_UNWRAP_GAS_LIMIT;
   const { maxGasPrice, isLoading: isMaxGasPriceLoading } = useMaxGasPrice();
 
-  const gasCost = useMemo(
-    () => (gasLimit && maxGasPrice ? gasLimit * maxGasPrice : undefined),
-    [gasLimit, maxGasPrice],
+  const gasCostEth = useMemo(
+    () => (maxGasPrice !== undefined ? gasLimitEth * maxGasPrice : undefined),
+    [gasLimitEth, maxGasPrice],
+  );
+  const gasCostWeth = useMemo(
+    () => (maxGasPrice !== undefined ? gasLimitWeth * maxGasPrice : undefined),
+    [gasLimitWeth, maxGasPrice],
   );
 
   const {
@@ -79,6 +94,13 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     refetch: updateEtherBalance,
     isLoading: isEtherBalanceLoading,
   } = useEthereumBalance();
+
+  const { isWethSupported } = useWethUnwrap();
+  const {
+    data: wethBalance,
+    refetch: updateWethBalance,
+    isLoading: isWethBalanceLoading,
+  } = useWethBalance();
 
   const {
     data: stakingLimitInfo,
@@ -89,29 +111,47 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const stakeableEther = useMemo(() => {
     if (etherBalance === undefined || !stakingLimitInfo) return undefined;
     if (etherBalance && stakingLimitInfo.isStakingLimitSet) {
-      return etherBalance < stakingLimitInfo.currentStakeLimit
-        ? etherBalance
-        : stakingLimitInfo.currentStakeLimit;
+      return minBN(etherBalance, stakingLimitInfo.currentStakeLimit);
     }
     return etherBalance;
   }, [etherBalance, stakingLimitInfo]);
 
-  const maxAmount = useTokenMaxAmount({
+  const stakeableWeth = useMemo(() => {
+    if (wethBalance === undefined || !stakingLimitInfo) return undefined;
+    if (wethBalance && stakingLimitInfo.isStakingLimitSet) {
+      return minBN(wethBalance, stakingLimitInfo.currentStakeLimit);
+    }
+    return wethBalance;
+  }, [wethBalance, stakingLimitInfo]);
+
+  const maxAmountEth = useTokenMaxAmount({
     balance: etherBalance,
     limit: stakingLimitInfo?.currentStakeLimit,
     isPadded: !isSmartAccount,
-    gasLimit: gasLimit,
+    gasLimit: gasLimitEth,
     padding: BALANCE_PADDING,
     isLoading: isSmartAccountLoading,
+  });
+
+  // gas is paid from the ETH balance, so the whole WETH balance can be staked
+  const maxAmountWeth = useTokenMaxAmount({
+    balance: wethBalance,
+    limit: stakingLimitInfo?.currentStakeLimit,
   });
 
   const revalidate = useCallback(async () => {
     await Promise.allSettled([
       updateStethBalance(),
       updateEtherBalance(),
+      updateWethBalance(),
       refetchStakeLimit(),
     ]);
-  }, [updateStethBalance, updateEtherBalance, refetchStakeLimit]);
+  }, [
+    updateStethBalance,
+    updateEtherBalance,
+    updateWethBalance,
+    refetchStakeLimit,
+  ]);
 
   const loading = useMemo(
     () => ({
@@ -119,13 +159,16 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
       isSmartAccountLoading,
       isMaxGasPriceLoading,
       isEtherBalanceLoading,
+      isWethBalanceLoading,
       isStakeableEtherLoading: isStakingLimitIsLoading || isEtherBalanceLoading,
+      isStakeableWethLoading: isStakingLimitIsLoading || isWethBalanceLoading,
     }),
     [
       isStethBalanceLoading,
       isSmartAccountLoading,
       isMaxGasPriceLoading,
       isEtherBalanceLoading,
+      isWethBalanceLoading,
       isStakingLimitIsLoading,
     ],
   );
@@ -133,12 +176,18 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   return {
     stethBalance,
     etherBalance,
+    wethBalance,
+    isWethSupported,
     isSmartAccount,
     stakeableEther,
+    stakeableWeth,
     stakingLimitInfo,
-    gasCost,
-    gasLimit,
-    maxAmount,
+    gasLimitEth,
+    gasLimitWeth,
+    gasCostEth,
+    gasCostWeth,
+    maxAmountEth,
+    maxAmountWeth,
     loading,
     revalidate,
   };
@@ -149,26 +198,58 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
 //
 export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const networkData = useStakeFormNetworkData();
-  const validationContextPromise = useStakeFormValidationContext(networkData);
+  const validationContextByToken = useStakeFormValidationContext(networkData);
 
-  const formObject = useForm<StakeFormInput>({
-    defaultValues: {
-      amount: null,
-      referral: null,
+  // recover the previously saved form state for the 'stake' scope
+  // L2 stake saves state to it
+  const recoveredState = recoverFormState('stake');
+
+  const formObject = useForm<StakeFormInput, StakeFormValidationContextByToken>(
+    {
+      defaultValues: {
+        amount: recoveredState.amount ?? null,
+        token: recoveredState.token ?? TOKENS_TO_STAKE.ETH,
+        referral: recoveredState.referral ?? null,
+      },
+      context: validationContextByToken,
+      resolver: stakeFormValidationResolver,
+      mode: 'onChange',
     },
-    context: validationContextPromise,
-    resolver: stakeFormValidationResolver,
-    mode: 'onChange',
-  });
+  );
   const { setValue } = formObject;
   useQueryParamsReferralForm<StakeFormInput>({ setValue });
   useQueryParamsAmountForm<StakeFormInput>({ setValue });
 
   const { retryEvent, retryFire } = useFormControllerRetry();
 
+  // the named watch keeps type not undefined
+  const token = useWatch({ control: formObject.control, name: 'token' });
+  const amount = useWatch({ control: formObject.control, name: 'amount' });
+  const referral = useWatch({ control: formObject.control, name: 'referral' });
+  const isWeth = token === TOKENS_TO_STAKE.WETH;
+
+  // communicate the amount/token to L2 staking form
+  useEffect(() => {
+    passFormStateTo('stakeL2', { amount, token, referral });
+  }, [amount, token, referral]);
+
+  // WETH may be unavailable on the connected chain (or after a chain switch).
+  // The selector is hidden there, so the token must be normalized here
+  useEffect(() => {
+    if (!networkData.isWethSupported && token !== TOKENS_TO_STAKE.ETH) {
+      setValue('token', TOKENS_TO_STAKE.ETH, { shouldValidate: true });
+    }
+  }, [networkData.isWethSupported, token, setValue]);
+
+  // after a separate unwrap the funds are ETH: keep the amount, retry as ETH
+  const onUnwrapped = useCallback(() => {
+    setValue('token', TOKENS_TO_STAKE.ETH, { shouldValidate: true });
+  }, [setValue]);
+
   const stake = useStake({
     onConfirm: networkData.revalidate,
     onRetry: retryFire,
+    onUnwrapped,
   });
 
   const formControllerValue: FormControllerContextValueType<StakeFormInput> =
@@ -176,13 +257,39 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
       () => ({
         onSubmit: stake,
         retryEvent,
+        onReset: ({ token, referral }) => {
+          formObject.reset({
+            amount: null,
+            token,
+            referral,
+          });
+        },
+        // keeps state between L1/L2 changes
+        resetFormOn: 'walletAddress',
       }),
-      [stake, retryEvent],
+      [stake, retryEvent, formObject],
     );
+
+  const value: StakeFormDataContextValue = useMemo(
+    () => ({
+      ...networkData,
+      token,
+      isWeth,
+      stakeableAmount: isWeth
+        ? networkData.stakeableWeth
+        : networkData.stakeableEther,
+      isStakeableAmountLoading: isWeth
+        ? networkData.loading.isStakeableWethLoading
+        : networkData.loading.isStakeableEtherLoading,
+      gasCost: isWeth ? networkData.gasCostWeth : networkData.gasCostEth,
+      maxAmount: isWeth ? networkData.maxAmountWeth : networkData.maxAmountEth,
+    }),
+    [networkData, token, isWeth],
+  );
 
   return (
     <FormProvider {...formObject}>
-      <StakeFormDataContext.Provider value={networkData}>
+      <StakeFormDataContext.Provider value={value}>
         <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>

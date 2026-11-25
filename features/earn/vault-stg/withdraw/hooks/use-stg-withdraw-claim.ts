@@ -13,8 +13,9 @@ import { useSTGDepositFormData } from '../../deposit/hooks';
 import { useTxModalStagesSTGWithdrawClaim } from './use-stg-withdraw-claim-tx-modal';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useSTGWithdrawClaim = (onRetry?: () => void) => {
+export const useSTGWithdrawClaim = (onRetry?: TxRetryHandler) => {
   const { core } = useLidoSDK();
   const { address } = useDappStatus();
   const { txModalStages } = useTxModalStagesSTGWithdrawClaim();
@@ -30,8 +31,8 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
       try {
         setIsClaiming(true);
         const redeemQueueContract = getSTGRedeemQueueWritableContractWSTETH(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         const claimArgs = [address, [timestamp]] as const;

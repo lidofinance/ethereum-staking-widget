@@ -1,48 +1,32 @@
 import { PublicClient, WalletClient } from 'viem';
 import {
   AsyncDepositQueueWritableContract,
-  DepositQueueWritableContract,
   SyncDepositQueueWritableContract,
 } from './contracts';
+
+type DepositQueueGetterArgs<
+  DepositToken extends string,
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient,
+> = {
+  publicClient: TPublicClient;
+  walletClient: TWalletClient;
+  token: DepositToken;
+};
 
 export type AsyncDepositQueueGetter<
   DepositToken extends string,
   TPublicClient extends PublicClient = PublicClient,
   TWalletClient extends WalletClient = WalletClient,
-> = ({
-  publicClient,
-  walletClient,
-  token,
-}: {
-  publicClient: TPublicClient;
-  walletClient: TWalletClient;
-  token: DepositToken;
-}) => AsyncDepositQueueWritableContract;
+> = (
+  args: DepositQueueGetterArgs<DepositToken, TPublicClient, TWalletClient>,
+) => AsyncDepositQueueWritableContract;
 
+// undefined for a token that has no sync queue
 export type SyncDepositQueueGetter<
   DepositToken extends string,
   TPublicClient extends PublicClient = PublicClient,
   TWalletClient extends WalletClient = WalletClient,
-> = ({
-  publicClient,
-  walletClient,
-  token,
-}: {
-  publicClient: TPublicClient;
-  walletClient: TWalletClient;
-  token: DepositToken;
-}) => SyncDepositQueueWritableContract;
-
-export type DepositQueueGetter<
-  DepositToken extends string,
-  TPublicClient extends PublicClient = PublicClient,
-  TWalletClient extends WalletClient = WalletClient,
-> = ({
-  publicClient,
-  walletClient,
-  token,
-}: {
-  publicClient: TPublicClient;
-  walletClient: TWalletClient;
-  token: DepositToken;
-}) => DepositQueueWritableContract;
+> = (
+  args: DepositQueueGetterArgs<DepositToken, TPublicClient, TWalletClient>,
+) => SyncDepositQueueWritableContract | undefined;

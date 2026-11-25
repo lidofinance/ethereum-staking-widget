@@ -14,8 +14,9 @@ import { getSTGRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { useTxModalStagesSTGWithdrawClaim } from './use-stg-withdraw-claim-tx-modal';
 import { useSTGWithdrawRequests } from './use-stg-withdraw-requests';
 import { useSTGDepositFormData } from '../../deposit/hooks';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useSTGWithdrawClaimAll = (onRetry?: () => void) => {
+export const useSTGWithdrawClaimAll = (onRetry?: TxRetryHandler) => {
   const { core } = useLidoSDK();
   const { address } = useDappStatus();
   const { txModalStages } = useTxModalStagesSTGWithdrawClaim();
@@ -40,8 +41,8 @@ export const useSTGWithdrawClaimAll = (onRetry?: () => void) => {
     try {
       setIsClaiming(true);
       const redeemQueueContract = getSTGRedeemQueueWritableContractWSTETH(
-        core.rpcProvider,
-        core.web3Provider as WalletClient,
+        core.publicClient,
+        core.walletClient as WalletClient,
       );
 
       const claimArgs = [address, timestamps] as const;

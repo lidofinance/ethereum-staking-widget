@@ -5,7 +5,10 @@ import type { Resolver } from 'react-hook-form';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
 import { getTokenSymbol } from 'utils/get-token-symbol';
-import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
+import {
+  handleResolverValidationError,
+  walletNotConnectedResult,
+} from 'shared/hook-form/validation/validation-error';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
@@ -45,10 +48,7 @@ export const UnwrapFormValidationResolver: Resolver<
         messageMaxAmount(maxAmount),
       );
     } else {
-      return {
-        values,
-        errors: { dummyErrorField: 'wallet is not connected' },
-      };
+      return walletNotConnectedResult('dummyErrorField');
     }
     return {
       values,

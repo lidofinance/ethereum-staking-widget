@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import { encodeFunctionData, getContract, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 
+import { getTokenAddress } from 'config/networks/token-address';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import {
   useDappStatus,
   useTxFlow,
@@ -10,10 +12,11 @@ import {
   useLidoSDK,
   applyRoundUpTxParameter,
 } from 'modules/web3';
-import { getTokenAddress } from 'config/networks/token-address';
-import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getReferralAddress } from 'utils/get-referral-address';
+import { withFallback } from 'utils/with-fallback';
+import { warnError } from 'utils/warn-error';
 
 import type { DVVDepositFormValidatedValues } from '../types';
 import {
@@ -21,8 +24,9 @@ import {
   getDVVaultWritableContract,
 } from '../../contracts';
 import { useTxModalStagesDVVDeposit } from './use-dvv-deposit-tx-modal';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useDVVDeposit = (onRetry?: () => void) => {
+export const useDVVDeposit = (onRetry?: TxRetryHandler) => {
   const { address } = useDappStatus();
   const { core, wrap } = useLidoSDK();
   const { txModalStages } = useTxModalStagesDVVDeposit();
@@ -40,26 +44,26 @@ export const useDVVDeposit = (onRetry?: () => void) => {
 
       try {
         const vault = getDVVaultWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
         const wrapper = getDVVDepositWrapperWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
+          core.publicClient,
+          core.walletClient as WalletClient,
         );
 
         const tokenContract = getContract({
           address: tokenAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
         const referralAddress = await getReferralAddress(
           referral,
-          core.rpcProvider,
+          core.publicClient,
         );
 
         // used to display in modal
@@ -173,7 +177,16 @@ export const useDVVDeposit = (onRetry?: () => void) => {
           },
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
-            const balance = await vault.read.balanceOf([address]);
+            // a failed read must not fail a settled tx: the modal drops the balance
+            const balance = await withFallback(
+              vault.read.balanceOf([address]),
+              undefined,
+              {
+                onError: warnError(
+                  '[useDVVDeposit] post-deposit balance read failed',
+                ),
+              },
+            );
             txModalStages.success(balance, txHash);
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvDepositFinish);
           },

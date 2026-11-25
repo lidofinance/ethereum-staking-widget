@@ -8,8 +8,9 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { getRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { useEthVaultWithdrawFormData } from './use-withdraw-form-data';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useEthVaultWithdrawClaim = (onRetry?: () => void) => {
+export const useEthVaultWithdrawClaim = (onRetry?: TxRetryHandler) => {
   const { core } = useLidoSDK();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');
@@ -26,9 +27,9 @@ export const useEthVaultWithdrawClaim = (onRetry?: () => void) => {
     () =>
       getRedeemQueueWritableContractWSTETH(
         publicClientMainnet,
-        core.web3Provider as WalletClient,
+        core.walletClient as WalletClient,
       ),
-    [publicClientMainnet, core.web3Provider],
+    [publicClientMainnet, core.walletClient],
   );
 
   return useWithdrawClaim({

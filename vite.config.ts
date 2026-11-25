@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import reactPlugin from '@vitejs/plugin-react';
+import babelPlugin from '@rolldown/plugin-babel';
 import svgrPlugin from 'vite-plugin-svgr';
 import sriPlugin from 'vite-plugin-sri-gen';
 import { vitePrerenderPlugin } from 'vite-prerender-plugin';
@@ -53,6 +54,15 @@ export default defineConfig({
     // (displayName/stable class names) is not applied. styled-components
     // works via its runtime; only devtools naming differs.
     reactPlugin(),
+    // Standard (TC39) decorators (lido-ethereum-sdk `@Cache`): oxc handles only the legacy flavour
+    babelPlugin({
+      plugins: [
+        [
+          '@babel/plugin-proposal-decorators',
+          { version: '2021-12', decoratorsBeforeExport: true },
+        ],
+      ],
+    }),
     rawMarkdownPlugin(),
     shimUsageReporterPlugin(root),
     // Runtime env: inlines window.__env__ in dev/IPFS; web builds keep the
@@ -119,6 +129,7 @@ export default defineConfig({
         'modules',
         'networks',
         'providers',
+        'scripts',
         'shared',
         'styles',
         'types',

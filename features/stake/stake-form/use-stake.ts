@@ -1,118 +1,191 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
+import { encodeFunctionData, type Address } from 'viem';
+import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 
 import { config, useConfig } from 'config';
+import { QA_KEYS } from 'consts/qa-keys';
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import {
   applyRoundUpTxParameter,
   useDappStatus,
   useLidoSDK,
   useAA,
   useTxFlow,
+  isStepSettled,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 
-import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
-import { QA_KEYS } from 'consts/qa-keys';
+import { TOKENS_TO_STAKE } from 'features/stake/shared/types';
+
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { ErrorMessage } from 'utils/getErrorMessage';
 import { getReferralAddress } from 'utils/get-referral-address';
+import { warnError } from 'utils/warn-error';
+import { withFallback } from 'utils/with-fallback';
 
 import { MockLimitReachedError } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 import { useBells } from './hooks/use-bells';
+import { useWethUnwrap } from './hooks/use-weth-unwrap';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type StakeArguments = {
   amount: bigint | null;
+  token: TOKENS_TO_STAKE;
   referral: string | null;
 };
 
 type StakeOptions = {
   onConfirm?: () => Promise<void> | void;
-  onRetry?: () => void;
+  onRetry?: TxRetryHandler;
+  // the WETH was unwrapped but the stake did not go through
+  onUnwrapped?: () => void;
 };
 
-export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
+// the steps of a stake, the first one only for WETH
+const STEP = { unwrap: 'unwrap', stake: 'stake' } as const;
+
+// what every stage of a stake needs, read once before the first step
+type StakeData = {
+  amount: bigint;
+  address: Address;
+  referralAddress: Address;
+  preStakeBalance: bigint;
+};
+
+export const useStake = ({ onConfirm, onRetry, onUnwrapped }: StakeOptions) => {
   const { bells } = useBells();
   const { address } = useDappStatus();
   const { isAA } = useAA();
   const { stake, stETH } = useLidoSDK();
+  const { unwrap, unwrapPopulateTx } = useWethUnwrap();
   const { txModalStages } = useTxModalStagesStake();
   const txFlow = useTxFlow();
   const { featureFlags } = useConfig().externalConfig;
 
   return useCallback(
-    async ({ amount, referral }: StakeArguments): Promise<boolean> => {
-      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart);
-      try {
-        invariant(amount, 'amount is null');
-        invariant(address, 'account is not defined');
+    async ({ amount, token, referral }: StakeArguments): Promise<boolean> => {
+      const isWeth = token === TOKENS_TO_STAKE.WETH;
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart, { token });
 
-        if (
-          config.enableQaHelpers &&
-          window.localStorage.getItem(QA_KEYS.stakeLimitReached) === 'true'
-        ) {
-          throw new MockLimitReachedError('Stake limit reached');
-        }
-
-        const referralAddress = await getReferralAddress(
-          referral,
-          stake.core.rpcProvider,
-        );
-        const preStakeBalance = await stETH.balance(address);
-
-        const onStakeTxConfirmed = async () => {
+      const { isSuccess } = await txFlow<StakeData>({
+        prepare: async () => {
+          invariant(amount, 'amount is null');
+          invariant(address, 'account is not defined');
+          if (
+            config.enableQaHelpers &&
+            window.localStorage.getItem(QA_KEYS.stakeLimitReached) === 'true'
+          ) {
+            throw new MockLimitReachedError('Stake limit reached');
+          }
+          return {
+            amount,
+            address,
+            referralAddress: await getReferralAddress(
+              referral,
+              stake.core.publicClient,
+            ),
+            preStakeBalance: await stETH.balance(address),
+          };
+        },
+        // Lido takes ETH only, so WETH is unwrapped first: in the same batch
+        // for AA wallets, as a separate transaction otherwise. The stake call
+        // is built without a gas estimate: for a WETH stake the ETH only
+        // exists after the unwrap, so estimating `submit` with the full value
+        // up front fails for anyone whose ETH balance is below the amount.
+        // The wallet estimates the AA batch as a whole, and the SDK estimates
+        // the legacy transaction once the unwrap has landed
+        callsFn: async ({ data }) => [
+          isWeth && { stepId: STEP.unwrap, ...unwrapPopulateTx(data.amount) },
+          {
+            stepId: STEP.stake,
+            to: await stETH.contractAddress(),
+            data: encodeFunctionData({
+              abi: StethAbi,
+              functionName: 'submit',
+              args: [data.referralAddress],
+            }),
+            value: data.amount,
+          },
+        ],
+        sendStep: async (step, txStagesCallback, { data }) => {
+          if (step.stepId === STEP.unwrap) {
+            await unwrap({ amount: data.amount, callback: txStagesCallback });
+            return;
+          }
+          await stake.stakeEth({
+            value: data.amount,
+            callback: txStagesCallback,
+            referralAddress: data.referralAddress,
+          });
+        },
+        onSign: async ({ payload, ctx: { stepId, data } }) => {
+          if (stepId === STEP.unwrap) {
+            txModalStages.signUnwrap(data.amount);
+            return;
+          }
+          // the stake itself is in ETH, even for a WETH stake
+          txModalStages.sign(data.amount, 'ETH');
+          return applyRoundUpTxParameter(
+            (payload as bigint) ?? config.STAKE_GASLIMIT_FALLBACK,
+          );
+        },
+        onReceipt: ({ txHashOrCallId, ctx: { stepId, data } }) =>
+          stepId === STEP.unwrap
+            ? txModalStages.pendingUnwrap(data.amount, txHashOrCallId)
+            : txModalStages.pending(data.amount, 'ETH', txHashOrCallId, isAA),
+        onSuccess: async ({ txHash, ctx: { stepId, data } }) => {
+          if (stepId !== STEP.stake) return;
           const [, balance] = await Promise.all([
+            // never rejects: the form refetches are settled inside
             onConfirm?.(),
-            stETH.balance(address),
+            // a failed read must not fail a settled tx: the modal drops the balance
+            withFallback(stETH.balance(data.address), undefined, {
+              onError: warnError('[useStake] post-stake balance read failed'),
+            }),
           ]);
-          return balance;
-        };
+          if (featureFlags.holidayDecorEnabled) {
+            bells();
+          }
+          txModalStages.success(balance, data.preStakeBalance, txHash);
+          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish, { token });
+        },
+        onMultisigDone: ({ ctx }) => {
+          if (ctx.stepId === STEP.stake) txModalStages.successMultisig();
+        },
+        onFailure: async ({ error, ctx }) => {
+          console.warn(error);
+          // Once a separate unwrap has landed the funds are ETH: the form
+          // switches token and refreshes balances, and a retry stakes ETH
+          if (isStepSettled(ctx, STEP.unwrap)) {
+            onUnwrapped?.();
+            await onConfirm?.();
+          }
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.stake, [
+              {
+                stepId: STEP.unwrap,
+                message: ErrorMessage.STAKE_WETH_INTERRUPTED,
+              },
+            ]),
+            onRetry,
+          );
+        },
+      });
 
-        const stakeCall = await stake.stakeEthPopulateTx({
-          value: amount,
-          referralAddress,
-        });
-        await txFlow({
-          callsFn: async () => [stakeCall],
-          sendTransaction: async (txStagesCallback) => {
-            await stake.stakeEth({
-              value: amount,
-              callback: txStagesCallback,
-              referralAddress,
-            });
-          },
-          onSign: async ({ payload }) => {
-            txModalStages.sign(amount);
-            return applyRoundUpTxParameter(
-              (payload as bigint) ?? config.STAKE_GASLIMIT_FALLBACK,
-            );
-          },
-          onReceipt: ({ txHashOrCallId }) => {
-            return txModalStages.pending(amount, txHashOrCallId, isAA);
-          },
-          onSuccess: async ({ txHash }) => {
-            const balance = await onStakeTxConfirmed();
-            if (featureFlags.holidayDecorEnabled) {
-              bells();
-            }
-            txModalStages.success(balance, preStakeBalance, txHash);
-            trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
-          },
-          onFailure: ({ error }) => txModalStages.failed(error, onRetry),
-          onMultisigDone: () => txModalStages.successMultisig(),
-        });
-
-        return true;
-      } catch (error) {
-        console.warn(error);
-        txModalStages.failed(error, onRetry);
-        return false;
-      }
+      // staked (or proposed to a multisig): the form resets
+      return isSuccess;
     },
     [
       address,
       stake,
       txFlow,
       onConfirm,
+      onUnwrapped,
       stETH,
+      unwrap,
+      unwrapPopulateTx,
       txModalStages,
       isAA,
       featureFlags.holidayDecorEnabled,

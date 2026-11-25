@@ -1,0 +1,175 @@
+import {
+  DEFAULT_COWSWAP_WIDGET_BASE_URL,
+  createContentSecurityPolicy,
+  cspInputsFromEnv,
+} from '../content-security-policy.mjs';
+
+const COWSWAP = 'https://swap.cow.example/';
+const REPORT_URI = 'https://stake.example/api/csp-report';
+const IPFS_HASH = "'sha256-ipfsbootstrap='";
+
+const serverInputs = {
+  trustedHosts: ['https://trusted.example'],
+  reportUri: REPORT_URI,
+  reportOnly: false,
+  cowswapBaseUrl: COWSWAP,
+  developmentMode: false,
+  ipfsMode: false,
+};
+
+type Directives = Record<string, string[] | string | undefined>;
+const directivesOf = (
+  inputs: Parameters<typeof createContentSecurityPolicy>[0],
+) => createContentSecurityPolicy(inputs).directives as Directives;
+
+describe('cspInputsFromEnv', () => {
+  it('reads the CSP server variables', () => {
+    expect(
+      cspInputsFromEnv({
+        CSP_TRUSTED_HOSTS: 'https://a.example,https://b.example',
+        CSP_REPORT_URI: REPORT_URI,
+        CSP_REPORT_ONLY: 'true',
+        COWSWAP_WIDGET_BASE_URL: COWSWAP,
+      }),
+    ).toEqual({
+      trustedHosts: ['https://a.example', 'https://b.example'],
+      reportUri: REPORT_URI,
+      reportOnly: true,
+      cowswapBaseUrl: COWSWAP,
+    });
+  });
+
+  it('defaults like the app: no trusted hosts, enforced, the testnet CoW origin', () => {
+    expect(cspInputsFromEnv({})).toEqual({
+      trustedHosts: [],
+      reportUri: undefined,
+      reportOnly: false,
+      cowswapBaseUrl: DEFAULT_COWSWAP_WIDGET_BASE_URL,
+    });
+  });
+
+  it('treats an empty CSP_REPORT_URI as no reporting', () => {
+    expect(cspInputsFromEnv({ CSP_REPORT_URI: '' }).reportUri).toBeUndefined();
+  });
+
+  it.each([
+    ['true', true],
+    ['TRUE', true],
+    ['1', true],
+    ['false', false],
+    ['0', false],
+    ['', false],
+  ])('reads CSP_REPORT_ONLY=%s as %s, like toBoolean', (value, expected) => {
+    expect(cspInputsFromEnv({ CSP_REPORT_ONLY: value }).reportOnly).toBe(
+      expected,
+    );
+  });
+});
+
+describe('createContentSecurityPolicy', () => {
+  it('pins scripts to self, the theme bootstrap hash and the trusted hosts', () => {
+    expect(directivesOf(serverInputs).scriptSrc).toEqual([
+      "'self'",
+      "'sha256-wTvVT3oJ2rMAqNUILvSYccTn53N47S3NIZbPE0ql0No='",
+      'https://trusted.example',
+    ]);
+  });
+
+  it('carries the header-only directives on the server', () => {
+    const directives = directivesOf(serverInputs);
+    expect(directives.frameAncestors).toEqual(['*']);
+    expect(directives.reportURI).toBe(REPORT_URI);
+    expect(directives['base-uri']).toEqual(["'none'"]);
+  });
+
+  it('frames the CoW origin next to WalletConnect', () => {
+    expect(directivesOf(serverInputs).frameSrc).toEqual([
+      "'self'",
+      COWSWAP,
+      'https://*.walletconnect.org',
+      'https://*.walletconnect.com',
+    ]);
+  });
+
+  it('allows eval and ws only in development, for HMR', () => {
+    const directives = directivesOf({ ...serverInputs, developmentMode: true });
+    expect(directives.scriptSrc).toContain("'unsafe-eval'");
+    expect(directives.connectSrc).toContain('ws:');
+
+    const production = directivesOf(serverInputs);
+    expect(production.scriptSrc).not.toContain("'unsafe-eval'");
+    expect(production.connectSrc).not.toContain('ws:');
+  });
+
+  it('drops the directives a <meta> tag ignores and adds the bootstrap hash on IPFS', () => {
+    const directives = directivesOf({
+      ...serverInputs,
+      ipfsMode: true,
+      ipfsBaseScriptHash: IPFS_HASH,
+    });
+    expect(directives.scriptSrc).toContain(IPFS_HASH);
+    expect(directives.frameAncestors).toBeUndefined();
+    expect(directives.reportURI).toBeUndefined();
+    expect(directives['base-uri']).toBeUndefined();
+  });
+
+  it('passes report-only through', () => {
+    expect(
+      createContentSecurityPolicy({ ...serverInputs, reportOnly: true })
+        .reportOnly,
+    ).toBe(true);
+  });
+});
+
+describe('createContentSecurityPolicy with an invalid value', () => {
+  it.each([
+    ['a control character', 'https://a.example\r\nX: 1'],
+    ['NUL', 'https://a.example\u0000'],
+    ['a directive separator', 'https://a.example; script-src *'],
+  ])('throws on a trusted host with %s', (_name, bad) => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        trustedHosts: ['https://ok.example', bad],
+      }),
+    ).toThrow(/\[csp\] invalid configuration: trusted host/);
+  });
+
+  it('throws on a relative report URI', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        reportUri: '/api/csp-report',
+      }),
+    ).toThrow(/report URI "\/api\/csp-report"/);
+  });
+
+  it('throws on an invalid CoW base URL instead of using the default', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        cowswapBaseUrl: 'not a url',
+      }),
+    ).toThrow(/CoW base URL "not a url"/);
+  });
+
+  it('names every invalid value in one error', () => {
+    expect(() =>
+      createContentSecurityPolicy({
+        ...serverInputs,
+        trustedHosts: ['bad host'],
+        reportUri: 'relative',
+      }),
+    ).toThrow(/trusted host "bad host", report URI "relative"/);
+  });
+
+  it('skips blank trusted host entries left by the separator', () => {
+    const directives = directivesOf({
+      ...serverInputs,
+      trustedHosts: ['https://trusted.example', ' ', ''],
+    });
+
+    expect(directives.scriptSrc).toContain('https://trusted.example');
+    expect(directives.scriptSrc).not.toContain('');
+  });
+});

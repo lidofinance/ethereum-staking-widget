@@ -14,6 +14,11 @@ vi.mock('viem', async (importOriginal) => ({
   custom: vi.fn((provider: EIP1193Provider) => ({ provider }) as never),
 }));
 
+// the listener is tested on which transport it installs, not on the wrapper
+vi.mock('../timeout-transport', () => ({
+  timeoutTransport: (transport: Transport) => transport,
+}));
+
 const getConnectionProviderMock = vi.mocked(getConnectionProvider);
 
 const CHAINS = [{ id: 1 }, { id: 10 }] as Chain[];

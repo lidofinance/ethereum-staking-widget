@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { ThemeName } from '@lidofinance/lido-ui';
 import { devicesHeaderMedia } from 'styles/global';
+import { CHAIN_TOOLTIP_Z_INDEX } from 'styles/constants';
 
 interface TooltipProps {
   $showArrow?: boolean;
@@ -11,11 +12,14 @@ export const SelectIconTooltipWrapper = styled.div`
   left: 0;
   top: calc(100% + 16px);
   width: 244px;
-  z-index: 100;
+  z-index: ${CHAIN_TOOLTIP_Z_INDEX};
 
   @media ${devicesHeaderMedia.mobile} {
     position: fixed;
-    bottom: 72px;
+    // above the mobile navigation
+    bottom: calc(
+      var(--nav-mobile-height) + var(--nav-mobile-bottom-inset) + 12px
+    );
     left: 20px;
     right: 20px;
     top: unset;

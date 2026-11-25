@@ -2,6 +2,7 @@
 // @ts-nocheck
 import { resolve } from 'node:path';
 
+import babel from '@rolldown/plugin-babel';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
@@ -33,7 +34,20 @@ const nextShims = ['router', 'link', 'head'].map((mod) => ({
 }));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    // lido-ethereum-sdk's `@Cache` is a standard (TC39, stage 3) decorator. Vite's
+    // oxc transform only supports the legacy flavour, so route source files
+    // through Babel here with the same plugin and spec version as vite.config.ts.
+    babel({
+      plugins: [
+        [
+          '@babel/plugin-proposal-decorators',
+          { version: '2021-12', decoratorsBeforeExport: true },
+        ],
+      ],
+    }),
+  ],
   resolve: {
     alias: [
       ...projectAliases,

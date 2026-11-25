@@ -2,18 +2,36 @@ import { WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 import { useMemo } from 'react';
 import { useLidoSDK, useMainnetOnlyWagmi } from 'modules/web3';
-import { useWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw';
-import { useTxModalStagesWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw-tx-modal';
+import {
+  getVaultRefetchScope,
+  useTxModalStagesWithdraw,
+  useWithdraw,
+  type VaultQuote,
+} from 'modules/mellow-meta-vaults';
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import {
   getCollectorContract,
+  getOracleContract,
   getRedeemQueueWritableContractWSTETH,
   getSyncRedeemQueueWritableContractWSTETH,
 } from '../../contracts';
+import { ETH_VAULT_QUERY_SCOPE } from '../../consts';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useEthVaultWithdraw = (onRetry: () => void) => {
+type UseEthVaultWithdrawArgs = {
+  onRetry: TxRetryHandler;
+  // the quote the form displays and its refetch: the withdrawal is held to it
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
+};
+
+export const useEthVaultWithdraw = ({
+  onRetry,
+  shownQuote,
+  refetchQuote,
+}: UseEthVaultWithdrawArgs) => {
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesWithdraw({
     stageOperationArgs: {
@@ -27,6 +45,11 @@ export const useEthVaultWithdraw = (onRetry: () => void) => {
 
   const collector = useMemo(
     () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
+  );
+
+  const oracle = useMemo(
+    () => getOracleContract(publicClientMainnet),
     [publicClientMainnet],
   );
 
@@ -48,9 +71,13 @@ export const useEthVaultWithdraw = (onRetry: () => void) => {
     collector,
     asyncRedeemQueue,
     syncRedeemQueue,
+    oracle,
+    shownQuote,
+    refetchQuote,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnEthWithdrawalStart,
     matomoEventSuccess: MATOMO_EARN_EVENTS_TYPES.earnEthWithdrawalFinish,
+    refetchScope: getVaultRefetchScope(ETH_VAULT_QUERY_SCOPE),
   });
 };

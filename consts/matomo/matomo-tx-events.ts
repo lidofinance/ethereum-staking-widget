@@ -1,7 +1,7 @@
 import { MatomoEventType } from '@lidofinance/analytics-matomo';
 
 export const enum MATOMO_TX_EVENTS_TYPES {
-  // Stake
+  // Stake (chain and token go as custom dimensions)
   stakingStart = 'stakingStart',
   stakingFinish = 'stakingFinish',
 
@@ -28,18 +28,25 @@ export const enum MATOMO_TX_EVENTS_TYPES {
   withdrawalDexSwapCancel = 'withdrawalDexSwapCancel',
   withdrawalDexQuoteViewed = 'withdrawalDexQuoteViewed',
   withdrawalDexQuoteError = 'withdrawalDexQuoteError',
+  swapStart = 'swapStart',
+  swapPosted = 'swapPosted',
+  swapFinish = 'swapFinish',
+  swapCancel = 'swapCancel',
+  swapQuoteViewed = 'swapQuoteViewed',
+  swapQuoteError = 'swapQuoteError',
 }
 
 export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
   {
+    // Staking, on any chain and with any token
     [MATOMO_TX_EVENTS_TYPES.stakingStart]: [
       'Ethereum_Staking_Widget',
-      'Start staking',
+      'Initiating staking transaction',
       'eth_widget_staking_start',
     ],
     [MATOMO_TX_EVENTS_TYPES.stakingFinish]: [
       'Ethereum_Staking_Widget',
-      'Successfully finish staking',
+      'Successful finish staking transaction',
       'eth_widget_staking_finish',
     ],
 
@@ -138,5 +145,35 @@ export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
       'Ethereum_Staking_Widget',
       'Dex quote error',
       'eth_widget_withdrawal_dex_quote_error',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.swapStart]: [
+      'Ethereum_Swap_Widget',
+      'Start swap',
+      'eth_swap_start_swap',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.swapPosted]: [
+      'Ethereum_Swap_Widget',
+      'Swap order signed and posted',
+      'eth_swap_swap_order_signed_and_posted',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.swapFinish]: [
+      'Ethereum_Swap_Widget',
+      'Swap order successfully finished',
+      'eth_swap_swap_order_successfully_finished',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.swapCancel]: [
+      'Ethereum_Swap_Widget',
+      'Swap order rejected',
+      'eth_swap_swap_rejected',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.swapQuoteViewed]: [
+      'Ethereum_Swap_Widget',
+      'Dex quote viewed',
+      'eth_swap_dex_quote_viewed',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.swapQuoteError]: [
+      'Ethereum_Swap_Widget',
+      'Dex quote error',
+      'eth_swap_dex_quote_error',
     ],
   };

@@ -10,7 +10,7 @@ import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
 
 export const StakeFormInfo = () => {
-  const { gasCost, loading } = useStakeFormData();
+  const { gasCost, token, loading } = useStakeFormData();
   const amount = useWatch<StakeFormInput, 'amount'>({ name: 'amount' });
 
   const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(gasCost);
@@ -22,7 +22,7 @@ export const StakeFormInfo = () => {
         <FormatToken amount={amount ?? 0n} symbol="stETH" trimEllipsis />
       </DataTableRow>
       <DataTableRow title="Exchange rate" data-testid="exchangeRate">
-        1 ETH = 1 stETH
+        1 {token} = 1 stETH
       </DataTableRow>
       <DataTableRow
         title="Max transaction cost"

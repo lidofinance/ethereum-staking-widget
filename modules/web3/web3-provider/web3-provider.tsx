@@ -7,7 +7,7 @@ import {
   useMemo,
 } from 'react';
 import invariant from 'tiny-invariant';
-import { http, type PublicClient } from 'viem';
+import type { PublicClient } from 'viem';
 import {
   WagmiProvider,
   createConfig,
@@ -20,25 +20,32 @@ import {
 import * as wagmiChains from 'wagmi/chains';
 import { Chain } from 'wagmi/chains';
 
-import { ReefKnotProvider, getDefaultConfig } from 'reef-knot/core-react';
 import {
-  ReefKnotWalletsModal,
+  ReefKnotProvider,
+  getDefaultConfig,
   getDefaultWalletsModalConfig,
-} from 'reef-knot/connect-wallet-modal';
-import { WalletIdsEthereum, WalletsListEthereum } from 'reef-knot/wallets';
+  WalletIdsEthereum,
+  WalletsListEthereum,
+} from 'reef-knot';
+import { ReefKnotWalletsModal } from '@reef-knot/ui-lido-legacy';
 
 import { useThemeToggle } from '@lidofinance/lido-ui';
 
-import { config } from 'config';
+import { config, useConfig } from 'config';
 import { CHAIN_ID, CHAINS } from 'consts/chains';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
-import { walletMetricProps } from 'consts/matomo';
+import { MATOMO_INPUT_EVENTS_TYPES, walletMetricProps } from 'consts/matomo';
+import {
+  DISCONNECTED_CHAIN_ID,
+  getTrackedChain,
+  setTrackedChain,
+} from 'utils/tracked-chain';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
-import { SupportL1Chains } from './dapp-chain';
-import { useWeb3Transport } from './web3-transport';
+import { SupportOnlyL1Chains } from './dapp-chain';
+import { createHttpTransports, useWeb3Transport } from './web3-transport';
 import { wagmiChainMap } from '../consts';
-import { useExternalConfigContext } from 'config/external-config';
 
 type ChainsList = [Chain, ...Chain[]];
 
@@ -83,7 +90,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
   } = useUserConfig();
-  const { wallets } = useExternalConfigContext();
+  const { wallets } = useConfig().externalConfig;
 
   const { themeName } = useThemeToggle();
 
@@ -119,34 +126,22 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   );
 
   const mainnetConfig = useMemo(() => {
-    const batchConfig = {
-      wait: config.PROVIDER_BATCH_TIME,
-      batchSize: config.PROVIDER_MAX_BATCH,
-    };
-
-    const rpcUrlMainnet = getRpcUrlByChainId(CHAINS.Mainnet);
-
     return createConfig({
       chains: [wagmiChains.mainnet],
       ssr: true,
+      ccipRead: false,
       connectors: [],
       batch: {
         multicall: false,
       },
       pollingInterval: config.PROVIDER_POLLING_INTERVAL,
       transports: {
-        [wagmiChains.mainnet.id]: fallback([
-          // api/rpc
-          http(rpcUrlMainnet, {
-            batch: batchConfig,
-            name: rpcUrlMainnet,
-          }),
-          // fallback rpc from wagmi.chains like cloudfare-eth
-          http(undefined, {
-            batch: batchConfig,
-            name: 'default public RPC URL',
-          }),
-        ]),
+        [wagmiChains.mainnet.id]: fallback(
+          createHttpTransports(getRpcUrlByChainId(CHAINS.Mainnet)),
+          // one pass over the stack per request, no transport-level retries:
+          // see the note in runtime-mutable-transport.ts
+          { retryCount: 0 },
+        ),
       },
     });
   }, [getRpcUrlByChainId]);
@@ -182,6 +177,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       chains: supportedChains,
       autoConnect: isWalletConnectionAllowed,
       ssr: true,
+      ccipRead: false,
       pollingInterval: config.PROVIDER_POLLING_INTERVAL,
       batch: {
         multicall: false,
@@ -217,7 +213,11 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   // separately; the first `useConnections` entry may belong to an obsolete
   // wallet, so wallet-first reads must follow the current connection only
   const connections = useConnections({ config: wagmiConfig });
-  const { connector: currentConnector, status } = useConnection({
+  const {
+    connector: currentConnector,
+    status,
+    chainId: walletChainId,
+  } = useConnection({
     config: wagmiConfig,
   });
   const activeConnection = useMemo(() => {
@@ -233,6 +233,21 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     void onActiveConnection(activeConnection);
   }, [activeConnection, onActiveConnection]);
 
+  // analytics read the wallet chain outside React; every change, including
+  // a disconnect (reported as 0), is an event of its own
+  useEffect(() => {
+    const nextChain =
+      status === 'connected' && walletChainId
+        ? walletChainId
+        : DISCONNECTED_CHAIN_ID;
+    if (nextChain === getTrackedChain()) return;
+    setTrackedChain(nextChain);
+    trackMatomoEvent(MATOMO_INPUT_EVENTS_TYPES.walletChainChanged, {
+      chainId: nextChain,
+      value: nextChain,
+    });
+  }, [status, walletChainId]);
+
   return (
     <Web3ProviderContext.Provider
       value={{ mainnetConfig, publicClientMainnet }}
@@ -244,7 +259,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
             config={walletsModalConfig}
             darkThemeEnabled={themeName === 'dark'}
           />
-          <SupportL1Chains>{children}</SupportL1Chains>
+          <SupportOnlyL1Chains>{children}</SupportOnlyL1Chains>
         </ReefKnotProvider>
       </WagmiProvider>
     </Web3ProviderContext.Provider>

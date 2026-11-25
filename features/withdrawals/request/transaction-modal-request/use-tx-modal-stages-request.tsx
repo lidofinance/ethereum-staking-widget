@@ -5,6 +5,7 @@ import {
   useTransactionModalStage,
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 import {
   TxStageBunker,
@@ -16,7 +17,8 @@ import { TxRequestStageSuccess } from './tx-stage-request-success';
 
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import type { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
-import { getErrorMessage } from 'utils';
+import { TxStaleError } from 'modules/web3';
+import { getErrorMessage, isRetryableTxError, isSettledTxError } from 'utils';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
@@ -34,16 +36,25 @@ const getTxModalStagesRequest = (
   ...getGeneralTransactionModalStages(transitStage),
 
   dialogBunker: (): Promise<boolean> =>
-    new Promise((resolve, _) => {
+    new Promise((resolve) => {
+      let close: (() => void) | undefined;
       transitStage(
         <TxStageBunker
           onClick={() => resolve(true)}
-          onClose={() => resolve(false)}
+          onClose={() => {
+            resolve(false);
+            close?.();
+          }}
         />,
         {
           isClosableOnLedger: true,
+          onOpen: (closeSession) => {
+            close = closeSession;
+          },
+          onDismiss: () => resolve(false),
         },
       );
+      if (!close) resolve(false);
     }),
 
   signPermit: () => transitStage(<TxStagePermit />),
@@ -100,10 +111,12 @@ const getTxModalStagesRequest = (
 
   failed: (
     error: unknown,
-    onRetry?: () => void,
+    onRetry?: TxRetryHandler,
     suggestTryAllowance?: boolean,
     onTryAllowance?: () => void,
   ) => {
+    // a flow superseded before it reached the wallet: nothing to report
+    if (error instanceof TxStaleError) return;
     return transitStage(
       <TxStageFail
         footer={
@@ -124,7 +137,8 @@ const getTxModalStagesRequest = (
           )
         }
         failedText={getErrorMessage(error)}
-        onRetry={onRetry}
+        isSettled={isSettledTxError(error)}
+        onRetry={isRetryableTxError(error) ? onRetry : undefined}
       />,
       {
         isClosableOnLedger: true,

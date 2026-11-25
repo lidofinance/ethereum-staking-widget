@@ -1,0 +1,129 @@
+import styled, { css, type DefaultTheme } from 'styled-components';
+
+export const POPUP_BASE_Z_INDEX = 200;
+export const POPUP_MENU_Z_INDEX = POPUP_BASE_Z_INDEX + 1;
+
+export const PopoverNoClickBackdrop = styled.div<{ $backdrop: boolean }>`
+  z-index: ${POPUP_BASE_Z_INDEX};
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: ${({ $backdrop }) => ($backdrop ? '100%' : '0px')};
+`;
+
+// light hover #000a3d08 (alpha ~0.03) is lighter than the active rgba(0, 10, 61, 0.04)
+export const popupItemActiveBg = (theme: DefaultTheme) =>
+  theme.name === 'dark' ? '#34343D' : 'rgba(0, 10, 61, 0.04)';
+export const popupItemHoverBg = (theme: DefaultTheme) =>
+  theme.name === 'dark' ? '#34343D' : '#000a3d08';
+
+type PopupMenuProps = {
+  $opened: boolean;
+};
+
+const visibleCSS = css`
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+
+  &[data-placement] {
+    transform: translate(0, 0);
+  }
+`;
+
+const hiddenCSS = css`
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  &[data-placement^='top'] {
+    transform: translateY(6px);
+  }
+  &[data-placement^='right'] {
+    transform: translateX(-6px);
+  }
+  &[data-placement^='bottom'] {
+    transform: translateY(-6px);
+  }
+  &[data-placement^='left'] {
+    transform: translateX(6px);
+  }
+`;
+
+export const PopupStyled = styled.div<PopupMenuProps>`
+  z-index: ${POPUP_MENU_Z_INDEX};
+  min-width: 115px;
+
+  position: absolute;
+  top: 48px;
+
+  overflow: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+
+  margin: 0;
+  padding: 0;
+
+  background: var(--lido-color-foreground);
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  line-height: 1.5em;
+  font-weight: 400;
+
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
+  box-shadow: ${({ theme }) => theme.boxShadows.md} rgba(0, 10, 61, 0.16);
+
+  transition: opacity 150ms ease;
+  transition-property: opacity, transform;
+
+  ${({ $opened }) => ($opened ? visibleCSS : hiddenCSS)};
+`;
+
+type PopupMenuOptionProps = {
+  $active: boolean;
+};
+
+export const OptionStyled = styled.button<PopupMenuOptionProps>`
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 44px;
+
+  padding: 0 8px;
+  margin: 0;
+  border: none;
+  box-sizing: border-box;
+  font: inherit;
+
+  text-align: left;
+  color: var(--lido-color-text);
+  transition: opacity 100ms;
+  cursor: pointer;
+  white-space: nowrap;
+
+  // Fix the highlight by click
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+
+  // Backgrounds
+  background: var(--lido-color-controlBg);
+
+  background: ${({ theme, $active }) => $active && popupItemActiveBg(theme)};
+
+  &:not(:disabled):hover,
+  &:focus-visible {
+    background: ${({ theme }) => popupItemHoverBg(theme)};
+  }
+
+  // Option.Text
+  & > span {
+    margin-left: 8px;
+
+    font-weight: 400;
+    font-size: 12px;
+    color: #7a8aa0;
+  }
+`;

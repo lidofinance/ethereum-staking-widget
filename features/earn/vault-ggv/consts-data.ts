@@ -16,3 +16,6 @@ export const GGV_INCENTIVES = [
 ];
 
 export const GGV_STATS_ORIGIN = 'https://api.sevenseas.capital';
+
+// 10 bps (basis points) = 0.1%. Tolerance for minimumAssets in Teller.bulkWithdraw.
+export const GGV_BULK_WITHDRAW_SLIPPAGE_BPS = 10n;

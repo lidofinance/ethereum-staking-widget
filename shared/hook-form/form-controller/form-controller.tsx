@@ -1,56 +1,81 @@
-import { FC, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import {
+  FC,
+  useCallback,
+  useEffect,
+  useRef,
+  type BaseSyntheticEvent,
+} from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useFormControllerContext } from './form-controller-context';
 import { useWagmiConnectionChangedCallback } from 'shared/hooks/use-wagmi-connection-changed-callback';
 
-type FormControllerProps = React.ComponentProps<'form'>;
-
-export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
+export const FormController: FC<React.ComponentProps<'form'>> = ({
   children,
   ...props
 }) => {
-  const { handleSubmit, reset: resetHookForm, getValues } = useFormContext();
+  const {
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { disabled },
+  } = useFormContext();
   const {
     onSubmit,
-    onReset: resetCustom,
+    onReset,
     retryEvent,
+    resetFormOn = 'all',
   } = useFormControllerContext();
+  // Keep lifecycle and disabled state current while asynchronous validation runs.
+  const submissionState = useRef({ mounted: true, disabled });
+  submissionState.current.disabled = disabled;
 
-  const reset = useMemo(() => {
-    return resetCustom
-      ? // for custom callback we provide current form values so that they can be used to build reset form state
-        // e.g. leave selected token but reset amount
-        resetCustom
-      : // for default hook-form reset we shim the argument, because hook-form reset expects the new form values as argument
-        // this resets form to default values provided to useForm
-        () => resetHookForm();
-  }, [resetCustom, resetHookForm]);
+  useEffect(() => {
+    const state = submissionState.current;
+    state.mounted = true;
+    return () => {
+      state.mounted = false;
+    };
+  }, []);
 
-  // Bind submit action
-  const doSubmit = useMemo(
-    () =>
-      handleSubmit(async (args) => {
-        const success = await onSubmit(args);
-        if (success) reset(args);
-      }),
-    [handleSubmit, onSubmit, reset],
+  const resetForm = useCallback(() => {
+    // Read current values: the form may change while a transaction is pending.
+    if (onReset) onReset(getValues());
+    else reset();
+  }, [onReset, getValues, reset]);
+
+  const submit = useCallback(
+    async (event?: BaseSyntheticEvent): Promise<boolean> => {
+      if (
+        !submissionState.current.mounted ||
+        submissionState.current.disabled
+      ) {
+        event?.preventDefault?.();
+        return false;
+      }
+
+      return (
+        (await handleSubmit(async (values) => {
+          // Validation may await network data; the form can disappear or be disabled.
+          if (
+            !submissionState.current.mounted ||
+            submissionState.current.disabled
+          )
+            return false;
+          const success = await onSubmit(values);
+          if (success) resetForm();
+          return success;
+        })(event)) ?? false
+      );
+    },
+    [handleSubmit, onSubmit, resetForm],
   );
 
-  // Bind retry callback
-  useEffect(() => {
-    return retryEvent.subscribe(doSubmit);
-  }, [retryEvent, doSubmit]);
-
-  const resetWithValues = useCallback(() => {
-    reset(getValues());
-  }, [reset, getValues]);
-
-  // Reset the form when chain id or wallet address changed or disconnected
-  useWagmiConnectionChangedCallback(resetWithValues);
+  useEffect(() => retryEvent.subscribe(submit), [retryEvent, submit]);
+  useWagmiConnectionChangedCallback(resetForm, resetFormOn);
 
   return (
-    <form autoComplete="off" onSubmit={doSubmit} {...props}>
+    <form autoComplete="off" onSubmit={submit} {...props}>
       {children}
     </form>
   );

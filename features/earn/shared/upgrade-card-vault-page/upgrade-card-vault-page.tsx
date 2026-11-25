@@ -56,7 +56,7 @@ export const UpgradeCardVaultPage: FC<UpgradeCardProps> = ({
     ? {
         title: 'Upgrade to EarnETH',
         subtitle:
-          'Move your assets from Lido DVV, GGV or stRATEGY into the newest Lido vault',
+          'Move your assets from Lido DVV or stRATEGY into the newest Lido vault',
         description: (
           <>
             To upgrade you just need to deposit your upgradable tokens into the

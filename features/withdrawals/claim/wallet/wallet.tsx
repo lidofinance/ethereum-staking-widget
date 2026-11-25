@@ -4,7 +4,7 @@ import {
   WalletWrapperStyled,
   WalletMyRequests,
 } from 'features/withdrawals/shared';
-import { CardAccount, CardRow, Fallback } from 'shared/wallet';
+import { CardNetwork, CardRow, Fallback } from 'shared/wallet';
 
 import { WalletAvailableAmount } from './wallet-availale-amount';
 import { WalletPendingAmount } from './wallet-pending-amount';
@@ -14,7 +14,7 @@ export const WalletComponent = () => {
     <WalletWrapperStyled data-testid="claimCardSection">
       <CardRow>
         <WalletAvailableAmount />
-        <CardAccount />
+        <CardNetwork />
       </CardRow>
       <Divider />
       <CardRow>

@@ -2,28 +2,48 @@ import { useCallback } from 'react';
 import {
   encodeFunctionData,
   getContract,
+  isAddressEqual,
   parseEventLogs,
-  WalletClient,
+  type Address,
+  type WalletClient,
 } from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
-  AACall,
   applyRoundUpTxParameter,
   Erc20AllowanceAbi,
+  QuoteMismatchError,
+  type TxFlowOptions,
   useDappStatus,
   useLidoSDK,
   useTxFlow,
+  detectTxFlowInterruption,
 } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
 import { getReferralAddress } from 'utils/get-referral-address';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { ErrorMessage } from 'utils/getErrorMessage';
 import { type Token, TOKENS } from 'consts/tokens';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { SYNC_DEPOSIT_QUEUE_ABI } from '../abi';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { DepositQueueGetter } from '../types/deposit-queue-getter';
-import { SyncDepositQueueWritableContract } from '../types/contracts';
+import {
+  AsyncDepositQueueGetter,
+  SyncDepositQueueGetter,
+} from '../types/deposit-queue-getter';
+import {
+  CollectorContract,
+  DepositQueueWritableContract,
+  SyncDepositQueueWritableContract,
+} from '../types/contracts';
+import { getDepositRoute } from '../utils/deposit-route';
+import {
+  isQuoteWorse,
+  readDepositQuote,
+  readSyncDepositPenalty,
+  type VaultQuote,
+} from '../utils/quote';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
 type DepositArgs = {
   amount: bigint;
@@ -31,19 +51,60 @@ type DepositArgs = {
   referral: string | null;
 };
 
+// The steps of a deposit: the approvals only for a token short of allowance,
+// the reset only for USDT, which rejects a non-zero to non-zero approval
+const STEP = {
+  resetApprove: 'reset-approve',
+  approve: 'approve',
+  deposit: 'deposit',
+} as const;
+
+// what every stage needs, read once before the first step
+type DepositData = {
+  address: Address;
+  tokenAddress: Address;
+  depositQueue: DepositQueueWritableContract;
+  isSyncQueue: boolean;
+  referralAddress: Address;
+  // Read here rather than taken from the form, so a retry after a confirmed
+  // approval never approves again
+  needsApprove: boolean;
+  needsApprovalReset: boolean;
+};
+
+type UseDepositArgs<DepositQueueToken extends string> = {
+  // the token's sync queue, which every token that has one deposits through,
+  // and the async queue of a token without one, see getDepositRoute
+  syncDepositQueueGetter: SyncDepositQueueGetter<DepositQueueToken>;
+  asyncDepositQueueGetter?: AsyncDepositQueueGetter<DepositQueueToken>;
+  // quotes the deposit right before it is sent
+  collector: CollectorContract;
+  // The quote the form displays and its refetch: the deposit is held to it.
+  // Required, so a caller states it: undefined only where no quote is
+  // displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
+  txModalStages: TxModalStages;
+  onRetry?: TxRetryHandler;
+  matomoEventStart?: MATOMO_EVENT_TYPE;
+  matomoEventSuccess?: MATOMO_EVENT_TYPE;
+  // the vault's query scopes, refetched after a deposit whose outcome could
+  // not be read; the whole cache without it
+  refetchScope?: TxFlowOptions['refetchScope'];
+};
+
 export const useDeposit = <DepositQueueToken extends string>({
-  depositQueueGetter,
+  syncDepositQueueGetter,
+  asyncDepositQueueGetter,
+  collector,
+  shownQuote,
+  refetchQuote,
   txModalStages,
   onRetry,
   matomoEventStart,
   matomoEventSuccess,
-}: {
-  depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
-  txModalStages: TxModalStages;
-  onRetry?: () => void;
-  matomoEventStart?: MATOMO_EVENT_TYPE;
-  matomoEventSuccess?: MATOMO_EVENT_TYPE;
-}) => {
+  refetchScope,
+}: UseDepositArgs<DepositQueueToken>) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const txFlow = useTxFlow();
@@ -51,203 +112,237 @@ export const useDeposit = <DepositQueueToken extends string>({
   const deposit = useCallback(
     async ({ amount, token, referral }: DepositArgs) => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
-      invariant(address, 'needs address');
-      const tokenAddress = getTokenAddress(core.chainId, token);
-      invariant(tokenAddress, 'Token address is not defined');
 
-      try {
-        const depositQueue = depositQueueGetter({
-          publicClient: core.rpcProvider,
-          walletClient: core.web3Provider as WalletClient,
-          token: token as DepositQueueToken,
-        });
-        // Both async and sync deposit queue ABIs expose an identical `deposit(assets, referral, merkleProof)`
-        // signature. Casting to the sync variant gives accurate call-site types while avoiding the
-        // uncallable union that TypeScript produces when `depositQueue` is `Async | Sync`.
-        const depositFn: SyncDepositQueueWritableContract['write']['deposit'] =
-          depositQueue.write.deposit;
-        const estimateDepositGasFn = depositQueue.estimateGas.deposit;
-
-        const depositTokenContract = getContract({
+      const msgValue = token === TOKENS.eth ? amount : 0n;
+      const getTokenContract = (tokenAddress: Address) =>
+        getContract({
           address: tokenAddress,
           abi: Erc20AllowanceAbi,
           client: {
-            public: core.rpcProvider,
-            wallet: core.web3Provider as WalletClient,
+            public: core.publicClient,
+            wallet: core.walletClient as WalletClient,
           },
         });
 
-        const referralAddress = await getReferralAddress(
-          referral,
-          core.rpcProvider,
-        );
-
-        let needsApprove = false;
-        // some tokens (like USDT) require resetting approval to 0 before setting it to a new value
-        let needsApprovalReset = false;
-
-        if (token !== TOKENS.eth) {
-          const allowance = await depositTokenContract.read.allowance([
-            address,
-            depositQueue.address,
-          ]);
-
-          needsApprove = allowance < amount;
-
-          needsApprovalReset =
-            token === TOKENS.usdt && needsApprove && allowance > 0n;
+      // Run right before the deposit is sent, as the last step before the
+      // wallet is reached in both signing paths, after any approval: the quote
+      // re-read on the queue the deposit goes to must not be worse than the
+      // displayed one. A better quote passes. The quote includes the sync
+      // queue's current penalty, so a penalty set or raised since the form
+      // quoted stops the deposit here. With no quote displayed there is
+      // nothing to hold the deposit to: any penalty stops it, so a deposit
+      // nobody saw priced is never charged one. Only an upgrade deposits with
+      // no quote displayed, so the stop says the upgrade is unavailable
+      const checkBeforeDeposit = async (data: DepositData) => {
+        if (!shownQuote) {
+          if ((await readSyncDepositPenalty(data.depositQueue)) > 0n) {
+            throw new QuoteMismatchError(ErrorMessage.UPGRADE_UNAVAILABLE);
+          }
+          return;
         }
+        const quote = await readDepositQuote({
+          collector,
+          depositQueue: data.depositQueue,
+          amount,
+          account: data.address,
+        });
+        if (isQuoteWorse(quote, shownQuote)) {
+          void refetchQuote?.();
+          throw new QuoteMismatchError();
+        }
+      };
 
-        const approveArgs = [depositQueue.address, amount] as const;
-        const resetApproveArgs = [depositQueue.address, 0n] as const;
-        const depositArgs = [amount, referralAddress, []] as const;
-        const msgValue = token === TOKENS.eth ? amount : 0n;
+      const { isSuccess } = await txFlow<DepositData>({
+        refetchScope,
+        prepare: async () => {
+          invariant(address, 'needs address');
+          const tokenAddress = getTokenAddress(core.chainId, token);
+          invariant(tokenAddress, 'Token address is not defined');
 
-        await txFlow({
-          callsFn: async () => {
-            const calls: AACall[] = [];
+          const queueArgs = {
+            publicClient: core.publicClient,
+            walletClient: core.walletClient as WalletClient,
+            token: token as DepositQueueToken,
+          };
+          const { depositQueue, isSyncQueue } = getDepositRoute({
+            syncQueue: syncDepositQueueGetter(queueArgs),
+            asyncQueue: asyncDepositQueueGetter?.(queueArgs),
+          });
+          const referralAddress = await getReferralAddress(
+            referral,
+            core.publicClient,
+          );
 
-            if (needsApprove) {
-              if (needsApprovalReset) {
-                calls.push({
-                  to: tokenAddress,
-                  data: encodeFunctionData({
-                    abi: depositTokenContract.abi,
-                    functionName: 'approve',
-                    args: resetApproveArgs,
-                  }),
-                });
-              }
+          let needsApprove = false;
+          let needsApprovalReset = false;
+          if (token !== TOKENS.eth) {
+            const allowance = await getTokenContract(
+              tokenAddress,
+            ).read.allowance([address, depositQueue.address]);
+            needsApprove = allowance < amount;
+            needsApprovalReset =
+              token === TOKENS.usdt && needsApprove && allowance > 0n;
+          }
 
-              calls.push({
-                to: tokenAddress,
-                data: encodeFunctionData({
-                  abi: depositTokenContract.abi,
-                  functionName: 'approve',
-                  args: approveArgs,
-                }),
-              });
-            }
-            calls.push({
-              to: depositQueue.address,
+          return {
+            address,
+            tokenAddress,
+            depositQueue,
+            isSyncQueue,
+            referralAddress,
+            needsApprove,
+            needsApprovalReset,
+          };
+        },
+        // the approvals join the batch for AA wallets and go as separate
+        // transactions otherwise. A batch is signed as built, so it is
+        // checked once built; a stepwise send checks right before the deposit
+        callsFn: async ({ isAA, data }) => {
+          const approve = (value: bigint) =>
+            encodeFunctionData({
+              abi: Erc20AllowanceAbi,
+              functionName: 'approve',
+              args: [data.depositQueue.address, value],
+            });
+          const calls = [
+            data.needsApprove &&
+              data.needsApprovalReset && {
+                stepId: STEP.resetApprove,
+                to: data.tokenAddress,
+                data: approve(0n),
+              },
+            data.needsApprove && {
+              stepId: STEP.approve,
+              to: data.tokenAddress,
+              data: approve(amount),
+            },
+            {
+              stepId: STEP.deposit,
+              to: data.depositQueue.address,
               data: encodeFunctionData({
-                abi: depositQueue.abi,
+                abi: data.depositQueue.abi,
                 functionName: 'deposit',
-                args: depositArgs,
+                args: [amount, data.referralAddress, []],
               }),
               value: msgValue,
-            });
-
-            needsApprove = false;
-
-            return calls;
-          },
-          sendTransaction: async (txStagesCallback) => {
-            if (needsApprove) {
-              if (needsApprovalReset) {
-                await core.performTransaction({
-                  getGasLimit: (opts) =>
-                    depositTokenContract.estimateGas.approve(
-                      resetApproveArgs,
-                      opts,
-                    ),
-                  sendTransaction: (opts) => {
-                    return depositTokenContract.write.approve(
-                      resetApproveArgs,
-                      opts,
-                    );
-                  },
-                  callback: txStagesCallback,
-                });
-                needsApprovalReset = false;
-              }
-
-              await core.performTransaction({
-                getGasLimit: (opts) =>
-                  depositTokenContract.estimateGas.approve(approveArgs, opts),
-                sendTransaction: (opts) => {
-                  return depositTokenContract.write.approve(approveArgs, opts);
-                },
-                callback: txStagesCallback,
-              });
-            }
-            needsApprove = false;
+            },
+          ];
+          if (isAA) await checkBeforeDeposit(data);
+          return calls;
+        },
+        sendStep: async (step, txStagesCallback, { data }) => {
+          if (step.stepId !== STEP.deposit) {
+            const tokenContract = getTokenContract(data.tokenAddress);
+            const approveArgs = [
+              data.depositQueue.address,
+              step.stepId === STEP.resetApprove ? 0n : amount,
+            ] as const;
             await core.performTransaction({
-              getGasLimit: async (opts) =>
-                applyRoundUpTxParameter(
-                  await estimateDepositGasFn(depositArgs, {
-                    ...opts,
-                    value: msgValue,
-                  }),
-                ),
-              sendTransaction: (opts) => {
-                return depositFn(depositArgs, {
-                  ...opts,
-                  value: msgValue,
-                });
-              },
+              getGasLimit: (opts) =>
+                tokenContract.estimateGas.approve(approveArgs, opts),
+              sendTransaction: (opts) =>
+                tokenContract.write.approve(approveArgs, opts),
               callback: txStagesCallback,
             });
-          },
-          onSign: () => {
-            if (needsApprove) {
-              return txModalStages.signApproval(amount, token);
+            return;
+          }
+          await checkBeforeDeposit(data);
+          // Both async and sync deposit queue ABIs expose an identical
+          // `deposit(assets, referral, merkleProof)`. Casting to the sync
+          // variant gives accurate call-site types while avoiding the
+          // uncallable union that TypeScript produces for `Async | Sync`
+          const depositFn: SyncDepositQueueWritableContract['write']['deposit'] =
+            data.depositQueue.write.deposit;
+          const estimateDepositGasFn = data.depositQueue.estimateGas.deposit;
+          const depositArgs = [amount, data.referralAddress, []] as const;
+          await core.performTransaction({
+            getGasLimit: async (opts) =>
+              applyRoundUpTxParameter(
+                await estimateDepositGasFn(depositArgs, {
+                  ...opts,
+                  value: msgValue,
+                }),
+              ),
+            sendTransaction: (opts) =>
+              depositFn(depositArgs, { ...opts, value: msgValue }),
+            callback: txStagesCallback,
+          });
+        },
+        onSign: ({ ctx: { stepId } }) => {
+          if (stepId === STEP.deposit) {
+            txModalStages.sign(amount, token);
+            return;
+          }
+          txModalStages.signApproval(amount, token);
+        },
+        onReceipt: ({ txHashOrCallId, isAA, ctx: { stepId } }) => {
+          if (stepId === STEP.deposit) {
+            txModalStages.pending(amount, token, txHashOrCallId, isAA);
+            return;
+          }
+          txModalStages.pendingApproval(amount, token, txHashOrCallId);
+        },
+        onSuccess: async ({ txHash, ctx: { stepId, data } }) => {
+          if (stepId !== STEP.deposit) return;
+          let receivedShares: bigint | undefined;
+          if (txHash && data.isSyncQueue) {
+            try {
+              const receipt = await core.publicClient.getTransactionReceipt({
+                hash: txHash,
+              });
+              // only the sync queue mints at once and emits `Deposited`
+              const claimedLog = parseEventLogs({
+                abi: SYNC_DEPOSIT_QUEUE_ABI,
+                logs: receipt.logs,
+                eventName: 'Deposited',
+              }).find((log) => isAddressEqual(log.args.account, data.address));
+              receivedShares = claimedLog?.args.shares;
+            } catch {
+              // ignore, show fallback title
             }
-            return txModalStages.sign(amount, token);
-          },
-          onReceipt: async ({ txHashOrCallId, isAA }) => {
-            if (needsApprove) {
-              return txModalStages.pendingApproval(
-                amount,
-                token,
-                txHashOrCallId,
-              );
-            }
-            return txModalStages.pending(amount, token, txHashOrCallId, isAA);
-          },
-          onSuccess: async ({ txHash }) => {
-            if (needsApprove) return;
-            let receivedShares: bigint | undefined;
-            if (txHash) {
-              try {
-                const receipt = await core.rpcProvider.getTransactionReceipt({
-                  hash: txHash,
-                });
-                // `Deposited` is only emitted by sync deposits (USDC/USDT). For async deposits
-                // this returns an empty array and `receivedShares` stays undefined.
-                // Using SYNC_DEPOSIT_QUEUE_ABI directly gives typed `log.args` without casting.
-                const claimedLog = parseEventLogs({
-                  abi: SYNC_DEPOSIT_QUEUE_ABI,
-                  logs: receipt.logs,
-                  eventName: 'Deposited',
-                }).find(
-                  (log) =>
-                    log.args.account.toLowerCase() === address?.toLowerCase(),
-                );
-                receivedShares = claimedLog?.args.shares;
-              } catch {
-                // ignore, show fallback title
-              }
-            }
-            txModalStages.success(amount, token, txHash, receivedShares);
-            if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
-          },
-          onMultisigDone: () => {
-            if (needsApprove) return;
-            txModalStages.successMultisig();
-          },
-        });
-        return true;
-      } catch (error) {
-        console.error(error);
-        txModalStages.failed(error, onRetry);
-        return false;
-      }
+          }
+          txModalStages.success(
+            amount,
+            token,
+            txHash,
+            receivedShares,
+            !data.isSyncQueue,
+          );
+          if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
+        },
+        onMultisigDone: ({ ctx }) => {
+          if (ctx.stepId === STEP.deposit) txModalStages.successMultisig();
+        },
+        onFailure: async ({ error, ctx }) => {
+          console.error(error);
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.deposit, [
+              {
+                stepId: STEP.approve,
+                message: ErrorMessage.DEPOSIT_INTERRUPTED,
+              },
+              {
+                stepId: STEP.resetApprove,
+                message: ErrorMessage.DEPOSIT_RESET_INTERRUPTED,
+              },
+            ]),
+            onRetry,
+          );
+        },
+      });
+
+      // deposited (or proposed to a multisig): the form resets
+      return isSuccess;
     },
     [
       address,
       core,
-      depositQueueGetter,
+      syncDepositQueueGetter,
+      asyncDepositQueueGetter,
+      collector,
+      shownQuote,
+      refetchQuote,
+      refetchScope,
       matomoEventStart,
       matomoEventSuccess,
       onRetry,
