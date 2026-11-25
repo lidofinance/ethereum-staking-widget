@@ -1,14 +1,15 @@
 import { useConnection, useChains } from 'wagmi';
 import { isSupportedL2Chain } from 'consts/chains';
 
-import { useDappChain } from 'modules/web3/web3-provider/dapp-chain';
-import { useWalletResolving } from 'modules/web3/web3-provider/wallet-resolving';
+import { useDappChain } from '../web3-provider/dapp-chain';
+import { useWalletResolving } from '../web3-provider/wallet-resolving';
 
 export const useDappStatus = () => {
   const {
     address,
     chainId: walletChainId,
     isConnected: isWalletConnected,
+    isConnecting,
   } = useConnection();
 
   // boot auto-connect still under way: not known to be disconnected yet
@@ -45,6 +46,7 @@ export const useDappStatus = () => {
     isDappActiveOnL1,
     isWalletConnected,
     isWalletResolving,
+    isConnecting,
     walletChainId,
     address,
     isTestnet,

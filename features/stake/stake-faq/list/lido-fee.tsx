@@ -5,10 +5,11 @@ import { DATA_UNAVAILABLE } from 'consts/text';
 import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
 
 export const LidoFee: FC = () => {
-  const protocolFee = useProtocolFee();
+  const { data: protocolFee, isLoading: isProtocolFeeLoading } =
+    useProtocolFee();
 
   const feeValue =
-    protocolFee.isLoading || !protocolFee.totalFeeString
+    isProtocolFeeLoading || !protocolFee?.totalFeeString
       ? DATA_UNAVAILABLE
       : `${protocolFee.totalFeeString}%`;
 

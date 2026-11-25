@@ -20,7 +20,8 @@ export const L2StakeFormInfo = () => {
   const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(gasCost);
   // This will use Lido SDK default chain for fetching the protocol fee
   // so it can be eth testnet value for mainnet L2 if env is misconfigured
-  const protocolFee = useProtocolFee();
+  const { data: protocolFee, isLoading: isProtocolFeeLoading } =
+    useProtocolFee();
   const { data: conversion, isLoading: isConversionLoading } =
     useFastStakeConversion();
   const { data: liquidity, isLoading: isLiquidityLoading } =
@@ -79,11 +80,11 @@ export const L2StakeFormInfo = () => {
       <DataTableRow
         title="Reward fee"
         data-testid="lidoFee"
-        loading={protocolFee.isLoading}
+        loading={isProtocolFeeLoading}
         help="Please note: this fee applies to staking rewards only,
       and is NOT taken from your staked amount."
       >
-        {!protocolFee.totalFeeString
+        {!protocolFee?.totalFeeString
           ? DATA_UNAVAILABLE
           : `${protocolFee.totalFeeString}%`}
       </DataTableRow>

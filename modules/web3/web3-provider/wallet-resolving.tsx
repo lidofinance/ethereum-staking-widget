@@ -6,7 +6,7 @@ const RECENT_CONNECTOR_KEY = 'wagmi.recentConnectorId';
 // a reconnect that has not started by then is not coming
 const START_TIMEOUT_MS = 3000;
 // the connect screen is never held back longer than this
-const MAX_RESOLVE_MS = 10_000;
+const MAX_RESOLVE_MS = 1000;
 
 export type WalletResolveState =
   'unknown' | 'waiting' | 'attempting' | 'settled';

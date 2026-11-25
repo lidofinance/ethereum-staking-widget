@@ -14,7 +14,8 @@ export const StakeFormInfo = () => {
   const amount = useWatch<StakeFormInput, 'amount'>({ name: 'amount' });
 
   const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(gasCost);
-  const protocolFee = useProtocolFee();
+  const { data: protocolFee, isLoading: isProtocolFeeLoading } =
+    useProtocolFee();
 
   return (
     <DataTable data-testid="stakeFormInfo">
@@ -34,11 +35,11 @@ export const StakeFormInfo = () => {
       <DataTableRow
         title="Reward fee"
         data-testid="lidoFee"
-        loading={protocolFee.isLoading}
+        loading={isProtocolFeeLoading}
         help="Please note: this fee applies to staking rewards only,
       and is NOT taken from your staked amount."
       >
-        {!protocolFee.totalFeeString
+        {!protocolFee?.totalFeeString
           ? DATA_UNAVAILABLE
           : `${protocolFee.totalFeeString}%`}
       </DataTableRow>

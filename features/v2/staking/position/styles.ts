@@ -6,10 +6,12 @@ import { fadeIn, FadeInProps } from '../../utils';
 export const BorderedCard = styled(Card).attrs({
   padding: 12,
 })`
+  min-height: 72px;
+
   border: 1px solid var(--lido-app-ui-color-border-default);
   border-radius: var(--lido-app-ui-border-radius-md);
   // horizontally combines with element padding 12 from attrs
-  padding-inline: 4px;
+  padding-inline: var(--lido-app-ui-space-4);
 `;
 
 export const UnconnectedText = styled(Typography).attrs({
