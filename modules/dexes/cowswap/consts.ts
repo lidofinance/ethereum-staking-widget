@@ -1,7 +1,7 @@
 import { config } from 'config';
 // import { GITHUB_RAW_MAIN_PATH } from 'consts/external-links';
 import { arbitrum, base, linea, mainnet, sepolia } from 'viem/chains';
-import { DEFAULT_COWSWAP_WIDGET_BASE_URL } from 'scripts/csp/content-security-policy.mjs';
+import { resolveCowswapBaseUrl } from 'scripts/csp/content-security-policy.mjs';
 
 export const COWSWAP_WIDGET_ALLOWED_RPC_METHODS = new Set([
   // read-only
@@ -47,8 +47,10 @@ export const COWSWAP_API_NETWORKS: Record<number, string> = {
   [linea.id]: 'linea',
 };
 
-export const COWSWAP_BASE_URL =
-  config.cowswapWidgetBaseUrl || DEFAULT_COWSWAP_WIDGET_BASE_URL;
+// the same form the CSP frame-src source uses (server header and IPFS meta tag)
+export const COWSWAP_BASE_URL = resolveCowswapBaseUrl(
+  config.cowswapWidgetBaseUrl,
+);
 
 // there is barn.api.cow.fi staging for API, but UI(even staging) uses prod API
 const COWSWAP_API_BASE_URL = 'https://api.cow.fi';

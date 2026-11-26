@@ -65,7 +65,11 @@ export const UpgradeAssetsBlock: FC = () => {
   const { isDepositEnabled } = useEthVaultAvailable();
   const { openDrawer: openDrawerRight } = useEthVaultDrawer();
 
-  const { deposit } = useEthVaultDeposit();
+  // an upgrade deposits the whole balance with no quote displayed
+  const { deposit } = useEthVaultDeposit({
+    shownQuote: undefined,
+    refetchQuote: undefined,
+  });
 
   const upgrade = useCallback(
     async ({ token }: UpgradeArgs) => {

@@ -2,78 +2,107 @@ import { useCallback } from 'react';
 import {
   encodeFunctionData,
   getContract,
+  isAddressEqual,
   parseEventLogs,
-  WalletClient,
+  type Address,
+  type WalletClient,
 } from 'viem';
 import invariant from 'tiny-invariant';
+import type { PopulatedTransaction } from '@lidofinance/lido-ethereum-sdk/core';
 
 import {
-  AACall,
   applyRoundUpTxParameter,
   Erc20AllowanceAbi,
+  isStepSent,
+  isStepSettled,
+  QuoteMismatchError,
+  TxFlowInterruptedError,
+  TxSentDataUnavailableError,
+  TxSettledError,
   useDappStatus,
   useLidoSDK,
   useTxFlow,
+  detectTxFlowInterruption,
 } from 'modules/web3';
+import {
+  getVaultRefetchScope,
+  isQuoteWorse,
+  getDepositRoute,
+  readDepositQuote,
+  type CollectorContract,
+  type DepositQueueWritableContract,
+  type DepositTxModalStages,
+  type SyncDepositQueueWritableContract,
+  type VaultQuote,
+} from 'modules/mellow-meta-vaults';
+import { SYNC_DEPOSIT_QUEUE_ABI } from 'modules/mellow-meta-vaults/abi';
 import { getTokenAddress } from 'config/networks/token-address';
 import { getReferralAddress } from 'utils/get-referral-address';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { ErrorMessage } from 'utils/getErrorMessage';
 import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import { getSyncDepositQueueWritableContract } from '../../contracts';
-import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
-import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
+import { ETH_VAULT_QUERY_SCOPE } from '../../consts';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-type Stage = 'steth-approve' | 'wrap' | 'wsteth-approve' | 'deposit';
+// The steps of a stETH deposit: the queue takes wstETH, so the stETH is
+// wrapped first. The approvals only for an allowance short of the amount
+const STEP = {
+  stethApprove: 'steth-approve',
+  wrap: 'wrap',
+  wstethApprove: 'wsteth-approve',
+  deposit: 'deposit',
+} as const;
 
 type DepositStethArgs = {
   amount: bigint;
   referral: string | null;
 };
 
-export const useEthVaultDepositSteth = (onRetry?: () => void) => {
-  const { txModalStages } = useTxModalStagesDeposit({
-    stageOperationArgs: {
-      willReceiveToken: ETH_VAULT_TOKEN_SYMBOL,
-      operationText: 'Requesting deposit for',
-    },
-    stageApproveArgs: {
-      willReceiveToken: ETH_VAULT_TOKEN_SYMBOL,
-      operationText: 'Unlocking',
-    },
-  });
+// what every stage needs, read once before the first step
+type DepositStethData = {
+  address: Address;
+  wstethAddress: Address;
+  depositQueue: DepositQueueWritableContract;
+  isSyncQueue: boolean;
+  referralAddress: Address;
+  // the wstETH the wrap gives for the stETH amount: what the queue receives
+  wstethAmount: bigint;
+  // Read here rather than taken from the form, so a retry after a confirmed
+  // approval never approves again
+  needsStethApprove: boolean;
+  needsWstethApprove: boolean;
+};
 
+type UseEthVaultDepositStethArgs = {
+  // quotes the deposit right before it is sent
+  collector: CollectorContract;
+  // The quote the form displays (for the wstETH the stETH wraps to) and its
+  // refetch: the deposit is held to it. Undefined where no quote is displayed
+  shownQuote: VaultQuote | undefined;
+  refetchQuote: (() => unknown) | undefined;
+  txModalStages: DepositTxModalStages;
+  onRetry?: TxRetryHandler;
+};
+
+export const useEthVaultDepositSteth = ({
+  collector,
+  shownQuote,
+  refetchQuote,
+  txModalStages,
+  onRetry,
+}: UseEthVaultDepositStethArgs) => {
   const { address } = useDappStatus();
   const { core, wrap } = useLidoSDK();
   const txFlow = useTxFlow();
 
   const deposit = useCallback(
-    async ({ amount, referral }: DepositStethArgs) => {
-      invariant(address, 'needs address');
-
-      const stethAddress = getTokenAddress(core.chainId, TOKENS.steth);
-      const wstethAddress = getTokenAddress(core.chainId, TOKENS.wsteth);
-      invariant(stethAddress, 'stETH address not defined');
-      invariant(wstethAddress, 'wstETH address not defined');
-
-      try {
-        const depositQueue = getSyncDepositQueueWritableContract({
-          publicClient: core.publicClient,
-          walletClient: core.walletClient as WalletClient,
-          token: TOKENS.wsteth,
-        });
-
-        const stethContract = getContract({
-          address: stethAddress,
-          abi: Erc20AllowanceAbi,
-          client: {
-            public: core.publicClient,
-            wallet: core.walletClient as WalletClient,
-          },
-        });
-
-        const wstethContract = getContract({
+    async ({ amount, referral }: DepositStethArgs): Promise<boolean> => {
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnEthDepositingStart);
+      const getWstethContract = (wstethAddress: Address) =>
+        getContract({
           address: wstethAddress,
           abi: Erc20AllowanceAbi,
           client: {
@@ -82,199 +111,278 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
           },
         });
 
-        const referralAddress = await getReferralAddress(
-          referral,
-          core.publicClient,
-        );
+      // Run right before the deposit is sent, as the last step before the
+      // wallet is reached in both signing paths, after the wrap and any
+      // approval: the quote re-read on the queue the deposit goes to must not
+      // be worse than the displayed one. A better quote passes. A stepwise
+      // send also runs it once before the first step, so a quote that is
+      // already worse stops the flow before the approval and the wrap
+      const checkBeforeDeposit = async (data: DepositStethData) => {
+        if (!shownQuote) return;
+        const quote = await readDepositQuote({
+          collector,
+          depositQueue: data.depositQueue,
+          amount: data.wstethAmount,
+          account: data.address,
+        });
+        if (isQuoteWorse(quote, shownQuote)) {
+          void refetchQuote?.();
+          throw new QuoteMismatchError();
+        }
+      };
 
-        // Pre-calculate expected wstETH amount for allowance check and deposit call
-        const wstethAmount = await wrap.convertStethToWsteth(amount);
+      const { isSuccess } = await txFlow<DepositStethData>({
+        refetchScope: getVaultRefetchScope(ETH_VAULT_QUERY_SCOPE),
+        prepare: async ({ isAA }) => {
+          invariant(address, 'needs address');
+          const wstethAddress = getTokenAddress(core.chainId, TOKENS.wsteth);
+          invariant(wstethAddress, 'wstETH address not defined');
 
-        const [stethAllowance, wstethAllowance] = await Promise.all([
-          stethContract.read.allowance([address, wstethAddress]),
-          wstethContract.read.allowance([address, depositQueue.address]),
-        ]);
+          const queueArgs = {
+            publicClient: core.publicClient,
+            walletClient: core.walletClient as WalletClient,
+            token: TOKENS.wsteth,
+          };
+          const { depositQueue, isSyncQueue } = getDepositRoute({
+            syncQueue: getSyncDepositQueueWritableContract(queueArgs),
+          });
+          const [referralAddress, wstethAmount, stethAllowance] =
+            await Promise.all([
+              getReferralAddress(referral, core.publicClient),
+              wrap.convertStethToWsteth(amount),
+              wrap.getStethForWrapAllowance(address),
+            ]);
+          const wstethAllowance = await getWstethContract(
+            wstethAddress,
+          ).read.allowance([address, depositQueue.address]);
 
-        let needsStethApprove = stethAllowance < amount;
-        let needsWstethApprove = wstethAllowance < wstethAmount;
-
-        // Stage tracking for tx modal UI
-        let currentStage: Stage = needsStethApprove ? 'steth-approve' : 'wrap';
-
-        const stethApproveArgs = [wstethAddress, amount] as const;
-        const wstethApproveArgs = [depositQueue.address, wstethAmount] as const;
-        const depositArgs = [wstethAmount, referralAddress, []] as const;
-
-        await txFlow({
-          callsFn: async () => {
-            const calls: (AACall | false)[] = [];
-
-            if (needsStethApprove) {
-              const approveStethCall =
-                await (wrap.approveStethForWrapPopulateTx({
-                  value: amount,
-                }) as Promise<AACall>);
-              calls.push(approveStethCall);
-            }
-
-            const wrapCall = await (wrap.wrapStethPopulateTx({
-              value: amount,
-            }) as Promise<AACall>);
-            calls.push(wrapCall);
-
-            if (needsWstethApprove) {
-              calls.push({
-                to: wstethAddress,
-                data: encodeFunctionData({
-                  abi: wstethContract.abi,
-                  functionName: 'approve',
-                  args: wstethApproveArgs,
-                }),
-              });
-            }
-
-            calls.push({
-              to: depositQueue.address,
+          const data = {
+            address,
+            wstethAddress,
+            depositQueue,
+            isSyncQueue,
+            referralAddress,
+            wstethAmount,
+            needsStethApprove: stethAllowance < amount,
+            needsWstethApprove: wstethAllowance < wstethAmount,
+          };
+          // a batch is checked once built, see callsFn
+          if (!isAA) await checkBeforeDeposit(data);
+          return data;
+        },
+        // every step joins the batch for AA wallets and goes as a separate
+        // transaction otherwise. A batch is signed as built, so it is checked
+        // once built; a stepwise send checks right before the deposit
+        callsFn: async ({ isAA, data }) => {
+          const props = { value: amount };
+          const calls = [
+            data.needsStethApprove && {
+              stepId: STEP.stethApprove,
+              // the SDK types the approval wider than the call it returns
+              ...((await wrap.approveStethForWrapPopulateTx(
+                props,
+              )) as PopulatedTransaction),
+            },
+            { stepId: STEP.wrap, ...(await wrap.wrapStethPopulateTx(props)) },
+            data.needsWstethApprove && {
+              stepId: STEP.wstethApprove,
+              to: data.wstethAddress,
               data: encodeFunctionData({
-                abi: depositQueue.abi,
-                functionName: 'deposit',
-                args: depositArgs,
+                abi: Erc20AllowanceAbi,
+                functionName: 'approve',
+                args: [data.depositQueue.address, data.wstethAmount],
               }),
-            });
-
-            // For AA all steps are batched; treat as single deposit stage
-            needsStethApprove = false;
-            needsWstethApprove = false;
-            currentStage = 'deposit';
-
-            return calls;
-          },
-          sendTransaction: async (txStagesCallback) => {
-            // Step 1: Approve stETH for wstETH wrap contract (if needed)
-            if (needsStethApprove) {
-              await core.performTransaction({
-                getGasLimit: (opts) =>
-                  stethContract.estimateGas.approve(stethApproveArgs, opts),
-                sendTransaction: (opts) =>
-                  stethContract.write.approve(stethApproveArgs, opts),
-                callback: txStagesCallback,
-              });
-              needsStethApprove = false;
-              currentStage = 'wrap';
-            }
-
-            // Step 2: Wrap stETH → wstETH
-            await wrap.wrapSteth({ value: amount, callback: txStagesCallback });
-            currentStage = needsWstethApprove ? 'wsteth-approve' : 'deposit';
-
-            // Step 3: Approve wstETH for deposit queue (if needed)
-            if (needsWstethApprove) {
-              await core.performTransaction({
-                getGasLimit: (opts) =>
-                  wstethContract.estimateGas.approve(wstethApproveArgs, opts),
-                sendTransaction: (opts) =>
-                  wstethContract.write.approve(wstethApproveArgs, opts),
-                callback: txStagesCallback,
-              });
-              needsWstethApprove = false;
-              currentStage = 'deposit';
-            }
-
-            // Step 4: Deposit wstETH into queue
+            },
+            {
+              stepId: STEP.deposit,
+              to: data.depositQueue.address,
+              data: encodeFunctionData({
+                abi: data.depositQueue.abi,
+                functionName: 'deposit',
+                args: [data.wstethAmount, data.referralAddress, []],
+              }),
+            },
+          ];
+          if (isAA) await checkBeforeDeposit(data);
+          return calls;
+        },
+        sendStep: async (step, txStagesCallback, { data }) => {
+          const props = { value: amount, callback: txStagesCallback };
+          if (step.stepId === STEP.stethApprove) {
+            await wrap.approveStethForWrap(props);
+            return;
+          }
+          if (step.stepId === STEP.wrap) {
+            await wrap.wrapSteth(props);
+            return;
+          }
+          if (step.stepId === STEP.wstethApprove) {
+            const wstethContract = getWstethContract(data.wstethAddress);
+            const approveArgs = [
+              data.depositQueue.address,
+              data.wstethAmount,
+            ] as const;
             await core.performTransaction({
-              getGasLimit: async (opts) =>
-                applyRoundUpTxParameter(
-                  await depositQueue.estimateGas.deposit(depositArgs, opts),
-                ),
+              getGasLimit: (opts) =>
+                wstethContract.estimateGas.approve(approveArgs, opts),
               sendTransaction: (opts) =>
-                depositQueue.write.deposit(depositArgs, opts),
+                wstethContract.write.approve(approveArgs, opts),
               callback: txStagesCallback,
             });
-          },
-          onSign: () => {
-            switch (currentStage) {
-              case 'steth-approve':
-                return txModalStages.signApproval(amount, TOKENS.steth);
-              case 'wrap':
-                return txModalStages.signWrap(amount, TOKENS.steth);
-              case 'wsteth-approve':
-                return txModalStages.signApproval(wstethAmount, TOKENS.wsteth);
-              case 'deposit':
-                return txModalStages.sign(wstethAmount, TOKENS.wsteth);
+            return;
+          }
+          await checkBeforeDeposit(data);
+          // Both async and sync deposit queue ABIs expose an identical
+          // `deposit(assets, referral, merkleProof)`, see useDeposit
+          const depositFn: SyncDepositQueueWritableContract['write']['deposit'] =
+            data.depositQueue.write.deposit;
+          const estimateDepositGasFn = data.depositQueue.estimateGas.deposit;
+          const depositArgs = [
+            data.wstethAmount,
+            data.referralAddress,
+            [],
+          ] as const;
+          await core.performTransaction({
+            getGasLimit: async (opts) =>
+              applyRoundUpTxParameter(
+                await estimateDepositGasFn(depositArgs, opts),
+              ),
+            sendTransaction: (opts) => depositFn(depositArgs, opts),
+            callback: txStagesCallback,
+          });
+        },
+        // an AA batch reports as its last step, the deposit
+        onSign: ({ ctx: { stepId, data } }) => {
+          switch (stepId) {
+            case STEP.stethApprove:
+              return txModalStages.signApproval(amount, TOKENS.steth);
+            case STEP.wrap:
+              return txModalStages.signWrap(amount, TOKENS.steth);
+            case STEP.wstethApprove:
+              return txModalStages.signApproval(
+                data.wstethAmount,
+                TOKENS.wsteth,
+              );
+            default:
+              return txModalStages.sign(data.wstethAmount, TOKENS.wsteth);
+          }
+        },
+        onReceipt: ({ txHashOrCallId, isAA, ctx: { stepId, data } }) => {
+          switch (stepId) {
+            case STEP.stethApprove:
+              return txModalStages.pendingApproval(
+                amount,
+                TOKENS.steth,
+                txHashOrCallId,
+              );
+            case STEP.wrap:
+              return txModalStages.pendingWrap(
+                amount,
+                TOKENS.steth,
+                txHashOrCallId,
+              );
+            case STEP.wstethApprove:
+              return txModalStages.pendingApproval(
+                data.wstethAmount,
+                TOKENS.wsteth,
+                txHashOrCallId,
+              );
+            default:
+              return txModalStages.pending(
+                data.wstethAmount,
+                TOKENS.wsteth,
+                txHashOrCallId,
+                isAA,
+              );
+          }
+        },
+        onSuccess: async ({ txHash, ctx: { stepId, data } }) => {
+          if (stepId !== STEP.deposit) return;
+          let receivedShares: bigint | undefined;
+          if (txHash && data.isSyncQueue) {
+            try {
+              const receipt = await core.publicClient.getTransactionReceipt({
+                hash: txHash,
+              });
+              // only the sync queue mints at once and emits `Deposited`
+              const claimedLog = parseEventLogs({
+                abi: SYNC_DEPOSIT_QUEUE_ABI,
+                logs: receipt.logs,
+                eventName: 'Deposited',
+              }).find((log) => isAddressEqual(log.args.account, data.address));
+              receivedShares = claimedLog?.args.shares;
+            } catch {
+              // ignore, show fallback title
             }
-          },
-          onReceipt: ({ txHashOrCallId, isAA }) => {
-            switch (currentStage) {
-              case 'steth-approve':
-                return txModalStages.pendingApproval(
-                  amount,
-                  TOKENS.steth,
-                  txHashOrCallId,
-                );
-              case 'wrap':
-                return txModalStages.pendingWrap(
-                  amount,
-                  TOKENS.steth,
-                  txHashOrCallId,
-                );
-              case 'wsteth-approve':
-                return txModalStages.pendingApproval(
-                  wstethAmount,
-                  TOKENS.wsteth,
-                  txHashOrCallId,
-                );
-              case 'deposit':
-                return txModalStages.pending(
-                  wstethAmount,
-                  TOKENS.wsteth,
-                  txHashOrCallId,
-                  isAA,
-                );
-            }
-          },
-          onSuccess: async ({ txHash }) => {
-            if (currentStage !== 'deposit') return;
-            let receivedShares: bigint | undefined;
-            if (txHash) {
-              try {
-                const receipt = await core.publicClient.getTransactionReceipt({
-                  hash: txHash,
-                });
-                const claimedLog = parseEventLogs({
-                  abi: depositQueue.abi,
-                  logs: receipt.logs,
-                  eventName: 'Deposited',
-                }).find(
-                  (log) =>
-                    log.args.account?.toLowerCase() === address?.toLowerCase(),
-                );
-                receivedShares = claimedLog?.args.shares;
-              } catch {
-                // ignore, show fallback title
-              }
-            }
-            txModalStages.success(
-              wstethAmount,
-              TOKENS.wsteth,
-              txHash,
-              receivedShares,
+          }
+          txModalStages.success(
+            data.wstethAmount,
+            TOKENS.wsteth,
+            txHash,
+            receivedShares,
+            !data.isSyncQueue,
+          );
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnEthDepositingFinish);
+        },
+        onMultisigDone: ({ ctx }) => {
+          if (ctx.stepId === STEP.deposit) txModalStages.successMultisig();
+        },
+        onFailure: async ({ error, ctx }) => {
+          console.error(error);
+          const cause = error instanceof TxSettledError ? error.cause : error;
+          // The wrap landed but the deposit did not: it was never sent (an
+          // approval or the deposit failed before reaching the chain, or the
+          // quote changed) or it reverted. The funds are wstETH now and a
+          // retry of a stETH deposit would wrap again: whatever stopped the
+          // deposit, the user must learn where the funds are. A deposit that
+          // settled, or was sent and never read back and so may have landed,
+          // keeps its own error, which offers no retry.
+          // A deposit that was sent and reverted gets the same copy ("…the
+          // deposit was not sent") and Matomo event. Accepted: what the user
+          // needs here is that the funds are wstETH and the deposit did not
+          // happen, and a separate revert copy would not change what they do
+          const isDepositOutcomeUnknown =
+            isStepSent(ctx, STEP.deposit) &&
+            error instanceof TxSentDataUnavailableError;
+          if (
+            isStepSettled(ctx, STEP.wrap) &&
+            !isStepSettled(ctx, STEP.deposit) &&
+            !isDepositOutcomeUnknown
+          ) {
+            txModalStages.failed(
+              new TxFlowInterruptedError(
+                ErrorMessage.DEPOSIT_WRAPPED_INTERRUPTED,
+                cause,
+              ),
             );
-            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnEthDepositingFinish);
-          },
-          onMultisigDone: () => {
-            if (currentStage !== 'deposit') return;
-            txModalStages.successMultisig();
-          },
-        });
+            return;
+          }
+          txModalStages.failed(
+            detectTxFlowInterruption(error, ctx, STEP.wrap, [
+              {
+                stepId: STEP.stethApprove,
+                message: ErrorMessage.DEPOSIT_INTERRUPTED,
+              },
+            ]),
+            onRetry,
+          );
+        },
+      });
 
-        return true;
-      } catch (error) {
-        console.error(error);
-        txModalStages.failed(error, onRetry);
-        return false;
-      }
+      // deposited (or proposed to a multisig): the form resets
+      return isSuccess;
     },
-    [address, core, onRetry, txFlow, txModalStages, wrap],
+    [
+      address,
+      core,
+      wrap,
+      collector,
+      shownQuote,
+      refetchQuote,
+      txFlow,
+      txModalStages,
+      onRetry,
+    ],
   );
 
   return { deposit };

@@ -39,8 +39,9 @@ export const CACHE_REWARDS_HEADERS =
   'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
 export const CACHE_PORTFOLIO_HEADERS =
   'public, max-age=60, stale-if-error=600, stale-while-revalidate=60';
-export const CACHE_VALIDATION_HEADERS =
-  'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
+// no stale-if-error/stale-while-revalidate: a stale `isValid: true` must not
+// outlive max-age after an address is newly prohibited
+export const CACHE_VALIDATION_HEADERS = 'public, max-age=30';
 // /api/geo answers differ per visitor IP — a shared cache entry would hand one
 // visitor's country to everyone behind the same edge node
 export const CACHE_GEO_HEADERS = 'private, no-store, must-revalidate';

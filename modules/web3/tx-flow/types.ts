@@ -55,9 +55,11 @@ export type TxFlowResult<TData = undefined> = {
   // an earlier step landed but the last one was never sent: the funds moved
   // without the action happening, a retry continues from there
   isInterrupted: boolean;
-  // nothing happened: the address failed validation or the flow went stale
+  // the flow stopped without reporting: the address failed validation or the
+  // flow went stale. The context still says what landed before that
   isAborted: boolean;
-  // the failure reported to onFailure, if any
+  // the failure reported to onFailure, if any; for a stale flow, the outcome
+  // of a tx that settled or was sent before it stopped
   error?: unknown;
 };
 
@@ -80,6 +82,8 @@ export type onSuccessCallbackProps = {
   stage: TransactionCallbackStage.DONE;
   payload?: bigint;
   txHash?: Hash;
+  // the block of an EIP-5792 batch, which reports no CONFIRMATION stage
+  blockNumber?: bigint;
 };
 export type onMultisigDoneCallbackProps = {
   stage: TransactionCallbackStage.MULTISIG_DONE;
@@ -161,10 +165,16 @@ export type TxFlowOptions = {
  *
  * @property callsFn - A function returning a list of calls for EIP-5792 sendCalls. Gets called only in case of EIP-5792.
  * @property sendTransaction - Fallback function to send a transaction if EIP-5792 is not supported.
+ * @deprecated Use {@link StepTxFlowArgs}: read shared data in `prepare`, build
+ * named steps in `callsFn`, and send each step through `sendStep`.
  */
 export type LegacyTxFlowArgs = StageCallbacks &
   TxFlowOptions & {
     callsFn?: CallsFn<AACall, undefined>;
+    /**
+     * @deprecated Use `prepare`, `callsFn` and `sendStep` instead of managing
+     * the transaction sequence inside `sendTransaction`.
+     */
     sendTransaction: (txStagesCallback: TransactionCallback) => Promise<void>;
     prepare?: never;
     sendStep?: never;
@@ -178,7 +188,7 @@ export type LegacyTxFlowArgs = StageCallbacks &
  * stage, so reads and checks the flow needs happen inside it. Every failure,
  * in `prepare` or before or after settlement, is reported to `onFailure` with
  * the context, and the flow resolves with the final context; a stale flow
- * resolves to undefined without reporting, its UI is gone.
+ * resolves as aborted without reporting, its UI is gone or shows a newer flow.
  *
  * @property prepare - Computes the data every stage needs; its failures are reported like any other.
  * @property callsFn - Builds the ordered steps; `ctx.isAA` tells whether they will be signed as a batch.
@@ -203,6 +213,18 @@ export type StepTxFlowArgs<TData = undefined> = StageCallbacks<TData> &
 export type TxFlowArgs<TData = undefined> =
   LegacyTxFlowArgs | StepTxFlowArgs<TData>;
 
+/** The transaction runner returned by {@link useTxFlow}. */
+export type TxFlow = {
+  <TData = undefined>(
+    args: StepTxFlowArgs<TData>,
+  ): Promise<TxFlowResult<TData>>;
+  /**
+   * @deprecated Use `prepare` for shared reads, `callsFn` for named steps and
+   * `sendStep` to send each step. This gives every callback the flow context.
+   */
+  (args: LegacyTxFlowArgs): Promise<TxFlowResult>;
+};
+
 export type TxFlowDeps = {
   isAA: boolean;
   address?: Address;
@@ -214,4 +236,10 @@ export type TxFlowDeps = {
   // False once the owning UI unmounted or a newer flow started; a stale flow
   // must neither reach the wallet nor report stages
   isCurrent: () => boolean;
+  // Told the block of every transaction that made it into one, a reverted
+  // one included, and of a stale flow too. Gets whatever the sender reported:
+  // the number may be missing
+  onTxBlock?: (blockNumber: bigint | undefined) => void;
+  // Awaited before the flow reads or sends anything. Never rejects
+  waitForPrevTx?: () => Promise<void>;
 };

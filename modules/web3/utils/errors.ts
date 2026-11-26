@@ -9,12 +9,16 @@ import type { Hash, TransactionReceipt } from 'viem';
 /**
  * Thrown by a tx flow when the quote re-read right before sending is worse
  * than the one the form displayed. The flow stops before the wallet is reached
- * and the user is asked to look at the updated amount.
+ * and the user is asked to look at the updated amount, or shown `userMessage`
+ * (an `ErrorMessage` value) where the flow has no displayed amount to point to.
  */
 export class QuoteMismatchError extends Error {
-  constructor() {
+  userMessage?: string;
+
+  constructor(userMessage?: string) {
     super('Quote changed between preview and submit');
     this.name = 'QuoteMismatchError';
+    this.userMessage = userMessage;
   }
 }
 
@@ -89,7 +93,7 @@ export class TxSettledError extends Error {
 /**
  * Thrown by a chained flow (unwrap, then stake; approve, then stake) when the
  * preparation transaction settled on-chain but the main one was never sent:
- * the SDK's follow-up read failed in between and the flow stopped there.
+ * an estimate, signature or follow-up read failed between the steps.
  * Unlike TxSettledError the flow is not complete, so the message (an
  * `ErrorMessage` value) says what landed and a Retry continues with the main
  * transaction. Shown as is by `getErrorMessage`.

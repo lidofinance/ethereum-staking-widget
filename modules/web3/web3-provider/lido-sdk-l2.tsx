@@ -38,7 +38,7 @@ export const useLidoSDKL2 = () => {
 };
 
 export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
-  const { chainId: walletChain } = useConnection();
+  const { chainId: walletChain, address } = useConnection();
   const { chainId, isChainMatched, supportedChainIds } = useDappChain();
 
   // It is needed so that when the widget's chainId and the wallet's chainId do not match,
@@ -52,7 +52,10 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
         : config.defaultChain;
   }, [isChainMatched, chainId, walletChain, supportedChainIds]);
 
-  const { data: walletClient } = useWalletClient({ chainId: sdkChainId });
+  const { data: walletClient } = useWalletClient({
+    chainId: sdkChainId,
+    account: address,
+  });
   const publicClient = usePublicClient({ chainId: sdkChainId });
 
   const contextValue = useMemo(() => {

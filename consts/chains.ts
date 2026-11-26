@@ -26,7 +26,6 @@ export enum LIDO_MULTICHAIN_CHAINS {
 }
 
 export const isSupportedChain = (chainId?: CHAINS) => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   return Boolean(chainId && SDK_SUPPORTED_CHAINS.includes(chainId as number));
 };
 

@@ -16,6 +16,15 @@ import {
   BASE_SERIES_OPTIONS,
 } from './consts';
 
+// Upper bound of UNIX_TIMESTAMP_SCHEMA (seconds) in ms: keeps `Date` conversions valid
+const MAX_CHART_TIMESTAMP_MS = 10_000_000_000 * 1000;
+
+/** Whether a point timestamp can be charted and converted to a `Date`. */
+export const isChartTimestampMs = (timestampMs: number) =>
+  Number.isFinite(timestampMs) &&
+  timestampMs >= 0 &&
+  timestampMs <= MAX_CHART_TIMESTAMP_MS;
+
 /**
  * Format TVL for display.
  * For ETH vaults renders as "X ETH"; for USD vaults renders as "$X".

@@ -7,8 +7,9 @@ import { useLidoSDK, useMainnetOnlyWagmi } from 'modules/web3';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { getVaultWritableContract } from '../../contracts';
 import { USD_VAULT_TOKEN_SYMBOL, USD_VAULT_QUERY_SCOPE } from '../../consts';
+import type { TxRetryHandler } from 'shared/transaction-modal';
 
-export const useUsdVaultDepositClaim = (onRetry?: () => void) => {
+export const useUsdVaultDepositClaim = (onRetry?: TxRetryHandler) => {
   const { core } = useLidoSDK();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
   invariant(publicClientMainnet, 'Public client is not available');

@@ -378,33 +378,6 @@ export const getAsyncDepositQueueWritableContract = <
   });
 };
 
-export const getDepositQueueWritableContract = <
-  TPublicClient extends PublicClient,
-  TWalletClient extends WalletClient = WalletClient,
->({
-  publicClient,
-  walletClient,
-  token,
-}: {
-  publicClient: TPublicClient;
-  walletClient: TWalletClient;
-  token: UsdDepositToken;
-}) => {
-  if (token === TOKENS.usde) {
-    return getAsyncDepositQueueWritableContract({
-      publicClient,
-      walletClient,
-      token,
-    });
-  }
-
-  return getSyncDepositQueueWritableContract({
-    publicClient,
-    walletClient,
-    token,
-  });
-};
-
 export const getShareManagerEARNUSD = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
 ) => {

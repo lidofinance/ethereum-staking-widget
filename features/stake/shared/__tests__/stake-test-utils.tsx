@@ -5,7 +5,7 @@ import {
   type TransactionCallback,
 } from '@lidofinance/lido-ethereum-sdk/core';
 
-import type { AACall, TxCallbackProps } from 'modules/web3/hooks/tx-flow/types';
+import type { AACall, TxCallbackProps } from 'modules/web3/tx-flow/types';
 
 // Hooks run during a server render; the returned callback is then driven
 // outside of React like the form submit would

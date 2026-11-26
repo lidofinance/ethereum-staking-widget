@@ -49,3 +49,76 @@ describe('manifest query refetching', () => {
     );
   });
 });
+
+describe('manifest query ordering', () => {
+  const deferred = <T>() => {
+    let resolve!: (value: T) => void;
+    let reject!: (error: Error) => void;
+    const promise = new Promise<T>((_resolve, _reject) => {
+      resolve = _resolve;
+      reject = _reject;
+    });
+    return { promise, resolve, reject };
+  };
+
+  const setup = () => {
+    const calls: ReturnType<typeof deferred<string>>[] = [];
+    const client = new QueryClient();
+    const observer = new QueryObserver(client, {
+      queryKey: ['external-config'],
+      queryFn: () => {
+        const call = deferred<string>();
+        calls.push(call);
+        return call.promise;
+      },
+      retry: false,
+    });
+    observer.subscribe(() => undefined);
+    return { calls, observer, client };
+  };
+
+  it('shares one load between overlapping requests', async () => {
+    const { calls, observer } = setup();
+    await vi.waitFor(() => expect(calls).toHaveLength(1));
+    void observer.refetch();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(calls).toHaveLength(1);
+  });
+
+  it('keeps the newest response when an older load settles later', async () => {
+    const { calls, observer } = setup();
+    await vi.waitFor(() => expect(calls).toHaveLength(1));
+    calls[0].resolve('enabled');
+    await vi.waitFor(() =>
+      expect(observer.getCurrentResult().data).toBe('enabled'),
+    );
+    // a second refetch supersedes the pending one
+    void observer.refetch();
+    await vi.waitFor(() => expect(calls).toHaveLength(2));
+    void observer.refetch();
+    await vi.waitFor(() => expect(calls).toHaveLength(3));
+    calls[2].resolve('suspended');
+    await vi.waitFor(() =>
+      expect(observer.getCurrentResult().data).toBe('suspended'),
+    );
+    calls[1].resolve('enabled');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(observer.getCurrentResult().data).toBe('suspended');
+  });
+
+  it('keeps the last response when a later load fails', async () => {
+    const { calls, observer } = setup();
+    await vi.waitFor(() => expect(calls).toHaveLength(1));
+    calls[0].resolve('suspended');
+    await vi.waitFor(() =>
+      expect(observer.getCurrentResult().data).toBe('suspended'),
+    );
+    void observer.refetch();
+    await vi.waitFor(() => expect(calls).toHaveLength(2));
+    calls[1].reject(new Error('network'));
+    await vi.waitFor(() =>
+      expect(observer.getCurrentResult().isError).toBe(true),
+    );
+    expect(observer.getCurrentResult().data).toBe('suspended');
+  });
+});
