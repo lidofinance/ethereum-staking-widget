@@ -1,6 +1,6 @@
 import { DataList, DataListRow } from '@lidofinance/lido-app-ui';
 import { DATA_UNAVAILABLE } from 'consts/text';
-import { Loader } from 'features/v2/utils';
+import { Loader } from 'features/stake-v2/utils';
 import { FormatPercent } from 'shared/formatters';
 import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
 

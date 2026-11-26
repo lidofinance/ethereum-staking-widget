@@ -1,7 +1,9 @@
 import styled from 'styled-components';
+
 import { LiquidControls } from './animated-card';
 import { Stats } from './stats';
 import { Staking } from './staking';
+import { StakePathProvider, type StakePath } from './routing';
 
 // Should be proper lido-app-ui layout/pageContent components
 const TemporaryV2Layout = styled.div`
@@ -14,13 +16,19 @@ const TemporaryV2Layout = styled.div`
   width: 100%;
 `;
 
-export const V2 = () => {
+type V2Props = {
+  path: StakePath;
+};
+
+export const StakeV2 = ({ path }: V2Props) => {
   return (
-    <TemporaryV2Layout>
-      <Stats />
-      <Staking />
-      {/* tuning panel for the card background, on stands too */}
-      <LiquidControls />
-    </TemporaryV2Layout>
+    <StakePathProvider path={path}>
+      <TemporaryV2Layout>
+        <Stats />
+        <Staking />
+        {/* tuning panel for the card background, on stands too */}
+        <LiquidControls />
+      </TemporaryV2Layout>
+    </StakePathProvider>
   );
 };

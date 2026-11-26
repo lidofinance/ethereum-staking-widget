@@ -1,4 +1,4 @@
-import { ConnectButton } from 'features/v2/utils';
+import { ConnectButton } from 'features/stake-v2/utils';
 
 export const Submit = () => {
   return <ConnectButton>Stake</ConnectButton>;
