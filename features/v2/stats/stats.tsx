@@ -16,23 +16,17 @@ export const Stats = () => {
 
   return (
     <StatsStack data-state={toMotionState(shouldShow)}>
-      <span>
-        <Body>
-          <b>{data?.totalStaked}</b> staked
-        </Body>
-      </span>
+      <Body as="span">
+        <b>{data?.totalStaked}</b> staked
+      </Body>
       <Divider orientation="vertical" />
-      <span>
-        <Body>
-          <b>{data?.stakers}</b> stakers
-        </Body>
-      </span>
+      <Body as="span">
+        <b>{data?.stakers}</b> stakers
+      </Body>
       <Divider orientation="vertical" />
-      <span>
-        <Body>
-          Since <b>2020</b>
-        </Body>
-      </span>
+      <Body as="span">
+        Since <b>2020</b>
+      </Body>
     </StatsStack>
   );
 };

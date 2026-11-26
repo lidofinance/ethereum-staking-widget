@@ -24,10 +24,16 @@ export type LiquidParams = {
   drift: number;
   /** fade-out band at the canvas edge, px */
   edgeFade: number;
+  /** moves the whole blob down (positive) or up (negative), px */
+  offsetY: number;
+  /** stretches the blob's layout down from its top band, keeping its look */
+  scaleY: number;
   /** canvas buffer scale; the blob is soft, so low is cheap and invisible */
   resolution: number;
   /** all softening: off draws the bare shape with a hard edge */
   blur: boolean;
+  /** police lights: the blob flashes red and blue, shader only */
+  gtaMode: boolean;
   /** extra CSS blur on the shader canvas, on top of `softness` */
   blurPx: number;
   /** max shader frames per second, 0 for the display rate */
@@ -54,8 +60,11 @@ export const DEFAULT_LIQUID_PARAMS: LiquidParams = {
   tendrils: 1.25,
   drift: 0.46,
   edgeFade: 130,
+  offsetY: 0,
+  scaleY: 1,
   resolution: 0.25,
   blur: true,
+  gtaMode: false,
   blurPx: 20,
   maxFps: 30,
   quality: 'auto',

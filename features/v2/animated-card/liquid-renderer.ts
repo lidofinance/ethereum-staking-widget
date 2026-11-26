@@ -18,6 +18,14 @@ import { createPerfMonitor, type PerfStats } from './perf-monitor';
 
 export const BLOB_BOX = { width: 915.836, height: 474 } as const;
 
+// y of the top band: `scaleY` stretches the layout below it, so the band
+// stays put and the tendrils reach further down
+export const BLOB_BAND_Y = 120;
+
+/** blob y position (px) once the layout is stretched by `scaleY` */
+export const stretchBlobY = (y: number, scaleY: number) =>
+  BLOB_BAND_Y + (y - BLOB_BAND_Y) * scaleY;
+
 export type RGB = readonly [number, number, number];
 
 export type BlobPalette = {
@@ -70,6 +78,10 @@ const MAX_FRAME_STEP_S = 0.1;
 const HARD_EDGE = 0.01;
 // frames ignored after a quality change while the new size settles
 const LEVEL_SETTLE_MS = 1000;
+// GTA mode: seconds per full red/blue swap, and the px width of the
+// blend between the two halves
+const SIREN_PERIOD_S = 0.8;
+const SIREN_BLEND_PX = 120;
 
 // GPUs that cannot run the shader at a usable rate
 const SLOW_GPU =
@@ -89,15 +101,15 @@ const BALLS = [
   [765, 320, 42, 2.9, 0.4],
 ] as const;
 
-// Figma gradient axis, pre-divided by its squared length so the shader
-// never squares a large number
-const GRADIENT_FROM = [643, 111.4] as const;
-const GRADIENT_AXIS = (() => {
-  const x = 609.8 - GRADIENT_FROM[0];
-  const y = 395.2 - GRADIENT_FROM[1];
+// Figma gradient axis, stretched with the layout and pre-divided by its
+// squared length so the shader never squares a large number
+const getGradient = (scaleY: number) => {
+  const from = [643, stretchBlobY(111.4, scaleY)] as const;
+  const x = 609.8 - from[0];
+  const y = stretchBlobY(395.2, scaleY) - from[1];
   const lengthSq = x * x + y * y;
-  return [x / lengthSq, y / lengthSq] as const;
-})();
+  return { from, axis: [x / lengthSq, y / lengthSq] as const };
+};
 
 const VERTEX_SHADER = `
 attribute vec2 aPosition;
@@ -132,6 +144,8 @@ uniform vec4 uNoiseOffset;
 uniform float uEdgeFade;
 uniform vec2 uGradientFrom;
 uniform vec2 uGradientAxis;
+// GTA mode. x: on (0 / 1), y: which half is red, -1 (left) .. 1 (right)
+uniform vec2 uSiren;
 // xy: centre (px), z: radius (px), w: weight
 uniform vec4 uBalls[${BALLS.length}];
 uniform sampler2D uNoise;
@@ -174,6 +188,15 @@ void main() {
 
   float k = clamp(dot(base - uGradientFrom, uGradientAxis), 0.0, 1.0);
   vec3 color = mix(uFrom, uTo, k);
+
+  // police lights: one half red, the other blue, swapping sides
+  float side = clamp((base.x - uSize.x * 0.5) / ${SIREN_BLEND_PX.toFixed(1)}, -1.0, 1.0);
+  vec3 siren = mix(
+    vec3(0.05, 0.3, 1.0),
+    vec3(1.0, 0.08, 0.12),
+    side * uSiren.y * 0.5 + 0.5
+  );
+  color = mix(color, siren, uSiren.x);
 
   gl_FragColor = vec4(color * alpha, alpha);
 }
@@ -278,6 +301,10 @@ export const createLiquidRenderer = (
     | 'warp'
     | 'noiseOffset'
     | 'edgeFade'
+    | 'size'
+    | 'gradientFrom'
+    | 'gradientAxis'
+    | 'siren'
     | 'balls',
     WebGLUniformLocation | null
   > | null = null;
@@ -294,7 +321,8 @@ export const createLiquidRenderer = (
     const { resolutionScale, fpsCap } = QUALITY_LEVELS[level];
     const scale = params.resolution * resolutionScale;
     const width = Math.max(1, Math.round(BLOB_BOX.width * scale));
-    const height = Math.max(1, Math.round(BLOB_BOX.height * scale));
+    const blobHeight = stretchBlobY(BLOB_BOX.height, params.scaleY);
+    const height = Math.max(1, Math.round(blobHeight * scale));
     if (canvas.width !== width || canvas.height !== height) {
       canvas.width = width;
       canvas.height = height;
@@ -326,6 +354,16 @@ export const createLiquidRenderer = (
       Math.max(params.warpScale, 1),
     );
     gl.uniform1f(uniforms.edgeFade, Math.max(params.edgeFade, 0.001));
+    // only the layout stretches: ball radii and noise keep their px size,
+    // so the motion looks the same in a taller box
+    gl.uniform2f(
+      uniforms.size,
+      BLOB_BOX.width,
+      stretchBlobY(BLOB_BOX.height, params.scaleY),
+    );
+    const gradient = getGradient(params.scaleY);
+    gl.uniform2f(uniforms.gradientFrom, ...gradient.from);
+    gl.uniform2f(uniforms.gradientAxis, ...gradient.axis);
   };
 
   // one triangle covering the viewport
@@ -349,9 +387,6 @@ export const createLiquidRenderer = (
 
     noiseTexture = uploadNoise(gl);
     gl.uniform1i(uniform('uNoise'), 0);
-    gl.uniform2f(uniform('uSize'), BLOB_BOX.width, BLOB_BOX.height);
-    gl.uniform2f(uniform('uGradientFrom'), ...GRADIENT_FROM);
-    gl.uniform2f(uniform('uGradientAxis'), ...GRADIENT_AXIS);
     uniforms = {
       from: uniform('uFrom'),
       to: uniform('uTo'),
@@ -360,6 +395,10 @@ export const createLiquidRenderer = (
       warp: uniform('uWarp'),
       noiseOffset: uniform('uNoiseOffset'),
       edgeFade: uniform('uEdgeFade'),
+      size: uniform('uSize'),
+      gradientFrom: uniform('uGradientFrom'),
+      gradientAxis: uniform('uGradientAxis'),
+      siren: uniform('uSiren'),
       balls: uniform('uBalls[0]'),
     };
     applyPalette();
@@ -396,11 +435,20 @@ export const createLiquidRenderer = (
       const local = t + phase;
       const orbit = radius * params.drift;
       ballData[index * 4] = x + Math.sin(local * 0.61) * orbit;
-      ballData[index * 4 + 1] = y + Math.cos(local * 0.47) * orbit;
+      ballData[index * 4 + 1] =
+        stretchBlobY(y, params.scaleY) + Math.cos(local * 0.47) * orbit;
       ballData[index * 4 + 2] = radius * (1 + 0.08 * Math.sin(local * 0.83));
       ballData[index * 4 + 3] = tendril === 0 ? 1 : tendril * params.tendrils;
     });
     gl.uniform4fv(uniforms.balls, ballData);
+    // real time, not shader time: the lights flash even at speed 0.
+    // A clamped sine is a square wave with short cross-fades.
+    const swap = Math.sin((bootTime * 2 * Math.PI) / SIREN_PERIOD_S) * 6;
+    gl.uniform2f(
+      uniforms.siren,
+      params.gtaMode ? 1 : 0,
+      Math.max(-1, Math.min(1, swap)),
+    );
     gl.uniform4f(
       uniforms.noiseOffset,
       0,

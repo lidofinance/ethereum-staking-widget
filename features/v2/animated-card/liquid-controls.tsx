@@ -33,6 +33,8 @@ const SLIDERS: Slider[] = [
   { key: 'tendrils', min: 0, max: 3, step: 0.05 },
   { key: 'drift', min: 0, max: 1, step: 0.01 },
   { key: 'edgeFade', min: 0, max: 200, step: 1 },
+  { key: 'offsetY', min: -150, max: 300, step: 1 },
+  { key: 'scaleY', min: 0.5, max: 3, step: 0.05 },
   { key: 'resolution', min: 0.1, max: 1, step: 0.05 },
   { key: 'blurPx', min: 0, max: 60, step: 1 },
   { key: 'maxFps', min: 0, max: 120, step: 5 },
@@ -53,6 +55,8 @@ const INFO: Record<keyof LiquidParams, string> = {
     'Shader quality. auto starts high and steps down (resolution, then frame rate, then SVG) when the device misses frames, and remembers the level for a week. high / medium / low pin a level.',
   maxFps:
     'Max shader frames per second. The motion is slow, so 30 looks the same as 60 for half the GPU and battery. 0 follows the display rate.',
+  gtaMode:
+    'Police lights: one half of the blob red, the other blue, swapping sides. Shader only, the SVG fallback stays as is.',
   blur: 'Master switch for all softening. Off draws the bare shape with a hard edge, handy for tuning the shape sliders.',
   speed:
     'How fast the blob moves: shader seconds per real second. 0 freezes it.',
@@ -74,6 +78,10 @@ const INFO: Record<keyof LiquidParams, string> = {
     'How far each ball orbits its spot, as a fraction of its radius. Higher means more shape-shifting.',
   edgeFade:
     'Width of the fade at the canvas edges, in px. Hides hard cuts when the blob drifts to an edge.',
+  offsetY:
+    'Moves the whole blob down (positive) or up (negative), in px. Applies to both the shader and the SVG.',
+  scaleY:
+    'Stretches the blob down from its top band, so it covers more of the card. The shader keeps its blob and noise size, so the motion looks the same; the SVG fallback is simply stretched.',
   resolution:
     'Canvas pixel scale. 0.5 renders at half size, a quarter of the GPU work, hidden by the blur. Use 1 to judge hard edges.',
   blurPx:
@@ -199,6 +207,17 @@ export const LiquidControls = () => {
           type="checkbox"
           checked={params.blur}
           onChange={(event) => setLiquidParams({ blur: event.target.checked })}
+        />
+      </Row>
+
+      <Row $changed={params.gtaMode !== DEFAULT_LIQUID_PARAMS.gtaMode}>
+        <Name name="gtaMode" />
+        <input
+          type="checkbox"
+          checked={params.gtaMode}
+          onChange={(event) =>
+            setLiquidParams({ gtaMode: event.target.checked })
+          }
         />
       </Row>
 

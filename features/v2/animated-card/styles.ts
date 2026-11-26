@@ -1,6 +1,8 @@
 import { Card } from '@lidofinance/lido-app-ui';
 import styled, { css, keyframes } from 'styled-components';
 
+import { BLOB_BAND_Y } from './liquid-renderer';
+
 export const CardWithBackground = styled(Card)`
   position: relative;
   /* own stacking context: the z-index -1 background paints above the
@@ -12,10 +14,15 @@ export const CardWithBackground = styled(Card)`
 // corner, a box rotated 8.48deg, and the artwork overflowing that box by
 // its 80px blur margin on every side
 
-export const BlobAnchor = styled.div`
+type BlobAnchorProps = {
+  /** vertical shift of the whole blob, px; positive moves it down */
+  $offsetY: number;
+};
+
+export const BlobAnchor = styled.div<BlobAnchorProps>`
   position: absolute;
   z-index: -1;
-  top: -144px;
+  top: calc(-144px + ${({ $offsetY }) => $offsetY}px);
   right: -159.86px;
   width: 793.86px;
   height: 421.967px;
@@ -50,6 +57,10 @@ const drift = keyframes`
 `;
 
 type BlobArtProps = {
+  /** box height, px: the Figma artwork stretched by `scaleY` */
+  $height: number;
+  /** `scaleY` for the SVG, which cannot re-lay itself out like the shader */
+  $svgScaleY?: number;
   $visible: boolean;
   $animated?: boolean;
   /** opacity fade, long enough to read as a fade-in on boot, not a pop */
@@ -59,7 +70,8 @@ type BlobArtProps = {
 
 export const BlobArt = styled.div<BlobArtProps>`
   position: absolute;
-  inset: -25.48% -10.58%;
+  inset: -25.48% -10.58% auto;
+  height: ${({ $height }) => $height}px;
 
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   transition: opacity ${({ $fadeMs }) => $fadeMs}ms
@@ -86,6 +98,16 @@ export const BlobArt = styled.div<BlobArtProps>`
     width: 100%;
     height: 100%;
   }
+
+  ${({ $svgScaleY }) =>
+    !!$svgScaleY &&
+    $svgScaleY !== 1 &&
+    css`
+      & > svg {
+        transform: scaleY(${$svgScaleY});
+        transform-origin: 50% ${BLOB_BAND_Y}px;
+      }
+    `}
 `;
 
 // forced shader failed (controls panel): impossible to miss on a stand

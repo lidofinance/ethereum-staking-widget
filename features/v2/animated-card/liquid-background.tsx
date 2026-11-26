@@ -17,6 +17,8 @@ import {
   type LiquidFailure,
   type LiquidRenderer,
   type RGB,
+  BLOB_BOX,
+  stretchBlobY,
 } from './liquid-renderer';
 import {
   BlobAnchor,
@@ -225,6 +227,7 @@ export const LiquidBackground = () => {
   }, [isFailed, isPaused, isTooSlow, mode, failure, level]);
 
   const BlobSVG = isDark ? BlobDarkSVG : BlobLightSVG;
+  const blobHeight = stretchBlobY(BLOB_BOX.height, params.scaleY);
 
   return (
     <>
@@ -233,9 +236,11 @@ export const LiquidBackground = () => {
           <ShaderFailedLabel>shader failed: {failure}</ShaderFailedLabel>
         </ShaderFailed>
       )}
-      <BlobAnchor aria-hidden>
+      <BlobAnchor aria-hidden $offsetY={params.offsetY}>
         <BlobRotation>
           <BlobArt
+            $height={blobHeight}
+            $svgScaleY={params.scaleY}
             $visible={isSvgVisible}
             $animated={isSvgVisible && !isReducedMotion}
             $fadeMs={params.fadeInMs}
@@ -244,6 +249,7 @@ export const LiquidBackground = () => {
           </BlobArt>
           <BlobArt
             ref={canvasSlotRef}
+            $height={blobHeight}
             $visible={isShaderVisible}
             $fadeMs={params.fadeInMs}
             $blurPx={params.blur ? params.blurPx : 0}

@@ -20,7 +20,7 @@ import { LocalLink } from 'shared/components/local-link';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { formatBalance } from 'utils';
 
-import { TokenChainIcon } from '../../../utils';
+import { TokenChainIcon } from '../../../../utils';
 
 import {
   AssetRow,
