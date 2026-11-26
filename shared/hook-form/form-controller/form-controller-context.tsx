@@ -11,10 +11,12 @@ export type FormControllerContextValueType<F extends FieldValues = any> = {
   retryEvent: EventSubscription;
   resetFormOn?: ResetMode;
 };
-
+/* @deprecated Use FormControllerProvider instead of directly using FormControllerContext */
 export const FormControllerContext =
   createContext<FormControllerContextValueType | null>(null);
 FormControllerContext.displayName = 'FormControllerContext';
+
+export const FormControllerProvider = FormControllerContext.Provider;
 
 export const useFormControllerContext = () => {
   const value = useContext(FormControllerContext);

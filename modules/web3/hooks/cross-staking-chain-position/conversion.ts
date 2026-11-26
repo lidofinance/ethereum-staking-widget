@@ -9,6 +9,9 @@ export const POSITION_TOKENS = [
 
 export type PositionToken = (typeof POSITION_TOKENS)[number];
 
+// every position token, on every chain, has 18 decimals
+export const POSITION_TOKEN_DECIMALS = 18;
+
 const ONE = 10n ** 18n;
 
 export type ConversionRates = {

@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 
-export const IconBox = styled.span`
+export const IconBox = styled.span<{ $size: number }>`
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
 
   > svg {
     width: 100%;
@@ -13,14 +13,14 @@ export const IconBox = styled.span`
   }
 `;
 
-// 12px on the default 32px icon
+// 12px at every icon size, as in the design
 export const ChainBadge = styled.span`
   position: absolute;
   right: 0;
   bottom: 0;
   display: inline-flex;
-  width: 37.5%;
-  height: 37.5%;
+  width: 12px;
+  height: 12px;
 
   > svg {
     width: 100%;

@@ -2,21 +2,16 @@ import { useCallback, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import { useQuery, useQueryClient, type QueryKey } from '@tanstack/react-query';
 import { erc20Abi, type Address } from 'viem';
-import { useChains, useConfig, useConnection, type Config } from 'wagmi';
+import { useConfig, useConnection, type Config } from 'wagmi';
 import { getPublicClient } from 'wagmi/actions';
 
 import { config } from 'config';
-import { getTokenAddress } from 'config/networks/token-address';
-import { TOKENS, TOKEN_SYMBOLS, type TokenSymbol } from 'consts/tokens';
+import { TOKENS } from 'consts/tokens';
 
-import { POSITION_TOKENS, type PositionToken } from './conversion';
+import { getPositionSlots, type PositionSlot } from './token-list';
 import type { PositionConverters } from './use-position-converters';
 
-export type CrossStakingChainPositionToken = {
-  token: PositionToken;
-  tokenLabel: TokenSymbol;
-  chainId: number;
-  tokenAddress: Address;
+export type CrossStakingChainPositionToken = PositionSlot & {
   balance: bigint;
   // undefined when a rate on the token's path failed or is still loading
   ethValue?: bigint;
@@ -29,11 +24,6 @@ export type CrossStakingChainPosition = {
   totalEthValue: bigint;
   totalUsdValue?: number;
 };
-
-type PositionSlot = Pick<
-  CrossStakingChainPositionToken,
-  'token' | 'tokenLabel' | 'chainId' | 'tokenAddress'
->;
 
 type BalanceReadResult = (bigint | undefined)[];
 
@@ -84,11 +74,16 @@ const readBalances = async (
   );
 };
 
-type UseCrossChainBalancesArgs = Pick<PositionConverters, 'toEth' | 'ethToUsd'>;
+type UseCrossChainBalancesArgs = Pick<
+  PositionConverters,
+  'toEth' | 'ethToUsd'
+> & {
+  chainIds: readonly number[];
+};
 
 /**
  * ETH, WETH, stETH and wstETH balances of the connected account on every
- * chain in the wagmi config, read in one query.
+ * chain in `chainIds`, read in one query.
  * Tokens a chain has no address for are skipped; a read that never
  * succeeded is dropped rather than shown as zero. Tokens come in
  * chain/token config order; sorting is a view concern of the caller.
@@ -102,36 +97,21 @@ type UseCrossChainBalancesArgs = Pick<PositionConverters, 'toEth' | 'ethToUsd'>;
 export const useCrossChainBalances = ({
   toEth,
   ethToUsd,
+  chainIds,
 }: UseCrossChainBalancesArgs) => {
   const { address } = useConnection();
-  const chains = useChains();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
 
-  const slots = useMemo(() => {
-    const slots: PositionSlot[] = [];
-    for (const chain of chains) {
-      for (const token of POSITION_TOKENS) {
-        const tokenAddress = getTokenAddress(chain.id, token);
-        if (!tokenAddress) continue;
-        slots.push({
-          token,
-          chainId: chain.id,
-          tokenAddress,
-          tokenLabel: TOKEN_SYMBOLS[token],
-        });
-      }
-    }
-    return slots;
-  }, [chains]);
+  const slots = useMemo(() => getPositionSlots(chainIds), [chainIds]);
 
   const queryKey = useMemo<QueryKey>(
     () => [
       'balance',
       'cross-staking-chain-position',
-      { account: address, chainIds: chains.map(({ id }) => id) },
+      { account: address, chainIds },
     ],
-    [address, chains],
+    [address, chainIds],
   );
 
   const select = useCallback(

@@ -1,12 +1,8 @@
 import { useMemo } from 'react';
 
 import { getSortGate, sortPositionTokens, type PositionSort } from './sort';
-import {
-  filterPositionByTokenList,
-  type PositionTokenList,
-} from './token-list';
-import { useCrossChainBalances } from './use-cross-chain-balances';
-import { usePositionConverters } from './use-position-converters';
+import type { PositionTokenList } from './token-list';
+import { usePositionSource } from './use-position-source';
 
 type UseCrossStakingChainPositionArgs = {
   sort?: PositionSort;
@@ -15,8 +11,8 @@ type UseCrossStakingChainPositionArgs = {
 
 /**
  * Cross-chain ETH/WETH/stETH/wstETH position of the connected account,
- * each token valued in ETH and USD, plus totals.
- * Price queries run once here and feed the balance query's converters.
+ * each token valued in ETH and USD, plus totals. Covers the chains of the
+ * nearest Support*Chains provider.
  *
  * `sort` is a view over the cached balances. While a held token is missing
  * its sort value, `data` waits for the converter behind it, and the position
@@ -24,28 +20,15 @@ type UseCrossStakingChainPositionArgs = {
  * converter used only by them is skipped. Values the sort does not read
  * stay best-effort: undefined until (or unless) their converter delivers.
  *
- * `tokenList` narrows the position to stakable (ETH, WETH) or staked
- * (stETH, wstETH) tokens; totals and the sort gate cover only those.
- * Every list shares one balances query.
+ * `tokenList` narrows the position to a token group (see token-list.ts);
+ * totals and the sort gate cover only those. Every list shares one
+ * balances query.
  */
 export const useCrossStakingChainPosition = ({
   sort = 'non-zero',
   tokenList = 'all',
 }: UseCrossStakingChainPositionArgs = {}) => {
-  const { toEth, ethToUsd, status } = usePositionConverters();
-  const balances = useCrossChainBalances({ toEth, ethToUsd });
-
-  const position = useMemo(
-    () =>
-      balances.data
-        ? filterPositionByTokenList({
-            position: balances.data,
-            tokenList,
-            ethToUsd,
-          })
-        : undefined,
-    [balances.data, tokenList, ethToUsd],
-  );
+  const { position, status, balances } = usePositionSource({ tokenList });
 
   const gate = useMemo(
     () =>

@@ -1,6 +1,6 @@
 import { zeroAddress } from 'viem';
 
-import { getSortGate, sortPositionTokens } from './sort';
+import { getSortGate, sortPositionTokens, sortTokenList } from './sort';
 import type { CrossStakingChainPositionToken } from './use-cross-chain-balances';
 
 const token = (
@@ -122,5 +122,46 @@ describe('getSortGate', () => {
     expect(getSortGate(tokens, 'usd', { eth: settled, usd: loading })).toEqual(
       loading,
     );
+  });
+});
+
+describe('sortTokenList', () => {
+  const item = (
+    id: string,
+    chainId: number,
+    balance?: bigint,
+    usdValue?: number,
+  ) => ({ id, chainId, balance, usdValue });
+
+  const ids = (items: { id: string }[]) => items.map(({ id }) => id);
+
+  it('held tokens by chain then USD, then empty ones by chain', () => {
+    const items = [
+      item('1:eth', 1, 0n, 0),
+      item('1:weth', 1, 1n, 10),
+      item('1:steth', 1, 5n, 50),
+      item('10:eth', 10, 2n, 20),
+      item('10:wsteth', 10, 0n, 0),
+      item('42161:eth', 42161, 0n, 0),
+      item('42161:wsteth', 42161, 1n, 100),
+    ];
+    expect(ids(sortTokenList(items, [1, 10, 42161]))).toEqual([
+      '1:steth',
+      '1:weth',
+      '10:eth',
+      '42161:wsteth',
+      '1:eth',
+      '10:wsteth',
+      '42161:eth',
+    ]);
+  });
+
+  it('an unread balance counts as empty, a missing USD value goes last', () => {
+    const items = [
+      item('a', 1, undefined),
+      item('b', 1, 1n, undefined),
+      item('c', 1, 1n, 5),
+    ];
+    expect(ids(sortTokenList(items, [1]))).toEqual(['c', 'b', 'a']);
   });
 });

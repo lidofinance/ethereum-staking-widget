@@ -15,6 +15,7 @@ export const ConnectButton = ({
   loading,
   onClick,
   disabled,
+  type,
   ...props
 }: ConnectButtonProps) => {
   const {
@@ -34,11 +35,14 @@ export const ConnectButton = ({
   let buttonLoading = loading ?? false;
   let buttonOnClick = onClick;
   let buttonDisabled = disabled ?? false;
+  let buttonType = type;
 
   if (!isWalletConnected) {
     buttonContent = 'Connect Wallet';
     buttonLoading = showContent && isConnecting;
     buttonOnClick = isConnecting ? undefined : () => handleConnect();
+    // connecting is not submitting, even inside a form
+    buttonType = 'button';
   }
 
   if (!isChainMatched) {
@@ -48,6 +52,7 @@ export const ConnectButton = ({
     buttonOnClick = isSwitchChainPending
       ? undefined
       : () => requestChangeChain(chainId);
+    buttonType = 'button';
   }
 
   const hackedPropsTyping = props as any;
@@ -58,6 +63,7 @@ export const ConnectButton = ({
       loading={buttonLoading}
       onClick={buttonOnClick}
       disabled={buttonDisabled}
+      type={buttonType}
       {...hackedPropsTyping}
     >
       <FadeInText data-state={toMotionState(showContent)}>

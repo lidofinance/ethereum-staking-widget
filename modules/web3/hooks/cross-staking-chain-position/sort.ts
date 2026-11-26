@@ -81,3 +81,27 @@ export const sortPositionTokens = (
   tokens: readonly CrossStakingChainPositionToken[],
   sort: PositionSort,
 ) => [...tokens].sort(COMPARATORS[sort]);
+
+type TokenListSortItem = {
+  chainId: number;
+  balance?: bigint;
+  usdValue?: number;
+};
+
+/**
+ * Held tokens first, grouped by chain in `chainIds` order and by USD value
+ * inside a chain; then zero or unread balances, grouped by chain again.
+ * Stable: ties keep chain/token config order.
+ */
+export const sortTokenList = <T extends TokenListSortItem>(
+  items: readonly T[],
+  chainIds: readonly number[],
+) => {
+  const isEmpty = ({ balance }: T) => !balance;
+  return [...items].sort(
+    (a, b) =>
+      Number(isEmpty(a)) - Number(isEmpty(b)) ||
+      chainIds.indexOf(a.chainId) - chainIds.indexOf(b.chainId) ||
+      (isEmpty(a) ? 0 : byDesc(a.usdValue, b.usdValue)),
+  );
+};

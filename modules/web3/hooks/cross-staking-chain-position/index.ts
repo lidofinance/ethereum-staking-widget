@@ -1,4 +1,5 @@
 export { useCrossStakingChainPosition } from './use-cross-staking-chain-position';
+export { useTokenList, type TokenListItem } from './use-token-list';
 export type {
   CrossStakingChainPosition,
   CrossStakingChainPositionToken,

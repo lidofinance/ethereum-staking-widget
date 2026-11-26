@@ -23,29 +23,41 @@ const CHAIN_ICONS: Record<DAPP_CHAIN_TYPE, FC<SVGProps<SVGSVGElement>>> = {
   [DAPP_CHAIN_TYPE.Linea]: Linea,
 };
 
-type TokenChainIconProps = ComponentPropsWithoutRef<'span'> & {
-  token: string;
+type ChainIconProps = SVGProps<SVGSVGElement> & {
   chainId: number;
 };
 
+/** Network glyph of `chainId`; nothing for an unknown chain */
+export const ChainIcon = ({ chainId, ...props }: ChainIconProps) => {
+  const chainType = getChainTypeByChainId(chainId);
+  const Icon = chainType ? CHAIN_ICONS[chainType] : null;
+  return Icon ? <Icon aria-hidden {...props} /> : null;
+};
+
+type TokenChainIconProps = ComponentPropsWithoutRef<'span'> & {
+  token: string;
+  chainId: number;
+  /** px, 32 by default */
+  size?: number;
+};
+
 /**
- * Token glyph with a network badge in the bottom right corner.
- * 32px by default; size it with width/height on the root, the badge scales.
+ * Token glyph with a 12px network badge in the bottom right corner.
  */
 export const TokenChainIcon = ({
   token,
   chainId,
+  size = 32,
   ...props
 }: TokenChainIconProps) => {
-  const chainType = getChainTypeByChainId(chainId);
-  const ChainIcon = chainType ? CHAIN_ICONS[chainType] : null;
+  const hasChainIcon = !!getChainTypeByChainId(chainId);
 
   return (
-    <IconBox aria-hidden {...props}>
+    <IconBox aria-hidden $size={size} {...props}>
       {isTokenIcon(token) && <TokenIcon token={token} />}
-      {ChainIcon && (
+      {hasChainIcon && (
         <ChainBadge>
-          <ChainIcon />
+          <ChainIcon chainId={chainId} />
         </ChainBadge>
       )}
     </IconBox>

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
+import { FormController } from 'shared/hook-form/form-controller';
 
-// TODO: use FormController
-export const StyledForm = styled.form`
+export const StyledFormController = styled(FormController)`
   display: flex;
   width: 100%;
   flex-direction: column;

@@ -1,6 +1,8 @@
 import { ActionList, ActionRow } from '@lidofinance/lido-app-ui';
 import styled from 'styled-components';
 
+import { thinScrollbar } from '../../../../utils';
+
 // shrinks to the popover height, so only the assets list scrolls
 export const PopoverContent = styled.div`
   display: flex;
@@ -35,18 +37,7 @@ export const AssetsList = styled(ActionList)`
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-
-    scrollbar-width: thin;
-    scrollbar-color: var(--lido-app-ui-color-border-hover) transparent;
-
-    /* Safari before scrollbar-width support */
-    &::-webkit-scrollbar {
-      width: 4px;
-    }
-    &::-webkit-scrollbar-thumb {
-      border-radius: 2px;
-      background-color: var(--lido-app-ui-color-border-hover);
-    }
+    ${thinScrollbar}
   }
 `;
 
