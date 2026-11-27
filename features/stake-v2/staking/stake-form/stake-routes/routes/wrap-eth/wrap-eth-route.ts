@@ -22,14 +22,10 @@ import {
   type StakeLimitInfo,
 } from '../../../../../utils';
 import type { StakeRoute } from '../../types';
-import {
-  isSameChain,
-  placeholderSubmit,
-  quoteQueryKey,
-  routeQueryKey,
-} from '../shared';
+import { isSameChain, quoteQueryKey, routeQueryKey } from '../shared';
 
 import { readWstethBySteth } from './reads';
+import { submitWrapEth } from './submit';
 
 type WrapEthContext = SpendBalances & {
   /** wstETH stakes the ETH, so Lido's stake limit applies */
@@ -118,5 +114,5 @@ export const wrapEthRoute: StakeRoute<WrapEthContext> = {
     });
   },
 
-  submit: placeholderSubmit('wrap-eth', { shouldVerifyQuote: true }),
+  submit: submitWrapEth,
 };

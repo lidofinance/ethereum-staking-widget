@@ -1,6 +1,8 @@
 import type { QueryKey } from '@tanstack/react-query';
 
-import { QuoteMismatchError } from '../../../../utils';
+import { QuoteMismatchError } from 'modules/web3';
+
+import { errorTexts } from '../../../../../utils';
 import type {
   StakeQuote,
   StakeRouteDeps,
@@ -8,10 +10,7 @@ import type {
   StakeRoutePair,
   StakeRouteQuoteDeps,
   StakeRouteSubmission,
-  StakeRouteValues,
-} from '../types';
-
-// what the stake routes share; generic pieces live in stake-v2/utils
+} from '../../types';
 
 export const isSameChain = ({ tokenIn, tokenOut }: StakeRoutePair) =>
   tokenIn.chainId === tokenOut.chainId;
@@ -55,25 +54,7 @@ export const verifyQuote = async <TContext>({
   refreshQuote,
 }: StakeRouteSubmission<TContext>): Promise<StakeQuote> => {
   const fresh = await refreshQuote();
-  if (fresh.amountOut < quote.amountOut) throw new QuoteMismatchError();
+  if (fresh.amountOut < quote.amountOut)
+    throw new QuoteMismatchError(errorTexts.forms.general.quoteChanged());
   return fresh;
 };
-
-/** stand-in for the tx flow: shows which route got which arguments */
-export const placeholderSubmit =
-  (id: StakeRouteId, { shouldVerifyQuote = false } = {}) =>
-  async <TContext>(
-    values: StakeRouteValues,
-    submission: StakeRouteSubmission<TContext>,
-  ) => {
-    const freshQuote = shouldVerifyQuote
-      ? await verifyQuote(submission)
-      : undefined;
-    console.info(`[stake-v2] submit via route "${id}"`, {
-      values,
-      context: submission.context,
-      quote: submission.quote,
-      freshQuote,
-    });
-    return true;
-  };

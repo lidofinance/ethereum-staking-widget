@@ -7,8 +7,11 @@ import {
 import invariant from 'tiny-invariant';
 import { useConfig, type Config } from 'wagmi';
 
+import { useFormControllerRetry } from 'shared/hook-form/form-controller';
+import type { EventSubscription } from 'utils/event-subscription';
+
 import { createRouteRequester, type RouteRequester } from './context';
-import type { FormRoute, FormRouteSpec } from './types';
+import type { FormRoute, FormRouteSpec, RouteSubmitResult } from './types';
 
 /** what every route reads with, wallet or not: chain-explicit clients */
 export type RoutePublicEnvironment = {
@@ -39,7 +42,11 @@ export type FormRoutingConfig<S extends FormRouteSpec, TEnvironment> = {
     pair: S['pair'],
     environment: RoutePublicEnvironment,
   ) => S['quoteDeps'];
-  /** refreshed after a successful submit; default: account reads */
+  /**
+   * refreshed after a submit, a failed one too: an earlier step (approve,
+   * unwrap) may have landed, or the data moved under the form (a drained
+   * pool). Default: account reads, route contexts included
+   */
   refetchAfterSubmit?: readonly QueryKey[];
 };
 
@@ -55,7 +62,9 @@ export type FormRouting<S extends FormRouteSpec> = {
    * runs the route of the values: its context, the quote the user saw for
    * exactly this amount (plus a fresh re-read to compare with), the tools
    */
-  submit: (values: S['values']) => Promise<boolean>;
+  submit: (values: S['values']) => Promise<RouteSubmitResult<S>>;
+  /** what submit's `retry` fires: the form controller submits on it */
+  retryEvent: EventSubscription;
 };
 
 const DEFAULT_REFETCH_AFTER_SUBMIT: readonly QueryKey[] = [['balance']];
@@ -67,6 +76,7 @@ export const useFormRouting = <S extends FormRouteSpec, TEnvironment>(
   const wagmiConfig = useConfig();
   const environment = config.useEnvironment();
   const tools = config.useSubmitTools();
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   return useMemo(() => {
     const publicEnvironment = { queryClient, wagmiConfig };
@@ -99,24 +109,23 @@ export const useFormRouting = <S extends FormRouteSpec, TEnvironment>(
         // the cached quote: what the UI showed for this amount
         requester.requestQuote(route, pair, amount),
       ]);
-      const isSuccess = await route.submit(
+      const result = await route.submit(
         values,
         {
           context,
           quote,
           refreshQuote: () =>
             requester.requestQuote(route, pair, amount, { fresh: true }),
+          retry: () => void retryFire(),
         },
         tools,
       );
 
-      if (isSuccess) {
-        for (const queryKey of config.refetchAfterSubmit ??
-          DEFAULT_REFETCH_AFTER_SUBMIT) {
-          void queryClient.invalidateQueries({ queryKey });
-        }
+      for (const queryKey of config.refetchAfterSubmit ??
+        DEFAULT_REFETCH_AFTER_SUBMIT) {
+        void queryClient.invalidateQueries({ queryKey });
       }
-      return isSuccess;
+      return result;
     };
 
     return {
@@ -126,6 +135,15 @@ export const useFormRouting = <S extends FormRouteSpec, TEnvironment>(
       getQuoteDeps,
       requester,
       submit,
+      retryEvent,
     };
-  }, [config, queryClient, wagmiConfig, environment, tools]);
+  }, [
+    config,
+    queryClient,
+    wagmiConfig,
+    environment,
+    tools,
+    retryEvent,
+    retryFire,
+  ]);
 };

@@ -96,6 +96,7 @@ export const StakeFormContext: FC<PropsWithChildren> = ({ children }) => {
     StakeFormValidatedInputValues
   >({
     routing,
+    form,
     // a new stake: clear the amount, keep the picks
     onReset: useCallback(
       (values: StakeFormInputValues) => form.reset({ ...values, amount: null }),

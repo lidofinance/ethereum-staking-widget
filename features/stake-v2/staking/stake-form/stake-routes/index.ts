@@ -13,6 +13,7 @@ export type {
   StakeRouteQuoteEnvironment,
   StakeRouteSpec,
   StakeRouteSubmission,
+  StakeRouteSubmitResult,
   StakeRouteSubmitTools,
   StakeRouteUi,
   StakeRouteValues,

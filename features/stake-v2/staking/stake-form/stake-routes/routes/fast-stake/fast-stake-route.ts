@@ -26,12 +26,7 @@ import {
   type SpendBalances,
 } from '../../../../../utils';
 import type { L2StakeState, StakeRoute } from '../../types';
-import {
-  isSameChain,
-  placeholderSubmit,
-  quoteQueryKey,
-  routeQueryKey,
-} from '../shared';
+import { isSameChain, quoteQueryKey, routeQueryKey } from '../shared';
 
 import {
   fastStakeEstimateTx,
@@ -39,6 +34,7 @@ import {
   readFastStakeRate,
   readWethAllowance,
 } from './reads';
+import { submitFastStake } from './submit';
 
 type FastStakeContext = SpendBalances &
   L2StakeState & {
@@ -169,5 +165,5 @@ export const fastStakeRoute: StakeRoute<FastStakeContext> = {
     });
   },
 
-  submit: placeholderSubmit('fast-stake', { shouldVerifyQuote: true }),
+  submit: submitFastStake,
 };

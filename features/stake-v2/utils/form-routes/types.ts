@@ -1,8 +1,6 @@
 import type { QueryKey } from '@tanstack/react-query';
 import type { z } from 'zod';
 
-import { errorTexts } from '../error-texts';
-
 /**
  * What a form's routes are about. A form with several flows behind one UI
  * (stake: Lido submit, wrap ETH, L2 fast stake) declares one spec and
@@ -38,6 +36,20 @@ export type RouteSubmission<S extends FormRouteSpec, TContext> = {
   quote: S['quote'];
   /** re-reads the quote, bypassing the cache, for the same amount */
   refreshQuote: () => Promise<S['quote']>;
+  /** submits the form again, through its validation (e.g. a modal's Try again) */
+  retry: () => void;
+};
+
+/** how a route's submit ended */
+export type RouteSubmitResult<S extends FormRouteSpec> = {
+  /** the action happened: the form resets */
+  isSuccess: boolean;
+  /**
+   * values the form switches to: a failed flow that already moved the
+   * funds (e.g. WETH unwrapped to ETH) points the form at where they are,
+   * so they do not look lost and a retry continues from there
+   */
+  nextValues?: Partial<S['values']>;
 };
 
 /**
@@ -69,13 +81,5 @@ export type FormRoute<S extends FormRouteSpec, TContext = unknown> = {
     values: S['values'],
     submission: RouteSubmission<S, TContext>,
     tools: S['tools'],
-  ): Promise<boolean>;
+  ): Promise<RouteSubmitResult<S>>;
 };
-
-/** the quote is worse than the one the user saw: submit must stop */
-export class QuoteMismatchError extends Error {
-  constructor(message = errorTexts.forms.general.quoteChanged()) {
-    super(message);
-    this.name = 'QuoteMismatchError';
-  }
-}

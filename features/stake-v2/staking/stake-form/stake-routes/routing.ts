@@ -1,8 +1,18 @@
 import { useMemo } from 'react';
 
-import { useAA, useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
+import {
+  useAA,
+  useDappStatus,
+  useLidoSDK,
+  useLidoSDKL2,
+  useTxFlow,
+} from 'modules/web3';
 
-import { isAtomicBatchSupported, type FormRoutingConfig } from '../../../utils';
+import {
+  isAtomicBatchSupported,
+  useTransactionStageModal,
+  type FormRoutingConfig,
+} from '../../../utils';
 
 import { resolveStakeRoute } from './registry';
 import type {
@@ -29,9 +39,14 @@ const useStakeSubmitTools = (): StakeRouteSubmitTools | null => {
   const { address: account } = useDappStatus();
   const txFlow = useTxFlow();
   const lidoSDK = useLidoSDK();
+  const lidoSDKL2 = useLidoSDKL2();
+  const { dispatchTransactionModal } = useTransactionStageModal();
   return useMemo(
-    () => (account ? { account, txFlow, lidoSDK } : null),
-    [account, txFlow, lidoSDK],
+    () =>
+      account
+        ? { account, txFlow, lidoSDK, lidoSDKL2, dispatchTransactionModal }
+        : null,
+    [account, txFlow, lidoSDK, lidoSDKL2, dispatchTransactionModal],
   );
 };
 

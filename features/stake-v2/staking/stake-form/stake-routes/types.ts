@@ -1,13 +1,15 @@
 import type { Address } from 'viem';
 
-import type { TxFlow, useLidoSDK } from 'modules/web3';
+import type { TxFlow, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 import type {
   CapabilitiesByChain,
   FormRoute,
   RoutePublicEnvironment,
   RouteSubmission,
+  RouteSubmitResult,
   TokenOnChain,
+  TransactionStageModalContextValue,
 } from '../../../utils';
 
 /** what the user picked: the route is chosen by it alone */
@@ -65,7 +67,11 @@ export type StakeQuote = {
 export type StakeRouteSubmitTools = {
   txFlow: TxFlow;
   lidoSDK: ReturnType<typeof useLidoSDK>;
+  /** the L2 SDK, on the wallet's chain: for L2 routes */
+  lidoSDKL2: ReturnType<typeof useLidoSDKL2>;
   account: Address;
+  /** the form's tx modal: the flow shows its stages there */
+  dispatchTransactionModal: TransactionStageModalContextValue['dispatchTransactionModal'];
 };
 
 export type StakeRouteId = 'stake' | 'wrap-eth' | 'fast-stake';
@@ -95,3 +101,5 @@ export type StakeRouteSubmission<TContext> = RouteSubmission<
   StakeRouteSpec,
   TContext
 >;
+
+export type StakeRouteSubmitResult = RouteSubmitResult<StakeRouteSpec>;

@@ -108,5 +108,5 @@ export const stakeRoute: StakeRoute<StakeContext> = {
     });
   },
 
-  submit: (values, _submission, tools) => submitStake(values, tools),
+  submit: submitStake,
 };

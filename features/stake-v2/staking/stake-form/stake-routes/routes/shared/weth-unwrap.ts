@@ -3,19 +3,22 @@ import type { TransactionCallback } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { wethABI } from 'abi/weth-abi';
 import { TOKENS } from 'consts/tokens';
-import type { AACall } from 'modules/web3';
+import type { TxStep } from 'modules/web3';
 
 import { getTokenAddressOrThrow } from '../../../../../utils';
 import type { StakeRouteSubmitTools } from '../../types';
 
+import { STAKE_STEP } from './steps';
+
 type LidoCore = StakeRouteSubmitTools['lidoSDK']['core'];
 
-// Lido's submit() takes ETH only. WETH9 withdraw() burns the caller's WETH
-// and sends the ETH back, so staking WETH is "unwrap, then submit". The SDK
-// has no WETH module, so the contract is addressed directly
+// Lido stakes ETH only. WETH9 withdraw() burns the caller's WETH and sends
+// the ETH back, so staking WETH is "unwrap, then stake". The SDK has no WETH
+// module, so the contract is addressed directly
 
-/** the unwrap as a batch call (AA wallets) */
-export const unwrapWethCall = (chainId: number, amount: bigint): AACall => ({
+/** the unwrap step: a batch call for AA wallets */
+export const unwrapWethStep = (chainId: number, amount: bigint): TxStep => ({
+  stepId: STAKE_STEP.unwrap,
   to: getTokenAddressOrThrow(chainId, TOKENS.weth),
   data: encodeFunctionData({
     abi: wethABI,
@@ -24,8 +27,8 @@ export const unwrapWethCall = (chainId: number, amount: bigint): AACall => ({
   }),
 });
 
-/** the unwrap as a separate transaction (legacy wallets) */
-export const unwrapWeth = (
+/** the unwrap as its own transaction, for EOAs */
+export const sendUnwrapWeth = (
   core: LidoCore,
   amount: bigint,
   callback: TransactionCallback,

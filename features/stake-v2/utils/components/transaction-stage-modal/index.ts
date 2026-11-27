@@ -8,6 +8,10 @@ export {
   type TransactionLinkProps,
   type TryAgainButtonProps,
 } from './primitives';
+export {
+  txFlowModalStages,
+  type TxStepModalTexts,
+} from './tx-flow-modal-stages';
 export type {
   AsyncModalArgs,
   TransactionModalAction,
