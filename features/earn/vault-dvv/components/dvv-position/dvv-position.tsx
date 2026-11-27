@@ -12,7 +12,7 @@ import {
   SSV_TOKEN_SYMBOL,
 } from '../../consts';
 import {
-  TokenDvstethIcon,
+  TokenDvstethLegacyIcon,
   TokenMellowIcon,
   TokenObolIcon,
   TokenSsvIcon,
@@ -84,7 +84,7 @@ export const DVVPosition = () => {
         symbol: DVV_TOKEN_SYMBOL,
         token: dvvTokenAddress,
         balance: sharesBalance,
-        icon: <TokenDvstethIcon />,
+        icon: <TokenDvstethLegacyIcon />,
         isLoading: isLoadingPosition,
         usdAmount: usdBalance,
       }}

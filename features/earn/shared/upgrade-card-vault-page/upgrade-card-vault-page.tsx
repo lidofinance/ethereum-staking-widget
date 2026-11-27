@@ -5,7 +5,7 @@ import {
   IconChartColumnIncreasing,
   IconChartPie,
   IconRotateCw,
-} from 'assets/earn-v2';
+} from 'assets/earn';
 import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 import { LocalLink } from 'shared/components/local-link';

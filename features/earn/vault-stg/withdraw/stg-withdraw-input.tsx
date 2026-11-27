@@ -2,7 +2,7 @@ import { useFormState } from 'react-hook-form';
 
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { TokenStrethIcon } from 'assets/earn';
+import { TokenStrethLegacyIcon } from 'assets/earn';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
@@ -15,7 +15,7 @@ export const STGWithdrawInput: React.FC = () => {
   return (
     <InputGroupHookForm errorField="amount" bottomSpacing={0}>
       <TokenAmountInputHookForm
-        leftDecorator={<TokenStrethIcon width={24} height={24} />}
+        leftDecorator={<TokenStrethLegacyIcon width={24} height={24} />}
         disabled={disabled}
         fieldName="amount"
         token={'strETH'}

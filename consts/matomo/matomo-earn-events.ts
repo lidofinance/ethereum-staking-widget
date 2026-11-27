@@ -103,15 +103,12 @@ export const enum MATOMO_EARN_EVENTS_TYPES {
   earnEthGgTokenUpgrade = 'earnEthGgTokenUpgrade',
   earnEthStrethTokenUpgrade = 'earnEthStrethTokenUpgrade',
   earnEthDvstethTokenUpgrade = 'earnEthDvstethTokenUpgrade',
-  earnEthPerformance = 'earnEthPerformance',
   earnEthPerformanceTvlTab = 'earnEthPerformanceTvlTab',
   earnEthPerformanceTvl1m = 'earnEthPerformanceTvl1m',
   earnEthPerformanceTvl3m = 'earnEthPerformanceTvl3m',
   earnEthPerformanceApyTab = 'earnEthPerformanceApyTab',
   earnEthPerformanceApy1m = 'earnEthPerformanceApy1m',
   earnEthPerformanceApy3m = 'earnEthPerformanceApy3m',
-  earnEthStrategy = 'earnEthStrategy',
-  earnEthFaq = 'earnEthFaq',
 
   // Earn USD Deposit
   earnUsdDepositTab = 'earnUsdDepositTab',
@@ -136,15 +133,12 @@ export const enum MATOMO_EARN_EVENTS_TYPES {
   earnUsdWithdrawalClaimAll = 'earnUsdWithdrawalClaimAll',
 
   // Earn USD Common
-  earnUsdPerformance = 'earnUsdPerformance',
   earnUsdPerformanceTvlTab = 'earnUsdPerformanceTvlTab',
   earnUsdPerformanceTvl1m = 'earnUsdPerformanceTvl1m',
   earnUsdPerformanceTvl3m = 'earnUsdPerformanceTvl3m',
   earnUsdPerformanceApyTab = 'earnUsdPerformanceApyTab',
   earnUsdPerformanceApy1m = 'earnUsdPerformanceApy1m',
   earnUsdPerformanceApy3m = 'earnUsdPerformanceApy3m',
-  earnUsdStrategy = 'earnUsdStrategy',
-  earnUsdFaq = 'earnUsdFaq',
 }
 
 export const MATOMO_EARN_EVENTS: Record<
@@ -544,11 +538,6 @@ export const MATOMO_EARN_EVENTS: Record<
     'Click on "Upgrade" for DVstETH token on Lido Earn ETH',
     'eth_earn_lido_earn_eth_dvsteth_token_upgrade',
   ],
-  [MATOMO_EARN_EVENTS_TYPES.earnEthPerformance]: [
-    'Ethereum_Earn_Widget',
-    'Click on "Performance" page on Lido Earn ETH',
-    'eth_earn_lido_earn_eth_performance',
-  ],
   [MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceTvlTab]: [
     'Ethereum_Earn_Widget',
     'Click on TVL tab on Performance page on Lido Earn ETH',
@@ -578,16 +567,6 @@ export const MATOMO_EARN_EVENTS: Record<
     'Ethereum_Earn_Widget',
     'Click on 3m APY on Performance page on Lido Earn ETH',
     'eth_earn_lido_earn_eth_performance_apy_3m',
-  ],
-  [MATOMO_EARN_EVENTS_TYPES.earnEthStrategy]: [
-    'Ethereum_Earn_Widget',
-    'Click on "Strategy" page on Lido Earn ETH',
-    'eth_earn_lido_earn_eth_strategy',
-  ],
-  [MATOMO_EARN_EVENTS_TYPES.earnEthFaq]: [
-    'Ethereum_Earn_Widget',
-    'Click on "FAQ" page on Lido Earn ETH',
-    'eth_earn_lido_earn_eth_faq',
   ],
 
   // Earn USD Deposit
@@ -685,11 +664,6 @@ export const MATOMO_EARN_EVENTS: Record<
   ],
 
   // Earn USD Common
-  [MATOMO_EARN_EVENTS_TYPES.earnUsdPerformance]: [
-    'Ethereum_Earn_Widget',
-    'Click on "Performance" page on Lido Earn USD',
-    'eth_earn_lido_earn_usd_performance',
-  ],
   [MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvlTab]: [
     'Ethereum_Earn_Widget',
     'Click on TVL tab on Performance page on Lido Earn USD',
@@ -719,15 +693,5 @@ export const MATOMO_EARN_EVENTS: Record<
     'Ethereum_Earn_Widget',
     'Click on 3m APY on Performance page on Lido Earn USD',
     'eth_earn_lido_earn_usd_performance_apy_3m',
-  ],
-  [MATOMO_EARN_EVENTS_TYPES.earnUsdStrategy]: [
-    'Ethereum_Earn_Widget',
-    'Click on "Strategy" page on Lido Earn USD',
-    'eth_earn_lido_earn_usd_strategy',
-  ],
-  [MATOMO_EARN_EVENTS_TYPES.earnUsdFaq]: [
-    'Ethereum_Earn_Widget',
-    'Click on "FAQ" page on Lido Earn USD',
-    'eth_earn_lido_earn_usd_faq',
   ],
 };

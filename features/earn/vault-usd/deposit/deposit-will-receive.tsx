@@ -3,7 +3,7 @@ import { useWatch } from 'react-hook-form';
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
 import { USD_VAULT_TOKEN_SYMBOL } from '../consts';
 import { USDDepositFormValues } from './form-context/types';
-import { TokenEarnUsdIcon } from 'assets/earn-v2';
+import { TokenEarnUsdIcon } from 'assets/earn';
 import { useUsdVaultPreviewDeposit } from './hooks/use-preview-deposit';
 import { asUsdDepositToken } from '../utils';
 

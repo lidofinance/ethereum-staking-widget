@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { FaqItem } from 'features/earn/shared/v2/faq';
+import { FaqItem } from 'features/earn/shared/faq';
 
 export const WhatFeesAreApplied: FC<{ id?: string }> = ({ id }) => {
   return (

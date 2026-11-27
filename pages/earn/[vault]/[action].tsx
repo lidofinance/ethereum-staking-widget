@@ -13,7 +13,7 @@ import {
 } from 'features/earn/consts';
 import { EthVaultPage } from 'features/earn/vault-eth';
 import { VaultPageUSD } from 'features/earn/vault-usd';
-import { isV1DesignVault } from 'features/earn/shared/utils/isV1DesignVault';
+import { isLegacyVault } from 'features/earn/shared/utils/is-legacy-vault';
 import { useEarnVaultGuard } from 'features/earn/shared/hooks/use-earn-vault-guard';
 
 type PageParams = {
@@ -73,7 +73,7 @@ export default function VaultActionPage({ vault, action }: PageParams) {
   const vaultTitle = vault.toUpperCase();
 
   // undefined means default container size ('tight' at the moment)
-  const containerSize = isV1DesignVault(vault) ? undefined : 'full';
+  const containerSize = isLegacyVault(vault) ? undefined : 'full';
 
   return (
     <Layout containerSize={containerSize}>

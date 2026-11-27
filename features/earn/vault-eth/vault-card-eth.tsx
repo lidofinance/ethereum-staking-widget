@@ -1,4 +1,4 @@
-import { VaultEthIcon } from 'assets/earn-v2';
+import { VaultEthIcon } from 'assets/earn';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { VaultListWarning } from 'features/earn/vaults-list/vault-list-warning';
@@ -8,7 +8,7 @@ import { EARN_VAULT_ETH_SLUG } from '../consts';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';
 import { EthVaultApyHint } from './components/apy-hint';
-import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
+import { ApyUpdateTooltipText } from '../shared/apy-update-tooltip-text';
 import {
   ETH_VAULT_DESCRIPTION,
   ETH_VAULT_TITLE,

@@ -3,7 +3,7 @@ import { useWatch } from 'react-hook-form';
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../consts';
 import { ETHDepositFormValues } from './form-context/types';
-import { TokenEarnEthIcon } from 'assets/earn-v2';
+import { TokenEarnEthIcon } from 'assets/earn';
 import { useEthVaultPreviewDeposit } from './hooks/use-preview-deposit';
 import { asEthDepositToken } from '../utils';
 

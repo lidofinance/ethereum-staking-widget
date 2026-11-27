@@ -19,7 +19,7 @@ export const EARN_VAULTS = [
   EARN_VAULT_USD_SLUG,
 ] as const;
 
-export const EARN_VAULTS_V1_DESIGN = [
+export const EARN_LEGACY_VAULTS = [
   EARN_VAULT_GGV_SLUG,
   EARN_VAULT_DVV_SLUG,
   EARN_VAULT_STG_SLUG,
@@ -46,4 +46,4 @@ export type EarnVaultKey = EnsureSameType<
   ManifestConfigEarnVault
 >;
 
-export type EarnVaultV1DesignKey = (typeof EARN_VAULTS_V1_DESIGN)[number];
+export type EarnLegacyVaultKey = (typeof EARN_LEGACY_VAULTS)[number];

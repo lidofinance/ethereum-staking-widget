@@ -1,8 +1,12 @@
 import { useController, useFormState, useFormContext } from 'react-hook-form';
 
 import { Option, Eth, Steth, Wsteth, OptionValue } from '@lidofinance/lido-ui';
-import { TokenWethIcon } from 'assets/earn';
-import { TokenUsdcIcon, TokenUsdeIcon, TokenUsdtIcon } from 'assets/earn-v2';
+import {
+  TokenWethIcon,
+  TokenUsdcIcon,
+  TokenUsdeIcon,
+  TokenUsdtIcon,
+} from 'assets/earn';
 
 import { getTokenSymbol, TokenSymbol } from 'utils/get-token-symbol';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';

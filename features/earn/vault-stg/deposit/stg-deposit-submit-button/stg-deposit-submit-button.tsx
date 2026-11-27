@@ -1,5 +1,5 @@
 import { getTokenSymbol } from 'utils/get-token-symbol';
-import { VaultDepositSubmitButton } from 'features/earn/shared/v2/vault-deposit-submit-button';
+import { VaultDepositSubmitButton } from 'features/earn/shared/vault-deposit-submit-button';
 import { useSTGAvailable } from '../../hooks/use-stg-available';
 import { useSTGDepositForm } from '../form-context';
 import { useDepositRequest } from '../hooks';

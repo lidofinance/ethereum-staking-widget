@@ -1,5 +1,5 @@
 import { InlineLoader } from 'features/earn/shared/inline-loader';
-import { TokenEarnUsdIcon } from 'assets/earn-v2';
+import { TokenEarnUsdIcon } from 'assets/earn';
 import { Request } from 'modules/mellow-meta-vaults/components/request';
 import { useUsdVaultPreviewWithdraw } from '../hooks/use-preview-withdraw';
 import { USD_VAULT_TOKEN_SYMBOL } from '../../consts';

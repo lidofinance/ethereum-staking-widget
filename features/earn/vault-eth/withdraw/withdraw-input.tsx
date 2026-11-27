@@ -2,7 +2,7 @@ import { useFormState } from 'react-hook-form';
 
 import { VaultInputGroupHookForm } from 'features/earn/shared/vault-input-group-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { TokenEarnEthIcon } from 'assets/earn-v2';
+import { TokenEarnEthIcon } from 'assets/earn';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 

@@ -1,6 +1,6 @@
 import { useFormState } from 'react-hook-form';
 
-import { TokenDvstethIcon } from 'assets/earn';
+import { TokenDvstethLegacyIcon } from 'assets/earn';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
@@ -15,7 +15,7 @@ export const DVVWithdrawInput = () => {
   return (
     <TokenAmountInputHookForm
       leftDecorator={
-        <TokenDvstethIcon width={24} height={24} viewBox={'0 0 28 28'} />
+        <TokenDvstethLegacyIcon width={24} height={24} viewBox={'0 0 28 28'} />
       }
       disabled={disabled}
       fieldName="amount"

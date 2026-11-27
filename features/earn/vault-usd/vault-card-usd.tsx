@@ -1,4 +1,4 @@
-import { VaultUsdIcon } from 'assets/earn-v2';
+import { VaultUsdIcon } from 'assets/earn';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
@@ -8,7 +8,7 @@ import { VaultListWarning } from '../vaults-list/vault-list-warning';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { UsdVaultApyHint } from './components/apy-hint';
-import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
+import { ApyUpdateTooltipText } from '../shared/apy-update-tooltip-text';
 import {
   USD_VAULT_DESCRIPTION,
   USD_VAULT_TITLE,

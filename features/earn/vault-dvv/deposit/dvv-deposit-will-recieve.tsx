@@ -1,6 +1,6 @@
 import { useWatch } from 'react-hook-form';
 
-import { TokenDvstethIcon } from 'assets/earn';
+import { TokenDvstethLegacyIcon } from 'assets/earn';
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
 
 import { useDVVPreviewDeposit } from './hooks/use-dvv-preview-deposit';
@@ -13,7 +13,9 @@ export const DVVDepositWillReceive = () => {
 
   return (
     <VaultWillReceive
-      icon={<TokenDvstethIcon width={16} height={16} viewBox="0 0 28 28" />}
+      icon={
+        <TokenDvstethLegacyIcon width={16} height={16} viewBox="0 0 28 28" />
+      }
       symbol={DVV_TOKEN_SYMBOL}
       isLoading={isLoading}
       amount={data.shares}

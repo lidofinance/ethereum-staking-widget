@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { FaqItem } from 'features/earn/shared/v2/faq/faq-item';
+import { FaqItem } from 'features/earn/shared/faq/faq-item';
 
 export const WhyReceiveWstethOnWithdrawal: FC<{ id?: string }> = ({ id }) => {
   return (

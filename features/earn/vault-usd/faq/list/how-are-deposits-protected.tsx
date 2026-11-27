@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
-import { FaqItem } from 'features/earn/shared/v2/faq';
+import { FaqItem } from 'features/earn/shared/faq';
 
 export const HowAreDepositsProtected: FC<{ id?: string }> = ({ id }) => {
   return (

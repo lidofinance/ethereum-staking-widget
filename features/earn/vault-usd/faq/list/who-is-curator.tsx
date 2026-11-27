@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { FaqItem } from 'features/earn/shared/v2/faq';
+import { FaqItem } from 'features/earn/shared/faq';
 import Link from 'next/link';
 
 export const WhoIsCurator: FC<{ id?: string }> = ({ id }) => {

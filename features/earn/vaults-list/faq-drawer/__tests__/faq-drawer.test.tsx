@@ -1,7 +1,7 @@
 import { forwardRef, type ReactNode, type RefObject } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { FaqDrawer } from '../faq-drawer';
+import { VaultsListFaqDrawer } from '../faq-drawer';
 import { EARN_LIST_FAQ } from '../faq-items';
 
 type DrawerStubProps = {
@@ -40,9 +40,9 @@ vi.mock('@lidofinance/lido-app-ui', async (importOriginal) => ({
   }),
 }));
 
-describe('FaqDrawer', () => {
+describe('VaultsListFaqDrawer', () => {
   it('renders the help button, closed by default', () => {
-    const html = renderToStaticMarkup(<FaqDrawer />);
+    const html = renderToStaticMarkup(<VaultsListFaqDrawer />);
     expect(html).toContain('data-testid="earn-faq-button"');
     expect(html).toContain('aria-label="Frequently asked questions"');
     expect(html).toContain('aria-expanded="false"');
@@ -50,7 +50,7 @@ describe('FaqDrawer', () => {
   });
 
   it('passes the title, width and focus target to the drawer', () => {
-    renderToStaticMarkup(<FaqDrawer />);
+    renderToStaticMarkup(<VaultsListFaqDrawer />);
     const drawer = state.drawer;
     expect(drawer?.title).toBe('FAQ');
     expect(drawer?.width).toBe(500);
@@ -58,7 +58,7 @@ describe('FaqDrawer', () => {
   });
 
   it('lists every question and opens only the first one', () => {
-    const html = renderToStaticMarkup(<FaqDrawer />);
+    const html = renderToStaticMarkup(<VaultsListFaqDrawer />);
     EARN_LIST_FAQ.forEach(({ question }) => expect(html).toContain(question));
     expect(html.match(/aria-expanded="true"/g)).toHaveLength(1);
     expect(html).toContain('First answer');

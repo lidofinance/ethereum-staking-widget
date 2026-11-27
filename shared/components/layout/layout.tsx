@@ -1,5 +1,6 @@
-import { ReactNode, FC, PropsWithChildren } from 'react';
+import { ReactNode, FC, PropsWithChildren, useState } from 'react';
 import { TestEnvBanner } from './test-env-banner';
+import { FabSlot, FabSlotContext } from './fab-slot';
 
 import type { ContainerProps } from '@lidofinance/lido-ui';
 
@@ -22,15 +23,15 @@ type Props = {
   title?: ReactNode;
   subtitle?: ReactNode;
   containerSize?: ContainerProps['size'];
-  stylesV2?: boolean;
 };
 
 export const Layout: FC<PropsWithChildren<Props>> = (props) => {
-  const { title, subtitle, containerSize, stylesV2 } = props;
+  const { title, subtitle, containerSize } = props;
   const { children } = props;
+  const [fabSlot, setFabSlot] = useState<HTMLDivElement | null>(null);
 
   return (
-    <>
+    <FabSlotContext.Provider value={fabSlot}>
       <TestEnvBanner />
       <Header />
       <Main size={containerSize}>
@@ -42,12 +43,13 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
         <AmountBannerOnlyMobileWrapper>
           <AmountBanner isDismissible placement="connect_wallet" />
         </AmountBannerOnlyMobileWrapper>
-        <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>
+        <LayoutTitleStyle>{title}</LayoutTitleStyle>
         <LayoutSubTitleStyle>{subtitle}</LayoutSubTitleStyle>
         {children}
       </Main>
+      <FabSlot ref={setFabSlot} />
       <Footer />
       <HolidaysDecorFooter />
-    </>
+    </FabSlotContext.Provider>
   );
 };

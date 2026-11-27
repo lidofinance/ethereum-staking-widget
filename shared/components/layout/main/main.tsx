@@ -5,10 +5,8 @@ import { useRouter } from 'next/router';
 
 import { MainStyle } from './styles';
 import { EARN_PATH } from 'consts/urls';
-import {
-  EARN_VAULTS_V1_DESIGN,
-  EarnVaultV1DesignKey,
-} from 'features/earn/consts';
+import type { EarnVaultKey } from 'features/earn/consts';
+import { isLegacyVault } from 'features/earn/shared/utils/is-legacy-vault';
 
 export const Main: FC<ContainerProps> = (props) => {
   const { size = 'tight', ...rest } = props;
@@ -17,12 +15,10 @@ export const Main: FC<ContainerProps> = (props) => {
 
   const isEarnListPage = router.pathname === EARN_PATH;
   const isEarnVault = router.pathname.includes(`${EARN_PATH}/[vault]/[action]`);
-  const isEarnVaultV1 =
-    isEarnVault &&
-    EARN_VAULTS_V1_DESIGN.includes(router.query.vault as EarnVaultV1DesignKey);
-  const isEarnVaultV2 = isEarnVault && !isEarnVaultV1;
-  // the Earn list sets its own column width; the wide container puts its FAQ button near the screen edge
-  const mainSize = isEarnVaultV2 || isEarnListPage ? 'full' : size;
+  const isFullWidthEarnVault =
+    isEarnVault && !isLegacyVault(router.query.vault as EarnVaultKey);
+  // Earn pages set their own column width; the wide container puts the FAQ button near the screen edge
+  const mainSize = isFullWidthEarnVault || isEarnListPage ? 'full' : size;
 
   return (
     <MainStyle

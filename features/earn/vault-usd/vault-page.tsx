@@ -1,250 +1,91 @@
-import { useMemo, type FC, type ReactNode } from 'react';
-import { Link } from '@lidofinance/lido-ui';
+import { useMemo } from 'react';
 
-import { config } from 'config';
-import { PartnerNethermindIconCircle, VaultUsdIcon } from 'assets/earn-v2';
-import { PartnerMellowIcon } from 'assets/earn';
-import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
-import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
+import { VaultUsdIcon } from 'assets/earn';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
-import { TOKEN_SYMBOLS } from 'consts/tokens';
-import {
-  ACTIVE_FEES_TOOLTIP,
-  WITHDRAWAL_WAITING_TIME_TOOLTIP,
-} from 'modules/mellow-meta-vaults';
 
-import { VaultAllocation } from '../shared/v2/vault-allocation/vault-allocation';
-import { Disclaimers } from '../shared/v2/disclaimers';
-import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
-import { ActiveFeesValue } from '../shared/v2/active-fees-value';
+import { ApyUpdateTooltipText } from '../shared/apy-update-tooltip-text';
+import {
+  METAVAULT_ALLOCATION_TOOLTIP,
+  MetavaultRiskDisclosure,
+  VaultPage,
+  getMetavaultStrategyRows,
+} from '../shared/vault-page';
+import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 
 import { UsdVaultPositionManager } from './position-manager/position-manager';
 import { EarnUsdFaq } from './faq/faq';
-import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
-import { useUsdVaultPosition } from './hooks/use-position';
 import { useUsdVaultActiveFees } from './hooks/use-active-fees';
 import { UsdVaultApyHint } from './components/apy-hint';
-import {
-  USD_VAULT_DESCRIPTION,
-  USD_VAULT_TITLE,
-  USD_VAULT_TOKEN_SYMBOL,
-} from './consts';
+import { USD_VAULT_DESCRIPTION, USD_VAULT_TITLE } from './consts';
 import { ProtectedTooltip } from './protected-tooltip';
 
-const GENERAL_INFO_LEFT = [
+const STRATEGY_LINKS = [
   {
-    label: 'Curators',
-    value: (
-      <>
-        <PartnerMellowIcon width={20} height={20} />{' '}
-        <Link href="https://mellow.finance/">Mellow ↗</Link>
-      </>
-    ),
-  },
-  { label: 'Vault contract deployed', value: '02 Feb 2026' },
-  {
-    label: 'Audit',
-    value: (
-      <>
-        <PartnerNethermindIconCircle width={20} height={20} />
-        <Link href="https://2485622279-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FPyujKH9RYkVLASDhGflO%2Fuploads%2F3TMwsLt6Q2z3Wutyewuo%2FNM_0758_Mellow-1.pdf?alt=media&token=187ae9c0-f4fd-44b0-bfd8-d5b003bcd94b">
-          Nethermind ↗
-        </Link>
-      </>
-    ),
-  },
-  { label: 'Last audit date', value: '02 March 2026' },
-];
-
-const GENERAL_INFO_RIGHT: Array<{
-  label: ReactNode;
-  value?: ReactNode;
-  tooltip?: string;
-}> = [
-  {
-    label: 'Withdrawal wait time',
-    value: 'Instant or up to 72 hours',
-    tooltip: WITHDRAWAL_WAITING_TIME_TOOLTIP,
+    label: 'View on Etherscan',
+    href: 'https://etherscan.io/address/0x4Ce1ac8F43E0E5BD7A346A98aF777bF8fbeA1981',
   },
   {
-    label: (
-      <Link href="https://etherscan.io/address/0x4Ce1ac8F43E0E5BD7A346A98aF777bF8fbeA1981">
-        View on Etherscan ↗
-      </Link>
-    ),
-  },
-  {
-    label: (
-      <Link href="https://debank.com/bundles/221534/accounts">
-        View on Debank ↗
-      </Link>
-    ),
+    label: 'View on Debank',
+    href: 'https://debank.com/bundles/221534/accounts',
   },
 ];
 
-const RISK_DISCLOSURE = (
-  <>
-    The EarnUSD vault is designed to optimize USD-based returns by allocating
-    capital across a diversified selection of DeFi protocols and strategies
-    within the broader ecosystem.
-    <br />
-    The vault provides exposure to multiple DeFi positions, each carrying smart
-    contract risk and different levels of market and economic risk. Its
-    strategies include liquidity provision, which may lead to impermanent loss,
-    and the use of leverage, introducing potential liquidation risk. Please note
-    that the vault is not available to U.S. persons, U.S. residents, or
-    individuals located in other restricted jurisdictions.{' '}
-    <Link href={`${config.rootOrigin}/earn/risk-disclosures`}>
-      See this for further disclosures
-    </Link>
-    .
-    <br />
-    <br />
-    Lido EarnUSD relies on third-party infrastructure provided by Mellow. By
-    proceeding, you are subject to Mellow&apos;s{' '}
-    <Link href="https://mellow.finance/Runtime-Labs-Vault-Legal-Notice.pdf">
-      Terms of Service
-    </Link>{' '}
-    and{' '}
-    <Link href="https://mellow.finance/Mellow-Privacy-Notice.pdf">
-      Privacy Notice
-    </Link>
-    .
-    <br />
-    <br />
-    By depositing cryptoassets into the Lido EarnUSD vault you:
-    <br />- acknowledge and accept Mellow&apos;s{' '}
-    <Link href="https://mellow.finance/Runtime-Labs-Vault-Legal-Notice.pdf">
-      Terms of Use
-    </Link>{' '}
-    and{' '}
-    <Link href="https://mellow.finance/Mellow-Privacy-Notice.pdf">
-      Privacy Notice
-    </Link>
-    ,{' '}
-    <Link href={`${config.rootOrigin}/terms-of-use`}>
-      Lido&apos;s Terms of Use
-    </Link>{' '}
-    and the{' '}
-    <Link href={`${config.rootOrigin}/earn/risk-disclosures`}>
-      Risk Disclosures
-    </Link>
-    .
-    <br />- acknowledge and agree that the Lido EarnUSD vault relies on
-    third-party infrastructure provided by Mellow (&quot;Third-Party
-    Services&quot;) and that : (a) the operation, performance, security,
-    legality, or continued availability of any such Third-Party Services cannot
-    be guaranteed; (b) any integration, routing, or utilisation of cryptoassets
-    through such Third-Party Services may result in partial or total loss,
-    inaccessibility, or impairment of cryptoassets, whether due to malfunction,
-    insolvency, security breach, exploit, hack, de-peg, or other technical or
-    operational failure; and (&zwnj;c) you assume all such risks fully and
-    voluntarily. By using or interacting with the vault, you acknowledge that
-    the blockchain and DeFi ecosystems are experimental and inherently risky,
-    and you accept and assume all risks associated with the use of any
-    Third-Party Services, integrations, or protocols, entirely at your own
-    discretion and responsibility.
-  </>
-);
+const CHART_MATOMO = {
+  clickChartsTvlTab: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvlTab,
+  clickChartsTvl1m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvl1m,
+  clickChartsTvl3m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvl3m,
+  clickChartsApyTab: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApyTab,
+  clickChartsApy1m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApy1m,
+  clickChartsApy3m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApy3m,
+};
 
-const VAULT_ALLOCATION_FOOTER =
-  'Data is provided by Mellow’s API and reflects the most recent snapshot at the time of update. As a result, the TVL shown here may differ from the vault’s TVL due to the data timestamp';
+type VaultAction =
+  typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 
-const DATA = {
-  title: USD_VAULT_TITLE,
-  description: USD_VAULT_DESCRIPTION,
-  logo: VaultUsdIcon,
-  generalInfoLeft: GENERAL_INFO_LEFT,
-  generalInfoRight: GENERAL_INFO_RIGHT,
-  riskDisclosure: RISK_DISCLOSURE,
-} as const;
-
-export const VaultPageUSD: FC<{
-  action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
-}> = ({ action }) => {
-  const {
-    apy,
-    apyUpdateTimestampMs,
-    isApyStale,
-    isLoading: isApyLoading,
-  } = useUsdVaultApy();
+export const VaultPageUSD = ({ action }: { action: VaultAction }) => {
+  const { apy, apyUpdateTimestampMs, isApyStale, isLoading } = useUsdVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
-  const {
-    data: earnusdPositionData,
-    isLoading: isPositionLoading,
-    usdcAmount,
-  } = useUsdVaultPosition();
-  const { value: activeFeesValue, isLoading: isActiveFeesLoading } =
-    useUsdVaultActiveFees();
+  const { value: fees, isLoading: isFeesLoading } = useUsdVaultActiveFees();
 
-  const sharesBalance = earnusdPositionData?.earnusdSharesBalance;
-
-  const fees = useMemo<InfoItem[]>(
-    () => [
-      {
-        label: 'Active fees',
-        value: (
-          <ActiveFeesValue
-            value={activeFeesValue}
-            isLoading={isActiveFeesLoading}
-          />
-        ),
-        tooltip: ACTIVE_FEES_TOOLTIP,
-      },
-    ],
-    [activeFeesValue, isActiveFeesLoading],
+  const strategyInfo = useMemo(
+    () => ({
+      rows: getMetavaultStrategyRows({ fees, isFeesLoading }),
+      links: STRATEGY_LINKS,
+    }),
+    [fees, isFeesLoading],
   );
 
   return (
-    <>
-      <VaultPage
-        {...DATA}
-        fees={fees}
-        apx={apy}
-        tvlUsd={tvlUsd}
-        isApxLoading={isApyLoading}
-        isTvlLoading={isTvlLoading}
-        apxHint={<UsdVaultApyHint />}
-        apxUpdateTooltipText={
+    <VaultPage
+      vaultName="usdVault"
+      variant="usd"
+      title={USD_VAULT_TITLE}
+      description={USD_VAULT_DESCRIPTION}
+      illustration={<VaultUsdIcon />}
+      protectedBadgeTooltip={<ProtectedTooltip />}
+      apx={{
+        value: apy,
+        hint: <UsdVaultApyHint />,
+        updateTooltipText: (
           <ApyUpdateTooltipText timestampMs={apyUpdateTimestampMs} />
-        }
-        isApxStale={isApyStale}
-        sidePanel={<UsdVaultPositionManager action={action} />}
-        vaultName="usdVault"
-        balance={
-          sharesBalance
-            ? {
-                amount: usdcAmount,
-                symbol: TOKEN_SYMBOLS.usdc,
-                sharesAmount: sharesBalance,
-                sharesSymbol: USD_VAULT_TOKEN_SYMBOL,
-                isLoading: isPositionLoading,
-              }
-            : undefined
-        }
-        faqContent={<EarnUsdFaq />}
-        strategyContent={
-          <VaultAllocation
-            vaultName="usdVault"
-            footer={VAULT_ALLOCATION_FOOTER}
-          />
-        }
-        matomo={{
-          performanceTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformance,
-          strategyTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdStrategy,
-          faqTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdFaq,
-          clickChartsTvlTab: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvlTab,
-          clickChartsTvl1m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvl1m,
-          clickChartsTvl3m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvl3m,
-          clickChartsApyTab: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApyTab,
-          clickChartsApy1m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApy1m,
-          clickChartsApy3m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApy3m,
-        }}
-        protectedBadgeTooltipText={<ProtectedTooltip />}
-      />
-      <Disclaimers />
-    </>
+        ),
+        isStale: isApyStale,
+        isLoading,
+      }}
+      tvl={{ value: tvlUsd, isLoading: isTvlLoading }}
+      sidePanel={<UsdVaultPositionManager action={action} />}
+      strategyInfo={strategyInfo}
+      riskDisclosure={
+        <MetavaultRiskDisclosure
+          vaultTitle={USD_VAULT_TITLE}
+          returnsLabel="USD-based"
+        />
+      }
+      allocationTooltip={METAVAULT_ALLOCATION_TOOLTIP}
+      faqContent={<EarnUsdFaq />}
+      chartMatomo={CHART_MATOMO}
+    />
   );
 };

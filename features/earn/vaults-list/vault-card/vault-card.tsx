@@ -3,7 +3,6 @@ import {
   Button,
   DataListRow,
   Hidden,
-  IconShield,
   Skeleton,
   Tooltip,
   Typography,
@@ -18,10 +17,11 @@ import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { FormatToken } from 'shared/formatters/format-token';
 import { getTokenDecimals } from 'utils/token-decimals';
 import { VaultCardGeoCta } from './vault-card-geo-cta';
-import { shouldShowApxUpdateTooltip } from '../../shared/v2/apy-update-tooltip-text';
+import { shouldShowApxUpdateTooltip } from '../../shared/apy-update-tooltip-text';
+import { ProtectedBadge } from '../../shared/protected-badge';
+import type { VaultVisualVariant } from '../../shared/vault-visual';
 
 import {
-  type VaultCardVariant,
   CardRoot,
   CardOverlayLink,
   CardBody,
@@ -30,14 +30,15 @@ import {
   CardTitle,
   CardTitleText,
   Interactive,
-  ProtectedBadge,
   CardStats,
   CardStatItem,
   CardDataList,
   StatValueTrigger,
   CardCta,
   CardWarning,
-  VaultVisual,
+  CardVisual,
+  ICON_SIZE,
+  ICON_SIZE_MOBILE,
 } from './styles';
 
 type VaultStats = {
@@ -65,7 +66,7 @@ type VaultCardProps = {
   stats: VaultStats;
   ctaLabel: string;
   position?: VaultPosition;
-  variant?: VaultCardVariant;
+  variant?: VaultVisualVariant;
   illustration?: ReactNode;
   depositLinkCallback?: () => void;
   protectedBadgeTooltipText?: ReactNode;
@@ -196,13 +197,9 @@ export const VaultCard = ({
             <CardTitle>
               <CardTitleText data-testid="vaultTitle">{title}</CardTitleText>
               {protectedBadgeTooltipText && (
-                <Tooltip content={protectedBadgeTooltipText} width={360}>
-                  <Interactive tabIndex={0} data-testid="protected-badge">
-                    <ProtectedBadge icon={<IconShield />}>
-                      Protected
-                    </ProtectedBadge>
-                  </Interactive>
-                </Tooltip>
+                <Interactive>
+                  <ProtectedBadge tooltip={protectedBadgeTooltipText} />
+                </Interactive>
               )}
             </CardTitle>
             <Typography variant="bodyLarge" data-testid="vault-description">
@@ -270,10 +267,13 @@ export const VaultCard = ({
         </CardContent>
 
         {illustration && (
-          <VaultVisual $variant={variant} aria-hidden="true">
-            <span data-glow-core />
+          <CardVisual
+            variant={variant}
+            iconSize={ICON_SIZE}
+            iconSizeMobile={ICON_SIZE_MOBILE}
+          >
             {illustration}
-          </VaultVisual>
+          </CardVisual>
         )}
       </CardBody>
     </CardRoot>

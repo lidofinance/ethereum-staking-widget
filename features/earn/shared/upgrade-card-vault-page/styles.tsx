@@ -9,7 +9,8 @@ export const UpgradeCardBlock = styled(Block)`
           border: 1px solid rgba(201, 172, 255, 0.7);
         `
       : css`
-          background: linear-gradient(
+          background:
+            linear-gradient(
               87.27deg,
               rgba(106, 154, 255, 0.2) -11.77%,
               rgba(201, 172, 255, 0.2) 21.01%,

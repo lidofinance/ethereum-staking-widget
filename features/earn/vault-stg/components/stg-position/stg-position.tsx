@@ -1,4 +1,4 @@
-import { TokenStrethIcon, TokenMellowIcon } from 'assets/earn';
+import { TokenStrethLegacyIcon, TokenMellowIcon } from 'assets/earn';
 import { VaultPosition } from 'features/earn/shared/vault-position';
 import { STG_TOKEN_SYMBOL, MELLOW_POINT_SYMBOL } from '../../consts';
 import { useSTGPosition } from '../../hooks/use-stg-position';
@@ -28,7 +28,7 @@ export const STGPosition = () => {
         symbol: STG_TOKEN_SYMBOL,
         token: data?.strethTokenAddress,
         balance: data?.strethSharesBalance,
-        icon: <TokenStrethIcon />,
+        icon: <TokenStrethLegacyIcon />,
         isLoading: isLoading || isLoadingUsd,
         usdAmount,
       }}

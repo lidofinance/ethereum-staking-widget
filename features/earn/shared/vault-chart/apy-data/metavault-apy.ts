@@ -1,0 +1,84 @@
+import { z } from 'zod';
+
+import { CHAINS } from 'consts/chains';
+import { standardFetcher } from 'utils/standardFetcher';
+import {
+  BIGINT_STRING_SCHEMA,
+  TOKEN_DECIMALS_SCHEMA,
+  UNIX_TIMESTAMP_SCHEMA,
+} from 'utils/zod';
+
+import { METAVAULT_CHART_ORIGIN, VAULT_LAUNCH_TIMESTAMP } from '../consts';
+
+export const METAVAULT_CHART_DATA_SCHEMA = z.array(
+  z.object({
+    tvl: z.object({
+      asset: z.string(),
+      // `BigInt(amount)` runs in render: a non-integer must fail the query here
+      amount: BIGINT_STRING_SCHEMA,
+      decimals: TOKEN_DECIMALS_SCHEMA,
+    }),
+    total_shares: z.object({
+      amount: z.string(),
+      decimals: z.number(),
+    }),
+    lp_price: z.object({
+      value: z.string(),
+      decimals: z.number(),
+    }),
+    timestamp: z.string(),
+    block_number: z.string(),
+    apy: z.object({
+      value: z.string(),
+      type: z.string(),
+    }),
+  }),
+);
+export type MetavaultChartFetchedData = z.infer<
+  typeof METAVAULT_CHART_DATA_SCHEMA
+>;
+
+export const METAVAULT_CURRENT_DATA_SCHEMA = z.object({
+  totalTvl: z.object({
+    usd: z.string(),
+    amount: z.string(),
+    decimals: z.number(),
+    usd_decimals: z.number(),
+  }),
+  lastUpdate: UNIX_TIMESTAMP_SCHEMA,
+});
+export type MetavaultCurrentData = z.infer<
+  typeof METAVAULT_CURRENT_DATA_SCHEMA
+>;
+
+export const fetchMetavaultCurrentData = async (vaultAddress: string) => {
+  const endpoint = `${METAVAULT_CHART_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/data`;
+  const data = await standardFetcher<unknown>(endpoint);
+
+  return METAVAULT_CURRENT_DATA_SCHEMA.parse(data);
+};
+
+export const fetchMetavaultChartData = async (
+  vaultAddress: string,
+  fromTimestamp: number,
+  days = 14, // 14 days is considered as an industry standard
+) => {
+  const timestamp = Math.max(fromTimestamp, VAULT_LAUNCH_TIMESTAMP);
+
+  const url = new URL(
+    `${METAVAULT_CHART_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/historical-data`,
+  );
+  url.searchParams.set('from_timestamp', String(timestamp));
+
+  // `days` param switches the endpoint from simple moving average (volatile, legacy) to time-weighted average APY
+  if (days > 0) {
+    url.searchParams.set('days', String(days));
+  }
+
+  const METAVAULT_CHART_DATA_ENDPOINT = url.toString();
+
+  const data = await standardFetcher<MetavaultChartFetchedData>(
+    METAVAULT_CHART_DATA_ENDPOINT,
+  );
+  return METAVAULT_CHART_DATA_SCHEMA.parse(data);
+};

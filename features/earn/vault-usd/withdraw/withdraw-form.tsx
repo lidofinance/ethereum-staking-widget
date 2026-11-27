@@ -3,7 +3,7 @@ import type { FC } from 'react';
 import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
-import { VaultWithdrawWarning } from 'features/earn/shared/v2/vault-warning';
+import { VaultWithdrawWarning } from 'features/earn/shared/vault-warning';
 
 import { UsdVaultWithdrawFormProvider } from './form-context';
 import { UsdVaultWithdrawRequests } from './withdraw-requests';

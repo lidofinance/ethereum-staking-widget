@@ -1,6 +1,6 @@
 import { useWatch } from 'react-hook-form';
 
-import { TokenGGIcon } from 'assets/earn';
+import { TokenGGLegacyIcon } from 'assets/earn';
 
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
 
@@ -13,7 +13,7 @@ export const GGVWillReceive = () => {
   const { data, isLoading } = useGGVPreviewDeposit(amount, token);
   return (
     <VaultWillReceive
-      icon={<TokenGGIcon viewBox="0 0 28 28" width={16} height={16} />}
+      icon={<TokenGGLegacyIcon viewBox="0 0 28 28" width={16} height={16} />}
       amount={data.shares}
       symbol={GGV_TOKEN_SYMBOL}
       usdAmount={data.usd}

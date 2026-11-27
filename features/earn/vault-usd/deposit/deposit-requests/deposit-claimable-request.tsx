@@ -1,5 +1,5 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
-import { TokenEarnUsdIcon } from 'assets/earn-v2';
+import { TokenEarnUsdIcon } from 'assets/earn';
 import {
   ActionableTitle,
   Request,

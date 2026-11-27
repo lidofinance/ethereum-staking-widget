@@ -9,8 +9,16 @@ export type ActiveFeesD6 = {
   performanceFeeD6: number;
 };
 
+export type ActiveFees = {
+  performanceFee: string;
+  // the protocol (AUM) fee; the vault page calls it the platform fee
+  platformFee: string;
+};
+
 export const formatActiveFees = ({
   protocolFeeD6,
   performanceFeeD6,
-}: ActiveFeesD6): string =>
-  `${formatFeeD6(protocolFeeD6)}% AUM + ${formatFeeD6(performanceFeeD6)}% performance`;
+}: ActiveFeesD6): ActiveFees => ({
+  performanceFee: `${formatFeeD6(performanceFeeD6)}%`,
+  platformFee: `${formatFeeD6(protocolFeeD6)}%`,
+});

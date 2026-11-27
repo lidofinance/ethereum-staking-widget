@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
-import { VaultDVVIcon } from 'assets/earn';
+import { VaultDVVLegacyIcon } from 'assets/earn';
 
 import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
@@ -81,7 +81,7 @@ export const VaultPageDVV: FC<{
         <VaultBlockHeaderSection>
           <VaultHeader
             title={`Lido DVV`}
-            logo={<VaultDVVIcon />}
+            logo={<VaultDVVLegacyIcon />}
             partners={DVV_PARTNERS}
           />
           <VaultStats compact tvl={tvl} isLoading={isLoadingStats} />

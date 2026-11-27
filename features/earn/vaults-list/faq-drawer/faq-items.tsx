@@ -15,7 +15,6 @@ type FaqEntry = {
   answer: ReactNode;
 };
 
-// questions from the Figma FAQ drawer; answers come from the vault pages
 export const EARN_LIST_FAQ: FaqEntry[] = [
   {
     id: 'how-does-lido-earn-work',

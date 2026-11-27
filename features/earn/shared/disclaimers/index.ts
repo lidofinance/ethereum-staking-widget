@@ -1,0 +1,1 @@
+export { EarnDisclaimers } from './disclaimers';

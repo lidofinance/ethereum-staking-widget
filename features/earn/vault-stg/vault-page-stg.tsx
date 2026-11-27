@@ -3,7 +3,7 @@ import { Link } from '@lidofinance/lido-ui';
 
 import { EARN_PATH } from 'consts/urls';
 
-import { VaultSTGIcon } from 'assets/earn';
+import { VaultSTGLegacyIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 import {
   DisclaimerSection,
@@ -85,7 +85,7 @@ export const VaultPageSTG: FC<{
         <VaultBlockHeaderSection>
           <VaultHeader
             title={'Lido stRATEGY'}
-            logo={<VaultSTGIcon />}
+            logo={<VaultSTGLegacyIcon />}
             partners={STG_PARTNERS}
           />
           <VaultStats compact tvl={totalTvlUsd} isLoading={isTvlLoading} />

@@ -16,7 +16,7 @@ export const hslToHex = (h: number, s: number, l: number) => {
 
 export const randomColor = (index: number) => {
   const seed = (index + 1) * 137.508;
-  const hue = seed % 360 | 0;
+  const hue = (seed % 360) | 0;
 
   const saturation = 65 + ((index * 5) % 30);
   const lightness = 45 + ((index * 7) % 20);

@@ -1,5 +1,5 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
-import { TokenStrethIcon } from 'assets/earn';
+import { TokenStrethLegacyIcon } from 'assets/earn';
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import {
   ActionableTitle,
@@ -42,7 +42,7 @@ export const STGDepositClaimableRequest = ({
         </Tooltip>
       </ActionableTitle>
       <STGRequest
-        tokenLogo={<TokenStrethIcon />}
+        tokenLogo={<TokenStrethLegacyIcon />}
         tokenAmount={claimableShares}
         tokenName={getTokenSymbol('strETH')}
         tokenAmountUSD={wstEthData?.usd ?? 0}

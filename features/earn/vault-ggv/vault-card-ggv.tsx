@@ -1,4 +1,4 @@
-import { VaultGgvIcon } from 'assets/earn-v2';
+import { VaultGgvIcon } from 'assets/earn';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { LegacyVaultRow } from '../vaults-list/legacy-vault-row';

@@ -6,7 +6,7 @@ import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TOKENS } from 'consts/tokens';
-import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
+import { TokenGGLegacyIcon, VaultGGVLegacyIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 import {
@@ -95,7 +95,7 @@ export const VaultPageGGV: FC<{
         <VaultBlockHeaderSection>
           <VaultHeader
             title={`Lido GGV`}
-            logo={<VaultGGVIcon />}
+            logo={<VaultGGVLegacyIcon />}
             partners={GGV_PARTNERS}
           />
           <VaultStats compact tvl={tvl} isLoading={isLoading} />
@@ -107,7 +107,7 @@ export const VaultPageGGV: FC<{
               symbol: GGV_TOKEN_SYMBOL,
               token: data?.ggvTokenAddress,
               balance: data?.sharesBalance,
-              icon: <TokenGGIcon />,
+              icon: <TokenGGLegacyIcon />,
               isLoading: isLoadingPosition || isLoadingUsd,
               usdAmount: usdBalance,
             }}

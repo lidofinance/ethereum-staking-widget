@@ -1,6 +1,6 @@
 import { useFormState } from 'react-hook-form';
 
-import { TokenGGIcon } from 'assets/earn';
+import { TokenGGLegacyIcon } from 'assets/earn';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
@@ -16,7 +16,7 @@ export const GGVWithdrawInput = () => {
     <InputGroupHookForm errorField="amount" bottomSpacing={0}>
       <TokenAmountInputHookForm
         leftDecorator={
-          <TokenGGIcon width={24} height={24} viewBox={'0 0 28 28'} />
+          <TokenGGLegacyIcon width={24} height={24} viewBox={'0 0 28 28'} />
         }
         disabled={disabled}
         fieldName="amount"

@@ -1,8 +1,9 @@
 import { type FC, useCallback, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { Tag, TextLink, Typography } from '@lidofinance/lido-app-ui';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
-import { TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
+import { TokenDvstethIcon, TokenStrethIcon } from 'assets/earn';
 import { FormatToken } from 'shared/formatters/format-token';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -14,11 +15,9 @@ import { useEarnGeoGate } from 'features/earn/shared/hooks/use-earn-geo-gate';
 import {
   UpgradeAssets,
   UpgradeAssetsHeader,
-  UpgradeAssetsTitle,
-  UpgradeAssetsHowItWorksButton,
+  UpgradeAssetsList,
   UpgradeAssetsRow,
   UpgradeAssetsAmount,
-  UpgradeAssetsButton,
   UpgradeAssetsTokenIcon,
 } from './styles';
 import { useUpgradableTokenBalances } from './use-upgradable-token-balances';
@@ -136,49 +135,59 @@ export const UpgradeAssetsBlock: FC = () => {
   if (tokensWithBalance.length === 0) return null;
 
   return (
-    <UpgradeAssets data-testid="upgradable-tokens-banner">
+    <UpgradeAssets
+      padding={24}
+      gap={12}
+      align="stretch"
+      dataTestId={{ root: 'upgradable-tokens-banner' }}
+    >
       <UpgradeAssetsHeader>
-        <UpgradeAssetsTitle>Assets available to upgrade</UpgradeAssetsTitle>
-        <UpgradeAssetsHowItWorksButton
-          onClick={() => {
-            trackMatomoEvent(
-              MATOMO_EARN_EVENTS_TYPES.earnListEarnEthBannerLearnHowItWorks,
-            );
-            openDrawerRight({ hideUpgradeNowButton: true });
-          }}
-          data-testid={'howItWorksButton'}
-        >
-          How it works
-        </UpgradeAssetsHowItWorksButton>
-      </UpgradeAssetsHeader>
-      {tokensWithBalance.map((token) => (
-        <UpgradeAssetsRow key={token} data-testid={token}>
-          <UpgradeAssetsAmount>
-            <UpgradeAssetsTokenIcon>
-              {TOKEN_ICON_MAP[token]}
-            </UpgradeAssetsTokenIcon>
-            <FormatToken
-              amount={balances[token]}
-              symbol={TOKEN_SYMBOLS[token]}
-              data-testid="amount-to-upgrade"
-            />
-          </UpgradeAssetsAmount>
-          <UpgradeAssetsButton
-            color="primary"
-            size="xs"
-            variant="translucent"
-            onClick={() =>
-              upgrade({
-                token,
-              })
-            }
-            loading={isUpgrading}
-            data-testid="upgrade-button"
+        <Typography as="h2" variant="caption" color="tertiary">
+          Available to upgrade
+        </Typography>
+        <Typography variant="description" weight="semibold">
+          <TextLink
+            size="inherit"
+            onClick={() => {
+              trackMatomoEvent(
+                MATOMO_EARN_EVENTS_TYPES.earnListEarnEthBannerLearnHowItWorks,
+              );
+              openDrawerRight({ hideUpgradeNowButton: true });
+            }}
+            dataTestId={{ root: 'howItWorksButton' }}
           >
-            Upgrade
-          </UpgradeAssetsButton>
-        </UpgradeAssetsRow>
-      ))}
+            How it works
+          </TextLink>
+        </Typography>
+      </UpgradeAssetsHeader>
+      <UpgradeAssetsList>
+        {tokensWithBalance.map((token) => (
+          <UpgradeAssetsRow key={token} data-testid={token}>
+            <UpgradeAssetsAmount>
+              <UpgradeAssetsTokenIcon aria-hidden="true">
+                {TOKEN_ICON_MAP[token]}
+              </UpgradeAssetsTokenIcon>
+              <Typography variant="body" weight="semibold">
+                <FormatToken
+                  amount={balances[token]}
+                  symbol={TOKEN_SYMBOLS[token]}
+                  data-testid="amount-to-upgrade"
+                />
+              </Typography>
+            </UpgradeAssetsAmount>
+            {/* Tag has no spinner: the tx modal shows the progress. */}
+            <Tag
+              as="button"
+              variant="action"
+              onClick={() => upgrade({ token })}
+              disabled={isUpgrading}
+              dataTestId={{ root: 'upgrade-button' }}
+            >
+              Upgrade
+            </Tag>
+          </UpgradeAssetsRow>
+        ))}
+      </UpgradeAssetsList>
     </UpgradeAssets>
   );
 };

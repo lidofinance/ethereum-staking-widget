@@ -1,4 +1,4 @@
-import { VaultDepositSubmitButton } from 'features/earn/shared/v2/vault-deposit-submit-button';
+import { VaultDepositSubmitButton } from 'features/earn/shared/vault-deposit-submit-button';
 import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { useUSDDepositForm } from '../form-context';
 import { useUsdVaultDepositRequests } from '../hooks';

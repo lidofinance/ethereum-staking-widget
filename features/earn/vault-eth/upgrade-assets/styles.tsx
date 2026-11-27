@@ -1,70 +1,51 @@
-import { ButtonInline } from 'shared/components/button-inline/button-inline';
-import styled, { css } from 'styled-components';
-import { Block, Button } from '@lidofinance/lido-ui';
+import styled from 'styled-components';
+import { Card } from '@lidofinance/lido-app-ui';
 
-export const UpgradeAssets = styled(Block)`
-  ${({ theme }) =>
-    theme.name === 'light'
-      ? css`
-          background: linear-gradient(135deg, #f5f3ff 0%, #fef1f6 100%);
-        `
-      : css`
-          background: linear-gradient(
-              87.27deg,
-              rgba(201, 172, 255, 0.2) -11.77%,
-              rgba(255, 206, 190, 0.2) 102.78%
-            ),
-            #27272e;
-        `}
-  display: grid;
-  gap: ${({ theme }) => theme.spaceMap.sm}px;
-  border: 1px solid #c9acff;
-  padding: ${({ theme }) => theme.spaceMap.lg}px;
-  color: var(--lido-color-text);
+// The design colour for upgrade blocks: the theme has no token for it.
+export const UpgradeAssets = styled(Card)`
+  && {
+    border: 1px solid #c9acff;
+  }
 `;
 
 export const UpgradeAssetsHeader = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.spaceMap.md}px;
-  margin: 0 0 ${({ theme }) => theme.spaceMap.sm}px;
+  gap: var(--lido-app-ui-space-12);
 `;
 
-export const UpgradeAssetsTitle = styled.div`
-  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  font-weight: 700;
+export const UpgradeAssetsList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: var(--lido-app-ui-space-4);
   margin: 0;
+  padding: 0;
+  list-style: none;
 `;
 
-export const UpgradeAssetsHowItWorksButton = styled(ButtonInline)`
-  font-weight: 700;
+export const UpgradeAssetsRow = styled.li`
+  display: flex;
+  align-items: center;
+  gap: var(--lido-app-ui-space-12);
+  padding: var(--lido-app-ui-space-8) 0;
 `;
 
 export const UpgradeAssetsAmount = styled.div`
   display: flex;
+  flex: 1 1 0;
   align-items: center;
-  gap: 6px;
-  font-weight: 700;
-  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-`;
-
-export const UpgradeAssetsRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spaceMap.sm}px;
+  gap: var(--lido-app-ui-space-8);
+  min-width: 0;
 `;
 
 export const UpgradeAssetsTokenIcon = styled.span`
   display: flex;
-  align-items: center;
-  flex-shrink: 0;
+  flex: none;
 
-  svg {
-    width: 26px;
-    height: 26px;
+  & > svg {
+    display: block;
+    width: 24px;
+    height: 24px;
   }
 `;
-
-export const UpgradeAssetsButton = styled(Button)``;

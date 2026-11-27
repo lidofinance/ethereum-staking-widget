@@ -33,15 +33,15 @@ describe('formatFeeD6', () => {
 });
 
 describe('formatActiveFees', () => {
-  it('joins both fees into the display string', () => {
+  it('formats each fee as a percent', () => {
     expect(
       formatActiveFees({ protocolFeeD6: 2000, performanceFeeD6: 150000 }),
-    ).toBe('0.2% AUM + 15% performance');
+    ).toEqual({ performanceFee: '15%', platformFee: '0.2%' });
   });
 
   it('renders zero fees literally', () => {
-    expect(formatActiveFees({ protocolFeeD6: 0, performanceFeeD6: 0 })).toBe(
-      '0% AUM + 0% performance',
+    expect(formatActiveFees({ protocolFeeD6: 0, performanceFeeD6: 0 })).toEqual(
+      { performanceFee: '0%', platformFee: '0%' },
     );
   });
 });

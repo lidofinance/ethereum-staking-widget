@@ -1,6 +1,6 @@
 import { EARN_PATH } from 'consts/urls';
 import { EARN_VAULT_ETH_SLUG } from 'features/earn/consts';
-import { VaultEthIcon } from 'assets/earn-v2';
+import { VaultEthIcon } from 'assets/earn';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { FormatPercent } from 'shared/formatters/format-percent';

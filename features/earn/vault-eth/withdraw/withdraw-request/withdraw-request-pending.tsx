@@ -1,5 +1,5 @@
 import { InlineLoader } from 'features/earn/shared/inline-loader';
-import { TokenEarnEthIcon } from 'assets/earn-v2';
+import { TokenEarnEthIcon } from 'assets/earn';
 import { Request } from 'modules/mellow-meta-vaults/components/request';
 import { useEthVaultPreviewWithdraw } from '../hooks/use-preview-withdraw';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';

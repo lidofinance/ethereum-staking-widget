@@ -6,8 +6,7 @@ import {
 } from 'features/earn/shared/vault-tx-info';
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
-import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
-import { VaultWithdrawWarning } from 'features/earn/shared/v2/vault-warning/vault-withdraw-warning';
+import { VaultWithdrawWarning } from 'features/earn/shared/vault-warning';
 import { WITHDRAWAL_WAITING_TIME_TOOLTIP } from 'modules/mellow-meta-vaults';
 
 import { EthVaultWithdrawFormProvider } from './form-context';
@@ -16,8 +15,6 @@ import { EthVaultWithdrawAvailable } from './withdraw-available';
 import { EthVaultWithdrawWillReceive } from './withdraw-will-receive';
 import { EthVaultWithdrawSubmitButton } from './withdraw-submit-button';
 import { EthVaultWithdrawRequests } from './withdraw-requests';
-import { ActionSwitch } from '../components/action-switch';
-import { UpgradeAssetsBlock } from '../upgrade-assets/upgrade-assets';
 import { useEthVaultAvailable } from '../hooks/use-vault-available';
 
 const EthVaultWithdrawFormContent: FC = () => {
@@ -25,36 +22,30 @@ const EthVaultWithdrawFormContent: FC = () => {
     useEthVaultAvailable();
 
   return (
-    <>
-      <UpgradeAssetsBlock />
-      <BlockSidePanel>
-        <ActionSwitch isWithdraw />
-        <VaultForm data-testid="withdraw-form">
-          <VaultWithdrawWarning
-            isWithdrawEnabled={isWithdrawEnabled}
-            isVaultAvailable={isEthVaultAvailable}
-            withdrawPauseReasonText={withdrawPauseReasonText}
-          />
+    <VaultForm data-testid="withdraw-form">
+      <VaultWithdrawWarning
+        isWithdrawEnabled={isWithdrawEnabled}
+        isVaultAvailable={isEthVaultAvailable}
+        withdrawPauseReasonText={withdrawPauseReasonText}
+      />
 
-          <VaultFormSection>
-            <EthVaultWithdrawRequests />
-            <EthVaultWithdrawAvailable />
-            <EthVaultWithdrawInput />
-          </VaultFormSection>
-          <VaultTxInfo>
-            <EthVaultWithdrawWillReceive />
-            <VaultTxInfoRow
-              title="Waiting time"
-              data-testid="waiting-time"
-              help={WITHDRAWAL_WAITING_TIME_TOOLTIP}
-            >
-              {'Instant or up to 72 hours'}
-            </VaultTxInfoRow>
-          </VaultTxInfo>
-          <EthVaultWithdrawSubmitButton />
-        </VaultForm>
-      </BlockSidePanel>
-    </>
+      <VaultFormSection>
+        <EthVaultWithdrawRequests />
+        <EthVaultWithdrawAvailable />
+        <EthVaultWithdrawInput />
+      </VaultFormSection>
+      <VaultTxInfo>
+        <EthVaultWithdrawWillReceive />
+        <VaultTxInfoRow
+          title="Waiting time"
+          data-testid="waiting-time"
+          help={WITHDRAWAL_WAITING_TIME_TOOLTIP}
+        >
+          {'Instant or up to 72 hours'}
+        </VaultTxInfoRow>
+      </VaultTxInfo>
+      <EthVaultWithdrawSubmitButton />
+    </VaultForm>
   );
 };
 

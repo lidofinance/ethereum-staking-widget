@@ -1,7 +1,7 @@
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
-import { VaultDepositWarning } from 'features/earn/shared/v2/vault-warning/vault-deposit-warning';
+import { VaultDepositWarning } from 'features/earn/shared/vault-warning';
 
 import { UsdVaultDepositFormProvider } from './form-context';
 import { UsdVaultDepositWillReceive } from './deposit-will-receive';

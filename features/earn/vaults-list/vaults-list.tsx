@@ -7,13 +7,13 @@ import {
   Typography,
 } from '@lidofinance/lido-app-ui';
 
-import { AprDisclaimer, LegalDisclaimer } from 'shared/components';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { useEarnState } from '../shared/hooks/use-earn-state';
 import { DrawerRight } from '../shared/drawer-right';
-import { EarnInfoBanner } from '../shared/v2/earn-info-banner';
+import { EarnInfoBanner } from '../shared/earn-info-banner';
+import { EarnDisclaimers } from '../shared/disclaimers';
 
 import { VaultCardGGV } from '../vault-ggv/vault-card-ggv';
 import { VaultCardDVV } from '../vault-dvv/vault-card-dvv';
@@ -21,14 +21,13 @@ import { VaultCardSTG } from '../vault-stg/vault-card-stg';
 import { UsdVaultCard } from '../vault-usd';
 import { EthVaultCard } from '../vault-eth';
 
-import { FaqDrawer } from './faq-drawer';
+import { VaultsListFaqDrawer } from './faq-drawer';
 import {
   ListRoot,
   Hero,
   CardsColumn,
   LegacyVaults,
   LegacyVaultsList,
-  Disclaimers,
 } from './styles';
 
 const VAULT_CARDS = {
@@ -105,10 +104,7 @@ export const EarnVaultsList = () => {
           )}
         </CardsColumn>
 
-        <Disclaimers>
-          <AprDisclaimer mentionAPY />
-          <LegalDisclaimer />
-        </Disclaimers>
+        <EarnDisclaimers />
 
         <DrawerRight
           onClose={() => setIsDrawerRightOpen(false)}
@@ -116,7 +112,7 @@ export const EarnVaultsList = () => {
         />
       </ListRoot>
 
-      <FaqDrawer />
+      <VaultsListFaqDrawer />
     </>
   );
 };

@@ -1,1 +1,1 @@
-export { FaqDrawer } from './faq-drawer';
+export { VaultsListFaqDrawer } from './faq-drawer';

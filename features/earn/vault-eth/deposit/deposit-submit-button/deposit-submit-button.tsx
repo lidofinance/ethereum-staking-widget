@@ -1,5 +1,5 @@
 import { TOKEN_SYMBOLS } from 'consts/tokens';
-import { VaultDepositSubmitButton } from 'features/earn/shared/v2/vault-deposit-submit-button';
+import { VaultDepositSubmitButton } from 'features/earn/shared/vault-deposit-submit-button';
 import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import { useETHDepositForm } from '../form-context';
 import { useEthVaultDepositRequests } from '../hooks';

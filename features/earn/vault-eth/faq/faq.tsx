@@ -1,6 +1,5 @@
 import { FC } from 'react';
-import { Section } from 'shared/components';
-import { FaqGroup } from 'features/earn/shared/v2/faq';
+import { FAQ_LOSS_PROTECTION_ID, FaqGroup } from 'features/earn/shared/faq';
 import { useInpageNavigation } from 'providers/inpage-navigation';
 import {
   WhatIsEarnEth,
@@ -38,7 +37,7 @@ export const FAQ_IDS = {
   withdrawalRequests: 'faq-withdrawal-requests',
   cancelWithdrawal: 'faq-cancel-withdrawal',
   claimRewards: 'faq-claim-rewards',
-  lossProtection: 'faq-loss-protection',
+  lossProtection: FAQ_LOSS_PROTECTION_ID,
 } as const;
 
 const FAQ_IDS_SET = new Set(Object.values(FAQ_IDS));
@@ -51,7 +50,7 @@ export const EarnEthFaq: FC = () => {
 
   return (
     <FaqGroup activeItemHash={activeItemHash}>
-      <Section data-testid="vault-faq">
+      <div data-testid="vault-faq">
         <WhatIsEarnEth defaultExpanded />
         <WhatIsApyForEarnEth id={FAQ_IDS.apy} />
         <WhatFeesAreApplied id={FAQ_IDS.fees} />
@@ -69,7 +68,7 @@ export const EarnEthFaq: FC = () => {
         <CanICancelMyWithdrawalRequest id={FAQ_IDS.cancelWithdrawal} />
         <HowDoIClaimMyRewards id={FAQ_IDS.claimRewards} />
         <HowAreDepositsProtected id={FAQ_IDS.lossProtection} />
-      </Section>
+      </div>
     </FaqGroup>
   );
 };

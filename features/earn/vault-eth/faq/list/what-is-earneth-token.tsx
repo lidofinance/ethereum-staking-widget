@@ -1,4 +1,4 @@
-import { FaqItem } from 'features/earn/shared/v2/faq';
+import { FaqItem } from 'features/earn/shared/faq';
 import { FC } from 'react';
 
 export const WhatIsEarnEthToken: FC<{ id?: string }> = ({ id }) => {

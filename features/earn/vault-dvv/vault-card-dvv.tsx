@@ -1,4 +1,4 @@
-import { VaultDvvIcon } from 'assets/earn-v2';
+import { VaultDvvIcon } from 'assets/earn';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { useDVVStats } from './hooks/use-dvv-stats';

@@ -1,5 +1,37 @@
 import styled, { css } from 'styled-components';
 
+// Icons of the current Earn design
+import { ReactComponent as VaultEthIcon } from './vault-eth.svg';
+import { ReactComponent as VaultUsdIcon } from './vault-usd.svg';
+import { ReactComponent as VaultDvvIcon } from './vault-dvv.svg';
+import { ReactComponent as VaultGgvIcon } from './vault-ggv.svg';
+import { ReactComponent as VaultStgIcon } from './vault-stg.svg';
+import { ReactComponent as UpgradeIllustrationIcon } from './upgrade.svg';
+import { ReactComponent as TokenEarnEthIcon } from './token-earneth.svg';
+import { ReactComponent as TokenEarnUsdIcon } from './token-earnusd.svg';
+import { ReactComponent as TokenUsdcIcon } from './token-usdc.svg';
+import { ReactComponent as TokenUsdtIcon } from './token-usdt.svg';
+import { ReactComponent as TokenUsdeIcon } from './token-usde.svg';
+import { ReactComponent as TokenGGIcon } from './token-gg.svg';
+import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
+import { ReactComponent as TokenStrethIcon } from './token-streth.svg';
+import { ReactComponent as IconChartColumnIncreasingRaw } from './icon-chart-column-increasing.svg';
+import { ReactComponent as IconChartPieRaw } from './icon-chart-pie.svg';
+import { ReactComponent as IconRotateCwRaw } from './icon-rotate-cw.svg';
+import { ReactComponent as SidePanelGlowEth } from './side-panel-glow-eth.svg';
+import { ReactComponent as SidePanelGlowUsd } from './side-panel-glow-usd.svg';
+import { ReactComponent as LossProtectionIllustration } from './loss-protection.svg';
+
+// Icons of the legacy vault pages (GGV, DVV, stRATEGY).
+// The current icons have the same names, so these have the Legacy suffix.
+import { ReactComponent as TokenGGLegacyIcon } from './legacy/token-gg.svg';
+import { ReactComponent as TokenDvstethLegacyIcon } from './legacy/token-dvsteth.svg';
+import { ReactComponent as TokenStrethLegacyIcon } from './legacy/token-streth.svg';
+import { ReactComponent as VaultDVVLegacyIcon } from './legacy/vault-dvv.svg';
+import { ReactComponent as VaultGGVLegacyIcon } from './legacy/vault-ggv.svg';
+import { ReactComponent as VaultSTGLegacyIcon } from './legacy/vault-stg.svg';
+
+// Other Earn icons
 import { ReactComponent as Partner7SeasIcon } from './partner-7seas.svg';
 import { ReactComponent as PartnerVedaIcon } from './partner-veda.svg';
 import { ReactComponent as PartnerSteakhouseIcon } from './partner-steakhouse.svg';
@@ -16,17 +48,10 @@ import { ReactComponent as TokenWethIcon32 } from './token-weth-32.svg';
 import { ReactComponent as TokenWstethIcon } from './token-wsteth.svg';
 import { ReactComponent as TokenWstethScalableIcon } from './token-wsteth-scalable.svg';
 import { ReactComponent as TokenWstethIcon32 } from './token-wsteth-32.svg';
-import { ReactComponent as TokenGGIcon } from './token-gg.svg';
-import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
 import { ReactComponent as TokenObolIconRaw } from './token-obol.svg';
 import { ReactComponent as TokenSsvIconRaw } from './token-ssv.svg';
 import { ReactComponent as TokenMellowIcon } from './token-mellow.svg';
 import { ReactComponent as TokenStethDarkIcon } from './token-steth-dark.svg';
-import { ReactComponent as TokenStrethIcon } from './token-streth.svg';
-
-import { ReactComponent as VaultDVVIcon } from './vault-dvv.svg';
-import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
-import { ReactComponent as VaultSTGIcon } from './vault-stg.svg';
 
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
 
@@ -61,8 +86,6 @@ export { ReactComponent as UsdtIcon } from './allocation/usdt.svg';
 export { ReactComponent as MantleIcon } from './allocation/mantle.svg';
 export { ReactComponent as EarnUsdIcon } from './allocation/earnusd.svg';
 
-import { ReactComponent as ShieldCheckIcon } from './shield-check.svg';
-
 const themedBackground = css`
   path,
   rect {
@@ -75,6 +98,27 @@ const themedBackground = css`
   }
 `;
 
+const themedFill = css`
+  path,
+  rect {
+    &[fill='#273852'] {
+      fill: ${({ theme }) => (theme.name === 'dark' ? '#fff' : 'var(--custom-fill-dark)')};
+    }
+  }
+`;
+
+const IconChartColumnIncreasing = styled(IconChartColumnIncreasingRaw)`
+  ${themedFill}
+`;
+
+const IconChartPie = styled(IconChartPieRaw)`
+  ${themedFill}
+`;
+
+const IconRotateCw = styled(IconRotateCwRaw)`
+  ${themedFill}
+`;
+
 const TokenObolIcon = styled(TokenObolIconRaw)`
   ${themedBackground}
 `;
@@ -84,6 +128,26 @@ const TokenSsvIcon = styled(TokenSsvIconRaw)`
 `;
 
 export {
+  VaultEthIcon,
+  VaultUsdIcon,
+  VaultDvvIcon,
+  VaultGgvIcon,
+  VaultStgIcon,
+  UpgradeIllustrationIcon,
+  TokenEarnEthIcon,
+  TokenEarnUsdIcon,
+  TokenUsdcIcon,
+  TokenUsdtIcon,
+  TokenUsdeIcon,
+  TokenGGIcon,
+  TokenDvstethIcon,
+  TokenStrethIcon,
+  IconChartColumnIncreasing,
+  IconChartPie,
+  IconRotateCw,
+  SidePanelGlowEth,
+  SidePanelGlowUsd,
+  LossProtectionIllustration,
   Partner7SeasIcon,
   PartnerVedaIcon,
   PartnerSteakhouseIcon,
@@ -91,10 +155,10 @@ export {
   PartnerRuntimeLabsIcon,
   PartnerRuntimeLabsIconInverted,
   TokenStethDarkIcon,
-  TokenStrethIcon,
-  VaultGGVIcon,
-  VaultDVVIcon,
-  VaultSTGIcon,
+  TokenStrethLegacyIcon,
+  VaultGGVLegacyIcon,
+  VaultDVVLegacyIcon,
+  VaultSTGLegacyIcon,
   TokenEthScalableIcon,
   TokenEthIcon32,
   TokenStethScalableIcon,
@@ -104,13 +168,12 @@ export {
   TokenWstethIcon,
   TokenWstethScalableIcon,
   TokenWstethIcon32,
-  TokenGGIcon,
-  TokenDvstethIcon,
+  TokenGGLegacyIcon,
+  TokenDvstethLegacyIcon,
   TokenObolIcon,
   TokenSsvIcon,
   TokenMellowIcon,
   NavIconEarn,
   EarnStgBannerIcon,
   EarnUpToBannerIcon,
-  ShieldCheckIcon,
 };

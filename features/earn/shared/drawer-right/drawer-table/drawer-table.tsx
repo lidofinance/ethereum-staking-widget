@@ -1,7 +1,7 @@
 import { Fragment, type ReactNode } from 'react';
 import { Tag } from '@lidofinance/lido-app-ui';
 
-import { VaultEthIcon } from 'assets/earn-v2';
+import { VaultEthIcon } from 'assets/earn';
 
 import {
   TableWrapper,
