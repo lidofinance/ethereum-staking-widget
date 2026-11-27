@@ -6,16 +6,19 @@ import { StakeInput } from './stake-input';
 import { Submit } from './submit';
 
 import { StyledFormController } from './styles';
+import { TransactionStageModalProvider } from 'features/stake-v2/utils';
 
 export const StakeForm = () => {
   return (
-    <StakeFormContext>
-      <StyledFormController>
-        <Position />
-        <StakeInput />
-        <StakeTxInfo />
-        <Submit />
-      </StyledFormController>
-    </StakeFormContext>
+    <TransactionStageModalProvider>
+      <StakeFormContext>
+        <StyledFormController>
+          <Position />
+          <StakeInput />
+          <StakeTxInfo />
+          <Submit />
+        </StyledFormController>
+      </StakeFormContext>
+    </TransactionStageModalProvider>
   );
 };
