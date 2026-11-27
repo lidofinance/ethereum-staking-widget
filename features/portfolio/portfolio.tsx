@@ -17,6 +17,8 @@ import {
   TokenDrawer,
   UpdateInfo,
 } from './components';
+import { useWalletResolving } from 'modules/web3';
+
 import { LIDO_COLOR, OTHER_COLOR, PORTFOLIO_QUERY_SCOPE } from './consts';
 import {
   ACTIVITY_TAB,
@@ -24,7 +26,6 @@ import {
   usePortfolio,
   usePortfolioRoute,
   usePortfolioTransactions,
-  useWalletResolving,
   type PortfolioTab,
 } from './hooks';
 import type { PortfolioRow } from './types';

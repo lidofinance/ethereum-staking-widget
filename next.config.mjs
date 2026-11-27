@@ -152,6 +152,25 @@ export default withBundleAnalyzer({
         use: 'raw-loader',
       },
 
+      // Strips TS with current Babel so the code can use syntax Next 12's
+      // bundled Babel 7.18 cannot parse (see the loader). Listed before the
+      // preprocessor rule: matched loaders run last-listed first, so this
+      // runs after the preprocessor and before Next's own Babel loader
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: fileURLToPath(
+              new URL(
+                'scripts/webpack/strip-types-loader.cjs',
+                import.meta.url,
+              ),
+            ),
+          },
+        ],
+      },
+
       // Needs for `Conditional Compilation`,
       // because we have differences in source code of IPFS widget and NOT IPFS widget
       {

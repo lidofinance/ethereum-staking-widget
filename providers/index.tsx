@@ -14,6 +14,7 @@ import { InpageNavigationProvider } from './inpage-navigation';
 import { ModalProvider } from './modal-provider';
 import { ExternalForbiddenRouteProvider } from './external-forbidden-route';
 import { AddressValidationProvider } from './address-validation-provider';
+import { LidoAppUiProvider } from './lido-app-ui-provider';
 import { queryClient } from './query-client';
 
 type ProvidersProps = {
@@ -31,19 +32,23 @@ export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
       <ConfigProvider prefetchedManifest={prefetchedManifest}>
         <CookieThemeProvider>
           <GlobalStyle />
-          <Web3Provider>
-            <IPFSInfoBoxStatusesProvider>
-              <InpageNavigationProvider>
-                <ModalProvider>
-                  <ExternalForbiddenRouteProvider>
-                    <AddressValidationProvider validationFile={validationFile}>
-                      {children}
-                    </AddressValidationProvider>
-                  </ExternalForbiddenRouteProvider>
-                </ModalProvider>
-              </InpageNavigationProvider>
-            </IPFSInfoBoxStatusesProvider>
-          </Web3Provider>
+          <LidoAppUiProvider>
+            <Web3Provider>
+              <IPFSInfoBoxStatusesProvider>
+                <InpageNavigationProvider>
+                  <ModalProvider>
+                    <ExternalForbiddenRouteProvider>
+                      <AddressValidationProvider
+                        validationFile={validationFile}
+                      >
+                        {children}
+                      </AddressValidationProvider>
+                    </ExternalForbiddenRouteProvider>
+                  </ModalProvider>
+                </InpageNavigationProvider>
+              </IPFSInfoBoxStatusesProvider>
+            </Web3Provider>
+          </LidoAppUiProvider>
         </CookieThemeProvider>
       </ConfigProvider>
     </AppFlagProvider>

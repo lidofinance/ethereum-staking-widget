@@ -72,8 +72,7 @@ export const DVVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
   });
 
   const token = formObject.watch('token');
-  const { setValue } = formObject;
-  useQueryParamsReferralForm<DVVDepositFormValues>({ setValue });
+  useQueryParamsReferralForm(formObject);
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({

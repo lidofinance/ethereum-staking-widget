@@ -12,7 +12,6 @@ import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import {
   STGDepositFormDataContextValue,
   STGDepositFormValidatedValues,
-  STGDepositFormValues,
 } from './types';
 import { useSTGDeposit } from '../hooks/use-stg-deposit';
 import { useSTGDepositFormData } from '../hooks/use-stg-deposit-form-data';
@@ -64,8 +63,7 @@ export const STGDepositFormProvider: React.FC<{
   });
 
   const token = formObject.watch('token');
-  const { setValue } = formObject;
-  useQueryParamsReferralForm<STGDepositFormValues>({ setValue });
+  useQueryParamsReferralForm(formObject);
 
   const depositRequest = useDepositRequest(token);
 

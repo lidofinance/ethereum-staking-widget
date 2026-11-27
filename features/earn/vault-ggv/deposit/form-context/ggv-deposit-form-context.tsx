@@ -79,8 +79,7 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: GGVDepositFormValidationResolver,
   });
   const token = formObject.watch('token');
-  const { setValue } = formObject;
-  useQueryParamsReferralForm<GGVDepositFormValues>({ setValue });
+  useQueryParamsReferralForm(formObject);
 
   const formControllerValue = useMemo(
     () => ({

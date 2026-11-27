@@ -73,6 +73,8 @@
     "@babel/core": "7.29.13",
     "@babel/plugin-proposal-class-static-block": "7.21.0",
     "@babel/plugin-proposal-decorators": "7.29.7",
+    "@babel/plugin-syntax-decorators": "7.29.7",
+    "@babel/preset-typescript": "7.29.7",
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
     "@eslint/compat": "2.1.1",

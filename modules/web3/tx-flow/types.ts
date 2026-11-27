@@ -202,7 +202,8 @@ export type StepTxFlowArgs<TData = undefined> = StageCallbacks<TData> &
       step: TxStep,
       txStagesCallback: TransactionCallback,
       ctx: TxFlowContext<TData>,
-    ) => Promise<void>;
+      // whatever the SDK resolves with: the flow reads the stages only
+    ) => Promise<unknown>;
     sendTransaction?: never;
   };
 
@@ -211,6 +212,7 @@ export type StepTxFlowArgs<TData = undefined> = StageCallbacks<TData> &
  * See callbacks for different stages of the transaction flow in {@link StageCallbacks}.
  */
 export type TxFlowArgs<TData = undefined> =
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   LegacyTxFlowArgs | StepTxFlowArgs<TData>;
 
 /** The transaction runner returned by {@link useTxFlow}. */
@@ -222,7 +224,10 @@ export type TxFlow = {
    * @deprecated Use `prepare` for shared reads, `callsFn` for named steps and
    * `sendStep` to send each step. This gives every callback the flow context.
    */
-  (args: LegacyTxFlowArgs): Promise<TxFlowResult>;
+  (
+    args: // eslint-disable-next-line @typescript-eslint/no-deprecated
+    LegacyTxFlowArgs,
+  ): Promise<TxFlowResult>;
 };
 
 export type TxFlowDeps = {

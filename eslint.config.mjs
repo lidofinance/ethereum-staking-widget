@@ -244,6 +244,8 @@ export default defineConfig(
           checksVoidReturn: false,
         },
       ],
+      // deprecated APIs (@deprecated JSDoc, e.g. queryClient.fetchQuery)
+      '@typescript-eslint/no-deprecated': 'warn',
       'no-restricted-imports': [
         'error',
         {

@@ -1,4 +1,4 @@
-import { use1inchDeepLinkProps } from 'features/stake/hooks';
+import { use1inchDeepLinkProps } from 'shared/hooks/use-one-inch-deeplink-props';
 
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { ButtonLinkSmall, RetryButton, Grid } from './styles';

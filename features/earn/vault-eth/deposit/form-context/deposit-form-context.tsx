@@ -86,7 +86,7 @@ export const EthVaultDepositFormProvider: React.FC<{
   });
 
   const { setValue } = formObject;
-  useQueryParamsReferralForm<ETHDepositFormValues>({ setValue });
+  useQueryParamsReferralForm(formObject);
   useQueryParamsTokenForm<ETHDepositFormValues>({
     setValue,
     tokens: ETH_VAULT_DEPOSIT_TOKEN_SYMBOLS_FORM,

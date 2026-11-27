@@ -3,7 +3,7 @@ import {
   nextWalletResolveState,
   type WalletResolveEvent,
   type WalletResolveState,
-} from '../use-wallet-resolving';
+} from '../wallet-resolving';
 
 const run = (events: WalletResolveEvent[]): WalletResolveState =>
   events.reduce(nextWalletResolveState, 'unknown' as WalletResolveState);
