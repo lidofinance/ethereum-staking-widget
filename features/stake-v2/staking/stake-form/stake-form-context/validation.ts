@@ -1,14 +1,10 @@
-import type { Resolver } from 'react-hook-form';
-import invariant from 'tiny-invariant';
 import { z } from 'zod';
 
-import {
-  ValidationError,
-  handleResolverValidationError,
-} from 'shared/hook-form/validation/validation-error';
+import { buildFormValidationResolver, requiredAmount } from '../../../utils';
+import type { StakeRouteSpec } from '../stake-routes';
 
 import { STAKE_TOKENS_IN, STAKE_TOKENS_OUT } from './consts';
-import { adjustTokenOut, getTokenOutList } from './token-out';
+import { routableTokenOut } from './token-out';
 import type {
   StakeFormInputValues,
   StakeFormValidatedInputValues,
@@ -31,51 +27,35 @@ const tokenOnChain = <T extends readonly [string, ...string[]]>(tokens: T) =>
  * empty and a bigint once validated.
  */
 export const stakeFormSchema = z.object({
-  amount: z
-    .bigint()
-    .nullable()
-    .transform((amount, ctx) => {
-      if (amount === null) {
-        ctx.addIssue({ code: 'custom', message: 'Enter amount' });
-        return z.NEVER;
-      }
-      return amount;
-    }),
+  amount: requiredAmount(),
   tokenIn: tokenOnChain(STAKE_TOKENS_IN),
   tokenOut: tokenOnChain(STAKE_TOKENS_OUT),
   referral: z.string().nullable(),
 });
 
-export const stakeFormResolver: Resolver<
+/**
+ * The stake form's resolver: the shared one, with the token pair fixed
+ * first (tokenOut must be one tokenIn can stake into) and the stake routes.
+ */
+export const stakeFormResolver = buildFormValidationResolver<
   StakeFormInputValues,
   StakeFormValidationContext,
-  StakeFormValidatedInputValues
-> = async (values, context) => {
-  try {
-    invariant(context, 'validation context is required');
-
-    // 1. fix what the UI has not caught up with yet: submit gets the
-    // resolver's values, so the fixed ones are what gets staked
-    const fixed: StakeFormInputValues = {
-      ...values,
-      tokenOut: adjustTokenOut(
-        values.tokenOut,
-        getTokenOutList(values.tokenIn, context.tokensOut),
-      ),
-    };
-
-    // 2. the schema
-    const result = stakeFormSchema.safeParse(fixed);
-    if (!result.success) {
-      const [issue] = result.error.issues;
-      throw new ValidationError(
-        String(issue?.path[0] ?? 'referral'),
-        issue?.message ?? 'Invalid value',
-      );
-    }
-
-    return { values: result.data, errors: {} };
-  } catch (error) {
-    return handleResolverValidationError(error, 'StakeForm', 'referral');
-  }
-};
+  StakeFormValidatedInputValues,
+  StakeRouteSpec
+>({
+  // names the form in logs and the unknown-error toast
+  formName: 'StakeForm',
+  // hidden field for errors that belong to no field (wallet, network)
+  fallbackField: 'referral',
+  // fixes a stale pair first: tokenOut must be one tokenIn stakes into
+  normalize: (values, context) => ({
+    ...values,
+    tokenOut: routableTokenOut(values, context.tokensOut),
+  }),
+  // the form's shape: what is required, and the validated types
+  schema: stakeFormSchema,
+  // then the picked route: its context, and its own checks
+  routing: {
+    getRouting: (context) => context.routing,
+  },
+});

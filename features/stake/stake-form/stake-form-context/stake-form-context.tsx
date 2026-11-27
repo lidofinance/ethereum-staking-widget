@@ -217,8 +217,8 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     },
   );
   const { setValue } = formObject;
-  useQueryParamsReferralForm<StakeFormInput>({ setValue });
-  useQueryParamsAmountForm<StakeFormInput>({ setValue });
+  useQueryParamsReferralForm(formObject);
+  useQueryParamsAmountForm(formObject);
 
   const { retryEvent, retryFire } = useFormControllerRetry();
 

@@ -1,6 +1,13 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Path, PathValue, UseFormSetValue } from 'react-hook-form';
+import type {
+  FieldPathByValue,
+  FieldValues,
+  Path,
+  PathValue,
+  UseFormReturn,
+  UseFormSetValue,
+} from 'react-hook-form';
 import { parseEther } from 'viem';
 
 export const useReferralQueryValue = () => {
@@ -14,25 +21,24 @@ export const useReferralQueryValue = () => {
   return ref;
 };
 
-type UseQueryParamsReferralFormArgs<T extends { referral: string | null }> = {
-  setValue: UseFormSetValue<T>;
-};
-
-export const useQueryParamsReferralForm = <
-  T extends { referral: string | null },
->({
-  setValue,
-}: UseQueryParamsReferralFormArgs<T>) => {
+/**
+ * fills the referral field from `?ref=`; `field` is a `string | null`
+ * field, `referral` by default
+ */
+export const useQueryParamsReferralForm = <T extends FieldValues>(
+  { setValue }: Pick<UseFormReturn<T>, 'setValue'>,
+  field = 'referral' as FieldPathByValue<T, string | null>,
+) => {
   const referral = useReferralQueryValue();
 
   useEffect(() => {
     if (!referral) return;
     try {
-      setValue('referral' as Path<T>, referral as PathValue<T, Path<T>>);
+      setValue(field, referral as PathValue<T, typeof field>);
     } catch (error) {
       console.warn('Error setting referral value from query params', error);
     }
-  }, [referral, setValue]);
+  }, [referral, setValue, field]);
 };
 
 type UseQueryParamsTokenFormArgs<T extends { token: string }> = {
@@ -73,13 +79,14 @@ export const useQueryParamsTokenForm = <T extends { token: string }>({
   }, [isReady, pathname, query, replace, setValue, tokens]);
 };
 
-type UseQueryParamsAmountFormArgs<T extends { amount: bigint | null }> = {
-  setValue: UseFormSetValue<T>;
-};
-
-export const useQueryParamsAmountForm = <T extends { amount: bigint | null }>({
-  setValue,
-}: UseQueryParamsAmountFormArgs<T>) => {
+/**
+ * fills the amount field from `?amount=` (in ether), then drops the param;
+ * `field` is a `bigint | null` field, `amount` by default
+ */
+export const useQueryParamsAmountForm = <T extends FieldValues>(
+  { setValue }: Pick<UseFormReturn<T>, 'setValue'>,
+  field = 'amount' as FieldPathByValue<T, bigint | null>,
+) => {
   const { isReady, query, pathname, replace } = useRouter();
 
   useEffect(() => {
@@ -90,10 +97,10 @@ export const useQueryParamsAmountForm = <T extends { amount: bigint | null }>({
       if (typeof amount === 'string') {
         void replace({ pathname, query: rest });
         const amountBigInt = parseEther(amount);
-        setValue('amount' as Path<T>, amountBigInt as PathValue<T, Path<T>>);
+        setValue(field, amountBigInt as PathValue<T, typeof field>);
       }
     } catch (error) {
       console.warn('Error setting amount value from query params', error);
     }
-  }, [isReady, pathname, query, replace, setValue]);
+  }, [isReady, pathname, query, replace, setValue, field]);
 };

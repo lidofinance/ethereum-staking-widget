@@ -1,39 +1,34 @@
+import { isOneOf, keepOrFirst } from '../../../utils';
+import { isRoutable } from '../stake-routes';
+
 import { STAKE_TOKENS_OUT } from './consts';
-import type {
-  StakeFormInputValues,
-  StakeTokenOut,
-  StakeTokenOutValue,
-} from './types';
+import type { StakeFormInputValues, StakeTokenOutValue } from './types';
 
-const isSameTokenOut = (a: StakeTokenOutValue, b: StakeTokenOutValue) =>
-  a.token === b.token && a.chainId === b.chainId;
+export const isStakeTokenOut = isOneOf(STAKE_TOKENS_OUT);
 
-export const isStakeTokenOut = (token: string): token is StakeTokenOut =>
-  (STAKE_TOKENS_OUT as readonly string[]).includes(token);
+const tokenOutOrder = ({ token }: StakeTokenOutValue) =>
+  STAKE_TOKENS_OUT.indexOf(token);
 
 /**
- * What staking `tokenIn` can give: the stake-out tokens available on its
- * chain, stETH first.
+ * What staking `tokenIn` can give: the available tokens some stake route
+ * leads to from it, stETH first.
  */
 export const getTokenOutList = (
   tokenIn: StakeFormInputValues['tokenIn'],
   available: readonly StakeTokenOutValue[],
 ): StakeTokenOutValue[] =>
-  STAKE_TOKENS_OUT.flatMap((token) => {
-    const tokenOut = { token, chainId: tokenIn.chainId };
-    return available.some((token) => isSameTokenOut(token, tokenOut))
-      ? [tokenOut]
-      : [];
-  });
+  available
+    .filter((tokenOut) => isRoutable({ tokenIn, tokenOut }))
+    .sort((a, b) => tokenOutOrder(a) - tokenOutOrder(b));
 
-/**
- * `tokenOut` itself (same object) when the list has it, otherwise the first
- * of the list. An empty list has nothing better to offer: `tokenOut` stays.
- */
+/** tokenOut when tokenIn can still stake into it, else the first option */
 export const adjustTokenOut = (
   tokenOut: StakeTokenOutValue,
   tokenOutList: readonly StakeTokenOutValue[],
-): StakeTokenOutValue =>
-  tokenOutList.some((token) => isSameTokenOut(token, tokenOut))
-    ? tokenOut
-    : (tokenOutList[0] ?? tokenOut);
+) => keepOrFirst(tokenOut, tokenOutList);
+
+/** tokenOut of `values`, fixed to one their tokenIn can stake into */
+export const routableTokenOut = (
+  { tokenIn, tokenOut }: Pick<StakeFormInputValues, 'tokenIn' | 'tokenOut'>,
+  tokensOut: readonly StakeTokenOutValue[],
+) => adjustTokenOut(tokenOut, getTokenOutList(tokenIn, tokensOut));

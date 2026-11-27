@@ -1,70 +1,62 @@
-import { useState } from 'react';
-import { useController } from 'react-hook-form';
-import { formatEther, parseEther } from 'viem';
-import { DataListRow } from '@lidofinance/lido-app-ui';
+import { useWatch } from 'react-hook-form';
+import { DataListRow, Typography } from '@lidofinance/lido-app-ui';
 
-import { useStakeFormContext } from '../stake-form-context';
+import { FormatPrice, FormatToken } from 'shared/formatters';
+
+import { Loader, tokenSymbol, useAmountField } from '../../../utils';
+import { useStakeForm, useStakeFormContext } from '../stake-form-context';
 import { TokenInSelect } from '../token-in-select';
 import { TokenOutSelect } from '../token-out-select';
 
 import { WrapperCard, FullWidthInput, DataListStyled } from './styles';
 
-// every stake token has 18 decimals
-const AMOUNT_DECIMALS = 18;
-
-const parseAmount = (text: string) => {
-  if (!text) return null;
-  try {
-    return parseEther(text);
-  } catch {
-    return null;
-  }
-};
-
-// TODO: move into a reusable amount control
-const useAmountField = () => {
-  const { control } = useStakeFormContext();
-  const { field } = useController({ control, name: 'amount' });
-
-  // the typed text, so "1." or "0.10" survive while the form holds a bigint
-  const [text, setText] = useState(() =>
-    field.value === null ? '' : formatEther(field.value),
-  );
-  // the amount changed from outside (query param, reset, max): show it
-  if (parseAmount(text) !== field.value) {
-    setText(field.value === null ? '' : formatEther(field.value));
-  }
-
-  return {
-    ref: field.ref,
-    name: field.name,
-    onBlur: field.onBlur,
-    value: text,
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-      setText(event.target.value);
-      field.onChange(parseAmount(event.target.value));
-    },
-  };
-};
-
 export const StakeInput = () => {
-  const amountField = useAmountField();
+  const { control, setValue } = useStakeFormContext();
+  // every stake token has 18 decimals
+  const amountField = useAmountField({ control, name: 'amount' });
+  // the route decides the max (balance, stake limit, pool capacity)
+  const { maxAmount, isContextLoading, amountInUsd } = useStakeForm();
+  const tokenIn = useWatch({ control, name: 'tokenIn' });
 
+  // nothing while disconnected: there is no route context to show
+  const maxLabel = isContextLoading ? (
+    <Loader isLoading width={96} />
+  ) : maxAmount !== undefined ? (
+    <FormatToken amount={maxAmount} symbol={tokenSymbol(tokenIn.token)} />
+  ) : undefined;
+
+  // no amount (empty or 0) fails with no text, so it shows nothing here
+  const hasError = !!amountField.error;
   return (
     <WrapperCard>
       <FullWidthInput
         label="Stake amount"
-        secondaryValue="$0"
-        balance="111"
+        secondaryValue={
+          hasError ? (
+            <Typography as="span" variant="inherit" color="error">
+              {amountField.error}
+            </Typography>
+          ) : (
+            <FormatPrice amount={amountInUsd} />
+          )
+        }
+        balance={maxLabel}
         showMaxButton
-        decimals={AMOUNT_DECIMALS}
-        inputMode="decimal"
+        maxDisabled={maxAmount === undefined}
+        onMaxClick={() => {
+          if (maxAmount === undefined) return;
+          setValue('amount', maxAmount, {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+        }}
         placeholder="0"
         tokenSelector={<TokenInSelect />}
         {...amountField}
+        error={hasError}
       />
       <DataListStyled>
-        <DataListRow label="Recieve" info="TODO" value={<TokenOutSelect />} />
+        <DataListRow label="Receive" info="TODO" value={<TokenOutSelect />} />
       </DataListStyled>
     </WrapperCard>
   );

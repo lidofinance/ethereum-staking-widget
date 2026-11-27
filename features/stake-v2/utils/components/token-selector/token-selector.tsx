@@ -4,11 +4,11 @@ import type { TokenListItem } from 'modules/web3';
 
 import { TokenDropdown } from './token-dropdown';
 import { TokenSelectorPopover } from './token-selector-popover';
-import type { TokenSelectorValue } from './types';
+import type { TokenOnChain } from '../../token';
 
 type TokenSelectorProps = {
-  value: TokenSelectorValue;
-  onChange: (value: TokenSelectorValue) => void;
+  value: TokenOnChain;
+  onChange: (value: TokenOnChain) => void;
   /** `tokens` of useTokenList */
   options: readonly TokenListItem[];
   /** `isLoading` of useTokenList: balances show as skeletons */

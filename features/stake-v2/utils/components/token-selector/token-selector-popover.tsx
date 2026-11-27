@@ -15,7 +15,7 @@ import { Loader } from '../loader';
 import { ChainIcon, TokenChainIcon } from '../token-chain-icon';
 
 import { OPTION_SELECTOR, centerInView, moveListboxFocus } from './listbox';
-import { isSameToken, type TokenSelectorValue } from './types';
+import { isSameTokenOnChain, type TokenOnChain } from '../../token';
 import {
   ChainButton,
   ChainFilter,
@@ -65,8 +65,8 @@ const TokenOption = ({ option, isLoading }: TokenOptionProps) => (
 );
 
 type TokenSelectorPopoverProps = {
-  value: TokenSelectorValue;
-  onSelect: (value: TokenSelectorValue) => void;
+  value: TokenOnChain;
+  onSelect: (value: TokenOnChain) => void;
   options: readonly TokenListItem[];
   isLoading: boolean;
   label?: ReactNode;
@@ -91,7 +91,7 @@ export const TokenSelectorPopover = ({
       ? options
       : options.filter(({ chainId }) => chainId === chainFilter);
   const focusStop =
-    visible.find((option) => isSameToken(option, value)) ?? visible[0];
+    visible.find((option) => isSameTokenOnChain(option, value)) ?? visible[0];
 
   // centres the selected token and its chain once, on open
   useLayoutEffect(() => {
@@ -164,7 +164,7 @@ export const TokenSelectorPopover = ({
             key={`${option.chainId}-${option.token}`}
             type="button"
             role="option"
-            aria-selected={isSameToken(option, value)}
+            aria-selected={isSameTokenOnChain(option, value)}
             tabIndex={option === focusStop ? 0 : -1}
             onClick={() =>
               onSelect({ token: option.token, chainId: option.chainId })

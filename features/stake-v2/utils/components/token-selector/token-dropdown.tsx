@@ -1,16 +1,15 @@
 import { useRef, useState, type ReactNode } from 'react';
 import { Typography } from '@lidofinance/lido-app-ui';
 
-import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { getPrettyChainName } from 'modules/web3';
 
 import { TokenChainIcon } from '../token-chain-icon';
 
-import type { TokenSelectorValue } from './types';
+import { tokenSymbol, type TokenOnChain } from '../../token';
 import { Chevron, SelectorPopover, SingleToken, Trigger } from './styles';
 
 type TokenDropdownProps = {
-  value: TokenSelectorValue;
+  value: TokenOnChain;
   /** chip text; the token symbol when omitted */
   label?: ReactNode;
   /** accessible name of the chip; "<symbol> on <chain>" when omitted */
@@ -38,7 +37,7 @@ export const TokenDropdown = ({
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const tokenLabel = TOKEN_SYMBOLS[value.token];
+  const tokenLabel = tokenSymbol(value.token);
   const content = (
     <>
       <TokenChainIcon token={tokenLabel} chainId={value.chainId} size={24} />

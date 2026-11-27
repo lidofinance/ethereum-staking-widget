@@ -1,53 +1,78 @@
 import { useController, useWatch } from 'react-hook-form';
+import invariant from 'tiny-invariant';
 import { SelectItem } from '@lidofinance/lido-app-ui';
 
-import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { getPrettyChainName } from 'modules/web3';
 
 import {
   TokenChainIcon,
   TokenDropdown,
+  isSameTokenOnChain,
   moveListboxFocus,
+  tokenSymbol,
+  useRouteQuotes,
 } from '../../../utils';
 import {
   getTokenOutList,
   useStakeForm,
   useStakeFormContext,
   useStakingTokenOutList,
-  type StakeTokenOutValue,
 } from '../stake-form-context';
+import type { StakeRouteSpec } from '../stake-routes';
 
-import { formatTokenOut, getTokenOutDetails } from './token-out-details';
-import { useEthToWsteth } from './use-eth-to-wsteth';
+import {
+  ONE_TOKEN_IN,
+  formatRate,
+  formatTokenOut,
+  getTokenOutDescription,
+} from './token-out-details';
 import { RateLine, TokenOutList } from './styles';
-
-const isSame = (a: StakeTokenOutValue, b: StakeTokenOutValue) =>
-  a.token === b.token && a.chainId === b.chainId;
 
 // TODO: move into a reusable token control
 export const TokenOutSelect = () => {
-  const { amountInEth } = useStakeForm();
+  const { routing } = useStakeForm();
 
   const { control } = useStakeFormContext();
   const tokenIn = useWatch({ control, name: 'tokenIn' });
+  const amount = useWatch({ control, name: 'amount' });
   const { field } = useController({ control, name: 'tokenOut' });
-  // the rate of the tokenIn chain, read once for every amount
-  const ethToWsteth = useEthToWsteth(tokenIn.chainId);
 
-  // what tokenIn can stake into, the same list the form adjusts tokenOut to
+  // what tokenIn can stake into, the same list the form adjusts tokenOut to;
+  // every option has a route, so each is quoted by its own route
   const options = getTokenOutList(tokenIn, useStakingTokenOutList());
-
-  const detailsArgs = {
-    amountInEth,
-    tokenInLabel: TOKEN_SYMBOLS[tokenIn.token],
-    ethToWsteth,
+  const entries = options.map((tokenOut) => {
+    const route = routing.resolve({ tokenIn, tokenOut });
+    invariant(route, 'every token out option must have a stake route');
+    return { route, deps: routing.getQuoteDeps({ tokenIn, tokenOut }) };
+  });
+  const quotes = useRouteQuotes<StakeRouteSpec>(entries, amount);
+  // the rate line: the same quote, for one whole token
+  const rates = useRouteQuotes<StakeRouteSpec>(entries, ONE_TOKEN_IN);
+  const tokenInLabel = tokenSymbol(tokenIn.token);
+  const describe = (index: number) => {
+    const option = options[index];
+    const quote = quotes[index];
+    const rate = rates[index];
+    invariant(option && quote && rate, 'a quote per option');
+    const tokenLabel = tokenSymbol(option.token);
+    return {
+      option,
+      tokenLabel,
+      label: formatTokenOut(tokenLabel, quote.quote?.amountOut),
+      description: getTokenOutDescription(option.token),
+      rate: formatRate(tokenInLabel, tokenLabel, rate.quote?.amountOut),
+    };
   };
+
   const value = field.value;
-  const valueLabel = formatTokenOut(
-    TOKEN_SYMBOLS[value.token],
-    getTokenOutDetails(value.token, detailsArgs)?.amountOut,
+  const selectedIndex = options.findIndex((option) =>
+    isSameTokenOnChain(option, value),
   );
-  const focusStop = options.find((option) => isSame(option, value));
+  const valueLabel =
+    selectedIndex === -1
+      ? tokenSymbol(value.token)
+      : describe(selectedIndex).label;
+  const focusStop = options.find((option) => isSameTokenOnChain(option, value));
 
   return (
     <TokenDropdown
@@ -64,9 +89,8 @@ export const TokenOutSelect = () => {
           onKeyDown={moveListboxFocus}
         >
           {options.map((option, index) => {
-            const tokenLabel = TOKEN_SYMBOLS[option.token];
-            const details = getTokenOutDetails(option.token, detailsArgs);
-            const isSelected = isSame(option, value);
+            const { tokenLabel, label, description, rate } = describe(index);
+            const isSelected = isSameTokenOnChain(option, value);
             const isFocusStop = focusStop ? option === focusStop : index === 0;
 
             return (
@@ -85,13 +109,13 @@ export const TokenOutSelect = () => {
                     size={24}
                   />
                 }
-                label={formatTokenOut(tokenLabel, details?.amountOut)}
+                label={label}
                 secondaryLabel={getPrettyChainName(option.chainId)}
                 description={
-                  details && (
+                  (description || rate) && (
                     <>
-                      {details.description}
-                      {details.rate && <RateLine>{details.rate}</RateLine>}
+                      {description}
+                      {rate && <RateLine>{rate}</RateLine>}
                     </>
                   )
                 }

@@ -87,7 +87,7 @@ export const UsdVaultDepositFormProvider: React.FC<{
   });
 
   const { setValue } = formObject;
-  useQueryParamsReferralForm<USDDepositFormValues>({ setValue });
+  useQueryParamsReferralForm(formObject);
   useQueryParamsTokenForm<USDDepositFormValues>({
     setValue,
     tokens: USD_VAULT_DEPOSIT_TOKEN_SYMBOLS,

@@ -1,63 +1,34 @@
-import type { ReactNode } from 'react';
-
 import { parseEther } from 'viem';
 
 import { TOKENS } from 'consts/tokens';
 import { formatBalance } from 'utils';
 
-const ONE_ETH = parseEther('1');
+/** one whole token in, to quote the rate line with */
+export const ONE_TOKEN_IN = parseEther('1');
 
-type TokenOutDetailsArgs = {
-  amountInEth: bigint | null;
-  /** symbol of the staked token, for the rate line */
-  tokenInLabel: string;
-  /** wstETH staking gives on the tokenIn chain; undefined while unknown */
-  ethToWsteth?: (eth: bigint) => bigint | undefined;
+// What staking can give, explained. Only the tokens listed get a blurb; any
+// other is shown by its quote alone, so the list can grow without this
+const TOKEN_OUT_DESCRIPTIONS: Partial<Record<string, string>> = {
+  [TOKENS.steth]: 'Rebasing token. Balance changes as rewards accrue.',
+  [TOKENS.wsteth]: 'Non-rebasing token. Its value in stETH changes over time.',
 };
 
-export type TokenOutDetails = {
-  /** what staking `amountInEth` gives; undefined while unknown */
-  amountOut?: bigint;
-  description: ReactNode;
-  rate?: ReactNode;
-};
-
-/**
- * Extra info of the tokens staking can give. null for any other token:
- * it is shown by its symbol alone, so the list can grow without this.
- */
-export const getTokenOutDetails = (
-  token: string,
-  { amountInEth, tokenInLabel, ethToWsteth }: TokenOutDetailsArgs,
-): TokenOutDetails | null => {
-  switch (token) {
-    case TOKENS.steth:
-      return {
-        // stETH is 1:1 with ETH
-        amountOut: amountInEth ?? undefined,
-        description: 'Rebasing token. Balance changes as rewards accrue.',
-        rate: `1 ${tokenInLabel} = 1 stETH`,
-      };
-    case TOKENS.wsteth: {
-      const rate = ethToWsteth?.(ONE_ETH);
-      return {
-        amountOut:
-          amountInEth === null ? undefined : ethToWsteth?.(amountInEth),
-        description:
-          'Non-rebasing token. Its value in stETH changes over time.',
-        rate:
-          rate === undefined
-            ? undefined
-            : `1 ${tokenInLabel} ≈ ${formatBalance(rate).trimmed} wstETH`,
-      };
-    }
-    default:
-      return null;
-  }
-};
+export const getTokenOutDescription = (token: string) =>
+  TOKEN_OUT_DESCRIPTIONS[token];
 
 /** "<amount> <symbol>", or the symbol alone while the amount is unknown */
 export const formatTokenOut = (tokenLabel: string, amountOut?: bigint) =>
   amountOut === undefined
     ? tokenLabel
     : `${formatBalance(amountOut).trimmed} ${tokenLabel}`;
+
+/** "1 ETH = 1 stETH" / "1 ETH ≈ 0.8044 wstETH", from the quote of one token */
+export const formatRate = (
+  tokenInLabel: string,
+  tokenOutLabel: string,
+  rateOut?: bigint,
+) => {
+  if (rateOut === undefined) return undefined;
+  if (rateOut === ONE_TOKEN_IN) return `1 ${tokenInLabel} = 1 ${tokenOutLabel}`;
+  return `1 ${tokenInLabel} ≈ ${formatBalance(rateOut).trimmed} ${tokenOutLabel}`;
+};

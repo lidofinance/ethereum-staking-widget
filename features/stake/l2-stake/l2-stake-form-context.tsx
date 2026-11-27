@@ -248,8 +248,8 @@ export const L2StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     disabled: !l2StakeState.isEnabled,
   });
   const { setValue, control } = formObject;
-  useQueryParamsReferralForm<L2StakeFormInputType>({ setValue });
-  useQueryParamsAmountForm<L2StakeFormInputType>({ setValue });
+  useQueryParamsReferralForm(formObject);
+  useQueryParamsAmountForm(formObject);
 
   const [token, amount, referral] = useWatch({
     control,

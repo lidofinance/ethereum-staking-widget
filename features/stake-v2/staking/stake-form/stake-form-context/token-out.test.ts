@@ -25,6 +25,13 @@ describe('getTokenOutList', () => {
     ]);
   });
 
+  it('WETH on L1 stakes into stETH and wraps into wstETH', () => {
+    expect(getTokenOutList({ token: 'weth', chainId: 1 }, available)).toEqual([
+      steth(1),
+      wsteth(1),
+    ]);
+  });
+
   it('nothing on a chain staking does not cover', () => {
     expect(getTokenOutList({ token: 'eth', chainId: 8453 }, available)).toEqual(
       [],

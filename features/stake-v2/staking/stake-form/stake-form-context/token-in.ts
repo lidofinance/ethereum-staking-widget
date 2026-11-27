@@ -1,8 +1,9 @@
-import { STAKE_TOKENS_IN } from './consts';
-import type { StakeFormInputValues, StakeTokenIn } from './types';
+import { isOneOf } from '../../../utils';
 
-export const isStakeTokenIn = (token: string): token is StakeTokenIn =>
-  (STAKE_TOKENS_IN as readonly string[]).includes(token);
+import { STAKE_TOKENS_IN } from './consts';
+import type { StakeFormInputValues } from './types';
+
+export const isStakeTokenIn = isOneOf(STAKE_TOKENS_IN);
 
 /**
  * The first stake-in token of `tokenInList` on `chainId`, in list order;

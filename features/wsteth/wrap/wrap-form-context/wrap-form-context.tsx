@@ -77,7 +77,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     setValue,
     getValues,
   } = formObject;
-  useQueryParamsReferralForm<WrapFormInputType>({ setValue });
+  useQueryParamsReferralForm(formObject);
   const [token, amount] = watch(['token', 'amount']);
 
   // L2 only wraps stETH. The selector is hidden there, so a token picked before
